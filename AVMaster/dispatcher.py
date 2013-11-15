@@ -20,6 +20,7 @@ class Dispatcher(object):
         self.mq = mq
         self.report = report
         self.timeout = timeout
+        logging.debug("Dispatcher, vms: %s" % vms )
  
     def dispatch(self, procedure, ):
         global received
@@ -44,7 +45,9 @@ class Dispatcher(object):
  
         ended = 0
         answered = 0
-        while not exit and ended < len(self.vms):
+        len_vms =  len(self.vms)
+        logging.debug("len vms: %s" % len_vms)
+        while not exit and ended < len_vms:
             rec = self.mq.receive_server(blocking=True, timeout=self.timeout)
             if rec is not None:
                 logging.debug("- SERVER RECEIVED %s %s" % (rec, type(rec)))
@@ -52,12 +55,12 @@ class Dispatcher(object):
                 m = av_machines[c]
                 answer = m.manage_answer(msg)
                 if self.report:
-                    self.report.received(c, msg)
+                    self.report.received(c, command.unserialize(msg))
                 answered += 1
                 #logging.debug("- SERVER RECEIVED ANSWER: %s" % answer.success)
                 if answer.name == "END":
                     ended += 1
-                    logging.debug("- SERVER RECEIVE END")
+                    logging.debug("- SERVER END: %s" % answer)
                 elif answer.success:
                     r, cmd = av_machines[c].execute_next_command()
                     if self.report:
@@ -65,13 +68,13 @@ class Dispatcher(object):
                     logging.debug("- SERVER SENT: %s, %s" % (c, cmd))
                 else:
                     ended += 1
-                    logging.debug("- SERVER RECEIVE ERROR, ENDING")
+                    logging.debug("- SERVER ERROR, ENDING")
  
             else:
                 logging.debug("- SERVER RECEIVED empty")
                 exit = True
  
         logging.debug("answered: %s, ended: %s, num_commands: %s" %( answered, ended, self.num_commands))
-        assert (ended == len(self.vms))
+        assert ended == len_vms, "vms: %s ended: %s" % (len_vms, ended)
         #assert answered >= (len(self.vms) * (self.num_commands)), "answered: %s, len(vms): %s, num_commands: %s" % (answered , len(self.vms), self.num_commands)
-        return answered
+        return ended, answered

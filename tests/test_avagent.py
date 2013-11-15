@@ -8,7 +8,7 @@ import logging, logging.config
 from multiprocessing import Pool, Process
 import threading
 
-from AVCommon.procedure import Procedure
+from AVCommon import procedure
 from AVCommon.mq import MQStar
 from AVMaster.dispatcher import Dispatcher
 from AVMaster import vm_manager
@@ -22,7 +22,7 @@ def test_avagent_create():
 
     vms = [ "testvm_%d" % i for i in range(10) ]
 
-    test = Procedure("TEST", ["BEGIN", "START_AGENT", ("EVAL_CLIENT", None, 'self.vm'), "STOP_AGENT", "END"])
+    test = procedure.Procedure("TEST", ["BEGIN", "START_AGENT", ("EVAL_CLIENT", None, 'vm'), "STOP_AGENT", "END"])
 
     host = "localhost"
     mq = MQStar(host)
@@ -35,14 +35,23 @@ def test_avagent_create():
 
     #agent.start_agent()
 
+def test_avagent_procedure():
+    test = procedure.Procedure("TEST", ["BEGIN", "START_AGENT", ("EVAL_CLIENT", None, 'vm'), "STOP_AGENT", "END"])
+
+    mq = av_agent.MQFeedProcedure(test)
+
+    agent = av_agent.AVAgent("test_1")
+    agent.start_agent(mq)
+
+
 def test_avagent_get_set():
     host = "localhost"
 
-    vms = [ "testvm_%d" % i for i in range(10) ]
+    vms = [ "testvm_%d" % i for i in range(2) ]
 
     #command_client={   'COMMAND_CLIENT': [{   'SET': [   'windows'                                 'whatever']}]}
 
-    procedure = """
+    proc = """
 TEST:
     - START_AGENT
     - SET: {pippo: franco}
@@ -60,7 +69,7 @@ TEST:
     - STOP_AGENT
 """
 
-    test = Procedure.load_from_yaml(procedure)
+    test = procedure.load_from_yaml(proc)
 
     host = "localhost"
     mq = MQStar(host)
@@ -69,24 +78,21 @@ TEST:
     logging.debug("MQ session: %s" % mq.session)
 
     #istanzia n client e manda delle procedure.
-
     vm_manager.vm_conf_file = "../AVMaster/conf/vms.cfg"
     report= Report()
 
     # dispatcher, inoltra e riceve i comandi della procedura test sulle vm
-    dispatcher = Dispatcher(mq, vms, report, timeout = 10)
+    dispatcher = Dispatcher(mq, vms, report, timeout = 15)
     thread = threading.Thread(target=dispatcher.dispatch, args=(test["TEST"],))
     thread.start()
-    #p = Process(target=dispatcher.dispatch, args=(test["TEST"],))
-    #p.start()
 
+    agents = [ av_agent.AVAgent(v, host, mq.session,)  for v in vms]
     # i client vengono eseguiti asincronicamente e comunicano tramite redis al server
-    pool = Pool(len(vms))
-    r = pool.map_async(av_agent.start_agent, ( (v, host, mq.session) for v in vms) )
-    r.get() #notare che i results dei client non ci interessano, viaggia tutto su channel/command.
 
-    # chiusura del server
-    #p.join()
+    for a in  agents:
+        p = Process(target = a.start_agent)
+        p.start()
+
     thread.join()
 
     logging.debug(dispatcher.report)
@@ -95,5 +101,6 @@ TEST:
 
 if __name__ == '__main__':
     logging.config.fileConfig('../logging.conf')
-    #test_dispatcher_server()
+    #test_avagent_create()
     test_avagent_get_set()
+    #test_avagent_procedure()

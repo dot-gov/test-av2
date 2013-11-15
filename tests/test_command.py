@@ -84,6 +84,20 @@ def test_commandUnserialize():
     assert q.side == "server"
     assert command.context == "mycontext"
 
+    s = command.factory( ("CALL", True, "WHAT") )
+    assert s.name == "CALL"
+    assert s.payload == "WHAT"
+    assert s.success is True
+    assert s.side == "meta"
+    assert command.context == "mycontext"
+
+    s = command.factory( ("GET", True, "WHAT") )
+    assert s.name == "GET"
+    assert s.payload == "WHAT"
+    assert s.success is True
+    assert s.side == "client"
+    assert command.context == "mycontext"
+
     try:
         s = command.factory( )
         assert False, "should not unserialize this"

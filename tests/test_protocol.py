@@ -5,7 +5,7 @@ sys.path.append(os.path.split(os.getcwd())[0])
 sys.path.append(os.getcwd())
 
 from AVCommon.protocol import Protocol
-from AVCommon.procedure import Procedure
+from AVCommon import procedure
 from AVCommon.mq import MQStar
 
 import logging
@@ -58,9 +58,9 @@ def test_ProtocolEval():
                 ("EVAL_SERVER", None, "locals()"),
                 ("EVAL_SERVER", None, "__import__('os').getcwd()"),
                 ("END", None, None)]
-    procedure = Procedure("PROC", commands)
+    proc = procedure.Procedure("PROC", commands)
 
-    p = Protocol(mq, c, procedure)
+    p = Protocol(mq, c, proc)
 
     while p.send_next_command():
         logging.debug("sent command: %s" % p.last_command)
@@ -101,10 +101,10 @@ CALLER:
     - EVAL_SERVER: locals()
     - END
 """
-    procedures = Procedure.load_from_yaml(yaml)
+    procedures = procedure.load_from_yaml(yaml)
 
-    caller = Procedure.procedures["CALLER"]
-    basic = Procedure.procedures["BASIC"]
+    caller = procedure.procedures["CALLER"]
+    basic = procedure.procedures["BASIC"]
 
     p = Protocol(mq, c, caller)
     while p.send_next_command():

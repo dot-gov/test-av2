@@ -92,11 +92,10 @@ SET_DEFAULTS:
         redis: 10.0.20.1
 
 TEST:
-    - BEGIN
     - START_AGENT
-    - BUILD: [ windows, scout ]
+    - CALL: SET_DEFAULTS
+    - BUILD: [ silent, windows, scout ]
     - STOP_AGENT
-    - END
 
 UPLOAD_AGENT:
     - PUSH:
@@ -149,9 +148,3 @@ ELITE:
 
 STATIC:
     - CALL: DISPATCH
-
-TEST:
-    - START_AGENT
-    - CALL: SET_DEFAULTS
-    - BUILD: [ silent, windows, scout ]
-    - STOP_AGENT

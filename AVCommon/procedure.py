@@ -16,12 +16,34 @@ import logging
 
 import pprint
 
+procedures = {}
 pp = pprint.PrettyPrinter(indent=4)
 
+def load_from_yaml(stream):
+    global procedures
+    procedures.clear()
+
+    data = load(stream, Loader=Loader)
+    pp.pprint(data)
+    for name in data.keys():
+        command_list = []
+        command_data = data[name]
+        logging.debug("new procedure: %s\nargs: %s" % (name, data[name]))
+        for c in command_data:
+            #c = command.factory(c)
+            command_list.append(c)
+            #logging.debug("  command: %s" % c)
+
+        procedures[name] = Procedure(name, command_list)
+    return procedures
+
+
+def load_from_file(filename):
+    stream = file(filename, 'r')
+    return load_from_yaml(stream)
+
 class Procedure:
-    command_list = []
     name = ""
-    procedures = {}
 
     """docstring for Procedure"""
 
@@ -30,13 +52,13 @@ class Procedure:
         if not command_list:
             self.command_list = []
         else:
-            self.command_list = [ command.factory(c) for c in command_list ]
+            self.command_list = command_list
             assert self.command_list, "empty command_list"
 
     def add_begin_end(self):
-        if self.command_list[0].name != "BEGIN":
+        if self.command_list[0] != "BEGIN":
             self.command_list.insert(0, "BEGIN")
-        if self.command_list[-1].name != "END":
+        if self.command_list[-1] != "END":
             self.command_list.append("END")
 
     def insert(self, new_proc):
@@ -49,25 +71,4 @@ class Procedure:
     def __len__(self):
         return len(self.command_list)
 
-    @staticmethod
-    def load_from_yaml(stream):
-        procedures = {}
-        data = load(stream, Loader=Loader)
-        pp.pprint(data)
-        for name in data.keys():
-            command_list = []
-            command_data = data[name]
-            logging.debug("new procedure: %s\nargs: %s" % (name, data[name]))
-            for c in command_data:
-                #c = command.factory(c)
-                command_list.append(c)
-                #logging.debug("  command: %s" % c)
 
-            procedures[name] = Procedure(name, command_list)
-        Procedure.procedures = procedures
-        return procedures
-
-    @staticmethod
-    def load_from_file(filename):
-        stream = file(filename, 'r')
-        return Procedure.load_from_yaml(stream)

@@ -2,7 +2,7 @@ import sys, os
 sys.path.append(os.path.split(os.getcwd())[0])
 sys.path.append(os.getcwd())
 
-from AVCommon.procedure import Procedure
+from AVCommon import procedure
 from AVCommon.command import Command
 
 from AVCommon import command
@@ -16,9 +16,9 @@ def test_dispatcher():
     agentFiles = ""
     params = ""
 
-    update = Procedure("UPDATE", ["REVERT", "START_VM", "UPDATE", "STOP_VM"])
-    dispatch = Procedure("DISPATCH", ["REVERT", "START_VM", ("PUSH", None, agentFiles)])
-    scout = Procedure("SCOUT", [
+    update = procedure.Procedure("UPDATE", ["REVERT", "START_VM", "UPDATE", "STOP_VM"])
+    dispatch = procedure.Procedure("DISPATCH", ["REVERT", "START_VM", ("PUSH", None, agentFiles)])
+    scout = procedure.Procedure("SCOUT", [
         ("CALL", None, "dispatch"),
         ("PUSH", None, agentFiles),
     ])
@@ -32,8 +32,8 @@ def test_procedure_insert():
     agentFiles = ""
     params = ""
 
-    p1 = Procedure("UPDATE", ["REVERT", "START_VM", "UPDATE", "STOP_VM"])
-    p2 = Procedure("DISPATCH", ["REVERT", "START_VM", ("PUSH", None, agentFiles)])
+    p1 = procedure.Procedure("UPDATE", ["REVERT", "START_VM", "UPDATE", "STOP_VM"])
+    p2 = procedure.Procedure("DISPATCH", ["REVERT", "START_VM", ("PUSH", None, agentFiles)])
 
     lp1= len(p1)
     lp2= len(p2)
@@ -45,11 +45,11 @@ def test_procedure_insert():
     assert len(p1) == lp1 + lp2
 
 def test_procedure_file():
-    procedures = Procedure.load_from_file("../AVMaster/conf/procedures.yaml")
+    procedures = procedure.load_from_file("../AVMaster/conf/procedures.yaml")
     assert procedures, "empty procedures"
     logging.debug("procedures: %s" % procedures)
     for p in procedures.values():
-        assert isinstance(p, Procedure), "not a Procedure: %s" % p
+        assert isinstance(p, procedure.Procedure), "not a Procedure: %s" % p
 
 
 def test_procedure_yaml():
@@ -72,19 +72,19 @@ SCOUT:
     - START_AGENT
     - BUILD
 """
-    procedures = Procedure.load_from_yaml(yaml)
+    procedures = procedure.load_from_yaml(yaml)
     assert procedures, "empty procedures"
     logging.debug("procedures: %s" % procedures)
     assert len(procedures) == 3, "wrong procedures number: %s" % len(procedures)
 
     for p in procedures.values():
-        assert isinstance(p, Procedure), "not a Procedure: %s" % p
+        assert isinstance(p, procedure.Procedure), "not a Procedure: %s" % p
         assert p.name
         assert p.command_list
         assert len(p) == len(p.command_list)
 
     leninstance = len(procedures.values())
-    lenstatic = len(Procedure.procedures)
+    lenstatic = len(procedure.procedures)
     assert leninstance == lenstatic
 
 

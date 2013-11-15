@@ -110,13 +110,13 @@ def normalize(data):
     return (cmd, success, payload, vm)
 
 def factory(data):
-    if not known_commands:
-        init()
-
     name, success, payload, vm = normalize(data)
     return _factory(name, success, payload, vm)
 
 def _factory(name, success, payload, vm):
+    global known_commands
+    if not known_commands:
+        init()
     assert name in known_commands.keys(), "Unknown command: %s" % name
 
     m = known_commands[name]

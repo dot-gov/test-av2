@@ -8,5 +8,5 @@ class Box:
 __box = Box()
 
 
-verbose = False
+verbose = True
 basedir = False

@@ -4,7 +4,6 @@ import threading
 from AVCommon import config
 
 import command
-from mq import MQStar
 
 import traceback
 
@@ -17,7 +16,6 @@ class ProtocolClient:
         self.timeout = 0
 
         assert(isinstance(vm, str))
-        assert(isinstance(mq, MQStar))
 
     def _execute_command(self, cmd):
         try:
@@ -54,16 +52,15 @@ class ProtocolClient:
 
 class Protocol(ProtocolClient):
     """ A protocol implements the server behavior."""
-    procedure = None
+    proc = None
     last_command = None
 
-    def __init__(self, mq, vm, procedure=None, timeout = 0):
+    def __init__(self, mq, vm, proc=None, timeout = 0):
         ProtocolClient.__init__(self, mq, vm, timeout)
         self.mq = mq
         self.vm = vm
-        self.procedure = copy.deepcopy(procedure)
+        self.proc = copy.deepcopy(proc)
         assert (isinstance(vm, str))
-        assert (isinstance(mq, MQStar))
 
     # server side
     def _send_command_mq(self, cmd):
@@ -81,29 +78,23 @@ class Protocol(ProtocolClient):
     def _meta(self, cmd):
         if config.verbose:
             logging.debug("PROTO S executing meta")
-        ret = cmd.execute( self.vm, (self, cmd.payload) )
+        ret = cmd.execute( self.vm, [self, cmd.payload] )
         cmd.success, cmd.payload = ret
         assert isinstance(cmd.success, bool)
         self.send_answer(cmd)
         return cmd
 
-    #def next(self):
-    #    logging.debug("next")
-    #    for c in self.procedure.next():
-    #        logging.debug("next, got a new command")
-    #        yield self.send_command(c)
-
     def send_next_command(self):
-        if not self.procedure:
+        if not self.proc:
             self.last_command = None
             return False
-        self.last_command = self.procedure.next_command()
+        self.last_command = self.proc.next_command()
         self.send_command(copy.deepcopy(self.last_command))
         return True
 
     def send_command(self, cmd):
         if config.verbose:
-            logging.debug("PROTO S send_command: %s" % str(cmd))
+            logging.debug("PROTO S send_command: %s  side: %s" % (str(cmd), cmd.side))
         #cmd = command.unserialize(cmd)
         cmd.vm = self.vm
         try:

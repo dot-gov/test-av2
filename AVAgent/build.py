@@ -598,14 +598,8 @@ class AgentBuild:
 
 
 def send_results(results):
-    # questo non serve, i risultato vengono restituiti dal command
-    try:
-        channel = socket.gethostname().replace(
-            "win7", "").replace("winxp", "").replace("win8", "")
-        r = redis.Redis("10.0.20.1")
-        r.publish(channel, results)
-    except Exception as e:
-        logging.debug("DBG problem saving results. fault: %s" % e)
+    #TODO
+    pass
 
 internet_checked = False
 
@@ -614,6 +608,7 @@ def execute_agent(args, level, platform):
     """ starts the vm and execute elite,scout or pull, depending on the level """
     global internet_checked
 
+    # ftype can be desktop or mobile
     ftype = args.platform_type[platform]
     logging.debug("DBG ftype: %s" % ftype)
 
@@ -625,7 +620,7 @@ def execute_agent(args, level, platform):
         if not internet_checked and internet_on():
             logging.debug("+ ERROR: I reach Internet")
             send_results("ENDED")
-            exit(0)
+            return False
 
     internet_checked = True
     logging.debug("- Network unreachable")
@@ -642,10 +637,15 @@ def execute_agent(args, level, platform):
                           vmavtest.execute_scout, "pull": vmavtest.execute_pull}
                 sleep(5)
                 action[level]()
+
             else:
                 logging.debug("+ ERROR SERVER ERRORS")
+                return False
         else:
             logging.debug("+ ERROR USER CREATE")
+            return False
+
+    return True
 
 
 def elite(args):
@@ -708,6 +708,7 @@ def build(action, platform, kind, backend, frontend, params):
     blacklist = "bitdef,comodo,gdata,drweb,emsisoft,sophos,360cn,kis32,avg,avg32".split(',')
 
     platform_type = {}
+    """ can be desktop or mobile """
     for v in platform_desktop:
         platform_type[v] = 'desktop'
     for v in platform_mobile:

@@ -2,12 +2,10 @@ __author__ = 'zeno'
 import logging
 
 def on_init(vm, args):
-    """ server side """
-    logging.debug("    CS on_init")
+    pass
 
 def on_answer(vm, success, answer):
-    """ server side """
-    logging.debug("    CS on_answer")
+    pass
 
 def execute(vm, args):
     """ client side, returns (bool,*) """
