@@ -36,7 +36,7 @@ class AVMachine(threading.Thread):
     def run(self):
         logging.debug("running")
         while not exit:
-            rec = self.mq.receive_command.receive_client(blocking=True, timeout=0)
+            rec = self.mq.receive_command.receive_client(timeout=0)
             logging.debug("received command: %s" % self.name)
             if rec is not None:
                 logging.debug("- CLIENT RECEIVED %s %s" % (rec, type(rec)))

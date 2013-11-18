@@ -26,10 +26,9 @@ def server_procedure(mq, clients, procedure):
     ended = 0
     answered = 0
     while not exit and ended < len(clients):
-        rec = mq.receive_server(blocking=True, timeout=10)
-        if rec is not None:
-            logging.debug("- SERVER RECEIVED %s %s" % (rec, type(rec)))
-            c, msg = rec
+        c, msg = mq.receive_server(timeout=10)
+        if msg is not None:
+            logging.debug("- SERVER RECEIVED %s %s" % (msg, type(msg)))
             answer = p[c].receive_answer(c, msg)
             answered += 1
             logging.debug("- SERVER RECEIVED ANSWER: %s" % answer.success)
@@ -68,7 +67,7 @@ def test_ProtocolEval():
     print("---- START RECEIVING ----")
     exit = False
     while not exit:
-        rec = mq.receive_server(blocking=True, timeout=10)
+        rec = mq.receive_server(timeout=10)
 
         if rec is not None:
             logging.debug("- SERVER RECEIVED %s %s" % (rec, type(rec)))
@@ -113,7 +112,7 @@ CALLER:
     exit = False
     answers =0
     while not exit:
-        rec = mq.receive_server(blocking=True, timeout=10)
+        rec = mq.receive_server(timeout=10)
         if rec is not None:
             logging.debug("- SERVER RECEIVED %s %s" % (rec, type(rec)))
             c, msg = rec

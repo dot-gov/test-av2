@@ -1,7 +1,7 @@
 import string
 import random
 import logging
-import re
+import time
 
 from channel import Channel
 from AVCommon import config
@@ -19,6 +19,11 @@ class MQStar():
     session = ""
     channels = {}
     """MQStar is a MessageQueue with a star topology based on Redis"""
+
+    def make_channel_server(self):
+        channel_server = "MQ_%s_to_server" % self.session
+        self.channel_to_server = Channel(self.host, channel_server)
+
     def __init__(self, host, session=None):
         self.host = host
         if not session:
@@ -26,8 +31,8 @@ class MQStar():
         else:
             self.session = session
 
-        channel_server = "MQ_%s_to_server" % self.session
-        self.channel_to_server = Channel(self.host, channel_server)
+        #time.sleep(1)
+        self.make_channel_server()
 
     def _make_channel(self, frm="server", to="server"):
         name = "MQ_%s_%s_%s" % (self.session, frm, to)
@@ -42,9 +47,12 @@ class MQStar():
         else:
             key = "MQ_*"
 
-        for k in self.channel_to_server.redis.keys(key):
-            logging.debug(" MQ clean %s" % k)
-            self.channel_to_server.redis.delete(k)
+        #for k in self.channel_to_server.redis.keys(key):
+        #    logging.debug(" MQ clean %s" % k)
+        #    self.channel_to_server.redis.delete(k)
+
+        self.channel_to_server.clean()
+        self.make_channel_server()
 
         #assert not self.channel_to_server.redis.keys("MQ_*")
 
@@ -62,25 +70,18 @@ class MQStar():
         if client not in self.channels.keys():
             logging.debug(" MQ error, client not found")
         ch = self.channel_to_server
-        payload = (client, message)
-        ch.write(payload)
+        payload = message
+        ch.write(payload, from_client=client)
 
-    def receive_server(self, blocking=False, timeout=10):
+    def receive_server(self, timeout=10):
         #logging.debug(" MQ receive_server")
-        payload = self.channel_to_server.read(blocking, timeout)
+        client, payload = self.channel_to_server.read_extended(timeout)
 
         if not payload:
-            logging.error("TIMEOUT")
-            return None
+            logging.error("TIMEOUT: %s,%s" %(client, payload))
+            return None, None
 
-        p = re.compile("\('(\w+)', (.+)\)")
-        m = p.match(payload)
-        assert m, "wrong format"
-        
-        cmd, args = m.group(1), m.group(2)
-        #logging.debug(" MQ read: %s args: %s" % (str(cmd), str(args)))
-        #client, message = payload
-        return cmd, args
+        return client, payload
 
     def send_client(self,  client, message):
         if client not in self.channels.keys():
@@ -89,12 +90,12 @@ class MQStar():
         ch = self.channels[client]
         ch.write(message)
 
-    def receive_client(self, client, blocking=False, timeout=60):
+    def receive_client(self, client, timeout=60):
         assert(isinstance(client, str))
         if client not in self.channels.keys():
             logging.debug(" MQ error, receiveClient, client (%s) not found: %s" % (client, self.channels))
         ch = self.channels[client]
-        message = ch.read(blocking, timeout)
+        message = ch.read(timeout)
         if not message:
             logging.error("TIMEOUT")
         return message

@@ -36,7 +36,7 @@ class ProtocolClient:
     def receive_command(self):
         assert(isinstance(self.vm, str))
         #logging.debug("PROTO receiveCommand %s" % (self.client))
-        msg = self.mq.receive_client(self.vm, blocking=True, timeout=self.timeout)
+        msg = self.mq.receive_client(self.vm, timeout=self.timeout)
         if config.verbose:
             logging.debug("PROTO C receive_command %s, %s" % (self.vm, msg))
         cmd = command.unserialize(msg)

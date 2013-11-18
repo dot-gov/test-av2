@@ -142,6 +142,7 @@ def _factory(name, success, payload, vm):
     return c
 
 def unserialize( message ):
+    assert message, "NULL MESSAGE"
     data=base64.b64decode(message)
 
     name, success, payload, vm, side = pickle.loads(data)

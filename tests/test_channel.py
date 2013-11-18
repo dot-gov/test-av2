@@ -34,8 +34,7 @@ def server(s):
 #
 class TestChannel(unittest.TestCase):
 
-
-    def test_Redis(self):
+    def no_test_Redis(self):
         host = "localhost"
         r = StrictRedis(host, socket_timeout=60)
         msg = "Hello world"
@@ -54,8 +53,10 @@ class TestChannel(unittest.TestCase):
         channel = "test"
         host = "localhost"
         s = Channel(host, channel)
-        r = s.read(blocking=True, timeout=1)
+        r = s.read(timeout=1)
         assert r is None
+
+        #s.close()
 
     def test_ChannelList(self):
         global count
@@ -83,44 +84,63 @@ class TestChannel(unittest.TestCase):
         assert(r3 == "+STARTED C1")
         assert(r4 == "+STARTED C2")
 
-
+        #s.close()
+        #c1.close()
+        #c2.close()
 
     def test_ChannelRandom(self):
         global count
         channel = id_generator()
         host = "localhost"
 
-        s = Channel(host, channel)
         c1 = Channel(host, channel + ".c1")
+        #c1.clean()
 
         messages = [ id_generator(size=1000) for i in range(10)]
 
         for m in messages:
-            c1.write(m)
+            c1.write(m, "whatever")
+        #c1.close()
+
+        c1 = Channel(host, channel + ".c1")
 
         for m in messages:
             r = c1.read()
-            assert(m == r)
+            assert m == r, "not equal: %s" % r
+        #c1.close()
 
-    def test_ChannelBinary(self):
+    def no_test_ChannelBinary(self):
         global count
         channel = id_generator()
         host = "localhost"
 
-        s = Channel(host, channel)
         c1 = Channel(host, channel + ".c1")
+        c1.clean()
 
         messages = [ binary_generator(size=100) for i in range(10)]
 
+        n = 0
+        logging.debug("sending %s messages" % len(messages))
         for m in messages:
-            c1.write(m)
+            c1.write(m, "server")
+            n+=1
 
+        #c1.close()
+
+        logging.debug("sent %s messages" % n)
+        logging.debug("channel dir: %s" % dir(c1.channel))
+
+        n=0
         for m in messages:
             r = c1.read()
-            assert(m == r)
+            n+=1
+            logging.debug("received %s message: %s" % (n, r))
+
+            assert m == r, "got: %s" % r
 
 if __name__ == '__main__':
     logging.config.fileConfig('../logging.conf')
 
     #test_dispatcher_server()
     unittest.main()
+    #TestChannel.test_ChannelBinary()
