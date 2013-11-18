@@ -6,7 +6,7 @@ sys.path.append(os.path.split(os.getcwd())[0])
 import package
 import logging, logging.config
 
-from AVCommon.procedure import Procedure
+from AVCommon import procedure
 from dispatcher import Dispatcher
 from AVCommon.mq import MQStar
 from AVCommon import command
@@ -22,7 +22,7 @@ class AVMaster():
 
     def start(self):
 
-        procedures = Procedure.load_from_file("conf/procedures.yaml")
+        procedures = procedure.load_from_file("conf/procedures.yaml")
         proc = procedures[self.procedure]
         assert proc, "cannot find the specified procedure: %s" % self.procedure
 

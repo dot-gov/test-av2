@@ -9,6 +9,7 @@ sys.path.append(os.getcwd())
 from AVCommon.mq import MQStar
 from av_machine import AVMachine
 from AVCommon import command
+from AVCommon import config
 
 
 class Dispatcher(object):
@@ -67,8 +68,13 @@ class Dispatcher(object):
                         self.report.sent(a.name, str(cmd))
                     logging.debug("- SERVER SENT: %s, %s" % (c, cmd))
                 else:
-                    ended += 1
-                    logging.debug("- SERVER ERROR, ENDING")
+                    if config.auto_stop_agent:
+                        logging.debug("- SERVER ERROR, SENDING END")
+                        r, cmd = av_machines[c].send_stop_agent()
+                    else:
+                        logging.debug("- SERVER ERROR, ENDING")
+                        ended += 1
+
  
             else:
                 logging.debug("- SERVER RECEIVED empty")

@@ -7,6 +7,7 @@ sys.path.append(os.path.split(os.getcwd())[0])
 sys.path.append(os.getcwd())
 
 from AVCommon.protocol import Protocol
+from AVCommon import command
 import AVMaster.vm_manager
 
 
@@ -49,3 +50,9 @@ class AVMachine(threading.Thread):
         return ret, last
         #    logging.debug("sent command")
         #logging.debug("sent all commands: %s" % self.name)
+
+    def send_stop_agent(self):
+        ret = self.protocol.send_command(command.factory("STOP_AGENT"))
+        last =  self.protocol.last_command
+
+        return ret, last

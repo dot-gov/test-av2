@@ -10,3 +10,5 @@ __box = Box()
 
 verbose = True
 basedir = False
+
+auto_stop_agent = True

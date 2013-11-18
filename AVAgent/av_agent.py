@@ -29,7 +29,6 @@ class MQFeedProcedure(object):
         pass
 
 class AVAgent(object):
-
     def __init__(self, vm, redis='localhost', session=None):
         self.vm = vm
         self.host = redis
@@ -86,4 +85,4 @@ if __name__ == "__main__":
         mq = MQFeedProcedure(proc[args.procedure])
 
     avagent = AVAgent(args.vm, args.redis, args.session)
-    avagent.start_agent(mq)
+    avagent.start_agent()

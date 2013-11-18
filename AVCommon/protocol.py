@@ -106,7 +106,7 @@ class Protocol(ProtocolClient):
                 self._meta(cmd)
             return True
         except Exception, ex:
-            logging.error("Error sending command %s: %s" % (cmd, ex))
+            logging.error("Error sending command %s: %s\n%s" % (cmd, ex, traceback.format_exc(ex)))
             return False
 
     def receive_answer(self, vm, msg):

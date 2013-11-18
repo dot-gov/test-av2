@@ -6,7 +6,10 @@ def execute(vm, args):
     logging.debug("    CS Execute ARGS: %s" % args)
     protocol, proc_name = args
 
-    proc = procedure.procedures[proc_name]
-    protocol.procedure.insert(proc)
+    proc_new = procedure.procedures[proc_name]
+    assert proc_new,"EMPTY proc %s" % proc_name
+
+    logging.debug("inserting new procedure: %s" % proc_new)
+    protocol.proc.insert(proc_new)
 
     return True, ""
