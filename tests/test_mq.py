@@ -37,12 +37,12 @@ def test_blockingMQ():
     mq2 = MQStar(host, session=mq1.session)
 
     c = "client1"
-    mq2.send_server(c, "WORKS")
-    mq2.send_server(c, "FINE TO THE")
-
     mq1.add_client(c)
     thread1 = threading.Thread(target=server, args=(mq1,))
     thread1.start()
+
+    mq2.send_server(c, "WORKS")
+    mq2.send_server(c, "FINE TO THE")
 
     time.sleep(2)
 

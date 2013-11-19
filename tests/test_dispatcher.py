@@ -21,12 +21,12 @@ def test_dispatcher_server():
 
     host = "localhost"
     mq = MQStar(host)
-    mq.clean()
+    #mq.clean()
 
     #istanzia n client e manda delle procedure.
 
     vm_manager.vm_conf_file = "../AVMaster/conf/vms.cfg"
-    dispatcher = Dispatcher(mq, vms)
+    dispatcher = Dispatcher(mq, vms, timeout=10)
 
     test = Procedure("TEST", [("EVAL_SERVER", None, 'vm'), ("SLEEP", None, 10)])
     dispatcher.dispatch(test)

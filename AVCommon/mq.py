@@ -73,7 +73,7 @@ class MQStar():
         payload = message
         ch.write(payload, from_client=client)
 
-    def receive_server(self, timeout=10):
+    def receive_server(self, timeout=0):
         #logging.debug(" MQ receive_server")
         client, payload = self.channel_to_server.read_extended(timeout)
 
@@ -90,7 +90,7 @@ class MQStar():
         ch = self.channels[client]
         ch.write(message)
 
-    def receive_client(self, client, timeout=60):
+    def receive_client(self, client, timeout=0):
         assert(isinstance(client, str))
         if client not in self.channels.keys():
             logging.debug(" MQ error, receiveClient, client (%s) not found: %s" % (client, self.channels))

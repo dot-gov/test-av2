@@ -12,7 +12,7 @@ import string
 import random
 import logging, sys
 import logging.config
-
+from functools import partial
 import unittest
 
 from AVCommon.channel import Channel
@@ -50,6 +50,7 @@ class TestChannel(unittest.TestCase):
         print m, type(m)
 
     def test_ChannelTimeout(self):
+        logging.debug("test_ChannelTimeout")
         channel = "test"
         host = "localhost"
         s = Channel(host, channel)
@@ -59,6 +60,7 @@ class TestChannel(unittest.TestCase):
         #s.close()
 
     def test_ChannelList(self):
+        logging.debug("test_ChannelList")
         global count
         channel = "response"
         host = "localhost"
@@ -67,15 +69,19 @@ class TestChannel(unittest.TestCase):
         c1 = Channel(host, channel + ".c1")
         c2 = Channel(host, channel + ".c2")
 
+        logging.debug("writing clients")
         c1.write("START")
         c2.write("START")
 
+        logging.debug("reading clients")
         rc1 = c1.read()
         rc2 = c2.read()
 
+        logging.debug("writing server")
         s.write("+STARTED C1")
         s.write("+STARTED C2")
 
+        logging.debug("reading server")
         r3 = s.read()
         r4 = s.read()
 
@@ -89,6 +95,7 @@ class TestChannel(unittest.TestCase):
         #c2.close()
 
     def test_ChannelRandom(self):
+        logging.debug("test_ChannelRandom")
         global count
         channel = id_generator()
         host = "localhost"
@@ -107,6 +114,40 @@ class TestChannel(unittest.TestCase):
         for m in messages:
             r = c1.read()
             assert m == r, "not equal: %s" % r
+        #c1.close()
+
+    def test_ChannelCallback(self):
+        logging.debug("test_ChannelCallback")
+        global count
+        channel = id_generator()
+        host = "localhost"
+
+        c1 = Channel(host, channel + ".c1")
+        #c1.clean()
+
+        messages = [ id_generator(size=10) for i in range(10)]
+
+        for m in messages:
+            c1.write(m, "whatever")
+        c1.close()
+
+        c1 = Channel(host, channel + ".c1")
+
+        n = 0
+        def callback(ch, body):
+            assert body
+            assert body in messages, "not in messages: %s" % (body)
+            logging.debug("read: %s" % body)
+            n+=1
+            if n >= len(messages):
+                logging.debug("closing channel")
+                c1.channel.close()
+
+        for m in messages:
+            c1.read_callback(callback)
+
+        c1.channel.start_consuming()
+        logging.debug("finished consuming")
         #c1.close()
 
     def no_test_ChannelBinary(self):

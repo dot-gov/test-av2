@@ -1,7 +1,7 @@
 Prerequisiti:
 MAC:
-    brew install libyaml
-    sudo easy_install redis pyyaml pysphere mock
+    brew install libyaml rabbitmq
+    sudo easy_install pika pyyaml pysphere mock
 WINDOWS:
     ez_setup
     c:\python27\scripts\easy_install redis pyyaml pysphere mock

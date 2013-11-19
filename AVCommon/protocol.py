@@ -49,7 +49,6 @@ class ProtocolClient:
             logging.debug("PROTO C send_answer %s" % reply)
         self.mq.send_server(self.vm, reply.serialize())
 
-
 class Protocol(ProtocolClient):
     """ A protocol implements the server behavior."""
     proc = None

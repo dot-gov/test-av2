@@ -38,18 +38,18 @@ class Dispatcher(object):
  
         for a in av_machines.values():
             #a.start()
-            self.mq.clean(a)
+            #self.mq.clean(a)
             r, c = a.execute_next_command()
             if self.report:
                 self.report.sent(a.name, str(c))
             logging.debug("- SERVER SENT: %s" % c)
- 
+
         ended = 0
         answered = 0
         len_vms =  len(self.vms)
         logging.debug("len vms: %s" % len_vms)
         while not exit and ended < len_vms:
-            rec = self.mq.receive_server(blocking=True, timeout=self.timeout)
+            rec = self.mq.receive_server(timeout=self.timeout)
             if rec is not None:
                 logging.debug("- SERVER RECEIVED %s %s" % (rec, type(rec)))
                 c, msg = rec
