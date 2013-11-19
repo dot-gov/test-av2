@@ -78,7 +78,7 @@ class ChannelRabbit():
 
         for i in range(5):
             try:
-                method_frame, header_frame, body = self.channel.basic_get(self.channel_name, no_ack=True)
+                method_frame, header_frame, body = self.channel.basic_get(self.channel_name, no_ack=False)
                 break
             except Exception, ex:
                 logging.info("RETRY Connect")
@@ -87,7 +87,7 @@ class ChannelRabbit():
 
         if method_frame:
             logging.debug("    CH read: frame: %s, header: %s, body: %s" %( method_frame, header_frame, body))
-            #self.channel.basic_ack(method_frame.delivery_tag)
+            self.channel.basic_ack(method_frame.delivery_tag)
         else:
             logging.debug("    CH no message read, channel: %s" % self.channel_name)
             return None, None
