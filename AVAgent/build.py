@@ -615,11 +615,11 @@ class AgentBuild:
 
     def execute_pull(self):
         """ build and execute the  """
-        factory_id, ident, zipfilename = self.execute_pull_server()
-        if not self.build_srv:
-            filenames = self._execute_extraction_and_static_check(zipfilename)
+        if self.build_srv:
+            factory_id, ident, zipfilename = self.factory
         else:
-            filenames = zipfilename
+            factory_id, ident, zipfilename = self.execute_pull_server()
+
         return factory_id, ident, filenames
 
 
