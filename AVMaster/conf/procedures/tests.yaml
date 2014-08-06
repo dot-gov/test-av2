@@ -363,7 +363,8 @@ TEST_BUILD_SRV:
     #- VM_ALL
     - ON_ERROR: SKIP
     #- SLEEP: [1, 600]
-    - BUILD_SRV: [ pull_srv, windows, silent ]
+    - BUILD_SRV: [ windows, silent ]
+
     #- REPORT:
     #    - TEST_PDF
     #- UNINSTALL
