@@ -49,19 +49,12 @@ docs/_build/
 *.pyc
 results.txt
 
-/.idea/workspace.xml
-
+#/.idea/workspace.xml
 
 /AVAgent/running/
-
 /remote_logs/
-
 /AVMaster/networking_log.txt
-
 /AVMaster/dump.rdb
-
 /logs/
-
 /.idea/RCSAVTest.iml
-
 /.idea/inspectionProfiles/Project_Default.xml
