@@ -13,6 +13,7 @@ import time
 import pickle
 import importlib
 
+import yaml
 import base64
 
 inspect_getfile = inspect.getfile(inspect.currentframe())
@@ -35,6 +36,15 @@ class WEFake:
 
 if "WindowsError" not in dir (exceptions):
     exceptions.WindowsError = WEFake
+
+
+def load_context_from_file(filename):
+    f = open(filename)
+    y = yaml.load(f)
+    for k,v in y.items():
+        context[k] = v
+    logging.debug("command.context size: %s" % len(context))
+
 
 def init():
     global command_names

@@ -1,23 +1,56 @@
-__author__ = 'fabrizio'
+__author__ = 'mlosito,fabrizio'
+
 
 from AVCommon.logger import logging
 import time
 import socket
 
 from AVCommon import command
+from AVCommon import build_common
+from AVCommon import helper
+from AVCommon import utils
+
 from AVAgent import build
 
 report_level = 1
 
+asset_dir = "AVAgent/assets"
 
 def on_init(protocol, args):
     """ server side """
-    factory = create_factory(args)
-    exe = build_local(args, factory)
+    from AVMaster import build_server_with_cache
 
-    push_exe(exe)
+    command.load_context_from_file("AVAgent/default.yaml")
 
-    puppet =  socket.gethostname()
+    puppet = socket.gethostname()
+    operation = "AOP_%s" % puppet
+
+    # FACTORY CREATION
+    #factory = create_factory(args)
+    action, platform, kind = args
+    hostname = helper.get_hostname()
+    ftype = 'desktop'
+    factory_id = '%s_%s_%s_%s' % (hostname, ftype, platform, kind)
+    logging.debug("creating factory: %s", factory_id)
+    config = "%s/config_%s.json" % (asset_dir, ftype)
+    target_id, factory_id, ident = build_common.create_new_factory(ftype, command.context["frontend"], command.context["backend"], operation, build.get_target_name(), factory_id, config)
+    factory = target_id, factory_id, ident
+    logging.debug("created factory: %s", factory)
+
+    # EXE CREATION
+    zipfilename = 'build/%s/build.zip' % platform
+    params_all = command.context["build_parameters"].copy()
+    params = params_all[platform]
+    build_common.build_agent(factory_id, hostname, params, logging.debug, zipfilename)
+
+    #unzip OVERWRITES the files
+    exe = utils.unzip(zipfilename, "build/%s" % platform, logging.debug)
+
+    # push_exe(exe)
+    logging.debug("Pushing file: %s", exe[0])
+    build_server_with_cache.push_file(protocol.vm, exe[0])
+
+
     args.append(puppet)
     args.append(factory)
     args.append(exe)
@@ -57,7 +90,7 @@ def execute(vm, args):
     platform_type = param['platform_type']
 
     assert kind in ['silent', 'melt'], "kind: %s" % kind
-    assert action in ['scout', 'elite', 'elite_fast', 'soldier_fast'], "action: %s" % action
+    assert action in ['pull', 'scout', 'elite', 'elite_fast', 'soldier_fast'], "action: %s" % action
     assert platform_type in ['desktop', 'mobile'], "platform_type: %s" % platform_type
 
 
@@ -75,10 +108,10 @@ def execute(vm, args):
     args.blacklist = blacklist
     args.soldierlist = soldierlist
     args.platform_type = platform_type
-    args.nointernetcheck = nointernetcheck
+    args.nointernetcheck = socket.gethostname().lower()
     args.operation = operation
     args.puppet = puppet
-    args.asset_dir = "AVAgent/assets"
+    args.asset_dir = asset_dir
     args.factory = factory
     args.exe = exe
     args.server_side = True
@@ -91,5 +124,3 @@ def execute(vm, args):
         last_result = "NO RESULTS"
 
     return success, results
-
-

@@ -97,11 +97,7 @@ class AVAgent(object):
 
         # TODO
         # load default.yaml as a default SET command.
-        f = open("AVAgent/default.yaml")
-        y = yaml.load(f)
-        for k,v in y.items():
-            command.context[k] = v
-        logging.debug("command.context size: %s" % len(command.context))
+        command.load_context_from_file("AVAgent/default.yaml")
 
 
     def __del__(self):
