@@ -60,3 +60,6 @@ results.txt
 /logs/
 
 /.idea/
+/.idea/workspace.xml
+
+/.idea/RCSAVTest.iml
