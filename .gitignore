@@ -59,8 +59,12 @@ results.txt
 
 /logs/
 
+/.idea/
+/.idea/workspace.xml
+
 /.idea/RCSAVTest.iml
+<<<<<<< HEAD
 
-/.idea/inspectionProfiles/Project_Default.xml
-
-/.idea
+profiles_settings.xml
+=======
+>>>>>>> d0f022192247f58bbbbf4241b14047f8284b9d20
