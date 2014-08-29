@@ -433,3 +433,86 @@ TEST_ENABLE:
     - CALL: TEST_ENABLE_1
     - CALL: TEST_ENABLE_2
     - SLEEP: 20
+
+
+TEST_BUILD_SRV:
+    - VM: [bitdef]
+    #- VM_ALL
+    - ON_ERROR: SKIP
+    #- SLEEP: [1, 600]
+    - BUILD_SRV: [ scout, windows, silent ]`
+
+    #- REPORT:
+    #    - TEST_PDF
+    #- UNINSTALL
+    #- CALL: END_DISPATCH
+
+TEST_BUILD_SRV_PULL:
+    - VM: [bitdef]
+    #- VM_ALL
+    - ON_ERROR: SKIP
+    #- SLEEP: [1, 600]
+    - BUILD_SRV: [ pull, windows, silent ]
+
+    #- REPORT:
+    #    - TEST_PDF
+    #- UNINSTALL
+    #- CALL: END_DISPATCH
+
+TEST_BUILD_SRV_ELITE:
+    - VM: [bitdef]
+    #- VM_ALL
+    - ON_ERROR: SKIP
+    #- SLEEP: [1, 600]
+    - BUILD_SRV: [ elite, windows, silent ]
+
+    #- REPORT:
+    #    - TEST_PDF
+    #- UNINSTALL
+    #- CALL: END_DISPATCH
+
+
+TEST_BUILD_CLI:
+    - VM: [bitdef]
+    #- VM_ALL
+    - ON_ERROR: SKIP
+    #- SLEEP: [1, 600]
+    - BUILD: [ scout, windows, silent ]
+    #- REPORT:
+    #    - TEST_PDF
+    #- UNINSTALL
+    #- CALL: END_DISPATCH
+
+TEST_BUILD_CLI_PULL:
+    - VM: [bitdef]
+    #- VM_ALL
+    - ON_ERROR: SKIP
+    #- SLEEP: [1, 600]
+    - BUILD: [ pull, windows, silent ]
+    #- REPORT:
+    #    - TEST_PDF
+    #- UNINSTALL
+    #- CALL: END_DISPATCH
+
+TEST_BUILD_CLI_ELITE:
+    - VM: [bitdef]
+    #- VM_ALL
+    - ON_ERROR: SKIP
+    #- SLEEP: [1, 600]
+    - BUILD: [ elite, windows, silent ]
+    #- REPORT:
+    #    - TEST_PDF
+    #- UNINSTALL
+    #- CALL: END_DISPATCH
+
+TEST_BUILD_CLI_SOLDIER_FAST:
+    - VM: [bitdef]
+    #- VM_ALL
+    - ON_ERROR: SKIP
+    #- SLEEP: [1, 600]
+    - CALL: INIT_DISPATCH
+    - BUILD: [ soldier_fast, windows, silent ]
+    #- REPORT:
+    #    - TEST_PDF
+    #- UNINSTALL
+    #- CALL: END_DISPATCH
