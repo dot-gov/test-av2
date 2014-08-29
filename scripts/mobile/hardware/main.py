@@ -20,6 +20,7 @@ service = 'com.android.dvci'
 
 def test_device(device_id, dev, results):
 
+    adb.execute("ddf ru", dev)
     # uninstall device
     adb.uninstall(service, dev)
 
@@ -51,12 +52,13 @@ def test_device(device_id, dev, results):
         instances = c.instances_by_deviceid(device_id, operation_id)
         assert len(instances) <= 1;
         for i in instances:
+            print "... deleted old instance"
             c.instance_delete(i["_id"])
         time.sleep(5)
         instances = c.instances_by_deviceid(device_id, operation_id)
         assert not instances
 
-        if not adb.executeGui(service, dev):
+        if not adb.executeMonkey(service, dev):
             return "execution failed"
         else:
             results["executed"] = True;
@@ -135,7 +137,7 @@ def test_device(device_id, dev, results):
     print "uninstall"
     calc = adb.execute("pm list packages calc").split()[0].split(":")[1]
     print "executing calc: %s" % calc
-    adb.executeGui(calc, dev)
+    adb.executeMonkey(calc, dev)
     time.sleep(20)
 
     processes = adb.ps(dev)
@@ -144,6 +146,7 @@ def test_device(device_id, dev, results):
 
     if not uninstall:
         print "uninstall: ERROR"
+        print "processes: %s" % processes
         adb.uninstall(service, dev)
     else:
         print "uninstall: OK"
@@ -166,7 +169,7 @@ def do_test(dev = None):
     assert device_id
     assert len(device_id) >= 8
 
-    with open('tmp/test-%s.csv' % device_id, 'wb') as csvfile:
+    with open('report/test-%s.csv' % device_id, 'ab') as csvfile:
         # write header
         devicelist = csv.writer(csvfile, delimiter=";",
                                 quotechar="|", quoting=csv.QUOTE_MINIMAL)
@@ -196,6 +199,8 @@ def do_test(dev = None):
         #devicelist.writerow(results.keys())
         devicelist.writerow(results.values())
 
+    return results
+
 def main():
     devices = adb.get_attached_devices()
 
@@ -219,8 +224,11 @@ def main():
             dev = raw_input("su quale device si vuole eseguire il test? ")
             print "eseguo il test su %s" % dev
 
-        do_test(dev)
+        results = do_test(dev)
 
+        with open('report/hardware.logs.txt', 'a+') as logfile:
+            logfile.write(str(results))
+            logfile.write("\n")
     print "Fine."
 
 if __name__ == "__main__":

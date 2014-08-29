@@ -13,7 +13,15 @@ import time
 
 #adb_path = "/Users/olli/Documents/work/android/android-sdk-macosx/platform-tools/adb"
 devices = []  # we found with usb devices actually connected
-adb_path = "adb"
+adb_paths = ["adb", "/Users/zeno/Developer/adt-bundle-mac/sdk/platform-tools/adb"]
+for adb_path in adb_paths:
+    try:
+        proc = subprocess.call([adb_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        if proc:
+            break
+    except:
+        continue
+
 
 temp_remote_path = "/data/local/tmp/in/"
 
@@ -145,6 +153,20 @@ def executeService(apk, device=None):
         return False
     return True
 
+def executeMonkey(app, device=None):
+    if device:
+        proc = subprocess.call([adb_path,
+                                "-s", device,
+                                "shell", "monkey", "-p",
+                                app, "-c", "android.intent.category.LAUNCHER", "1"], stdout=subprocess.PIPE)
+    else:
+        proc = subprocess.call([adb_path,
+                                "shell", "monkey", "-p",
+                                app, "-c", "android.intent.category.LAUNCHER", "1"], stdout=subprocess.PIPE)
+    if proc != 0:
+        return False
+    return True
+
 def executeGui(apk, device=None):
     """ Execute melted apk on phone
     @param apk class name to run (eg. com.roxy.angrybirds)
@@ -177,7 +199,7 @@ def uninstall(apk, device=None):
                             "-s", device,
                             "uninstall", apk], stdout=subprocess.PIPE)
     else:
-        print "adb uninstall %s" % apk
+        #print "adb uninstall %s" % apk
         proc = subprocess.call([adb_path,
                                 "uninstall", apk], stdout=subprocess.PIPE)
 
@@ -198,7 +220,7 @@ def get_attached_devices():
             dev = line.split('\\t')[0]
             props = get_properties(dev)
             #devices += "device: %s model: %s %s\n" % (dev,props["manufacturer"],props["model"])
-            devices.append("device: %s model: %s %s" % (dev,props["manufacturer"],props["model"]))
+            devices.append("device: %s model: %s %s release: %s" % (dev,props["manufacturer"],props["model"], props["release"]))
 
     return devices
 
