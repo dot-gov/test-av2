@@ -50,7 +50,7 @@ def execute(vm, args):
     platform_type = param['platform_type']
 
     assert kind in ['silent', 'melt'], "kind: %s" % kind
-    assert action in ['scout', 'elite', 'elite_fast', 'soldier_fast'], "action: %s" % action
+    assert action in ['pull', 'scout', 'elite', 'elite_fast', 'soldier_fast'], "action: %s" % action
     assert platform_type in ['desktop', 'mobile'], "platform_type: %s" % platform_type
 
 
@@ -73,7 +73,7 @@ def execute(vm, args):
     args.puppet = puppet
     args.asset_dir = "AVAgent/assets"
     args.factory = None
-
+    args.server_side = False
     results, success, errors = build.build(args, report)
 
     try:

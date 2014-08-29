@@ -73,9 +73,10 @@ sys.path.append("/Users/zeno/AVTest/")
 
 
 #pushes the file to client, to be executed
-def push_file(vm, zipfilename):
-    remote_name = "C:\\AVTest\\AVAgent\\buildsrv.zip"
-    vm_manager.execute(vm, "copyFileToGuest", zipfilename, remote_name)
+def push_file(vm, exefilename):
+    remote_name = "C:\\AVTest\\AVAgent\\buildsrv.exe"
+    vm_manager.execute(vm, "copyFileToGuest", exefilename, remote_name)
+    logging.debug("Pushed file: %s to: %s" % (exefilename, remote_name))
 
 # TODO tobe implemented
 def unzip_agent():

