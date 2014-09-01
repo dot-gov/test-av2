@@ -440,7 +440,7 @@ TEST_BUILD_SRV:
     #- VM_ALL
     - ON_ERROR: SKIP
     #- SLEEP: [1, 600]
-    - BUILD_SRV: [ scout, windows, silent ]`
+    - BUILD_SRV: [ scout, windows, silent ]
 
     #- REPORT:
     #    - TEST_PDF
