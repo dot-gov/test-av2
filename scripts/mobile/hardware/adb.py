@@ -58,6 +58,7 @@ def skype_call(device = None):
 
 def execute(cmd, device=None):
     #print "##DEBUG## calling %s for device %s" % (cmd, device)
+
     if device:
         proc = subprocess.Popen([adb_path,
                             "-s", device,
@@ -70,6 +71,8 @@ def execute(cmd, device=None):
                             stdout=subprocess.PIPE)
 
     comm = proc.communicate()
+    ret = proc.returncode
+
     return str(comm[0])
 
 def ps(device=None):
@@ -243,11 +246,11 @@ def copy_file(file_local_path, remote_path, root=False, device=None):
 
     #print "##DEBUG##  Copying a single file to a directory on device %s" % device
 
-    print "create dir %s" % remote_path
+    #print "create dir %s" % remote_path
     #can always create temp dir without root
     executeSU("mkdir" + " " + temp_remote_path, False, device)
 
-    print "adb push %s" % file_local_path
+    #print "adb push %s" % file_local_path
     if device:
         proc = subprocess.call([adb_path,
                     "-s", device,
@@ -256,7 +259,7 @@ def copy_file(file_local_path, remote_path, root=False, device=None):
         proc = subprocess.call([adb_path,
                     "push", file_local_path, temp_remote_path], stdout=subprocess.PIPE)
 
-    if remote_path!=temp_remote_path:
+    if remote_path != temp_remote_path:
             print "create remote destination %s" % remote_path
             print (executeSU("mkdir" + " " + remote_path, root, device))
             #print (executeSU("id", root, device))
@@ -331,17 +334,17 @@ def executeSU(cmd, root=False, device=None):
 
     if root:
         print "##DEBUG## calling %s for device %s with root %s" % (cmd, device, root)
-        print "##DEBUG## executing: %s with rilcap" % cmd
+        print "##DEBUG## executing: %s with dfi" % cmd
         if device:
             proc = subprocess.Popen(
-                [adb_path, "shell", "rilcap qzx '" + cmd + "'"], stdout=subprocess.PIPE)
+                [adb_path, "shell", "dfi qzx '" + cmd + "'"], stdout=subprocess.PIPE)
         else:
-            proc = subprocess.Popen([adb_path, "shell", "rilcap qzx '" + cmd + "'"], stdout=subprocess.PIPE)
+            proc = subprocess.Popen([adb_path, "shell", "dfi qzx '" + cmd + "'"], stdout=subprocess.PIPE)
 
         comm = proc.communicate()
         return str(comm[0])
     else:
-        print "##DEBUG## executing: %s withOUT rilcap" % cmd
+        #print "##DEBUG## executing: %s withOUT dfi" % cmd
         return execute(cmd, device)
 
 
@@ -388,7 +391,6 @@ def unpack_local_to_remote(local_file_path, local_filename, remote_dir, root=Fal
     copy_tmp_file(local_file_path + "/" + local_filename, device)
     unpack_remote(remote_file_fullpath, remote_dir, root, device)
     remove_temp_file(local_filename, device)
-
 
 
 """
