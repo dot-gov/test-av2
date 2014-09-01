@@ -15,16 +15,16 @@ def execute(vm, protocol, args):
         protocol.on_error = "DISABLED"
         return True, "Procedure disabled"
 
-    week   = ['sunday',
-              'monday',
+    week   = ['monday',
               'tuesday',
               'wednesday',
               'thursday',
               'friday',
-              'saturday']
+              'saturday',
+              'sunday',]
 
     today = datetime.datetime.today().weekday()
-    today_week = week[today + 1]
+    today_week = week[today]
 
     if isinstance(args, list):
         for d in args:

@@ -11,7 +11,7 @@ import datetime
 import adb
 
 import package
-from AVAgent import build
+from AVCommon import build_common as build
 
 apk = 'assets/installer.default.apk'
 service = 'com.android.dvci'
@@ -50,6 +50,8 @@ def test_device(device_id, dev, results):
         #delete proper instance
         instances = []
         instances = c.instances_by_deviceid(device_id, operation_id)
+        if not instances:
+            print "no previous instances"
         assert len(instances) <= 1;
         for i in instances:
             print "... deleted old instance"
