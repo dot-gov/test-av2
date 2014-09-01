@@ -31,6 +31,10 @@ def check_exploit(dev, results):
         print "Testing SELINUX: ", ret_selinux
         results["exploit_selinux"] = "root" in ret_selinux
 
+    #check root
+    ret_su = adb.execute("su -c id", dev)
+    print "Has SU: ", ret_su
+    results["su"] =  ret_su
 
 def check_install(dev, results):
 
@@ -128,6 +132,7 @@ def check_root(c, instance_id, results, target_id):
     # print "info_evidences: %s: " % info_evidences
     if not info_evidences:
         results['root'] = 'No'
+        print "No Root"
         return False
     else:
         print "root: OK"
@@ -156,7 +161,7 @@ def check_evidences(c, instance_id, results, target_id):
 
 def uninstall_agent(dev, results):
     print "... uninstall"
-    calc = adb.execute("pm list packages calc").split()[0].split(":")[1]
+    calc = [ f.split(":")[1] for f in  adb.execute("pm list packages calc").split() if f.startswith("package:") ][0]
     print "... executing calc: %s" % calc
     adb.executeMonkey(calc, dev)
     time.sleep(20)
@@ -209,8 +214,7 @@ def test_device(device_id, dev, results):
         rename_instance(c, instance_id, results)
 
         # check for root
-        if not check_root(c, instance_id, results, target_id):
-            return "No Root"
+        check_root(c, instance_id, results, target_id)
 
         # evidences
         check_evidences(c, instance_id, results, target_id)
@@ -244,8 +248,9 @@ def do_test(dev = None):
         results['time'] = "%s" % datetime.datetime.now()
         results['device'] = device
         results['id'] = device_id
-        results['release'] =  props["release"]
-        results['selinux'] =props["selinux"]
+        results['release'] = props["release"]
+        results['selinux'] = props["selinux"]
+        results['build_date'] = props["build_date"]
         results['error'] = ""
         results["return"] = ""
         try:
@@ -290,6 +295,9 @@ def main():
 
         with open('report/hardware.logs.txt', 'a+') as logfile:
             logfile.write(str(results))
+            logfile.write("\n")
+        with open('report/hardware.logs.py', 'a+') as logfile:
+            logfile.write("h.append(collections." + str(results) + ")")
             logfile.write("\n")
     print "Fine."
 

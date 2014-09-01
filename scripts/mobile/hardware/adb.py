@@ -106,8 +106,9 @@ def get_properties(device=None):
     model = get_prop("ro.product.model")
     selinux = get_prop("ro.build.selinux.enforce")
     release_v = get_prop("ro.build.version.release")
+    build_date = get_prop("ro.build.date")
 #    print manufacturer, model, selinux, release_v
-    return { "manufacturer": manufacturer, "model": model, "selinux": selinux, "release":release_v }
+    return { "manufacturer": manufacturer, "model": model, "selinux": selinux, "release":release_v, "build_date": build_date }
 
 #    for line in output.split('\\n'):
 #        if 'Device ID' in line:
