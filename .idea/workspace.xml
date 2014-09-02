@@ -5,30 +5,7 @@
     <option name="CUSTOM_SCOPE_NAME" value="Changed Files" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4052f9d9-3c11-47a0-a6cc-5122f61c053e" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/scripts/mobile/hardware/assets/installer.default.apk" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/scripts/mobile/hardware/assets/installer.v2.apk" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/AVCommon/commands/client/LIST_DIR.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/AVCommon/commands/server/PUSHZIP.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/AVCommon/commands/client/CROP.py" afterPath="$PROJECT_DIR$/AVCommon/commands/client/CROP.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/AVCommon/commands/meta/VM_ALL.py" afterPath="$PROJECT_DIR$/AVCommon/commands/meta/VM_ALL.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/mobile/hardware/adb.py" afterPath="$PROJECT_DIR$/scripts/mobile/hardware/adb.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/AVAgent/av_agent.py" afterPath="$PROJECT_DIR$/AVAgent/av_agent.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/AVAgent/build.py" afterPath="$PROJECT_DIR$/AVAgent/build.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/AVMaster/conf/procedures/build.yaml" afterPath="$PROJECT_DIR$/AVMaster/conf/procedures/build.yaml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/AVCommon/command.py" afterPath="$PROJECT_DIR$/AVCommon/command.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/mobile/hardware/main.py" afterPath="$PROJECT_DIR$/scripts/mobile/hardware/main.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/AVAgent/rcs_client.py" afterPath="$PROJECT_DIR$/AVAgent/rcs_client.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/AVMaster/conf/procedures/rite.yaml" afterPath="$PROJECT_DIR$/AVMaster/conf/procedures/rite.yaml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/AVMaster/conf/procedures/system.yaml" afterPath="$PROJECT_DIR$/AVMaster/conf/procedures/system.yaml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/AVMaster/conf/procedures/tests.yaml" afterPath="$PROJECT_DIR$/AVMaster/conf/procedures/tests.yaml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/server/update.sh" afterPath="$PROJECT_DIR$/scripts/server/update.sh" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/AVMaster/conf/procedures/update.yaml" afterPath="$PROJECT_DIR$/AVMaster/conf/procedures/update.yaml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/server/update_and_test_all.sh" afterPath="$PROJECT_DIR$/scripts/server/update_and_test_all.sh" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/AVMaster/conf/vms-rite.cfg" afterPath="$PROJECT_DIR$/AVMaster/conf/vms-rite.cfg" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-    </list>
+    <list default="true" id="4052f9d9-3c11-47a0-a6cc-5122f61c053e" name="Default" comment="" />
     <ignored path="RCSAVTest.iws" />
     <ignored path=".idea/workspace.xml" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -102,13 +79,31 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="main.py" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="main.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/scripts/mobile/hardware/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="161" column="9" selection-start="4687" selection-end="4692" vertical-scroll-proportion="-0.076845296" vertical-offset="2491" max-vertical-offset="3480">
+            <state line="161" column="9" selection-start="4687" selection-end="4692" vertical-scroll-proportion="2.9230769" vertical-offset="2491" max-vertical-offset="3480">
               <folding>
                 <element signature="e#25#41#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="agent.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/AVAgent/lib/agent.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="99" column="67" selection-start="2609" selection-end="2609" vertical-scroll-proportion="0.0" vertical-offset="765" max-vertical-offset="12000">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="rcs_client.py" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/AVAgent/lib/rcs_client.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="117" column="57" selection-start="3433" selection-end="3433" vertical-scroll-proportion="0.3443114" vertical-offset="1320" max-vertical-offset="6555">
+              <folding />
             </state>
           </provider>
         </entry>
@@ -266,6 +261,38 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="hardware" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="RCSAVTest" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="AVTest" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="AVAgent" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="RCSAVTest" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="AVTest" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="AVAgent" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="lib" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -660,13 +687,13 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="79" y="203" width="2240" height="1138" extended-state="0" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32968882" sideWeight="0.49960223" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3293718" sideWeight="0.49952874" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32968882" sideWeight="0.49960223" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.22603878" sideWeight="0.6719717" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.16071428" sideWeight="0.67266774" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.16071428" sideWeight="0.67266774" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3573854" sideWeight="0.79359096" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32733223" sideWeight="0.50071025" order="8" side_tool="true" content_ui="tabs" />
@@ -735,12 +762,16 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/AVAgent/lib/agent.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="96" column="25" selection-start="2497" selection-end="2497" vertical-scroll-proportion="0.0" vertical-offset="1380" max-vertical-offset="12315" />
+        <state line="96" column="25" selection-start="2497" selection-end="2497" vertical-scroll-proportion="0.0" vertical-offset="1380" max-vertical-offset="12315">
+          <folding />
+        </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/AVAgent/lib/agent.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="567" column="0" selection-start="20839" selection-end="20839" vertical-scroll-proportion="0.0" vertical-offset="420" max-vertical-offset="12300" />
+        <state line="567" column="0" selection-start="20839" selection-end="20839" vertical-scroll-proportion="0.0" vertical-offset="420" max-vertical-offset="12300">
+          <folding />
+        </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/AVAgent/lib/rcs_client.py">
@@ -751,16 +782,6 @@
     <entry file="file:///System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/multiprocessing/pool.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="553" column="0" selection-start="18350" selection-end="18350" vertical-scroll-proportion="0.0" vertical-offset="7947" max-vertical-offset="10950" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/AVAgent/lib/rcs_client.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="117" column="57" selection-start="3433" selection-end="3433" vertical-scroll-proportion="0.4798331" vertical-offset="1320" max-vertical-offset="6555" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/AVAgent/lib/agent.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="99" column="67" selection-start="2609" selection-end="2609" vertical-scroll-proportion="0.2994012" vertical-offset="765" max-vertical-offset="12000" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/AVMaster/master.py">
@@ -822,10 +843,24 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/scripts/mobile/hardware/main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="161" column="9" selection-start="4687" selection-end="4692" vertical-scroll-proportion="-0.076845296" vertical-offset="2491" max-vertical-offset="3480">
+        <state line="161" column="9" selection-start="4687" selection-end="4692" vertical-scroll-proportion="2.9230769" vertical-offset="2491" max-vertical-offset="3480">
           <folding>
             <element signature="e#25#41#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/AVAgent/lib/agent.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="99" column="67" selection-start="2609" selection-end="2609" vertical-scroll-proportion="0.0" vertical-offset="765" max-vertical-offset="12000">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/AVAgent/lib/rcs_client.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="117" column="57" selection-start="3433" selection-end="3433" vertical-scroll-proportion="0.3443114" vertical-offset="1320" max-vertical-offset="6555">
+          <folding />
         </state>
       </provider>
     </entry>
