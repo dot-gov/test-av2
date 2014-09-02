@@ -7,14 +7,18 @@ import inspect
 import traceback
 import collections
 import datetime
-
 import adb
+import commands
 
 import package
 from AVCommon import build_common as build
 
-apk = 'assets/installer.default.apk'
+#apk_template = "build/android/install.%s.apk"
+apk_template = "assets/installer.%s.apk"
 service = 'com.android.dvci'
+
+def say(text):
+    os.system("say " + text)
 
 def check_exploit(dev, results):
     for f in ["expl_check", "local_exploit", "selinux_check", "selinux_exploit", "check.sh"]:
@@ -36,12 +40,29 @@ def check_exploit(dev, results):
     print "Has SU: ", ret_su
     results["su"] =  ret_su
 
-def check_install(dev, results):
+def check_install(dev, results, factory=None):
 
     adb.execute("ddf ru", dev)
     # uninstall device
     adb.uninstall(service, dev)
 
+    if adb.get_properties()['release'].startswith("2"):
+        apk = apk_template % "v2"
+    else:
+        apk = apk_template % "default"
+    #apk = apk_template % "default"
+
+    #print "... building %s" % apk
+
+    #if not os.path.isfile(apk):
+    #    if not commands.build_apk("silent", "castore", factory):
+    #        return False
+
+    if not os.path.isfile(apk):
+        print "not existent file: %s" % apk
+        return False
+
+    print "... installing %s" % apk
     # install
     if not adb.install(apk, dev):
         return False
@@ -65,17 +86,33 @@ def check_instances(c, device_id, operation_id):
 
 
 def execute_agent(dev, results):
-    if not adb.executeMonkey(service, dev):
-        return False
-    else:
-        results["executed"] = True;
-        print "executed: OK"
+    processes = adb.ps(dev)
+    running = service in processes
+    if not running:
+        if not adb.executeMonkey(service, dev):
+            return False
+        else:
+            results["executed"] = True;
+            print "executed: OK"
 
     # check for running
-    time.sleep(10)
+    time.sleep(3)
+    processes = adb.ps(dev)
+    running = service in processes
+
+    if not running:
+        if not adb.executeService(service, dev):
+            return False
+        else:
+            results["executed"] = True;
+            print "executed: OK"
+
+    time.sleep(3)
     processes = adb.ps(dev)
     running = service in processes
     assert running
+
+    say("agent installed, verify root request")
     return True
 
 
@@ -97,12 +134,14 @@ def connect(c):
 def sync(c, device_id, instances, operation_id):
     print "... sleeping for sync"
     time.sleep(60)
-    while not instances:
+    for i in range(10):
         # print "operation: %s, %s" % (operation_id, group_id)
         instances = c.instances_by_deviceid(device_id, operation_id)
         if not instances:
             print "... waiting for sync"
             time.sleep(10)
+        else:
+            break
     assert len(instances) == 1
     instance_id = instances[0]['_id']
     # print "instance_id: %s " % instance_id
@@ -146,6 +185,7 @@ def check_root(c, instance_id, results, target_id):
 
 
 def check_evidences(c, instance_id, results, target_id):
+    time.sleep(60)
     evidences = c.evidences(target_id, instance_id)
     device_evidences = [e['data']['content'] for e in evidences if e['type'] == 'device']
     screenshot_evidences = [e for e in evidences if e['type'] == 'screenshot']
@@ -164,7 +204,10 @@ def uninstall_agent(dev, results):
     calc = [ f.split(":")[1] for f in  adb.execute("pm list packages calc").split() if f.startswith("package:") ][0]
     print "... executing calc: %s" % calc
     adb.executeMonkey(calc, dev)
-    time.sleep(20)
+    time.sleep(5)
+    say("agent uninstall, verify request")
+
+    time.sleep(15)
 
     processes = adb.ps(dev)
     uninstall = service not in processes
@@ -181,7 +224,7 @@ def uninstall_agent(dev, results):
 def check_persistence(dev, results):
     print ".... reboot"
     adb.reboot(dev)
-    time.sleep(120)
+    time.sleep(60)
     processes = adb.ps(dev)
     running = "persistence: %s" % service in processes
     results['running'] = running
@@ -190,19 +233,26 @@ def check_persistence(dev, results):
 def test_device(device_id, dev, results):
 
     # check manually exploits
-    check_exploit(dev, results)
+    #check_exploit(dev, results)
 
     # install agent and check it's running
-    if not check_install(dev, results):
-        return "installation failed"
+
 
     # connect
     with build.connection() as c:
         ret = connect(c)
         if not ret:
             return "Not logged in"
+
         operation_id, target_id = ret
+        #agents = c.agents(target_id)
+        #print agents
+
+        #factory = "540468ffaef1de2997000fb6"
         instances = check_instances(c, device_id, operation_id)
+
+        if not check_install(dev, results):
+            return "installation failed"
 
         if not execute_agent(dev, results):
             return "execution failed"
@@ -227,6 +277,10 @@ def test_device(device_id, dev, results):
 
     return True
 
+def set_time(dev):
+    t = time.localtime()
+    adb.execute('date -s %04d%02d%02d.%02d%02d%02d' %(t.tm_year,t.tm_mon,t.tm_mday,t.tm_hour,t.tm_min,t.tm_sec))
+
 def do_test(dev = None):
     build.connection.host = "rcs-castore"
     device_id = adb.get_deviceid(dev)
@@ -240,6 +294,7 @@ def do_test(dev = None):
         devicelist = csv.writer(csvfile, delimiter=";",
                                 quotechar="|", quoting=csv.QUOTE_MINIMAL)
 
+        set_time(dev)
         # getprop device
         props = adb.get_properties(dev)
         device = "%s %s" % (props["manufacturer"], props["model"])
@@ -300,6 +355,7 @@ def main():
             logfile.write("h.append(collections." + str(results) + ")")
             logfile.write("\n")
     print "Fine."
+    say("test ended")
 
 if __name__ == "__main__":
     main()

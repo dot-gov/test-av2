@@ -13,6 +13,7 @@ from scripts.mobile.hardware.utils import wifiutils, superuserutils, utils
 
 import adb
 
+from AVCommon import build_common
 from AVAgent import build
 #from AVCommon import logger
 #from AVAgent.build import build
@@ -123,10 +124,11 @@ def build_apk(kind, srv, factory):
     args.nointernetcheck = socket.gethostname()
     args.puppet = "rite"
     args.factory = factory
+    args.server_side = False
 
-    build.connection.host = srv_params["backend"]
+    build_common.connection.host = srv_params["backend"]
     #build.connection.user = "avmonitor"
-    build.connection.passwd = "testriteP123"
+    build_common.connection.passwd = "testriteP123"
 
     results, success, errors = build.build(args, report)
     print "after build", results, success, errors
@@ -139,9 +141,9 @@ def build_apk(kind, srv, factory):
 def check_evidences(backend, type_ev, key=None, value=None, imei=None):
 #    #backend = command.context["backend"]
 #    try:
-        build.connection.host = backend
-        build.connection.user = "avmonitor"
-        build.connection.passwd = "testriteP123"
+        build_common.connection.host = backend
+        build_common.connection.user = "avmonitor"
+        build_common.connection.passwd = "testriteP123"
         #success, ret = build.check_evidences(backend, type_ev, key, value)
         #return success, ret
         #if success:
