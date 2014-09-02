@@ -5,7 +5,30 @@
     <option name="CUSTOM_SCOPE_NAME" value="Changed Files" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4052f9d9-3c11-47a0-a6cc-5122f61c053e" name="Default" comment="" />
+    <list default="true" id="4052f9d9-3c11-47a0-a6cc-5122f61c053e" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/scripts/mobile/hardware/assets/installer.default.apk" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/scripts/mobile/hardware/assets/installer.v2.apk" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/AVCommon/commands/client/LIST_DIR.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/AVCommon/commands/server/PUSHZIP.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/AVCommon/commands/client/CROP.py" afterPath="$PROJECT_DIR$/AVCommon/commands/client/CROP.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/AVCommon/commands/meta/VM_ALL.py" afterPath="$PROJECT_DIR$/AVCommon/commands/meta/VM_ALL.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/mobile/hardware/adb.py" afterPath="$PROJECT_DIR$/scripts/mobile/hardware/adb.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/AVAgent/av_agent.py" afterPath="$PROJECT_DIR$/AVAgent/av_agent.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/AVAgent/build.py" afterPath="$PROJECT_DIR$/AVAgent/build.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/AVMaster/conf/procedures/build.yaml" afterPath="$PROJECT_DIR$/AVMaster/conf/procedures/build.yaml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/AVCommon/command.py" afterPath="$PROJECT_DIR$/AVCommon/command.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/mobile/hardware/main.py" afterPath="$PROJECT_DIR$/scripts/mobile/hardware/main.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/AVAgent/rcs_client.py" afterPath="$PROJECT_DIR$/AVAgent/rcs_client.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/AVMaster/conf/procedures/rite.yaml" afterPath="$PROJECT_DIR$/AVMaster/conf/procedures/rite.yaml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/AVMaster/conf/procedures/system.yaml" afterPath="$PROJECT_DIR$/AVMaster/conf/procedures/system.yaml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/AVMaster/conf/procedures/tests.yaml" afterPath="$PROJECT_DIR$/AVMaster/conf/procedures/tests.yaml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/server/update.sh" afterPath="$PROJECT_DIR$/scripts/server/update.sh" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/AVMaster/conf/procedures/update.yaml" afterPath="$PROJECT_DIR$/AVMaster/conf/procedures/update.yaml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/server/update_and_test_all.sh" afterPath="$PROJECT_DIR$/scripts/server/update_and_test_all.sh" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/AVMaster/conf/vms-rite.cfg" afterPath="$PROJECT_DIR$/AVMaster/conf/vms-rite.cfg" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+    </list>
     <ignored path="RCSAVTest.iws" />
     <ignored path=".idea/workspace.xml" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -41,55 +64,59 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="agent.py" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/AVAgent/lib/agent.py">
+      <file leaf-file-name="vms-rite.cfg" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/AVMaster/conf/vms-rite.cfg">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="99" column="67" selection-start="2609" selection-end="2609" vertical-scroll-proportion="0.0" vertical-offset="1185" max-vertical-offset="12420">
+            <state line="39" column="45" selection-start="1257" selection-end="1257" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1275">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="master.py" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/AVMaster/master.py">
+      <file leaf-file-name="update_reg.bat" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/assets/update_reg.bat">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="433" column="11" selection-start="13882" selection-end="13882" vertical-scroll-proportion="0.0" vertical-offset="6315" max-vertical-offset="12645">
+            <state line="13" column="26" selection-start="267" selection-end="267" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="285">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="vmavtest.cfg" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/AVAgent/conf/vmavtest.cfg">
+      <file leaf-file-name="av_agent.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/AVAgent/av_agent.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="6" column="1" selection-start="138" selection-end="138" vertical-scroll-proportion="0.08866995" vertical-offset="0" max-vertical-offset="1015">
+            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="3135">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="vms.cfg" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/AVMaster/conf/vms.cfg">
+      <file leaf-file-name="build.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/AVAgent/build.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="35" column="50" selection-start="1205" selection-end="1205" vertical-scroll-proportion="0.0" vertical-offset="572" max-vertical-offset="1275">
-              <folding />
+            <state line="48" column="44" selection-start="1554" selection-end="1554" vertical-scroll-proportion="0.0" vertical-offset="2760" max-vertical-offset="16815">
+              <folding>
+                <element signature="e#0#9#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="VMachine.py" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/AVMaster/lib/core/VMachine.py">
+      <file leaf-file-name="main.py" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/scripts/mobile/hardware/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="3645">
-              <folding />
+            <state line="161" column="9" selection-start="4687" selection-end="4692" vertical-scroll-proportion="-0.076845296" vertical-offset="2491" max-vertical-offset="3480">
+              <folding>
+                <element signature="e#25#41#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="VMManager.py" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/AVMaster/lib/core/VMManager.py">
+      <file leaf-file-name="VM_ALL.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/AVCommon/commands/meta/VM_ALL.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="95" column="0" selection-start="2816" selection-end="2816" vertical-scroll-proportion="0.0" vertical-offset="1395" max-vertical-offset="3225">
+            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="495">
               <folding />
             </state>
           </provider>
@@ -113,7 +140,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/tests/test_procedure.py" />
         <option value="$PROJECT_DIR$/AVCommon/commands/meta/CALL.py" />
         <option value="$PROJECT_DIR$/AVCommon/config.py" />
         <option value="$PROJECT_DIR$/AVCommon/command.py" />
@@ -129,6 +155,7 @@
         <option value="$PROJECT_DIR$/AVMaster/lib/core/VMManager.py" />
         <option value="$PROJECT_DIR$/AVMaster/master.py" />
         <option value="$PROJECT_DIR$/AVAgent/conf/vmavtest.cfg" />
+        <option value="$PROJECT_DIR$/AVMaster/conf/vms-rite.cfg" />
       </list>
     </option>
   </component>
@@ -198,7 +225,47 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="AVAgent" />
+              <option name="myItemId" value="scripts" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="RCSAVTest" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="AVTest" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="scripts" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="mobile" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="RCSAVTest" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="AVTest" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="scripts" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="mobile" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="hardware" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -209,14 +276,14 @@
   <component name="PropertiesComponent">
     <property name="options.splitter.main.proportions" value="0.3" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="TODO_SCOPE" value="Project Files" />
-    <property name="recentsLimit" value="5" />
     <property name="options.lastSelected" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
-    <property name="restartRequiresConfirmation" value="true" />
+    <property name="recentsLimit" value="5" />
+    <property name="TODO_SCOPE" value="Project Files" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/tests" />
+    <property name="restartRequiresConfirmation" value="true" />
     <property name="FullScreen" value="false" />
-    <property name="options.searchVisible" value="true" />
     <property name="options.splitter.details.proportions" value="0.2" />
+    <property name="options.searchVisible" value="true" />
   </component>
   <component name="PyConsoleOptionsProvider">
     <option name="myPythonConsoleState">
@@ -514,13 +581,13 @@
       <method />
     </configuration>
     <list size="7">
-      <item index="0" class="java.lang.String" itemvalue="Python.av_agent" />
-      <item index="1" class="java.lang.String" itemvalue="Python.test_vm_commands" />
-      <item index="2" class="java.lang.String" itemvalue="Python.test_avagent" />
-      <item index="3" class="java.lang.String" itemvalue="Python.test_command" />
-      <item index="4" class="java.lang.String" itemvalue="Python.test_protocol" />
-      <item index="5" class="java.lang.String" itemvalue="Python.test_vm_agent" />
-      <item index="6" class="java.lang.String" itemvalue="Python tests.Tests" />
+      <item index="0" class="java.lang.String" itemvalue="Python.test_vm_agent" />
+      <item index="1" class="java.lang.String" itemvalue="Python tests.Tests" />
+      <item index="2" class="java.lang.String" itemvalue="Python.av_agent" />
+      <item index="3" class="java.lang.String" itemvalue="Python.test_vm_commands" />
+      <item index="4" class="java.lang.String" itemvalue="Python.test_avagent" />
+      <item index="5" class="java.lang.String" itemvalue="Python.test_command" />
+      <item index="6" class="java.lang.String" itemvalue="Python.test_protocol" />
     </list>
     <recent_temporary>
       <list size="5">
@@ -593,7 +660,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="79" y="203" width="2240" height="1138" extended-state="0" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32968882" sideWeight="0.49960223" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3293718" sideWeight="0.49952874" order="10" side_tool="false" content_ui="tabs" />
@@ -636,9 +703,9 @@
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.22603878" sideWeight="0.6719717" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.25852036" sideWeight="0.67266774" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.41850594" sideWeight="0.7723845" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.17979316" sideWeight="0.6703112" order="5" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39949536" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.17979316" sideWeight="0.6703112" order="5" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.41850594" sideWeight="0.7723845" order="2" side_tool="false" content_ui="tabs" />
     </layout-to-restore>
   </component>
   <component name="VcsContentAnnotationSettings">
@@ -668,51 +735,12 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/AVAgent/lib/agent.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="99" column="67" selection-start="2609" selection-end="2609" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="12420">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/AVMaster/master.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="91" column="8" selection-start="2256" selection-end="2256" vertical-scroll-proportion="0.0" vertical-offset="1275" max-vertical-offset="12645">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/AVMaster/conf/vms.cfg">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="35" column="50" selection-start="1205" selection-end="1205" vertical-scroll-proportion="0.0" vertical-offset="572" max-vertical-offset="1275">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/AVMaster/lib/core/VMachine.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="3645">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/AVMaster/lib/core/VMManager.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="95" column="0" selection-start="2816" selection-end="2816" vertical-scroll-proportion="0.0" vertical-offset="1395" max-vertical-offset="3225">
-          <folding />
-        </state>
+        <state line="96" column="25" selection-start="2497" selection-end="2497" vertical-scroll-proportion="0.0" vertical-offset="1380" max-vertical-offset="12315" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/AVAgent/lib/agent.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="96" column="25" selection-start="2497" selection-end="2497" vertical-scroll-proportion="0.0" vertical-offset="1380" max-vertical-offset="12315">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/AVAgent/lib/agent.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="567" column="0" selection-start="20839" selection-end="20839" vertical-scroll-proportion="0.0" vertical-offset="420" max-vertical-offset="12300">
-          <folding />
-        </state>
+        <state line="567" column="0" selection-start="20839" selection-end="20839" vertical-scroll-proportion="0.0" vertical-offset="420" max-vertical-offset="12300" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/AVAgent/lib/rcs_client.py">
@@ -732,43 +760,72 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/AVAgent/lib/agent.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="99" column="67" selection-start="2609" selection-end="2609" vertical-scroll-proportion="0.0" vertical-offset="1185" max-vertical-offset="12420">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/AVMaster/conf/vms.cfg">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="35" column="50" selection-start="1205" selection-end="1205" vertical-scroll-proportion="0.0" vertical-offset="572" max-vertical-offset="1275">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/AVMaster/lib/core/VMachine.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="3645">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/AVMaster/lib/core/VMManager.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="95" column="0" selection-start="2816" selection-end="2816" vertical-scroll-proportion="0.0" vertical-offset="1395" max-vertical-offset="3225">
-          <folding />
-        </state>
+        <state line="99" column="67" selection-start="2609" selection-end="2609" vertical-scroll-proportion="0.2994012" vertical-offset="765" max-vertical-offset="12000" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/AVMaster/master.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="433" column="11" selection-start="13882" selection-end="13882" vertical-scroll-proportion="0.0" vertical-offset="6315" max-vertical-offset="12645">
-          <folding />
-        </state>
+        <state line="433" column="11" selection-start="13882" selection-end="13882" vertical-scroll-proportion="0.17964073" vertical-offset="6000" max-vertical-offset="12330" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/AVAgent/conf/vmavtest.cfg">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="6" column="1" selection-start="138" selection-end="138" vertical-scroll-proportion="0.08866995" vertical-offset="0" max-vertical-offset="1015">
+        <state line="6" column="1" selection-start="138" selection-end="138" vertical-scroll-proportion="0.08866995" vertical-offset="0" max-vertical-offset="1015" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/AVMaster/lib/core/VMachine.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="1" column="0" selection-start="10" selection-end="10" vertical-scroll-proportion="0.0" vertical-offset="15" max-vertical-offset="4080" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/AVMaster/lib/core/VMManager.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="95" column="0" selection-start="2816" selection-end="2816" vertical-scroll-proportion="0.02955665" vertical-offset="1275" max-vertical-offset="3105" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/AVCommon/commands/meta/VM_ALL.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1015">
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/AVMaster/conf/vms-rite.cfg">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="39" column="45" selection-start="1257" selection-end="1257" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1275">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/assets/update_reg.bat">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="13" column="26" selection-start="267" selection-end="267" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="285">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/AVAgent/av_agent.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="3135">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/AVAgent/build.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="48" column="44" selection-start="1554" selection-end="1554" vertical-scroll-proportion="0.0" vertical-offset="2760" max-vertical-offset="16815">
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts/mobile/hardware/main.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="161" column="9" selection-start="4687" selection-end="4692" vertical-scroll-proportion="-0.076845296" vertical-offset="2491" max-vertical-offset="3480">
+          <folding>
+            <element signature="e#25#41#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
