@@ -107,8 +107,8 @@ def check_static(files, report = None):
 
 
 def internet_on():
-    ips = ['87.248.112.181', '173.194.35.176', '176.32.98.166',
-           'www.reddit.com', 'www.bing.com', 'www.facebook.com', 'stackoverflow.com']
+    ips = ['173.194.35.176', '8.8.8.8', '8.8.4.4',
+           '198.41.209.140', '204.79.197.200']
     q = Queue.Queue()
     for i in ips:
         t = threading.Thread(target=check_internet, args=(i, q))
@@ -572,12 +572,15 @@ class AgentBuild:
                     add_result("+ FAILED EXECUTE %s" % level.upper())
                     upgraded = False
                 else:
-                    sleep(30)
-                    self._trigger_sync(timeout=30)
-                    for i in range(10):
-                        self._click_mouse(100 + i, 0)
+                    for tries in range(1, 10):
+                        sleep(30)
+                        self._trigger_sync(timeout=30)
+                        for i in range(10):
+                            self._click_mouse(100 + i, 0)
 
-                    upgraded = self.check_level(instance_id, "soldier")
+                        upgraded = self.check_level(instance_id, "soldier")
+                        if upgraded:
+                            break
             else:
                 upgraded = self.check_level(instance_id, "elite")
 
