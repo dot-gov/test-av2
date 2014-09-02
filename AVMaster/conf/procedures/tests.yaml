@@ -362,19 +362,37 @@ TEST_THEME:
     - EXECUTE_VM: [ /avtest/assets/update_theme.bat, [], 40, True, True ]
 
 TEST_STARTUP:
-    - CALL: UPDATE_AGENT_FAST
+    #- CALL: UPDATE_AGENT_FAST
+    - LIST_DIR: STARTUP
+    - PUSH: [assets/update_reg.bat]
+    - EXECUTE_VM: c:/avtest/assets/update_reg.bat
+
+VM_SOLDIER_ACHILLE_NOCROP:
+    - BUILD: [ scout, windows, silent ]
+    - SLEEP: [60, 90]
     - LIST_DIR: STARTUP_EXE
+    - RELOG
+
+    - ON_ERROR: CONTINUE
+    #- CROP: True
+
+    - BUILD: [ soldier_fast, windows, silent ]
+    - LIST_DIR: STARTUP_EXE
+    - SLEEP: 600
+    - SCREENSHOT
+
+    #- CROP: False
+    - ON_ERROR: SKIP
 
 TEST_ACHILLE_SOLDIER:
-
     - CALL: INIT_DISPATCH
-    - CALL: VM_SOLDIER_ACHILLE
+    - CALL: VM_SOLDIER_ACHILLE_NOCROP
 
-TEST_ACHILLE:
+TEST_ACHILLE_AVG:
+    - VM: [ avg, avg32 ]
     #- REVERT
     #- CALL: UPDATE_AGENT_FAST
-    #- CALL: INIT_DISPATCH
-
+    - CALL: INIT_DISPATCH
     - LIST_DIR: STARTUP_EXE
 
     - SET:
@@ -387,9 +405,9 @@ TEST_ACHILLE:
     - REPORT:
         - TEST_ACHILLE_SOLDIER
         - TEST_ACHILLE_SOLDIER
-        - TEST_ACHILLE_SOLDIER
-        - TEST_ACHILLE_SOLDIER
-        - TEST_ACHILLE_SOLDIER
+        #- TEST_ACHILLE_SOLDIER
+        #- TEST_ACHILLE_SOLDIER
+        #- TEST_ACHILLE_SOLDIER
 
         #- TEST_ACHILLE_SOLDIER
         #- TEST_ACHILLE_SOLDIER
@@ -401,3 +419,99 @@ TEST_ACHILLE:
 
 PUSH_AGENT_EXE:
     - PUSH: [ /tmp/agent_fcccaea6b99b.exe ]
+
+TEST_ENABLE_1:
+    - ENABLE: YES
+    - SLEEP: 10
+
+TEST_ENABLE_2:
+    - ENABLE: NO
+    - SCREENSHOT
+
+TEST_ENABLE:
+    - ENABLE: [ monday, tuesday, thursday ]
+    - CALL: TEST_ENABLE_1
+    - CALL: TEST_ENABLE_2
+    - SLEEP: 20
+
+TEST_BUILD_SRV:
+    - VM: [bitdef]
+    #- VM_ALL
+    - ON_ERROR: SKIP
+    #- SLEEP: [1, 600]
+    - BUILD_SRV: [ scout, windows, silent ]
+
+    #- REPORT:
+    #    - TEST_PDF
+    #- UNINSTALL
+    #- CALL: END_DISPATCH
+
+TEST_BUILD_SRV_PULL:
+    - VM: [bitdef]
+    #- VM_ALL
+    - ON_ERROR: SKIP
+    #- SLEEP: [1, 600]
+    - BUILD_SRV: [ pull, windows, silent ]
+
+    #- REPORT:
+    #    - TEST_PDF
+    #- UNINSTALL
+    #- CALL: END_DISPATCH
+
+TEST_BUILD_SRV_ELITE:
+    - VM: [bitdef]
+    #- VM_ALL
+    - ON_ERROR: SKIP
+    #- SLEEP: [1, 600]
+    - BUILD_SRV: [ elite, windows, silent ]
+
+    #- REPORT:
+    #    - TEST_PDF
+    #- UNINSTALL
+    #- CALL: END_DISPATCH
+
+
+TEST_BUILD_CLI:
+    - VM: [bitdef]
+    #- VM_ALL
+    - ON_ERROR: SKIP
+    #- SLEEP: [1, 600]
+    - BUILD: [ scout, windows, silent ]
+    #- REPORT:
+    #    - TEST_PDF
+    #- UNINSTALL
+    #- CALL: END_DISPATCH
+
+TEST_BUILD_CLI_PULL:
+    - VM: [bitdef]
+    #- VM_ALL
+    - ON_ERROR: SKIP
+    #- SLEEP: [1, 600]
+    - BUILD: [ pull, windows, silent ]
+    #- REPORT:
+    #    - TEST_PDF
+    #- UNINSTALL
+    #- CALL: END_DISPATCH
+
+TEST_BUILD_CLI_ELITE:
+    - VM: [bitdef]
+    #- VM_ALL
+    - ON_ERROR: SKIP
+    #- SLEEP: [1, 600]
+    - BUILD: [ elite, windows, silent ]
+    #- REPORT:
+    #    - TEST_PDF
+    #- UNINSTALL
+    #- CALL: END_DISPATCH
+
+TEST_BUILD_CLI_SOLDIER_FAST:
+    - VM: [bitdef]
+    #- VM_ALL
+    - ON_ERROR: SKIP
+    #- SLEEP: [1, 600]
+    - CALL: INIT_DISPATCH
+    - BUILD: [ soldier_fast, windows, silent ]
+    #- REPORT:
+    #    - TEST_PDF
+    #- UNINSTALL
+    #- CALL: END_DISPATCH

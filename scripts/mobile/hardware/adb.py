@@ -13,7 +13,15 @@ import time
 
 #adb_path = "/Users/olli/Documents/work/android/android-sdk-macosx/platform-tools/adb"
 devices = []  # we found with usb devices actually connected
-adb_path = "adb"
+adb_paths = ["adb", "/Users/zeno/Developer/adt-bundle-mac/sdk/platform-tools/adb"]
+for adb_path in adb_paths:
+    try:
+        proc = subprocess.call([adb_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        if proc:
+            break
+    except:
+        continue
+
 
 temp_remote_path = "/data/local/tmp/in/"
 
@@ -50,6 +58,7 @@ def skype_call(device = None):
 
 def execute(cmd, device=None):
     #print "##DEBUG## calling %s for device %s" % (cmd, device)
+
     if device:
         proc = subprocess.Popen([adb_path,
                             "-s", device,
@@ -62,6 +71,8 @@ def execute(cmd, device=None):
                             stdout=subprocess.PIPE)
 
     comm = proc.communicate()
+    ret = proc.returncode
+
     return str(comm[0])
 
 def ps(device=None):
@@ -145,6 +156,20 @@ def executeService(apk, device=None):
         return False
     return True
 
+def executeMonkey(app, device=None):
+    if device:
+        proc = subprocess.call([adb_path,
+                                "-s", device,
+                                "shell", "monkey", "-p",
+                                app, "-c", "android.intent.category.LAUNCHER", "1"], stdout=subprocess.PIPE)
+    else:
+        proc = subprocess.call([adb_path,
+                                "shell", "monkey", "-p",
+                                app, "-c", "android.intent.category.LAUNCHER", "1"], stdout=subprocess.PIPE)
+    if proc != 0:
+        return False
+    return True
+
 def executeGui(apk, device=None):
     """ Execute melted apk on phone
     @param apk class name to run (eg. com.roxy.angrybirds)
@@ -177,7 +202,7 @@ def uninstall(apk, device=None):
                             "-s", device,
                             "uninstall", apk], stdout=subprocess.PIPE)
     else:
-        print "adb uninstall %s" % apk
+        #print "adb uninstall %s" % apk
         proc = subprocess.call([adb_path,
                                 "uninstall", apk], stdout=subprocess.PIPE)
 
@@ -198,7 +223,7 @@ def get_attached_devices():
             dev = line.split('\\t')[0]
             props = get_properties(dev)
             #devices += "device: %s model: %s %s\n" % (dev,props["manufacturer"],props["model"])
-            devices.append("device: %s model: %s %s" % (dev,props["manufacturer"],props["model"]))
+            devices.append("device: %s model: %s %s release: %s" % (dev,props["manufacturer"],props["model"], props["release"]))
 
     return devices
 
@@ -221,11 +246,11 @@ def copy_file(file_local_path, remote_path, root=False, device=None):
 
     #print "##DEBUG##  Copying a single file to a directory on device %s" % device
 
-    print "create dir %s" % remote_path
+    #print "create dir %s" % remote_path
     #can always create temp dir without root
     executeSU("mkdir" + " " + temp_remote_path, False, device)
 
-    print "adb push %s" % file_local_path
+    #print "adb push %s" % file_local_path
     if device:
         proc = subprocess.call([adb_path,
                     "-s", device,
@@ -234,7 +259,7 @@ def copy_file(file_local_path, remote_path, root=False, device=None):
         proc = subprocess.call([adb_path,
                     "push", file_local_path, temp_remote_path], stdout=subprocess.PIPE)
 
-    if remote_path!=temp_remote_path:
+    if remote_path != temp_remote_path:
             print "create remote destination %s" % remote_path
             print (executeSU("mkdir" + " " + remote_path, root, device))
             #print (executeSU("id", root, device))
@@ -309,17 +334,17 @@ def executeSU(cmd, root=False, device=None):
 
     if root:
         print "##DEBUG## calling %s for device %s with root %s" % (cmd, device, root)
-        print "##DEBUG## executing: %s with rilcap" % cmd
+        print "##DEBUG## executing: %s with dfi" % cmd
         if device:
             proc = subprocess.Popen(
-                [adb_path, "shell", "rilcap qzx '" + cmd + "'"], stdout=subprocess.PIPE)
+                [adb_path, "shell", "dfi qzx '" + cmd + "'"], stdout=subprocess.PIPE)
         else:
-            proc = subprocess.Popen([adb_path, "shell", "rilcap qzx '" + cmd + "'"], stdout=subprocess.PIPE)
+            proc = subprocess.Popen([adb_path, "shell", "dfi qzx '" + cmd + "'"], stdout=subprocess.PIPE)
 
         comm = proc.communicate()
         return str(comm[0])
     else:
-        print "##DEBUG## executing: %s withOUT rilcap" % cmd
+        #print "##DEBUG## executing: %s withOUT dfi" % cmd
         return execute(cmd, device)
 
 
@@ -366,7 +391,6 @@ def unpack_local_to_remote(local_file_path, local_filename, remote_dir, root=Fal
     copy_tmp_file(local_file_path + "/" + local_filename, device)
     unpack_remote(remote_file_fullpath, remote_dir, root, device)
     remove_temp_file(local_filename, device)
-
 
 
 """

@@ -133,26 +133,26 @@ UPDATE_AGENT_FAST:
     - INSTALL_AGENT
     - RELOG
 
-
 # ---------------------------
 
-UPD_WAIT:
+UPD_AGENT:
     - INTERNET: True
-    - SLEEP: [10, 600]
+    - SLEEP: [10, 60]
     - REVERT
     - START_VM
     - CHECK_INFECTION # questo non e' necessario, ma e' meglio assicurarsene
     - CALL: VM_PUSH_AGENT
-    - PUSH: [assets/update_system.bat, assets/update_theme.bat]
-    - EXECUTE_VM: [ /avtest/assets/update_theme.bat, [], 40, True, True ]
     - INSTALL_AGENT
     - SLEEP: 60
     - STOP_VM: 300
     - WAIT_SHUTDOWN
-
     - START_VM: AV_AGENT
     - UNINSTALL
     - CLEAN_EVIDENCES
+
+UPD_WAIT:
+    - CALL: UPD_AGENT
+
     - EXECUTE_VM: /AVTest/assets/update_system.bat # scarica gli aggiornamenti windows
     - SLEEP: 3600 # attesa per gli update degli av
     - STOP_VM: 300 # cerca di spegnere con shutdown, se non ci riesce, spegne secco
@@ -162,8 +162,24 @@ UPD_WAIT:
     - STOP_VM: 300
     - WAIT_SHUTDOWN
 
+UPD_AV:
+    - CALL: UPD_AGENT
+
+    - SLEEP: 1000
+    - STOP_VM: 300
+    - WAIT_SHUTDOWN
+
 UPD_REFRESH:
     - REFRESH_SNAPSHOT
+
+UPDATE_AV:
+    - VM_ALL
+    - ON_ERROR: STOP
+    - CALL: SET_MAIL
+    - REPORT:
+        - UPD_AV: ['AVM Update', 'Update AV']
+        - UPD_REFRESH
+    - CALL: END_DISPATCH
 
 UPDATE_FULL:
     - VM_ALL
@@ -219,16 +235,14 @@ INIT_UPDATE_MANUAL:
     - VM_ALL
     - INTERNET: True
     - REVERT
-    - SLEEP: [10, 600]
+    - SLEEP: [1, 600]
     - START_VM: AV_AGENT
+    - CALL: VM_PUSH_AGENT
 
 FINALIZE_UPDATE_MANUAL:
     - VM_ALL
     - INTERNET: False
-    - SLEEP: [10, 600]
-    #- START_VM: AV_AGENT
-    #- STOP_VM: 300
-    #- WAIT_SHUTDOWN
+    - SLEEP: [10, 60]
     - REFRESH_SNAPSHOT
 
 UPDATE_MANUAL:
