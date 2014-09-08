@@ -52,7 +52,6 @@ def execute_no_command_split(cmd, device):
 
 
 def skype_call(device = None):
-    #cmd = "am start -a android.intent.action.MAIN -d skype:echo123?call"
     cmd = '"am start -a android.intent.action.VIEW -d skype:echo123?call"'
     return execute(cmd, device)
 
@@ -338,9 +337,9 @@ def executeSU(cmd, root=False, device=None):
         print "##DEBUG## executing: %s with dfi" % cmd
         if device:
             proc = subprocess.Popen(
-                [adb_path, "shell", "dfi qzx '" + cmd + "'"], stdout=subprocess.PIPE)
+                [adb_path, "shell", "ddf qzx '" + cmd + "'"], stdout=subprocess.PIPE)
         else:
-            proc = subprocess.Popen([adb_path, "shell", "dfi qzx '" + cmd + "'"], stdout=subprocess.PIPE)
+            proc = subprocess.Popen([adb_path, "shell", "ddf qzx '" + cmd + "'"], stdout=subprocess.PIPE)
 
         comm = proc.communicate()
         return str(comm[0])
