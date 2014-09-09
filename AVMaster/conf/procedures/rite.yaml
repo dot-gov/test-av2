@@ -128,30 +128,12 @@ VM_SOLDIER_ACHILLE:
     - CROP: False
     - ON_ERROR: SKIP
 
-
-SYSTEM_FUNCTIONAL_ACHILLE:
-    - VM_ALL
-    - INTERNET: False
-
-    - CALL: INIT_DISPATCH
-    - SET:
-        backend: 172.20.20.119
-        frontend: 172.20.20.119
-
-    - SET_SERVER:
-        mail_recipients: [zeno@hackingteam.com, seppia@hackingteam.com, m.losito@hackingteam.com]
-
-    - REPORT:
-        - VM_SOLDIER_ACHILLE: ['AV Invisibility Experimental', 'Soldier']
-
-    - CALL: VM_GET_LOG
-    - CALL: END_DISPATCH
-
 SYSTEM_SOLDIER_ACHILLE:
     - VM_ALL
     - INTERNET: False
 
     - CALL: INIT_DISPATCH
+    - CLEAN_EVIDENCES
     - SET:
         backend: 172.20.20.119
         frontend: 172.20.20.119
