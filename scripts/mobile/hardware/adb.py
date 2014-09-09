@@ -52,11 +52,11 @@ def execute_no_command_split(cmd, device):
 
 
 def skype_call(device = None):
-    cmd = '"am start -a android.intent.action.VIEW -d skype:echo123?call"'
+    cmd = "am start -a android.intent.action.VIEW -d skype:echo123?call"
     return execute(cmd, device)
 
 def execute(cmd, device=None):
-    #print "##DEBUG## calling %s for device %s" % (cmd, device)
+    #print "##DEBUG## calling '%s' for device %s" % (cmd, device)
 
     if device:
         proc = subprocess.Popen([adb_path,

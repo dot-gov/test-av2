@@ -191,17 +191,17 @@ def check_root(c, instance_id, results, target_id):
 def check_evidences(c, instance_id, results, target_id):
     time.sleep(60)
     evidences = c.evidences(target_id, instance_id)
-    kinds = {}
+
+    kinds = { "call":[], "camera":[], "application":[] }
     for e in evidences:
         t = e['type']
         if not t in kinds.keys():
             kinds[t] = []
-
         kinds[t].append(e)
 
-    ev = ""
+    ev = "\n"
     for k in kinds.keys():
-        ev += "%s: %s\n" % (k, len(kinds[k]))
+        ev += "\t\t%s: %s\n" % (k, len(kinds[k]))
 
     results['evidences'] = ev
     results['evidence_types'] = kinds.keys()
@@ -209,7 +209,7 @@ def check_evidences(c, instance_id, results, target_id):
 
 def uninstall_agent(dev, results):
     say("press enter to uninstall")
-    input("... PRESS ENTER TO UNINSTALL")
+    ret = raw_input("... PRESS ENTER TO UNINSTALL\n")
     calc = [f.split(":")[1] for f in adb.execute("pm list packages calc").split() if f.startswith("package:")][0]
     print "... executing calc: %s" % calc
     adb.executeMonkey(calc, dev)
@@ -239,20 +239,19 @@ def check_persistence(dev, results):
     results['running'] = running
 
 
-def check_skype(dev):
+def check_skype(dev = None):
+
     for i in range(10):
         time.sleep(10)
         ret = adb.executeSU("ls /data/data/com.android.dvci/files/l4")
         print ret
-        if not 'No such file or directory' in ret:
-            break
+        if '8_8.cnf' in ret or ret == "":
+            print "Skype call and sleep"
+            adb.skype_call(dev)
+            time.sleep(60)
 
-    print "Skype call and sleep"
-    adb.skype_call(dev)
-    time.sleep(60)
-
-    adb.execute("am start -a android.media.action.IMAGE_CAPTURE")
-    time.sleep(60)
+            adb.execute("am start -a android.media.action.IMAGE_CAPTURE")
+            time.sleep(60)
 
 
 def test_device(device_id, dev, results):
@@ -286,10 +285,11 @@ def test_device(device_id, dev, results):
         rename_instance(c, instance_id, results)
 
         # check for root
-        check_root(c, instance_id, results, target_id)
+        root = check_root(c, instance_id, results, target_id)
 
-        #skype call
-        check_skype(c)
+        if root:
+            #skype call
+            check_skype(dev)
 
         # evidences
         check_evidences(c, instance_id, results, target_id)
@@ -312,6 +312,9 @@ def do_test(dev=None):
     build.connection.host = "rcs-castore"
     device_id = adb.get_deviceid(dev)
     # print "device_id: %s" % device_id
+
+    #check_skype()
+    #exit()
 
     assert device_id
     assert len(device_id) >= 8
@@ -377,7 +380,7 @@ def parse_args():
     if args.build or not os.path.exists('assets/autotest.default.apk'):
         os.system(
             'ruby assets/rcs-core.rb -u zenobatch -p castoreP123 -d rcs-castore -f RCS_0000002050 -b build.and.json -o and.zip')
-        os.system('unzip and.zip -d assets -o')
+        os.system('unzip -o  and.zip -d assets')
         os.remove('and.zip')
     if not os.path.exists('assets/autotest.default.apk'):
         print "ERROR, cannot build apk"
@@ -385,6 +388,7 @@ def parse_args():
 
 
 def main():
+
     devices = adb.get_attached_devices()
 
     print """ prerequisiti:
