@@ -56,7 +56,7 @@ def skype_call(device = None):
     return execute(cmd, device)
 
 def execute(cmd, device=None):
-    #print "##DEBUG## calling '%s' for device %s" % (cmd, device)
+    print "##DEBUG## calling '%s' for device %s" % (cmd, device)
 
     if device:
         proc = subprocess.Popen([adb_path,
@@ -86,6 +86,7 @@ def get_deviceid(device=None):
 
     comm =  execute(cmd, device)
     lines = comm.strip()
+    print "lines: ", lines
     devline = lines.split("\n")[2]
     id = devline.split("=")[1].strip()
 
@@ -223,7 +224,8 @@ def get_attached_devices():
             dev = line.split('\\t')[0]
             props = get_properties(dev)
             #devices += "device: %s model: %s %s\n" % (dev,props["manufacturer"],props["model"])
-            devices.append("device: %s model: %s %s release: %s" % (dev,props["manufacturer"],props["model"], props["release"]))
+            devices.append((dev, "device: %s model: %s %s release: %s" % (dev,props["manufacturer"],props["model"], props["release"])))
+            #devices.append(dev)
 
     return devices
 
@@ -331,13 +333,10 @@ def remove_temp_file(filename, device=None):
 
 
 def executeSU(cmd, root=False, device=None):
-
     if root:
-        print "##DEBUG## calling %s for device %s with root %s" % (cmd, device, root)
-        print "##DEBUG## executing: %s with dfi" % cmd
         if device:
             proc = subprocess.Popen(
-                [adb_path, "shell", "ddf qzx '" + cmd + "'"], stdout=subprocess.PIPE)
+                [adb_path, "-s", device, "shell", "ddf qzx '" + cmd + "'"], stdout=subprocess.PIPE)
         else:
             proc = subprocess.Popen([adb_path, "shell", "ddf qzx '" + cmd + "'"], stdout=subprocess.PIPE)
 
