@@ -153,11 +153,11 @@ def main():
 
     proj_id = 1
     plan_name = "Continuous Testing rite" #% helper.get_hostname()
-    run_name = "AV Invisibility"
-    test_case = "Elite"
+    run_name = "Android Functional Testing"
+    test_case = "Installation"
     #test_case_id = 1
     result = "retest"
-    config = "avg, Windows"
+    config = "Android 4.2"
 
     #plan_id = 55
     #plan = get_plan(project_id, plan_id)

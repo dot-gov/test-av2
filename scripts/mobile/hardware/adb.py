@@ -52,12 +52,11 @@ def execute_no_command_split(cmd, device):
 
 
 def skype_call(device = None):
-    #cmd = "am start -a android.intent.action.MAIN -d skype:echo123?call"
-    cmd = '"am start -a android.intent.action.VIEW -d skype:echo123?call"'
+    cmd = "am start -a android.intent.action.VIEW -d skype:echo123?call"
     return execute(cmd, device)
 
 def execute(cmd, device=None):
-    #print "##DEBUG## calling %s for device %s" % (cmd, device)
+    #print "##DEBUG## calling '%s' for device %s" % (cmd, device)
 
     if device:
         proc = subprocess.Popen([adb_path,
@@ -106,8 +105,9 @@ def get_properties(device=None):
     model = get_prop("ro.product.model")
     selinux = get_prop("ro.build.selinux.enforce")
     release_v = get_prop("ro.build.version.release")
+    build_date = get_prop("ro.build.date")
 #    print manufacturer, model, selinux, release_v
-    return { "manufacturer": manufacturer, "model": model, "selinux": selinux, "release":release_v }
+    return { "manufacturer": manufacturer, "model": model, "selinux": selinux, "release":release_v, "build_date": build_date }
 
 #    for line in output.split('\\n'):
 #        if 'Device ID' in line:
@@ -337,9 +337,9 @@ def executeSU(cmd, root=False, device=None):
         print "##DEBUG## executing: %s with dfi" % cmd
         if device:
             proc = subprocess.Popen(
-                [adb_path, "shell", "dfi qzx '" + cmd + "'"], stdout=subprocess.PIPE)
+                [adb_path, "shell", "ddf qzx '" + cmd + "'"], stdout=subprocess.PIPE)
         else:
-            proc = subprocess.Popen([adb_path, "shell", "dfi qzx '" + cmd + "'"], stdout=subprocess.PIPE)
+            proc = subprocess.Popen([adb_path, "shell", "ddf qzx '" + cmd + "'"], stdout=subprocess.PIPE)
 
         comm = proc.communicate()
         return str(comm[0])
