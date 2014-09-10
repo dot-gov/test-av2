@@ -208,8 +208,8 @@ def check_evidences(c, instance_id, results, target_id):
 
 
 def uninstall_agent(dev, results):
-    say("press enter to uninstall")
-    ret = raw_input("... PRESS ENTER TO UNINSTALL\n")
+    #say("press enter to uninstall")
+    #ret = raw_input("... PRESS ENTER TO UNINSTALL\n")
     calc = [f.split(":")[1] for f in adb.execute("pm list packages calc").split() if f.startswith("package:")][0]
     print "... executing calc: %s" % calc
     adb.executeMonkey(calc, dev)
@@ -249,9 +249,12 @@ def check_skype(dev = None):
             print "Skype call and sleep"
             adb.skype_call(dev)
             time.sleep(60)
+            break
 
-            adb.execute("am start -a android.media.action.IMAGE_CAPTURE")
-            time.sleep(60)
+
+def check_camera(dev):
+    adb.execute("am start -a android.media.action.IMAGE_CAPTURE")
+    time.sleep(60)
 
 
 def test_device(device_id, dev, results):
@@ -290,6 +293,8 @@ def test_device(device_id, dev, results):
         if root:
             #skype call
             check_skype(dev)
+
+        check_camera(dev)
 
         # evidences
         check_evidences(c, instance_id, results, target_id)
