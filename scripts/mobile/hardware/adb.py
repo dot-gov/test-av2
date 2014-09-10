@@ -41,8 +41,7 @@ def call(cmd, device = None):
 
 
 def execute_no_command_split(cmd, device):
-
-    print "##DEBUG## calling %s for device %s" % (cmd,device)
+    #print "##DEBUG## calling %s for device %s" % (cmd,device)
 
     proc = subprocess.Popen([adb_path,
            "-s", device, "shell", cmd], stdout=subprocess.PIPE)
@@ -56,7 +55,7 @@ def skype_call(device = None):
     return execute(cmd, device)
 
 def execute(cmd, device=None):
-    print "##DEBUG## calling '%s' for device %s" % (cmd, device)
+    #print "##DEBUG## calling '%s' for device %s" % (cmd, device)
 
     if device:
         proc = subprocess.Popen([adb_path,
@@ -97,16 +96,17 @@ def get_deviceid(device=None):
 
     return id.replace('*','')
 
-def get_properties(device=None):
-    def get_prop(property):
+def get_prop(property, device):
         cmd = "getprop %s" % property
         return execute(cmd, device).strip()
 
-    manufacturer = get_prop("ro.product.manufacturer")
-    model = get_prop("ro.product.model")
-    selinux = get_prop("ro.build.selinux.enforce")
-    release_v = get_prop("ro.build.version.release")
-    build_date = get_prop("ro.build.date")
+def get_properties(device = None):
+
+    manufacturer = get_prop("ro.product.manufacturer", device)
+    model = get_prop("ro.product.model", device)
+    selinux = get_prop("ro.build.selinux.enforce", device)
+    release_v = get_prop("ro.build.version.release", device)
+    build_date = get_prop("ro.build.date", device)
 #    print manufacturer, model, selinux, release_v
     return { "manufacturer": manufacturer, "model": model, "selinux": selinux, "release":release_v, "build_date": build_date }
 
@@ -222,10 +222,11 @@ def get_attached_devices():
     for line in output.split('\\n'):
         if '\\t' in line:
             dev = line.split('\\t')[0]
-            props = get_properties(dev)
-            #devices += "device: %s model: %s %s\n" % (dev,props["manufacturer"],props["model"])
-            devices.append((dev, "device: %s model: %s %s release: %s" % (dev,props["manufacturer"],props["model"], props["release"])))
-            #devices.append(dev)
+            if dev:
+                props = get_properties(dev)
+                #devices += "device: %s model: %s %s\n" % (dev,props["manufacturer"],props["model"])
+                devices.append((dev, "device: %s model: %s %s release: %s" % (dev,props["manufacturer"],props["model"], props["release"])))
+                #devices.append(dev)
 
     return devices
 

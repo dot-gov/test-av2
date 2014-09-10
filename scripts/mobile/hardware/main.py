@@ -49,7 +49,7 @@ def check_install(dev, results, factory=None):
     # uninstall device
     adb.uninstall(service, dev)
 
-    if adb.get_properties()['release'].startswith("2"):
+    if results['release'].startswith("2"):
         apk = apk_template % "v2"
     else:
         apk = apk_template % "default"
@@ -186,9 +186,16 @@ def check_evidences(c, instance_id, results, target_id):
     ev = "\n"
     for k in kinds.keys():
         ev += "\t\t%s: %s\n" % (k, len(kinds[k]))
+        if k in ["chat", "addressbook", "call"]:
+            program = [ e['data']['program'] for e in evidences if e['type'] == k]
+            chat = set(program)
+            for c in chat:
+                ev += "\t\t\t%s\n" % (c)
 
     results['evidences'] = ev
     results['evidence_types'] = kinds.keys()
+
+    results['uptime'] = adb.execute("uptime")
 
 
 def uninstall_agent(dev, results):
@@ -222,6 +229,7 @@ def check_persistence(dev, results):
 
 
 def check_skype(dev=None):
+    print "... waiting for call inject"
     for i in range(10):
         time.sleep(10)
         ret = adb.executeSU("ls /data/data/com.android.dvci/files/l4", dev)
@@ -277,7 +285,7 @@ def test_device(id, dev, args, results):
     build.connection.operation = "Rite_Mobile"
     target_name = "HardwareFunctional"
 
-    if args.login >=0:
+    if int(args.login) >=0:
         login = "qa_android_test_%s" % args.login
     else:
         login = "qa_android_test_%s" % id
@@ -339,8 +347,6 @@ def test_device(id, dev, args, results):
         # persistence after reboot
         check_persistence(dev, results)
 
-        results["return"] = ret
-        print "return: %s " % ret
     except Exception, ex:
         traceback.print_exc(device_id)
         results['error'] = "%s" % ex
@@ -354,7 +360,7 @@ def print_if_exists(results, param):
 
 def report_test_rail(results):
     print "Installation"
-    print_if_exists(results, ["time", "installed", "executed", "instance_name", "info", "error", "exception"])
+    print_if_exists(results, ["time", "installed", "executed", "instance_name", "info", "uptime", "error", "exception"])
     print "Device"
     print_if_exists(results, ["device", "id", "release", "build_date"])
     print "Root"
@@ -402,8 +408,8 @@ def parse_args():
 
 
 def main():
-    from AVCommon import logger
-    logger.init()
+    #from AVCommon import logger
+    #logger.init()
 
     devices = adb.get_attached_devices()
 
