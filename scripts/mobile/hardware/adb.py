@@ -78,7 +78,7 @@ def ps(device=None):
     return pp
 
 def reboot(device = None):
-    call("reboot",device)
+    call("reboot", device)
 
 def get_deviceid(device=None):
     cmd = "dumpsys iphonesubinfo"
