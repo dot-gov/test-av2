@@ -511,7 +511,7 @@ def main():
 
     print "Fine."
     say("test ended %s" % id)
-    print "Check manually with the evidences in the instance: %s" % (results['instance_name'])
+    print "Check manually with the evidences in the instance: %s" % (results.get('instance_name',"NO SYNC"))
 
 
 if __name__ == "__main__":

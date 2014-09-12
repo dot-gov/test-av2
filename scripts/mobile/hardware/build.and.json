@@ -1,1 +1,1 @@
-{"platform":"android","binary":{"demo":true, "admin":true},"melt":{"appname":"autotest"},"package":{"type":"installation"}}
+build.nodemo.json
