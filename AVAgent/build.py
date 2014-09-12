@@ -18,7 +18,7 @@ from ConfigParser import ConfigParser
 
 import ctypes
 import shutil
-
+import glob
 
 from AVCommon.logger import logging
 from AVCommon import process
@@ -226,6 +226,8 @@ class AgentBuild:
             logging.debug("level, expected: %s got: %s" % (expected, level))
             if not level == expected:
                 add_result("+ FAILED %s LEVEL %s" % (expected.upper(), level.upper()))
+                self.terminate_every_agent()
+                executed = self.execute_agent_startup()
                 return False
             else:
                 add_result("+ SUCCESS %s LEVEL" % level.upper())
@@ -338,6 +340,13 @@ class AgentBuild:
         instance_id = self.execute_scout()
         self.execute_soldier_fast(instance_id, False)
 
+    def terminate_every_agent(self):
+        logging.debug("Killing every agent...T1000 mode")
+        for name in names:
+            name_exe = name + ".exe"
+            logging.debug(" - killing agent %s" % name_exe)
+            os.system("taskkill /F /T /IM %s" % name_exe)
+
     def execute_soldier_fast(self, instance_id = None, fast = True):
 
         if not instance_id:
@@ -431,7 +440,10 @@ class AgentBuild:
                 upgraded, got_level = self._check_upgraded(instance_id)
                 if upgraded:
                     break
-
+                else:
+                    if got_level.upper() == "soldier":
+                        self.terminate_every_agent()
+                        executed = self.execute_agent_startup()
                 for i in range(10):
                     self._click_mouse(100 + i, 0)
 
@@ -448,7 +460,8 @@ class AgentBuild:
             sleep(60)
             #add_result("+ SUCCESS UPGRADE INSTALL %s" % got_level.upper())
             if level == "soldier":
-                executed = self.execute_agent_startup();
+#                self.terminate_every_agent()
+                executed = self.execute_agent_startup()
                 if not executed:
                     add_result("+ FAILED EXECUTE %s" % level.upper())
                     upgraded = False
@@ -464,8 +477,11 @@ class AgentBuild:
                             break
                     if not upgraded:
                         add_result("+ FAILED UPGRADE %s" % level.upper())
-            else:
-                upgraded = self.check_level(instance_id, "elite")
+                        self.terminate_every_agent()
+                        executed = self.execute_agent_startup()
+
+        else:
+            upgraded = self.check_level(instance_id, "elite")
 
             logging.debug("re executing scout")
             self._execute_build(["build/scout.exe"], silent=True)
@@ -488,6 +504,9 @@ class AgentBuild:
     def execute_agent_startup(self):
         logging.debug("execute_agent_startup")
         executed = False
+
+        """
+        OLD AND AINT WORK WELL
         for d, b in itertools.product(start_dirs, names):
             filename = "%s/%s.exe" % (d, b)
             filename = filename.replace("/", "\\")
@@ -500,6 +519,17 @@ class AgentBuild:
                     break
                 except:
                     logging.exception("Cannot execute %s" % filename)
+        """
+        for d in start_dirs:
+            fz = glob.glob("%s%s*exe" % (d,os.sep) )
+            if fz is not None and fz != []:
+                fz.sort(key=os.path.getmtime)
+                filename = fz[-1]
+                logging.debug("check if file exists: %s" % filename)
+                if os.path.exists(filename):
+                    logging.debug("try to execute: %s" % filename)
+                    subprocess.Popen([filename])
+                    executed = True
 
         if not executed:
             for dir in start_dirs:
