@@ -9,6 +9,7 @@ import threading
 import os
 import zipfile
 import time
+import datetime
 
 
 #adb_path = "/Users/olli/Documents/work/android/android-sdk-macosx/platform-tools/adb"
@@ -24,7 +25,6 @@ for adb_path in adb_paths:
 
 
 temp_remote_path = "/data/local/tmp/in/"
-
 busybox_filename = 'busybox-android'
 
 
@@ -96,6 +96,13 @@ def get_deviceid(device=None):
 
     return id.replace('*','')
 
+def get_packages(device = None):
+    packages = execute("pm list packages", device)
+    p_list=[]
+    for p in packages.split():
+        p_list.append(p.split(':')[1])
+    return p_list
+
 def get_prop(property, device):
         cmd = "getprop %s" % property
         return execute(cmd, device).strip()
@@ -106,9 +113,10 @@ def get_properties(device = None):
     model = get_prop("ro.product.model", device)
     selinux = get_prop("ro.build.selinux.enforce", device)
     release_v = get_prop("ro.build.version.release", device)
-    build_date = get_prop("ro.build.date", device)
+    build_date = get_prop("ro.build.date.utc", device)
+    iso_date = datetime.datetime.fromtimestamp(1367392279).isoformat()
 #    print manufacturer, model, selinux, release_v
-    return { "manufacturer": manufacturer, "model": model, "selinux": selinux, "release":release_v, "build_date": build_date }
+    return { "manufacturer": manufacturer, "model": model, "selinux": selinux, "release":release_v, "build_date": iso_date }
 
 #    for line in output.split('\\n'):
 #        if 'Device ID' in line:

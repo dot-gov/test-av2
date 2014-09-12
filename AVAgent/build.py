@@ -298,7 +298,8 @@ class AgentBuild:
         with build_common.connection() as c:
             return c.server_status()['error']
 
-    def create_user_machine(self):
+    def create_user_machine(self, user_name = None):
+        # TODO: use build_common.create_user
         logging.debug("create_user_machine")
         privs = [
             'ADMIN', 'ADMIN_USERS', 'ADMIN_OPERATIONS', 'ADMIN_TARGETS', 'ADMIN_AUDIT',
@@ -307,7 +308,8 @@ class AgentBuild:
             'TECH_FACTORIES', 'TECH_BUILD', 'TECH_CONFIG', 'TECH_EXEC', 'TECH_UPLOAD',
             'TECH_IMPORT', 'TECH_NI_RULES', 'VIEW', 'VIEW_ALERTS', 'VIEW_FILESYSTEM',
             'VIEW_EDIT', 'VIEW_DELETE', 'VIEW_EXPORT', 'VIEW_PROFILES']
-        user_name = "avmonitor_%s_%s" % (self.prefix, self.hostname)
+        if not user_name:
+            user_name = "avmonitor_%s_%s" % (self.prefix, self.hostname)
         build_common.connection.user = user_name
 
         user_exists = False

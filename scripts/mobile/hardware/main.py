@@ -57,9 +57,9 @@ def check_install(dev, results, factory=None):
 
     # print "... building %s" % apk
 
-    #if not os.path.isfile(apk):
-    #    if not commands.build_apk("silent", "castore", factory):
-    #        return False
+    # if not os.path.isfile(apk):
+    # if not commands.build_apk("silent", "castore", factory):
+    # return False
 
     if not os.path.isfile(apk):
         print "not existent file: %s" % apk
@@ -119,6 +119,7 @@ def execute_agent(dev, results):
     say("agent installed, verify root request")
     return True
 
+
 def sync(c, device_id, instances, operation_id):
     print "... sleeping for sync"
     time.sleep(60)
@@ -168,15 +169,15 @@ def check_root(c, instance_id, results, target_id):
     results['root'] = root_method
     roots = [r for r in info_evidences if 'previous' not in r]
     # print "roots: %s " % roots
-    assert len(roots) == 1
+    assert len(roots) >= 1
     return True
 
 
-def check_evidences(c, instance_id, results, target_id):
+def check_evidences(dev, c, instance_id, results, target_id, timestamp=""):
     time.sleep(60)
     evidences = c.evidences(target_id, instance_id)
 
-    kinds = {"call": [], "camera": [], "application": []}
+    kinds = {"call": [], "chat": [], "camera": [], "application": []}
     for e in evidences:
         t = e['type']
         if not t in kinds.keys():
@@ -184,18 +185,31 @@ def check_evidences(c, instance_id, results, target_id):
         kinds[t].append(e)
 
     ev = "\n"
-    for k in kinds.keys():
+    ok = kinds.keys()
+    ok.sort()
+    for k in ok:
         ev += "\t\t%s: %s\n" % (k, len(kinds[k]))
         if k in ["chat", "addressbook", "call"]:
-            program = [ e['data']['program'] for e in evidences if e['type'] == k]
+            program = [e['data']['program'] for e in evidences if e['type'] == k]
             chat = set(program)
             for c in chat:
                 ev += "\t\t\t%s\n" % (c)
 
-    results['evidences'] = ev
-    results['evidence_types'] = kinds.keys()
+    results['evidences' + timestamp] = ev
+    results['evidence_types' + timestamp] = kinds.keys()
 
-    results['uptime'] = adb.execute("uptime")
+    results['uptime' + timestamp] = adb.execute("uptime", dev)
+
+    packages = adb.get_packages(dev)
+
+    expected = set()
+    for i in ['skype', 'facebook', 'wechat', 'telegram', 'hangout', 'android.talk', 'line.android', 'viber',
+              'tencent.mm', 'whatsapp']:
+        for p in packages:
+            if i in p:
+                expected.add(i)
+
+    results['expected'] = list(expected)
 
 
 def uninstall_agent(dev, results):
@@ -228,11 +242,31 @@ def check_persistence(dev, results):
     results['running'] = running
 
 
-def check_skype(dev=None):
+def check_skype(c, target_id, instance_id, results, dev=None):
+    supported = ['4.0', '4.1', '4.2', '4.3']
+    release = results['release'][0:3]
+
+    results['call_supported'] = release in supported
+    if release not in supported:
+        print "Call not supported"
+        return
+
     print "... waiting for call inject"
+    info_evidences = []
+    counter = 0
+    while not info_evidences and counter < 10:
+        infos = c.infos(target_id, instance_id)
+        info_evidences = [e['data']['content'] for e in infos if 'Call' in e['data']['content']]
+        counter += 1
+        if not info_evidences:
+            print "... waiting for info"
+            time.sleep(10)
+        else:
+            break
+
     for i in range(10):
         time.sleep(10)
-        ret = adb.executeSU("ls /data/data/com.android.dvci/files/l4", dev)
+        ret = adb.executeSU("ls /data/data/com.android.dvci/files/l4", True, dev)
         print ret
         if '8_8.cnf' in ret or ret == "":
             print "Skype call and sleep"
@@ -248,7 +282,8 @@ def check_camera(dev):
 
 def set_time(dev):
     t = time.localtime()
-    adb.execute('date -s %04d%02d%02d.%02d%02d%02d' % (t.tm_year, t.tm_mon, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec), dev)
+    adb.execute('date -s %04d%02d%02d.%02d%02d%02d' % (t.tm_year, t.tm_mon, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec),
+                dev)
 
 
 def set_properties(dev, device_id, results):
@@ -280,12 +315,18 @@ def connect(c, target_name):
     return operation_id, target_id
 
 
+def check_reboot(dev):
+    print "... reboot"
+    adb.reboot(dev)
+    time.sleep(60)
+
+
 def test_device(id, dev, args, results):
     build.connection.host = "rcs-castore"
     build.connection.operation = "Rite_Mobile"
     target_name = "HardwareFunctional"
 
-    if int(args.login) >=0:
+    if int(args.login) >= 0:
         login = "qa_android_test_%s" % args.login
     else:
         login = "qa_android_test_%s" % id
@@ -327,15 +368,20 @@ def test_device(id, dev, args, results):
 
             # check for root
             root = check_root(c, instance_id, results, target_id)
+            results['root_first'] = root
+            check_evidences(dev, c, instance_id, results, target_id, "_first")
 
+            check_reboot(dev)
+
+            root = check_root(c, instance_id, results, target_id)
             if root:
                 # skype call
-                check_skype(dev)
+                check_skype(c, target_id, instance_id, results, dev)
 
             check_camera(dev)
 
             # evidences
-            check_evidences(c, instance_id, results, target_id)
+            check_evidences(dev, c, instance_id, results, target_id, "_last")
 
         if args.interactive:
             say("press enter to uninstall %s" % id)
@@ -352,34 +398,49 @@ def test_device(id, dev, args, results):
         results['error'] = "%s" % ex
 
 
-
-def print_if_exists(results, param):
+def report_if_exists(results, param):
+    report = ""
     for p in param:
-        print "\t%s: %s" % (p, results.get(p, ""))
+        report += "\t%s: %s\n" % (p, results.get(p, ""))
+    return report
 
 
 def report_test_rail(results):
-    print "Installation"
-    print_if_exists(results, ["time", "installed", "executed", "instance_name", "info", "uptime", "error", "exception"])
-    print "Device"
-    print_if_exists(results, ["device", "id", "release", "build_date"])
-    print "Root"
-    print_if_exists(results, ["root", "su", "selinux"])
-    print "Evidences"
-    print_if_exists(results, ["evidences"])
-    print "Uninstall"
-    print_if_exists(results, ["uninstall", "running"])
+    report = ""
+    report += "Installation\n"
+    report += report_if_exists(results,
+                               ["time", "installed", "executed", "instance_name", "info", "uptime_first", "uptime_last",
+                                "error",
+                                "exception"])
+    report += "Device\n"
+    report += report_if_exists(results, ["device", "id", "release", "build_date"])
+    report += "Root\n"
+    report += report_if_exists(results, ["root", "root_first", "su", "selinux"])
+    report += "Evidences\n"
+    report += report_if_exists(results, ["evidences_first", "evidences_last"])
+    report += "Expected\n"
+    report += report_if_exists(results, ["call_supported", "expected"])
+    report += "Uninstall\n"
+    report += report_if_exists(results, ["uninstall", "running"])
+
+    print report
+    return report
 
 
-def report_files(results):
-    with open('report/test-%s.%s.csv' % (results.get('id',0), results.get('device',"device")), 'ab') as csvfile:
+def report_files(results, report):
+    with open('report/test-%s.%s.txt' % (results.get('id', 0), results.get('device', "device")), 'ab') as tfile:
+        tfile.write(report)
+
+    with open('report/test-%s.%s.csv' % (results.get('id', 0), results.get('device', "device")), 'ab') as csvfile:
         # write header
         devicelist = csv.writer(csvfile, delimiter=";",
                                 quotechar="|", quoting=csv.QUOTE_MINIMAL)
         devicelist.writerow(results.values())
+
     with open('report/hardware.logs.txt', 'a+') as logfile:
         logfile.write(str(results))
         logfile.write("\n")
+
     with open('report/hardware.logs.py', 'a+') as logfile:
         logfile.write("h.append(collections." + str(results) + ")")
         logfile.write("\n")
@@ -408,8 +469,8 @@ def parse_args():
 
 
 def main():
-    #from AVCommon import logger
-    #logger.init()
+    # from AVCommon import logger
+    # logger.init()
 
     devices = adb.get_attached_devices()
 
@@ -424,7 +485,7 @@ def main():
 
     print "devices connessi:"
     for id in range(len(devices)):
-        print "%s) %s" %(id, devices[id][1])
+        print "%s) %s" % (id, devices[id][1])
 
     dev = None
     if not devices:
@@ -445,11 +506,12 @@ def main():
             results['exception'] = ex
 
         print results
-        report_test_rail(results)
-        report_files(results)
+        report = report_test_rail(results)
+        report_files(results, report)
 
     print "Fine."
     say("test ended %s" % id)
+    print "Check manually with the evidences in the instance: %s" % (results['instance_name'])
 
 
 if __name__ == "__main__":
