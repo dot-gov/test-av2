@@ -12,6 +12,7 @@ from AVAgent.rcs_client import Rcs_client
 
 class connection:
     host = ""
+    DEFAULT = ("avmonitor", "testriteP123")
     user = "avmonitor"
     passwd = "testriteP123" # old: avmonitorp123
     operation = 'AOP_avmaster'
@@ -124,3 +125,41 @@ def build_agent(factory, hostname, param, result_adder_function, zipfilename, me
 
             raise e
         return zipfilename
+
+def create_user(user_name, passwd = connection.passwd):
+    logging.debug("create_user_machine")
+    privs = [
+        'ADMIN', 'ADMIN_USERS', 'ADMIN_OPERATIONS', 'ADMIN_TARGETS', 'ADMIN_AUDIT',
+        'ADMIN_LICENSE', 'SYS', 'SYS_FRONTEND', 'SYS_BACKEND', 'SYS_BACKUP',
+        'SYS_INJECTORS', 'SYS_CONNECTORS', 'TECH',
+        'TECH_FACTORIES', 'TECH_BUILD', 'TECH_CONFIG', 'TECH_EXEC', 'TECH_UPLOAD',
+        'TECH_IMPORT', 'TECH_NI_RULES', 'VIEW', 'VIEW_ALERTS', 'VIEW_FILESYSTEM',
+        'VIEW_EDIT', 'VIEW_DELETE', 'VIEW_EXPORT', 'VIEW_PROFILES']
+
+    assert user_name
+    assert passwd
+
+    connection.user = user_name
+    connection.passwd = passwd
+
+    user_exists = False
+    try:
+        with connection() as c:
+            logging.debug("LOGIN SUCCESS")
+            user_exists = True
+    except:
+        pass
+
+    if not user_exists:
+        logging.debug("creating user")
+        connection.user, connection.passwd = connection.DEFAULT
+        with connection() as c:
+            ret = c.operation(connection.operation)
+            op_id, group_id = ret
+            assert op_id and group_id
+
+            c.user_create(user_name, passwd, privs, group_id)
+
+    connection.user = user_name
+    connection.passwd = passwd
+    return True

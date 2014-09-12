@@ -9,6 +9,7 @@ import threading
 import os
 import zipfile
 import time
+import datetime
 
 
 #adb_path = "/Users/olli/Documents/work/android/android-sdk-macosx/platform-tools/adb"
@@ -24,7 +25,6 @@ for adb_path in adb_paths:
 
 
 temp_remote_path = "/data/local/tmp/in/"
-
 busybox_filename = 'busybox-android'
 
 
@@ -41,8 +41,7 @@ def call(cmd, device = None):
 
 
 def execute_no_command_split(cmd, device):
-
-    print "##DEBUG## calling %s for device %s" % (cmd,device)
+    #print "##DEBUG## calling %s for device %s" % (cmd,device)
 
     proc = subprocess.Popen([adb_path,
            "-s", device, "shell", cmd], stdout=subprocess.PIPE)
@@ -79,13 +78,14 @@ def ps(device=None):
     return pp
 
 def reboot(device = None):
-    call("reboot",device)
+    call("reboot", device)
 
 def get_deviceid(device=None):
     cmd = "dumpsys iphonesubinfo"
 
     comm =  execute(cmd, device)
     lines = comm.strip()
+    print "lines: ", lines
     devline = lines.split("\n")[2]
     id = devline.split("=")[1].strip()
 
@@ -96,18 +96,27 @@ def get_deviceid(device=None):
 
     return id.replace('*','')
 
-def get_properties(device=None):
-    def get_prop(property):
+def get_packages(device = None):
+    packages = execute("pm list packages", device)
+    p_list=[]
+    for p in packages.split():
+        p_list.append(p.split(':')[1])
+    return p_list
+
+def get_prop(property, device):
         cmd = "getprop %s" % property
         return execute(cmd, device).strip()
 
-    manufacturer = get_prop("ro.product.manufacturer")
-    model = get_prop("ro.product.model")
-    selinux = get_prop("ro.build.selinux.enforce")
-    release_v = get_prop("ro.build.version.release")
-    build_date = get_prop("ro.build.date")
+def get_properties(device = None):
+
+    manufacturer = get_prop("ro.product.manufacturer", device)
+    model = get_prop("ro.product.model", device)
+    selinux = get_prop("ro.build.selinux.enforce", device)
+    release_v = get_prop("ro.build.version.release", device)
+    build_date = get_prop("ro.build.date.utc", device)
+    iso_date = datetime.datetime.fromtimestamp(1367392279).isoformat()
 #    print manufacturer, model, selinux, release_v
-    return { "manufacturer": manufacturer, "model": model, "selinux": selinux, "release":release_v, "build_date": build_date }
+    return { "manufacturer": manufacturer, "model": model, "selinux": selinux, "release":release_v, "build_date": iso_date }
 
 #    for line in output.split('\\n'):
 #        if 'Device ID' in line:
@@ -221,9 +230,11 @@ def get_attached_devices():
     for line in output.split('\\n'):
         if '\\t' in line:
             dev = line.split('\\t')[0]
-            props = get_properties(dev)
-            #devices += "device: %s model: %s %s\n" % (dev,props["manufacturer"],props["model"])
-            devices.append("device: %s model: %s %s release: %s" % (dev,props["manufacturer"],props["model"], props["release"]))
+            if dev:
+                props = get_properties(dev)
+                #devices += "device: %s model: %s %s\n" % (dev,props["manufacturer"],props["model"])
+                devices.append((dev, "device: %s model: %s %s release: %s" % (dev,props["manufacturer"],props["model"], props["release"])))
+                #devices.append(dev)
 
     return devices
 
@@ -331,13 +342,10 @@ def remove_temp_file(filename, device=None):
 
 
 def executeSU(cmd, root=False, device=None):
-
     if root:
-        print "##DEBUG## calling %s for device %s with root %s" % (cmd, device, root)
-        print "##DEBUG## executing: %s with dfi" % cmd
         if device:
             proc = subprocess.Popen(
-                [adb_path, "shell", "ddf qzx '" + cmd + "'"], stdout=subprocess.PIPE)
+                [adb_path, "-s", device, "shell", "ddf qzx '" + cmd + "'"], stdout=subprocess.PIPE)
         else:
             proc = subprocess.Popen([adb_path, "shell", "ddf qzx '" + cmd + "'"], stdout=subprocess.PIPE)
 
