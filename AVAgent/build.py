@@ -480,8 +480,8 @@ class AgentBuild:
                         self.terminate_every_agent()
                         executed = self.execute_agent_startup()
 
-        else:
-            upgraded = self.check_level(instance_id, "elite")
+            else:
+                upgraded = self.check_level(instance_id, "elite")
 
             logging.debug("re executing scout")
             self._execute_build(["build/scout.exe"], silent=True)
@@ -816,7 +816,7 @@ def check_evidences(backend, type_ev, key=None, value=None):
     return number > 0, number
 
 def check_blacklist(blacklist=None):
-    with connection() as client:
+    with build_common.connection() as client:
         logging.debug("connected")
         blacklist_server = client.blacklist()
         logging.info("blacklist from server: %s" % blacklist_server)
