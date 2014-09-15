@@ -1,0 +1,49 @@
+Installation
+	time: 2014-09-12 11:13:04.723092
+	installed: True
+	executed: True
+	instance_name: Android (129) HTC HTC One
+	info: 
+	uptime_first: up time: 21:56:25, idle time: 00:25:26, sleep time: 21:32:07
+
+	uptime_last: up time: 00:03:56, idle time: 00:06:56, sleep time: 00:00:00
+
+	error: 
+	exception: 
+Device
+	device: HTC HTC One
+	id: 56485632
+	release: 4.4.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: No
+	root_first: False
+	su: 
+	selinux: 
+Evidences
+	evidences_first: 
+		addressbook: 7
+			phone
+		application: 3
+		call: 0
+		camera: 10
+		chat: 0
+		device: 2
+		position: 2
+
+	evidences_last: 
+		addressbook: 7
+			phone
+		application: 6
+		call: 0
+		camera: 14
+		chat: 0
+		device: 3
+		position: 3
+
+Expected
+	call_supported: 
+	expected: ['android.talk', 'facebook', 'skype']
+Uninstall
+	uninstall: False
+	running: False

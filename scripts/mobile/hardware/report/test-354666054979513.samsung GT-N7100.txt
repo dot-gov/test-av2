@@ -1,0 +1,86 @@
+Installation
+	time: 2014-09-15 10:31:26.454629
+	installed: True
+	executed: True
+	instance_name: Android (134) samsung GT-N7100
+	info: True
+	uptime_first: up time: 2 days, 22:44:57, idle time: 23:28:13, sleep time: 2 days, 16:25:20
+
+	uptime_last: up time: 00:03:22, idle time: 00:09:43, sleep time: 00:00:00
+
+	error: 
+	exception: 
+Device
+	device: samsung GT-N7100
+	id: 354666054979513
+	release: 4.1.1
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: 
+	selinux: 
+Evidences
+	evidences_first: 
+		addressbook: 36
+			telegram
+			phone
+			viber
+			facebook
+			skype
+			wechat
+			whatsapp
+			gmail
+		application: 3
+		calendar: 2
+		call: 0
+		camera: 6
+		chat: 123
+			telegram
+			viber
+			facebook
+			skype
+			wechat
+			whatsapp
+			line
+			gmail
+		device: 2
+		message: 3
+		position: 4
+		screenshot: 3
+
+	evidences_last: 
+		addressbook: 36
+			telegram
+			phone
+			viber
+			facebook
+			skype
+			wechat
+			whatsapp
+			gmail
+		application: 6
+		calendar: 2
+		call: 1
+			skype
+		camera: 10
+		chat: 123
+			telegram
+			viber
+			facebook
+			skype
+			wechat
+			whatsapp
+			line
+			gmail
+		device: 3
+		message: 3
+		position: 6
+		screenshot: 5
+
+Expected
+	call_supported: True
+	expected: ['telegram', 'android.talk', 'viber', 'facebook', 'line.android', 'skype', 'whatsapp', 'tencent.mm']
+Uninstall
+	uninstall: True
+	running: False

@@ -1,0 +1,143 @@
+Installation
+	time: 2014-09-12 16:13:03.954947
+	installed: True
+	executed: True
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 
+Device
+	device: HTC Nexus One
+	id: 354957032342654
+	release: 2.3.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+Installation
+	time: 2014-09-12 16:17:56.274562
+	installed: True
+	executed: True
+	instance_name: Android (131) HTC Nexus One
+	info: 
+	uptime_first: up time: 00:17:50, idle time: 00:07:45, sleep time: 00:00:00
+
+	uptime_last: up time: 00:03:54, idle time: 00:01:31, sleep time: 00:00:00
+
+	error: 
+	exception: 
+Device
+	device: HTC Nexus One
+	id: 354957032342654
+	release: 2.3.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: No
+	root_first: False
+	su: 
+	selinux: 
+Evidences
+	evidences_first: 
+		addressbook: 232
+			phone
+		application: 1
+		call: 0
+		camera: 0
+		chat: 0
+		device: 2
+		position: 2
+
+	evidences_last: 
+		addressbook: 232
+			phone
+		application: 6
+		call: 0
+		camera: 0
+		chat: 0
+		device: 3
+		position: 3
+
+Expected
+	call_supported: 
+	expected: ['telegram', 'android.talk', 'viber', 'facebook', 'line.android', 'skype', 'whatsapp']
+Uninstall
+	uninstall: False
+	running: False
+Installation
+	time: 2014-09-12 17:05:12.094911
+	installed: True
+	executed: True
+	instance_name: Android (132) HTC Nexus One
+	info: True
+	uptime_first: up time: 00:41:37, idle time: 00:26:32, sleep time: 00:00:00
+
+	uptime_last: up time: 00:02:03, idle time: 00:00:35, sleep time: 00:00:00
+
+	error: 
+	exception: 
+Device
+	device: HTC Nexus One
+	id: 354957032342654
+	release: 2.3.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: 
+	selinux: 
+Evidences
+	evidences_first: 
+		addressbook: 247
+			telegram
+			whatsapp
+			gmail
+			phone
+			skype
+		application: 1
+		call: 0
+		camera: 0
+		chat: 91
+			telegram
+			whatsapp
+			skype
+			gmail
+		device: 2
+		position: 2
+
+	evidences_last: 
+		addressbook: 247
+			telegram
+			whatsapp
+			gmail
+			phone
+			skype
+		application: 1
+		call: 0
+		camera: 0
+		chat: 91
+			telegram
+			whatsapp
+			skype
+			gmail
+		device: 2
+		position: 2
+
+Expected
+	call_supported: False
+	expected: ['telegram', 'android.talk', 'viber', 'facebook', 'line.android', 'skype', 'whatsapp']
+Uninstall
+	uninstall: True
+	running: False

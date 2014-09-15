@@ -1,0 +1,71 @@
+Installation
+	time: 2014-09-12 10:37:10.668227
+	installed: True
+	executed: True
+	instance_name: Android (128) samsung GT-I9195
+	info: True
+	uptime_first: up time: 1 days, 18:22:30, idle time: 1 days, 18:36:47, sleep time: 20:09:30
+
+	uptime_last: up time: 00:03:19, idle time: 00:01:47, sleep time: 00:00:00
+
+	error: 
+	exception: 
+Device
+	device: samsung GT-I9195
+	id: 354899060497374
+	release: 4.2.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: 
+	selinux: 1
+Evidences
+	evidences_first: 
+		addressbook: 47
+			telegram
+			phone
+			viber
+			skype
+			whatsapp
+			gmail
+		application: 1
+		calendar: 3
+		call: 0
+		camera: 5
+		chat: 25
+			telegram
+			whatsapp
+			viber
+			skype
+		device: 2
+		message: 2
+		position: 4
+		screenshot: 3
+
+	evidences_last: 
+		addressbook: 47
+			telegram
+			phone
+			viber
+			skype
+			whatsapp
+			gmail
+		application: 12
+		calendar: 3
+		call: 0
+		camera: 6
+		chat: 25
+			telegram
+			whatsapp
+			viber
+			skype
+		device: 3
+		message: 2
+		position: 6
+		screenshot: 6
+
+Expected
+Uninstall
+	uninstall: True
+	running: False

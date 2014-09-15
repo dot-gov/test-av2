@@ -1,0 +1,108 @@
+Installation
+	time: 2014-09-11 09:29:48.319707
+	installed: True
+	executed: True
+	instance_name: Android (125) samsung GT-I9505
+	info: True
+	uptime_first: up time: 00:31:25, idle time: 00:27:55, sleep time: 00:00:00
+
+	uptime_last: up time: 00:03:43, idle time: 00:03:35, sleep time: 00:00:00
+
+	error: 
+	exception: 
+Device
+	device: samsung GT-I9505
+	id: 356845056078692
+	release: 4.4.2
+	build_date: Thu Feb 13 20:47:45 KST 2014
+Root
+	root: Root
+	root_first: True
+	su: 
+	selinux: 1
+Evidences
+	evidences_first: 
+		addressbook: 2
+			gmail
+			skype
+		application: 1
+		call: 0
+		camera: 3
+		chat: 0
+		device: 2
+		position: 2
+		screenshot: 3
+
+	evidences_last: 
+		addressbook: 2
+			gmail
+			skype
+		application: 8
+		call: 0
+		camera: 3
+		chat: 0
+		device: 3
+		position: 5
+		screenshot: 5
+
+Expected
+Uninstall
+	uninstall: True
+	running: False
+Installation
+	time: 2014-09-11 10:03:41.427236
+	installed: True
+	executed: True
+	instance_name: Android (126) samsung GT-I9505
+	info: True
+	uptime_first: up time: 00:30:22, idle time: 00:27:35, sleep time: 00:00:00
+
+	uptime_last: up time: 00:02:04, idle time: 00:02:10, sleep time: 00:00:00
+
+	error: 
+	exception: 
+Device
+	device: samsung GT-I9505
+	id: 356845056078692
+	release: 4.4.2
+	build_date: Thu Feb 13 20:47:45 KST 2014
+Root
+	root: Root
+	root_first: True
+	su: 
+	selinux: 1
+Evidences
+	evidences_first: 
+		addressbook: 20
+			phone
+			gmail
+			skype
+		application: 1
+		calendar: 3
+		call: 0
+		camera: 0
+		chat: 35
+			skype
+		device: 2
+		position: 3
+		screenshot: 4
+
+	evidences_last: 
+		addressbook: 20
+			phone
+			gmail
+			skype
+		application: 10
+		calendar: 3
+		call: 0
+		camera: 0
+		chat: 35
+			skype
+		device: 3
+		position: 4
+		screenshot: 5
+
+Expected
+Uninstall
+	uninstall: True
+	running: False
