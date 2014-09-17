@@ -7,9 +7,13 @@ import re
 import shutil
 import threading
 import os
+from time import sleep
 import zipfile
 import time
 import datetime
+
+
+from multiprocessing import Process
 
 
 #adb_path = "/Users/olli/Documents/work/android/android-sdk-macosx/platform-tools/adb"
@@ -53,6 +57,7 @@ def execute_no_command_split(cmd, device):
 def skype_call(device = None):
     cmd = "am start -a android.intent.action.VIEW -d skype:echo123?call"
     return execute(cmd, device)
+
 
 def execute(cmd, device=None):
     #print "##DEBUG## calling '%s' for device %s" % (cmd, device)
@@ -284,6 +289,7 @@ def copy_file(file_local_path, remote_path, root=False, device=None):
 #local dir should exists!
 #works only with temp dir (because does not use ROOT!)
 def get_remote_temp_file(remote_filename, local_destination_path, device=None):
+    print "%s" % local_destination_path
     assert os.path.exists(local_destination_path)
 
     remote_file_fullpath = temp_remote_path + "/" + remote_filename
@@ -399,6 +405,75 @@ def unpack_local_to_remote(local_file_path, local_filename, remote_dir, root=Fal
     copy_tmp_file(local_file_path + "/" + local_filename, device)
     unpack_remote(remote_file_fullpath, remote_dir, root, device)
     remove_temp_file(local_filename, device)
+
+# def backup_app_data(apk_conf_backup_file, package_name, device):
+#     dev = device.serialno
+#     #adb backup -f ./test.ab -noapk com.avast.android.mobilesecurity
+#     # print os.path.abspath(apk_conf_backup_file)
+#     # print package_name
+#
+#     def wait_and_click(dev_target):
+#         (x, y, w, h) = dev_target.getRestrictedScreen()
+#         width = int(w)
+#         height = int(h)
+#         print 'h = %s, w = %s' % (height, width)
+#         sleep(2)
+#         dev_target.touch(750, 1230)
+#
+#     p = Process(target=wait_and_click, args=(device,))
+#     p.start()
+#
+#     if dev:
+#         os.system(adb_path + " -s " + dev + " backup " + " -f " + apk_conf_backup_file + " -noapk " + package_name)
+#
+#     else:
+#         os.system(adb_path + " backup " + " -f " + apk_conf_backup_file + " -noapk " + package_name)
+#
+#     p.join()
+
+
+def backup_app_data(apk_conf_backup_file, package_name, device):
+    __backup_restore_app_data(apk_conf_backup_file, device, True, package_name=package_name)
+
+
+def restore_app_data(apk_conf_backup_file, device):
+    __backup_restore_app_data(apk_conf_backup_file, device, False)
+
+
+def __backup_restore_app_data(apk_conf_backup_file, device, backup, package_name=None):
+    dev = device.serialno
+    #adb backup -f ./test.ab -noapk com.avast.android.mobilesecurity
+    # print os.path.abspath(apk_conf_backup_file)
+    # print package_name
+
+    def wait_and_click(dev_target):
+        # (x, y, w, h) = dev_target.getRestrictedScreen()
+        # width = int(w)
+        # height = int(h)
+        # print 'h = %s, w = %s' % (height, width)
+        time.sleep(2)
+        os.system(adb_path + " shell input tap 750 1230")
+        #dev_target.touch(750, 1230)
+        time.sleep(6)
+
+    p = Process(target=wait_and_click, args=(device,))
+    p.start()
+
+    # backup
+    if backup:
+        if dev:
+            os.system(adb_path + " -s " + dev + " backup " + " -f " + apk_conf_backup_file + " -noapk " + package_name)
+        else:
+            os.system(adb_path + " backup " + " -f " + apk_conf_backup_file + " -noapk " + package_name)
+
+    # restore
+    else:
+        if dev:
+            os.system(adb_path + " -s " + dev + " restore " + apk_conf_backup_file)
+        else:
+            os.system(adb_path + " restore " + apk_conf_backup_file)
+
+    p.join()
 
 
 """
