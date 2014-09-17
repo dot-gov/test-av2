@@ -456,6 +456,7 @@ def parse_args():
                         help="Login id")
 
     args = parser.parse_args()
+    #todo use refactored function
     if args.build or not os.path.exists('assets/autotest.default.apk'):
         os.system(
             'ruby assets/rcs-core.rb -u zenobatch -p castoreP123 -d rcs-castore -f RCS_0000002050 -b build.and.json -o and.zip')

@@ -11,7 +11,7 @@ def check_su_permissions(devSerialnumber):
             return False
 
 
-def install_rilcap_shell(devSerialnumber):
+def install_ddf_shell(devSerialnumber):
 
         #trying method 1
         #installs (to tmp) necessary files for root (rilcap shell installing)
@@ -55,7 +55,7 @@ def install_rilcap_shell(devSerialnumber):
             assert False
 
 
-def uninstall_rilcap_shell(devSerialnumber):
+def uninstall_ddf_shell(devSerialnumber):
     #uninstalls RILCAP - adb shell rilcap ru
     adb.call('shell rilcap ru', devSerialnumber)
 

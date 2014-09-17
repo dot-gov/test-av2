@@ -7,7 +7,7 @@ import adb
 import time
 
 RSSM_ssid = "RSSM"
-RSSM_psk = "SteveJobsSux!"
+RSSM_psk = "SteveJobsSux!_new"
 TPLINK_ssid = "TP-LINK_9EF638"
 TPLINK_psk = "wroadoaqle38lechlesw"
 

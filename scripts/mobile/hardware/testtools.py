@@ -14,6 +14,13 @@ import testmain
 import adb
 
 
+def get_which_av():
+    print 'Choose one av:'
+    print str(apk_dataLoader.get_av_list())
+    av = raw_input()
+    return av
+
+
 def main(argv):
     devices = adb.get_attached_devices()
 
@@ -60,7 +67,7 @@ def main(argv):
 
         operation = -1
 
-        while operation != "99":
+        while operation not in ["99", "69"]:
             print ''
             print '#################       OPERATIONS      #################'
             print 'What operation do you want to perform?'
@@ -82,22 +89,27 @@ def main(argv):
             print '21 - test set_server'
             print '22 - test get_client'
             print '23 - test set_client'
-            print '24 - test install'
+            print '24 - test install (test on wifi_enabler)'
             print '25 - test install_agent'
-            print '26 - test uninstall'
+            print '26 - test uninstall (test on wifi_enabler)'
             print '27 - test uninstall_agent'
-            print '28 - test execute'
+            print '28 - test execute (test on wifi_enabler)'
             print '29 - test execute_agent'
+            print '30 - test build_agent'
+            print '31 - test build_agent (overwrite)'
+            print '32 - test backup app data'
+            print '33 - test restore app data from backup'
+            print '34 - test restore app data from one of the sources'
+            print '35 - test get new apk for an av'
             print ''
             print '#################          EXIT         #################'
+            print '69 - Exit (no cleanup)!'
             print '99 - Clean & exit!'
 
             operation = raw_input()
 
             if operation == '1':
-                print 'Which av you want to retrieve?'
-                print str(apk_dataLoader.get_av_list())
-                av = raw_input()
+                av = get_which_av()
                 commands.update(av, dev)
 
             elif operation == '2':
@@ -125,9 +137,7 @@ def main(argv):
 
             elif operation == '8':
                 # TODO: andrebbe spostato il do_test
-                print 'Which av you want to test?'
-                print str(apk_dataLoader.get_av_list())
-                av = raw_input()
+                av = get_which_av()
                 do_test(device, av)
 
             elif operation == '9':
@@ -175,9 +185,28 @@ def main(argv):
                 commands.execute('wifi_enabler', dev)
             elif operation == '29':
                 commands.execute_agent(dev)
+            elif operation == '30':
+                commands.build_apk_ruby()
+            elif operation == '31':
+                commands.build_apk_ruby(rebuild=True)
+            elif operation == '32':
+                av = get_which_av()
+                commands.backup_app_data(av, device)
+            elif operation == '33':
+                av = get_which_av()
+                commands.restore_app_data(av, device)
+            elif operation == '34':
+                av = get_which_av()
+                commands.install_configuration(av, device)
+            elif operation == '35':
+                av = get_which_av()
+                commands.update_apk(av,dev)
+        if operation == '99':
+            print "Operazioni terminate, cleaning time"
+            commands.reset_device(dev)
+        elif operation == '69':
+            print "Operazioni terminate, esco senza pulire!"
 
-        print "Operazioni terminate, cleaning time"
-        commands.reset_device(dev)
         print "The end"
 
 '''
@@ -202,13 +231,15 @@ push
 '''
 
 
-def test_av(dev, antivirus_apk_instance, results):
+def test_av(device, antivirus_apk_instance, results):
     print "##################################################"
     print "#### STAGE 1 : TESTING ANTIVIRUS %s ####" % antivirus_apk_instance.apk_file
     print "##################################################"
 
+    dev = device.serialno
+
     print "#STEP 1.1: installing AV"
-    antivirus_apk_instance.full_install(dev)
+    antivirus_apk_instance.full_install(device)
 
     print "#STEP 1.2: starting AV"
     antivirus_apk_instance.start_default_activity(dev)
@@ -276,10 +307,10 @@ def do_test(device_id, av):
 
 def test_device(device, av, results):
     # extracts serial number (cannot pass an object to command line!)
-    dev = device.serialno
+    # dev = device.serialno
 
     # Starts av installation and stealth check)
-    test_av(dev, apk_dataLoader.get_apk_av(av), results)
+    test_av(device, apk_dataLoader.get_apk_av(av), results)
 
 
 if __name__ == "__main__":

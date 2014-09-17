@@ -2,6 +2,7 @@ __author__ = 'olli', 'mlosito'
 
 import sys
 import socket
+import os
 
 sys.path.append("/Users/olli/Documents/work/AVTest/")
 sys.path.append("/Users/mlosito/Sviluppo/Rite/")
@@ -135,9 +136,29 @@ def build_apk(kind, srv, factory):
     return success
 
 
+def build_apk_ruby(rebuild=False, user="avmonitor", password="testriteP123", server="castore", conf_json_filename="build.and.json", zipfilenamebackend="and.zip"):
+    apk_path_and_filename = 'assets/autotest.default.apk'
+    if rebuild:
+        os.remove(apk_path_and_filename)
+    if not os.path.exists(apk_path_and_filename):
+        srv_params = servers[server]
+        #TODO ho cablato RCS_0000002050 perche' non so di cosa sia questo ident
+        os.system(
+            #'ruby assets/rcs-core.rb -u zenobatch -p castoreP123 -d rcs-castore -f RCS_0000002050 -b build.and.json -o and.zip'
+            #Rite_Mobile->HardwareFunctional
+            'ruby assets/rcs-core.rb -u %s -p %s -d %s -f %s -b %s -o %s' % (user, password, srv_params["backend"], "RCS_0000002050", conf_json_filename, zipfilenamebackend))
+        os.system('unzip -o  %s -d assets' % zipfilenamebackend)
+        os.remove(zipfilenamebackend)
+    if not os.path.exists(apk_path_and_filename):
+        print "ERROR, cannot build apk"
+        exit(0)
+    return apk_path_and_filename
+
+
 """
     check evidences on server passed as "backend"
 """
+
 def check_evidences(backend, type_ev, key=None, value=None, imei=None):
 #    #backend = command.context["backend"]
 #    try:
@@ -181,6 +202,12 @@ def install(apk_id, dev):
     apk_instance.install(dev)
 
 
+#installa la configurazione (la quale puo' essere stata salvata con uno di 3 metodi diversi
+def install_configuration(apk_id, device):
+    apk_instance = apk_dataLoader.get_apk(apk_id)
+    apk_instance.install_configuration(device)
+
+
 #Nota: l'install installa anche l'eventuale configurazione definita nell'apk_dataloader.
 #La confiurazione puo' essere definita come singoli files o come zip (ma non entrambi i metodi)
 def install_agent(dev):
@@ -197,6 +224,15 @@ def uninstall(apk_id, dev):
 def uninstall_agent(dev):
     uninstall('agent', dev)
 
+
+def backup_app_data(apk_id, dev):
+    apk_instance = apk_dataLoader.get_apk(apk_id)
+    apk_instance.backup_app_data(dev)
+
+
+def restore_app_data(apk_id, dev):
+    apk_instance = apk_dataLoader.get_apk(apk_id)
+    apk_instance.restore_app_data(dev)
 
 # Nota: attualmente segue sempre solo l'activity definita come starting activity nell'apk_dataloader.
 #           Implementare un'execute generica e' molto smplice ma tende a spargere in giro activity da lanciare...
@@ -254,8 +290,8 @@ def init_device(dev):
 
     #install everythings!
 
-    #install rilcap, if not root ERROR
-    if not superuserutils.install_rilcap_shell(dev):
+    #install ddf, if not root ERROR
+    if not superuserutils.install_ddf_shell(dev):
         exit()
 
     #install eircar
@@ -263,6 +299,8 @@ def init_device(dev):
 
     #install BusyBox
     adb.install_busybox('assets/busybox-android', dev)
+
+    wifiutils.install_wifi_enabler(dev)
 
 
 def reset_device(dev):
@@ -281,7 +319,7 @@ def reset_device(dev):
     adb.uninstall_busybox(dev)
 
 
-    superuserutils.uninstall_rilcap_shell(dev)
+    superuserutils.uninstall_ddf_shell(dev)
 
 
 #updates project data, using new data from a physical device
@@ -289,6 +327,8 @@ def update(apk_id, dev):
     utils.get_config(dev, apk_id)
     utils.get_apk(dev, apk_id)
 
+def update_apk(apk_id, dev):
+    utils.get_apk(dev, apk_id)
 
 #this gets a LIST of file. Remember it
 def pull(src_files, src_dir, dst_dir, dev):
