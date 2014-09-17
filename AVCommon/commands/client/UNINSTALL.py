@@ -129,16 +129,14 @@ def remove_agent_startup():
             os.remove(remote_name)
 
 
-def on_rm_error(func, path, exc_info):
-    #In case of error it tries to set the file RW and to delete it
+def remove_readonly(func, path, excinfo):
     os.chmod(path, stat.S_IWRITE)
     os.unlink(path)
-
 
 def delete_build():
     logging.debug("deleting build")
     if os.path.exists("build"):
-        shutil.rmtree("build", onerror=on_rm_error)
+        shutil.rmtree("build", onerror=remove_readonly)
 
 
 def execute(vm, args):
