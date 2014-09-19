@@ -224,6 +224,16 @@ class Rcs_client:
                and op['_kind'] == 'agent' and target_id in op['path']]
         return ret
 
+    def instances_by_factory(self, deviceid, factory):
+        """ gets the instances id of an operation, matching the ident """
+        logging.debug("lookin for instances with deviceid: %s" % deviceid)
+        agents = self._call_get('agent')
+
+        ret = [op for op in agents
+               if 'stat' in op and 'device' in op['stat'] and deviceid in op['stat']['device']
+               and op['_kind'] == 'agent' and factory == op['ident']]
+        return ret
+
     def agents(self, target_id):
         """ gets the agents (agents and factories) of an operation, matching the target id """
         agents = self._call_get('agent')

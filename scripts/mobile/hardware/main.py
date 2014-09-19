@@ -75,16 +75,16 @@ def check_install(dev, results, factory=None):
     return True
 
 
-def check_instances(c, device_id, operation_id):
-    instances = c.instances_by_deviceid(device_id, operation_id)
+def check_instances(c, device_id, factory):
+    instances = c.instances_by_factory(device_id, factory)
     if not instances:
         print "no previous instances"
-    assert len(instances) <= 1;
+    assert len(instances) <= 1, "too many instances: %s" % instances ;
     for i in instances:
         print "... deleted old instance"
         c.instance_delete(i["_id"])
     time.sleep(5)
-    instances = c.instances_by_deviceid(device_id, operation_id)
+    instances = c.instances_by_factory(device_id, factory)
     assert not instances
     return instances
 
@@ -120,12 +120,12 @@ def execute_agent(dev, results):
     return True
 
 
-def sync(c, device_id, instances, operation_id):
+def sync(c, device_id, instances, factory):
     print "... sleeping for sync"
     time.sleep(60)
     for i in range(10):
         # print "operation: %s, %s" % (operation_id, group_id)
-        instances = c.instances_by_deviceid(device_id, operation_id)
+        instances = c.instances_by_factory(device_id, factory)
         if not instances:
             print "... waiting for sync"
             time.sleep(10)
@@ -325,6 +325,7 @@ def test_device(id, dev, args, results):
     build.connection.host = "rcs-castore"
     build.connection.operation = "Rite_Mobile"
     target_name = "HardwareFunctional"
+    factory = 'RCS_0000002050'
 
     if int(args.login) >= 0:
         login = "qa_android_test_%s" % args.login
@@ -340,6 +341,15 @@ def test_device(id, dev, args, results):
     assert device_id
     assert len(device_id) >= 8
 
+    if args.build or not os.path.exists('assets/autotest.default.apk'):
+        os.system(
+            'ruby assets/rcs-core.rb -u zenobatch -p castoreP123 -d rcs-castore -f %s -b build.and.json -o and.zip' % factory)
+        os.system('unzip -o  and.zip -d assets')
+        os.remove('and.zip')
+    if not os.path.exists('assets/autotest.default.apk'):
+        print "ERROR, cannot build apk"
+        exit(0)
+
     set_time(dev)
 
     set_properties(dev, device_id, results)
@@ -351,7 +361,7 @@ def test_device(id, dev, args, results):
                 return "Not logged in"
 
             operation_id, target_id = ret
-            instances = check_instances(c, device_id, operation_id)
+            instances = check_instances(c, device_id, factory)
 
             # install agent and check it's running
             if not check_install(dev, results):
@@ -361,7 +371,7 @@ def test_device(id, dev, args, results):
                 return "execution failed"
 
             # sync e verifica
-            instance_id = sync(c, device_id, instances, operation_id)
+            instance_id = sync(c, device_id, instances, factory)
 
             # rename instance
             rename_instance(c, instance_id, results)
@@ -456,14 +466,6 @@ def parse_args():
                         help="Login id")
 
     args = parser.parse_args()
-    if args.build or not os.path.exists('assets/autotest.default.apk'):
-        os.system(
-            'ruby assets/rcs-core.rb -u zenobatch -p castoreP123 -d rcs-castore -f RCS_0000002050 -b build.and.json -o and.zip')
-        os.system('unzip -o  and.zip -d assets')
-        os.remove('and.zip')
-    if not os.path.exists('assets/autotest.default.apk'):
-        print "ERROR, cannot build apk"
-        exit(0)
 
     return args
 
