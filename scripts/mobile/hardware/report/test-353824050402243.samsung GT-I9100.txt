@@ -1,0 +1,111 @@
+Installation
+	time: 2014-09-17 14:39:27.848422
+	installed: True
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 
+Device
+	device: samsung GT-I9100
+	id: 353824050402243
+	release: 4.0.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+Installation
+	time: 2014-09-17 15:00:07.209605
+	installed: True
+	executed: True
+	instance_name: Android (136) samsung GT-I9100
+	info: True
+	uptime_first:  15:06:56 up  4:55,  load average: 0.37, 0.46, 0.31
+
+	uptime_last:  15:10:45 up 3 min,  load average: 1.44, 1.86, 0.83
+
+	error: 
+	exception: 
+Device
+	device: samsung GT-I9100
+	id: 353824050402243
+	release: 4.0.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: 
+	selinux: 
+Evidences
+	evidences_first: 
+		addressbook: 56
+			telegram
+			phone
+			viber
+			facebook
+			skype
+			whatsapp
+			gmail
+		application: 1
+		calendar: 12
+		call: 0
+		camera: 13
+		chat: 193
+			telegram
+			viber
+			facebook
+			skype
+			line
+			whatsapp
+			gmail
+		device: 2
+		message: 6
+		position: 4
+		screenshot: 7
+
+	evidences_last: 
+		addressbook: 56
+			telegram
+			phone
+			viber
+			facebook
+			skype
+			whatsapp
+			gmail
+		application: 6
+		calendar: 12
+		call: 1
+			skype
+		camera: 18
+		chat: 196
+			telegram
+			viber
+			facebook
+			skype
+			line
+			whatsapp
+			gmail
+		device: 3
+		message: 6
+		position: 6
+		screenshot: 10
+
+Expected
+	call_supported: True
+	expected: ['telegram', 'android.talk', 'viber', 'facebook', 'line.android', 'skype', 'whatsapp', 'tencent.mm']
+Uninstall
+	uninstall: True
+	running: False

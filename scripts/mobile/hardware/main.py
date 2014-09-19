@@ -322,9 +322,12 @@ def check_reboot(dev):
 
 
 def test_device(id, dev, args, results):
-    build.connection.host = "rcs-castore"
+#    build.connection.host = "rcs-castore"
+#    build.connection.operation = "Rite_Mobile"
+#    target_name = "HardwareFunctional"
+    build.connection.host = "rcs-zeus-master.hackingteam.local"
     build.connection.operation = "Rite_Mobile"
-    target_name = "HardwareFunctional"
+    target_name = "Functional"
 
     if int(args.login) >= 0:
         login = "qa_android_test_%s" % args.login
@@ -459,7 +462,8 @@ def parse_args():
     #todo use refactored function
     if args.build or not os.path.exists('assets/autotest.default.apk'):
         os.system(
-            'ruby assets/rcs-core.rb -u zenobatch -p castoreP123 -d rcs-castore -f RCS_0000002050 -b build.and.json -o and.zip')
+            'ruby assets/rcs-core.rb -u avtest -p Castorep123 -d rcs-zeus-master.hackingteam.local -f RCS_0000000046 -b build.and.json -o and.zip')
+#            'ruby assets/rcs-core.rb -u avtest -p Castorep123 -d rcs-zeus-master.hackingteam.local -f RCS_0000000046 -o and.zip')
         os.system('unzip -o  and.zip -d assets')
         os.remove('and.zip')
     if not os.path.exists('assets/autotest.default.apk'):

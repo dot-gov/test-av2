@@ -1,0 +1,146 @@
+Installation
+	time: 2014-09-18 09:28:49.683381
+	installed: True
+	executed: True
+	instance_name: Android (151) samsung GT-N7100
+	info: True
+	uptime_first: up time: 2 days, 15:50:08, idle time: 6 days, 06:28:38, sleep time: 1 days, 01:41:48
+
+	uptime_last: up time: 00:03:52, idle time: 00:10:03, sleep time: 00:00:00
+
+	error: 
+	exception: 
+Device
+	device: samsung GT-N7100
+	id: 354666054979513
+	release: 4.1.1
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: 
+	selinux: 
+Evidences
+	evidences_first: 
+		addressbook: 36
+			telegram
+			phone
+			viber
+			facebook
+			skype
+			wechat
+			whatsapp
+			gmail
+		application: 1
+		calendar: 2
+		call: 0
+		camera: 8
+		chat: 125
+			telegram
+			viber
+			facebook
+			skype
+			wechat
+			whatsapp
+			line
+			gmail
+		device: 2
+		message: 10
+		position: 4
+		screenshot: 4
+
+	evidences_last: 
+		addressbook: 36
+			telegram
+			phone
+			viber
+			facebook
+			skype
+			wechat
+			whatsapp
+			gmail
+		application: 8
+		calendar: 2
+		call: 0
+		camera: 16
+		chat: 125
+			telegram
+			viber
+			facebook
+			skype
+			wechat
+			whatsapp
+			line
+			gmail
+		device: 3
+		message: 10
+		position: 6
+		screenshot: 11
+
+Expected
+	call_supported: True
+	expected: ['telegram', 'android.talk', 'viber', 'facebook', 'line.android', 'skype', 'whatsapp', 'tencent.mm']
+Uninstall
+	uninstall: True
+	running: False
+Installation
+	time: 2014-09-18 10:49:06.758149
+	installed: True
+	executed: True
+	instance_name: Android (3) samsung GT-N7100
+	info: True
+	uptime_first: up time: 01:16:06, idle time: 04:51:39, sleep time: 00:00:00
+
+	uptime_last: 
+	error: list index out of range
+	exception: 
+Device
+	device: samsung GT-N7100
+	id: 354666054979513
+	release: 4.1.1
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: False
+	su: 
+	selinux: 
+Evidences
+	evidences_first: 
+		application: 0
+		call: 0
+		camera: 0
+		chat: 0
+
+	evidences_last: 
+		addressbook: 28
+			telegram
+			phone
+			viber
+			facebook
+			skype
+			wechat
+			whatsapp
+			gmail
+		application: 2
+		calendar: 2
+		call: 0
+		camera: 1
+		chat: 124
+			viber
+			facebook
+			skype
+			wechat
+			whatsapp
+			line
+			gmail
+		device: 2
+		message: 10
+		position: 3
+		screenshot: 2
+
+Expected
+	call_supported: True
+	expected: []
+Uninstall
+	uninstall: 
+	running: 

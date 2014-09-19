@@ -159,7 +159,30 @@ VM_STATIC_ACHILLE:
     - CROP: False
     - ON_ERROR: SKIP
 
-SYSTEM_STATIC_ACHILLE:
+VM_EXPLOIT_ACHILLE:
+    - ON_ERROR: CONTINUE
+    - CALL: INIT_DISPATCH
+    - SET:
+        backend: 172.20.20.119
+        frontend: 172.20.20.119
+    - BUILD: [ scout, exploit, melt ]
+    - UNINSTALL
+    - RELOG
+    - SET:
+        backend: 172.20.20.119
+        frontend: 172.20.20.119
+
+    - BUILD: [ scout, exploit_pdf, melt ]
+    - UNINSTALL
+    - RELOG
+
+    - SET:
+        backend: 172.20.20.119
+        frontend: 172.20.20.119
+    - BUILD: [ scout, selfdel_exploit, melt ]
+
+
+SYSTEM_EXPLOIT_ACHILLE:
     - VM_ALL
     - INTERNET: False
 
@@ -173,7 +196,7 @@ SYSTEM_STATIC_ACHILLE:
         mail_recipients: [zeno@hackingteam.com, seppia@hackingteam.com, m.losito@hackingteam.com]
 
     - REPORT:
-        - VM_STATIC_ACHILLE: ['AV Invisibility Experimental', 'Soldier']
+        - VM_EXPLOIT_ACHILLE: ['AV Invisibility Experimental', 'Exploits']
 
     - CALL: VM_GET_LOG
     - CALL: END_DISPATCH

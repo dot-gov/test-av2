@@ -1,0 +1,58 @@
+Installation
+	time: 2014-09-17 17:30:36.610991
+	installed: 
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 
+Device
+	device: LGE Full JellyBean on Mako
+	id: 357541051264523
+	release: 4.2.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+Installation
+	time: 2014-09-18 12:27:46.012328
+	installed: True
+	executed: True
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 
+Device
+	device: LGE Full JellyBean on Mako
+	id: 357541051264523
+	release: 4.2.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
