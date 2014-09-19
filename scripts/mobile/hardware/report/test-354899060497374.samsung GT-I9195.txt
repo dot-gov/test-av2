@@ -1,4 +1,5 @@
 Installation
+
 	time: 2014-09-17 15:24:07.392080
 	installed: True
 	executed: True
@@ -32,8 +33,8 @@ Evidences
 		application: 1
 		calendar: 3
 		call: 0
-		camera: 0
-		chat: 31
+		camera: 5
+		chat: 25
 			telegram
 			whatsapp
 			viber
@@ -51,11 +52,12 @@ Evidences
 			skype
 			whatsapp
 			gmail
-		application: 4
+
+		application: 12
 		calendar: 3
 		call: 0
-		camera: 0
-		chat: 31
+		camera: 6
+		chat: 25
 			telegram
 			whatsapp
 			viber
@@ -68,6 +70,7 @@ Evidences
 Expected
 	call_supported: True
 	expected: ['telegram', 'android.talk', 'viber', 'line.android', 'skype', 'whatsapp']
+
 Uninstall
 	uninstall: True
 	running: False
