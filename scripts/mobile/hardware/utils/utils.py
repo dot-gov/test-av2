@@ -45,15 +45,13 @@ def get_properties(device, av, *props):
 
 
 def get_config(device, av):
-    dev = device.serialno
     apk = apk_dataLoader.get_apk_av(av)
 
-    adb.install_busybox('assets/busybox-android', dev)
-    apk.pack_app_data(dev)
-    adb.uninstall_busybox(dev)
+    adb.install_busybox('assets/busybox-android', device)
+    apk.pack_app_data(device)
+    adb.uninstall_busybox(device)
 
 
 def get_apk(device, av):
-    dev = device.serialno
     apk = apk_dataLoader.get_apk_av(av)
-    apk.retrieve_apk(dev)
+    apk.retrieve_apk(device)

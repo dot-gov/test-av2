@@ -14,8 +14,8 @@ from scripts.mobile.hardware.utils import wifiutils, superuserutils, utils
 sys.path.append("/Users/mlosito/Sviluppo/Rite/")
 sys.path.append("/Users/zeno/AVTest/")
 
-from AVAgent import build
-
+#from AVAgent import build
+from AVCommon import build_common
 
 #avs_to_test = ['avast', '360security', 'AVG']
 #avs_to_test = ['AVG']
@@ -24,9 +24,9 @@ avs_all = ['avast', '360security', 'AVG', 'avira', 'Lookout', 'Norton']
 
 
 #build.connection.host = "rcs-minotauro"
-build.connection.host = "rcs-castore"
-build.connection.user = "marco"
-build.connection.passwd = "passwordP123"
+build_common.connection.host = "rcs-castore"
+build_common.connection.user = "marco"
+build_common.connection.passwd = "passwordP123"
 
 def main():
     devices = adb.get_attached_devices()
@@ -74,14 +74,16 @@ def main():
     print "Fine."
 
 
-def test_av(dev, antivirus_apk_instance, results):
+def test_av(device, antivirus_apk_instance, results):
 
     print "##################################################"
     print "##### STAGE 1 : TESTING ANTIVIRUS %s        #####" % antivirus_apk_instance.apk_file
     print "##################################################"
 
+    dev = device.serialno
+
     print "#STEP 1.1: installing AV"
-    antivirus_apk_instance.full_install(dev)
+    antivirus_apk_instance.full_install(device)
 
     print "#STEP 1.2: starting AV"
     antivirus_apk_instance.start_default_activity(dev)
@@ -140,8 +142,8 @@ def pre_test(device):
     eicar_instance.clean(dev)
 
     #STEP 0.5: install rilcap
-    print "#STEP 0.4: install rilcap using: %s"
-    if not superuserutils.install_rilcap_shell(dev):
+    print "#STEP 0.4: install ddf using: %s"
+    if not superuserutils.install_ddf_shell(dev):
         exit()
 
     #STEP 0.6: set wifi to 'protected' network with no access to internet
@@ -172,8 +174,8 @@ def post_test(device):
     agent_instance = apk_dataLoader.get_apk('agent')
     agent_instance.clean(dev)
 
-    print "#STEP 99.3 uninstalling rilcap"
-    print device.shell('rilcap ru')
+    print "#STEP 99.3 uninstalling ddf"
+    print device.shell('ddf ru')
 
     print "#STEP 99.4 uninstalling eicar"
     eicar_instance = apk_dataLoader.get_apk('eicar')
@@ -228,7 +230,7 @@ def test_device(device, av, results):
     dev = device.serialno
 
     #Starts av installation and stealth check)
-    test_av(dev, apk_dataLoader.get_apk_av(av), results)
+    test_av(device, apk_dataLoader.get_apk_av(av), results)
 
     # print "Antivirus installed, configured and launched!"
 

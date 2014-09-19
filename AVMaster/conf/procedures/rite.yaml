@@ -150,7 +150,33 @@ SYSTEM_SOLDIER_ACHILLE:
     - CALL: VM_GET_LOG
     - CALL: END_DISPATCH
 
+VM_STATIC_ACHILLE:
+    - CROP: True
+    - ON_ERROR: CONTINUE
+    - CALL: BUILD_DESKTOP
+    - CALL: BUILD_MOBILE
+    - CALL: BUILD_EXPLOIT
+    - CROP: False
+    - ON_ERROR: SKIP
 
+SYSTEM_STATIC_ACHILLE:
+    - VM_ALL
+    - INTERNET: False
+
+    - CALL: INIT_DISPATCH
+    - SET:
+        backend: 172.20.20.119
+        frontend: 172.20.20.119
+    - CLEAN_EVIDENCES
+
+    - SET_SERVER:
+        mail_recipients: [zeno@hackingteam.com, seppia@hackingteam.com, m.losito@hackingteam.com]
+
+    - REPORT:
+        - VM_STATIC_ACHILLE: ['AV Invisibility Experimental', 'Soldier']
+
+    - CALL: VM_GET_LOG
+    - CALL: END_DISPATCH
 
 VM_SOLDIER_CASTORE:
     - BUILD: [ scout, windows, silent ]

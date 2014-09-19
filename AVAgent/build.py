@@ -39,7 +39,7 @@ MOUSEEVENTF_CLICK = MOUSEEVENTF_LEFTDOWN + MOUSEEVENTF_LEFTUP
 names = ['8169Diag', 'CCleaner', 'Linkman', 'PCSwift', 'PerfTune', 'SystemOptimizer', 'agent']
 
 start_dirs = ['C:/Users/avtest/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Startup',
-            'C:/Documents and Settings/avtest/Start Menu/Programs/Startup', 'C:/Users/avtest/Desktop']
+            'C:/Documents and Settings/avtest/Start Menu/Programs/Startup' ] #, 'C:/Users/avtest/Desktop']
 
 
 def unzip(filename, fdir):
@@ -530,6 +530,7 @@ class AgentBuild:
                     logging.debug("try to execute: %s" % filename)
                     subprocess.Popen([filename])
                     executed = True
+                    break
 
         if not executed:
             for dir in start_dirs:

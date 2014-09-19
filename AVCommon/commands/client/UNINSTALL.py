@@ -5,6 +5,7 @@ import os
 import subprocess
 import shutil
 import re
+import stat
 
 from AVCommon.logger import logging
 
@@ -128,10 +129,14 @@ def remove_agent_startup():
             os.remove(remote_name)
 
 
+def remove_readonly(func, path, excinfo):
+    os.chmod(path, stat.S_IWRITE)
+    os.unlink(path)
+
 def delete_build():
     logging.debug("deleting build")
     if os.path.exists("build"):
-        shutil.rmtree("build")
+        shutil.rmtree("build", onerror=remove_readonly)
 
 
 def execute(vm, args):
