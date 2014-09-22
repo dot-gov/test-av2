@@ -72,7 +72,7 @@ def main(argv):
             print '#################       OPERATIONS      #################'
             print 'What operation do you want to perform?'
             print '1  - get new configuration from installed av'
-            print '2  - use net RSSM'
+            print '2  - use net Fastnet'
             print '3  - use net TPLINK'
             print '4  - disable net'
             print '5  - get wifi network name'

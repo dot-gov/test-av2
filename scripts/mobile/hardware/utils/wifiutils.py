@@ -6,19 +6,27 @@ import adb
 
 import time
 
+#RSSM deprecated
 RSSM_ssid = "RSSM"
+#remember to use sigle quote in case of strange characters in password
 RSSM_psk = "SteveJobsSux!_new"
+
 TPLINK_ssid = "TP-LINK_9EF638"
+#remember to use sigle quote in case of strange characters in password
 TPLINK_psk = "wroadoaqle38lechlesw"
+
+Fastnet_ssid = "Fastnet"
+#remember to use sigle quote in case of strange characters in password
+Fastnet_psk = "'@JG2F&38ApNnbA+'"
 
 #starts wifi with TPLINK (internal network)
 def start_wifi_av_network(dev):
     start_wifi_network(TPLINK_ssid, TPLINK_psk, dev)
 
 
-#starts wifi with RSSM (OPEN TO INTERNET!!!!)
+#starts wifi with Fastnet (OPEN TO INTERNET!!!!)
 def start_wifi_open_network(dev):
-    start_wifi_network(RSSM_ssid, RSSM_psk, dev)
+    start_wifi_network(Fastnet_ssid, Fastnet_psk, dev)
 
 
 #sets NO AP on wifi config

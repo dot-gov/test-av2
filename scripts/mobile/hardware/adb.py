@@ -462,6 +462,7 @@ def __backup_restore_app_data(apk_conf_backup_file, device, backup, package_name
     # backup
     if backup:
         if dev:
+            #-shared
             os.system(adb_path + " -s " + dev + " backup " + " -f " + apk_conf_backup_file + " -noapk " + package_name)
         else:
             os.system(adb_path + " backup " + " -f " + apk_conf_backup_file + " -noapk " + package_name)
