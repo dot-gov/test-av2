@@ -1,0 +1,56 @@
+Installation
+	time: 2014-09-18 13:41:41.807241
+	installed: True
+	executed: True
+	instance_name: Android (10) samsung GT-I9000
+	info: True
+	uptime_first: up time: 22:34:00, idle time: 03:01:37, sleep time: 19:21:10
+
+	uptime_last: 
+	error: list index out of range
+	exception: 
+Device
+	device: samsung GT-I9000
+	id: 358001048505933
+	release: 2.3.6
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: 
+	selinux: 
+Evidences
+	evidences_first: 
+		addressbook: 18
+			phone
+			facebook
+			skype
+		application: 1
+		call: 0
+		camera: 0
+		chat: 21
+			facebook
+			skype
+		device: 2
+		position: 4
+
+	evidences_last: 
+		addressbook: 18
+			phone
+			facebook
+			skype
+		application: 2
+		call: 0
+		camera: 0
+		chat: 21
+			facebook
+			skype
+		device: 3
+		position: 6
+
+Expected
+	call_supported: False
+	expected: []
+Uninstall
+	uninstall: 
+	running: 

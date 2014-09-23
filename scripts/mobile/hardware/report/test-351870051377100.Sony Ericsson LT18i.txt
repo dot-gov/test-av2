@@ -1,0 +1,77 @@
+Installation
+	time: 2014-09-18 09:24:58.279884
+	installed: True
+	executed: True
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 
+Device
+	device: Sony Ericsson LT18i
+	id: 351870051377100
+	release: 2.3.4
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+Installation
+	time: 2014-09-18 11:14:16.463439
+	installed: True
+	executed: True
+	instance_name: Android (4) Sony Ericsson LT18i
+	info: 
+	uptime_first: up time: 17:18:31, idle time: 17:09:16, sleep time: 00:00:00
+
+	uptime_last: 
+	error: list index out of range
+	exception: 
+Device
+	device: Sony Ericsson LT18i
+	id: 351870051377100
+	release: 2.3.4
+	build_date: 2013-05-01T09:11:19
+Root
+	root: No
+	root_first: False
+	su: 
+	selinux: 
+Evidences
+	evidences_first: 
+		addressbook: 207
+			phone
+		application: 1
+		call: 0
+		camera: 0
+		chat: 0
+		device: 2
+		position: 2
+
+	evidences_last: 
+		addressbook: 207
+			phone
+		application: 2
+		call: 0
+		camera: 0
+		chat: 0
+		device: 3
+		position: 3
+
+Expected
+	call_supported: 
+	expected: []
+Uninstall
+	uninstall: 
+	running: 

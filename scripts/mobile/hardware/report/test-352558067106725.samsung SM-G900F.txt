@@ -1,0 +1,117 @@
+Installation
+	time: 2014-09-18 14:47:20.661798
+	installed: True
+	executed: True
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 
+Device
+	device: samsung SM-G900F
+	id: 352558067106725
+	release: 4.4.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 1
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+Installation
+	time: 2014-09-18 14:51:14.952660
+	installed: 
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 
+Device
+	device: samsung SM-G900F
+	id: 352558067106725
+	release: 4.4.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 1
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+Installation
+	time: 2014-09-18 14:52:51.848459
+	installed: True
+	executed: True
+	instance_name: Android (17) samsung SM-G900F
+	info: True
+	uptime_first: up time: 03:59:20, idle time: 03:00:23, sleep time: 00:00:00
+
+	uptime_last: up time: 00:02:11, idle time: 00:02:27, sleep time: 00:00:00
+
+	error: 
+	exception: 
+Device
+	device: samsung SM-G900F
+	id: 352558067106725
+	release: 4.4.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: 
+	selinux: 1
+Evidences
+	evidences_first: 
+		addressbook: 19
+			phone
+			gmail
+			skype
+		application: 1
+		calendar: 2
+		call: 0
+		camera: 0
+		chat: 2
+			skype
+		device: 2
+		position: 4
+		screenshot: 3
+
+	evidences_last: 
+		addressbook: 19
+			phone
+			gmail
+			skype
+		application: 1
+		calendar: 2
+		call: 0
+		camera: 0
+		chat: 2
+			skype
+		device: 3
+		position: 6
+		screenshot: 3
+
+Expected
+	call_supported: False
+	expected: ['android.talk', 'skype']
+Uninstall
+	uninstall: True
+	running: False

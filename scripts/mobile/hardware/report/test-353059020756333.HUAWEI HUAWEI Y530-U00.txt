@@ -1,0 +1,108 @@
+Installation
+	time: 2014-09-17 17:31:10.540911
+	installed: True
+	executed: True
+	instance_name: Android (146) HUAWEI HUAWEI Y530-U00
+	info: True
+	uptime_first: up time: 00:02:21, idle time: 00:01:21, sleep time: 00:00:00
+
+	uptime_last: 
+	error: list index out of range
+	exception: 
+Device
+	device: HUAWEI HUAWEI Y530-U00
+	id: 353059020756333
+	release: 4.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: 
+	selinux: 
+Evidences
+	evidences_first: 
+		addressbook: 1
+			phone
+		application: 1
+		call: 0
+		camera: 3
+		chat: 0
+		device: 2
+		position: 2
+		screenshot: 1
+
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+Installation
+	time: 2014-09-17 17:35:09.552419
+	installed: True
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 
+Device
+	device: HUAWEI HUAWEI Y530-U00
+	id: 353059020756333
+	release: 4.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+Installation
+	time: 2014-09-18 12:14:20.428889
+	installed: True
+	executed: True
+	instance_name: Android (8) HUAWEI HUAWEI Y530-U00
+	info: True
+	uptime_first: up time: 00:04:37, idle time: 00:02:41, sleep time: 00:00:00
+
+	uptime_last: 
+	error: list index out of range
+	exception: 
+Device
+	device: HUAWEI HUAWEI Y530-U00
+	id: 353059020756333
+	release: 4.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: 
+	selinux: 
+Evidences
+	evidences_first: 
+		addressbook: 1
+			phone
+		application: 1
+		call: 0
+		camera: 0
+		chat: 0
+		device: 2
+		position: 2
+
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 

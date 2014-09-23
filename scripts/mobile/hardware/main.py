@@ -324,10 +324,14 @@ def check_reboot(dev):
 
 
 def test_device(id, dev, args, results):
-    build.connection.host = "rcs-castore"
+#    build.connection.host = "rcs-castore"
+#    build.connection.operation = "Rite_Mobile"
+#    target_name = "HardwareFunctional"
+    build.connection.host = "rcs-zeus-master.hackingteam.local"
     build.connection.operation = "Rite_Mobile"
-    target_name = "HardwareFunctional"
-    factory = 'RCS_0000002050'
+    target_name = "Functional"
+#    factory = 'RCS_0000002050'
+    factory = "RCS_0000000046"
 
     if int(args.login) >= 0:
         login = "qa_android_test_%s" % args.login
@@ -468,6 +472,7 @@ def parse_args():
                         help="Login id")
 
     args = parser.parse_args()
+
 
     return args
 

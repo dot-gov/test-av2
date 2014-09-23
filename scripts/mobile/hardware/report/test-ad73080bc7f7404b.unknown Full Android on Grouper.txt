@@ -1,7 +1,7 @@
 Installation
-	time: 2014-09-17 17:30:36.610991
-	installed: 
-	executed: 
+	time: 2014-09-17 17:16:13.870888
+	installed: True
+	executed: True
 	instance_name: 
 	info: 
 	uptime_first: 
@@ -9,8 +9,8 @@ Installation
 	error: 
 	exception: 
 Device
-	device: LGE Full JellyBean on Mako
-	id: 357541051264523
+	device: unknown Full Android on Grouper
+	id: ad73080bc7f7404b
 	release: 4.2.2
 	build_date: 2013-05-01T09:11:19
 Root
@@ -28,7 +28,7 @@ Uninstall
 	uninstall: 
 	running: 
 Installation
-	time: 2014-09-18 12:27:46.012328
+	time: 2014-09-17 17:18:50.589256
 	installed: True
 	executed: True
 	instance_name: 
@@ -38,8 +38,8 @@ Installation
 	error: 
 	exception: 
 Device
-	device: LGE Full JellyBean on Mako
-	id: 357541051264523
+	device: unknown Full Android on Grouper
+	id: ad73080bc7f7404b
 	release: 4.2.2
 	build_date: 2013-05-01T09:11:19
 Root

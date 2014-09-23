@@ -1,0 +1,47 @@
+Installation
+	time: 2014-09-17 17:09:48.628122
+	installed: True
+	executed: True
+	instance_name: Android (145) TCT ALCATEL ONE TOUCH 4030D
+	info: True
+	uptime_first: up time: 07:24:34, idle time: 00:10:01, sleep time: 07:01:23
+
+	uptime_last: up time: 00:03:12, idle time: 00:01:01, sleep time: 00:00:00
+
+	error: 
+	exception: 
+Device
+	device: TCT ALCATEL ONE TOUCH 4030D
+	id: 869230012414242
+	release: 4.1.1
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: 
+	selinux: 
+Evidences
+	evidences_first: 
+		application: 1
+		call: 0
+		camera: 3
+		chat: 0
+		device: 2
+		position: 2
+		screenshot: 2
+
+	evidences_last: 
+		application: 10
+		call: 0
+		camera: 4
+		chat: 0
+		device: 3
+		position: 3
+		screenshot: 4
+
+Expected
+	call_supported: True
+	expected: ['android.talk', 'facebook', 'viber', 'skype']
+Uninstall
+	uninstall: True
+	running: False

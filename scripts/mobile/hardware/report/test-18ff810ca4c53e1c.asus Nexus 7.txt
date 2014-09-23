@@ -1,0 +1,55 @@
+Installation
+	time: 2014-09-17 15:43:46.026441
+	installed: True
+	executed: True
+	instance_name: Android (140) asus Nexus 7
+	info: True
+	uptime_first: up time: 6 days, 02:24:39, idle time: 10:42:16, sleep time: 5 days, 23:33:40
+
+	uptime_last: up time: 00:02:09, idle time: 00:04:57, sleep time: 00:00:00
+
+	error: 
+	exception: 
+Device
+	device: asus Nexus 7
+	id: 18ff810ca4c53e1c
+	release: 4.4.4
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: 
+	selinux: 
+Evidences
+	evidences_first: 
+		addressbook: 11
+			phone
+			gmail
+		application: 1
+		call: 0
+		camera: 4
+		chat: 0
+		device: 3
+		message: 11
+		position: 3
+		screenshot: 3
+
+	evidences_last: 
+		addressbook: 11
+			phone
+			gmail
+		application: 4
+		call: 0
+		camera: 5
+		chat: 0
+		device: 4
+		message: 11
+		position: 4
+		screenshot: 4
+
+Expected
+	call_supported: False
+	expected: ['facebook', 'android.talk']
+Uninstall
+	uninstall: False
+	running: False
