@@ -115,8 +115,16 @@ def main(argv):
             elif operation == '2':
                 commands.wifi('open', dev)
 
+            #hidden test: network no check
+            elif operation == '2a':
+                commands.wifi('open', dev, False)
+
             elif operation == '3':
                 commands.wifi('av', dev)
+
+            #hidden test: network no check
+            elif operation == '3a':
+                commands.wifi('av', dev, False)
 
             elif operation == '4':
                 commands.wifi('disable', dev)
