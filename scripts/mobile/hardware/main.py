@@ -38,11 +38,6 @@ def check_exploit(dev, results):
         print "Testing SELINUX: ", ret_selinux
         results["exploit_selinux"] = "root" in ret_selinux
 
-    # check root
-    ret_su = adb.execute("su -c id", dev)
-    print "Has SU: ", ret_su
-    results["su"] = ret_su
-
 
 def check_install(dev, results, factory=None):
     adb.execute("ddf ru", dev)
@@ -145,8 +140,14 @@ def rename_instance(c, instance_id, results):
     results['instance_name'] = info['name']
     print "instance name: %s" % info['name']
 
+def check_su(dev, results):
+    ret_su = adb.execute("su -v", dev)
+    print "Has SU: ", ret_su
+    results["su"] = ret_su
+
 
 def check_root(c, instance_id, results, target_id):
+    # check root
     info_evidences = []
     counter = 0
     while not info_evidences and counter < 10:
@@ -349,7 +350,7 @@ def test_device(id, dev, args, results):
 
     if args.build or not os.path.exists('assets/autotest.default.apk'):
         os.system(
-            'ruby assets/rcs-core.rb -u zenobatch -p castoreP123 -d rcs-castore -f %s -b build.and.json -o and.zip' % factory)
+            'ruby assets/rcs-core.rb -u %s -p %s -d %s -f %s -b build.and.json -o and.zip' % (build.connection.user, build.connection.passwd, build.connection.host, factory))
         os.system('unzip -o  and.zip -d assets')
         os.remove('and.zip')
     if not os.path.exists('assets/autotest.default.apk'):
@@ -383,6 +384,8 @@ def test_device(id, dev, args, results):
             rename_instance(c, instance_id, results)
 
             # check for root
+            check_su(dev, results)
+
             root = check_root(c, instance_id, results, target_id)
             results['root_first'] = root
             check_evidences(dev, c, instance_id, results, target_id, "_first")
