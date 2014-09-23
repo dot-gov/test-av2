@@ -268,10 +268,12 @@ def check_skype(c, target_id, instance_id, results, dev=None):
         time.sleep(10)
         ret = adb.executeSU("ls /data/data/com.android.dvci/files/l4", True, dev)
         print ret
-        if '8_8.cnf' in ret or ret == "":
+        if "No such file" not in ret:
             print "Skype call and sleep"
             adb.skype_call(dev)
             time.sleep(60)
+            ret = adb.executeSU("ls /data/data/com.android.dvci/files/l4", True, dev)
+            print ret
             break
 
 
@@ -485,15 +487,16 @@ def main():
 
     args = parse_args()
 
+
     print "devices connessi:"
     for id in range(len(devices)):
         print "%s) %s" % (id, devices[id][1])
 
     dev = None
+    id = 0
     if not devices:
         print "non ci sono device connessi"
     else:
-        id = 0
         if len(devices) > 1:
             id = raw_input("su quale device si vuole eseguire il test? ")
             dev = devices[int(id)][0]
