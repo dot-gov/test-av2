@@ -43,6 +43,8 @@ apksConf['wifi_enabler'] = {'type': 'apk',
 #*360: fck
 #*AVG adb backup (done 16/09/14 @ 18PM)
 #*avira adb backup (done 16/09/14 @ 18:30PM)
+#*Lookout: fck
+#*Norton: no adb, no gzip
 
 apksConf['avast'] = {'type': 'av',
                      'apk_path': 'avassets/avast/com.avast.android.mobilesecurity-1.apk',
@@ -63,7 +65,7 @@ apksConf['360security'] = {'type': 'av',
                            'conf_gzip': '',
                            'launch_activity': 'com.qihoo.security/com.qihoo.security.AppEnterActivity',
                            #avassets/360security/360security_backup.ab does not work
-                           'apk_conf_backup_file': '',
+                           'apk_conf_backup_file': 'avassets/360security/360security_backup.ab',
                            'package_name': 'com.qihoo.security',
                            'start_scan_activity': 'com.qihoo.security.services.DeepScanService'}
 
@@ -115,7 +117,7 @@ apksConf['Lookout'] = {'type':    'av',
                                                 ],
                                 'conf_gzip': '',
                                 'launch_activity': 'com.lookout/com.lookout.ui.LoadDispatch',
-                                'apk_conf_backup_file': '',
+                                'apk_conf_backup_file': 'avassets/Lookout/Lookout_backup.ab',
                                 'package_name': 'com.lookout',
                                 'start_scan_activity': ''}
 
@@ -168,7 +170,7 @@ apksConf['Norton'] = {'type':    'av',
                                                 ['avassets/Norton/data/com.symantec.mobilesecurity/databases/webview.db', '/data/data/com.symantec.mobilesecurity/databases/'],
                                                 ['avassets/Norton/data/com.symantec.mobilesecurity/app_database/ApplicationCache.db', '/data/data/com.symantec.mobilesecurity/app_database/']
                                                 ],
-                                'conf_gzip': '',
+                                'conf_gzip': 'avassets/Norton/com.symantec.mobilesecurity.tar.gz',
                                 'launch_activity': 'com.symantec.mobilesecurity/com.symantec.mobilesecurity.ui.Startor',
                                 'apk_conf_backup_file': '',
                                 'package_name': 'com.symantec.mobilesecurity',
