@@ -248,13 +248,13 @@ def execute_agent(dev):
 # Gestisce il wifi del dispositivo
 # Nota: Per imitare il funzionamento di INTERNET.py, accetta mode che indica la modalita'
 # mode: open is a net open to internet, av is open only to our servers, every other mode disables wifi
-def wifi(mode, dev):
+def wifi(mode, dev, check_connection=True):
     if mode == 'open':
-        wifiutils.start_wifi_open_network(dev)
+        wifiutils.start_wifi_open_network(dev, check_connection)
     elif mode == 'av':
-        wifiutils.start_wifi_av_network(dev)
+        wifiutils.start_wifi_av_network(dev, check_connection)
     else:
-        wifiutils.disable_wifi_network(dev)
+        wifiutils.disable_wifi_network(dev, check_connection)
 
 
 #this checks which wifi network is active and return the SSID

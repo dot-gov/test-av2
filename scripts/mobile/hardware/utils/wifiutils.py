@@ -20,13 +20,13 @@ Fastnet_ssid = "Fastnet"
 Fastnet_psk = "'@JG2F&38ApNnbA+'"
 
 #starts wifi with TPLINK (internal network)
-def start_wifi_av_network(dev):
-    start_wifi_network(TPLINK_ssid, TPLINK_psk, dev)
+def start_wifi_av_network(dev, check_connection=True):
+    start_wifi_network(TPLINK_ssid, TPLINK_psk, dev, check_connection)
 
 
 #starts wifi with Fastnet (OPEN TO INTERNET!!!!)
-def start_wifi_open_network(dev):
-    start_wifi_network(Fastnet_ssid, Fastnet_psk, dev)
+def start_wifi_open_network(dev, check_connection=True):
+    start_wifi_network(Fastnet_ssid, Fastnet_psk, dev, check_connection)
 
 
 #sets NO AP on wifi config
@@ -34,8 +34,23 @@ def disable_wifi_network(dev):
     wifi_enabler = apk_dataLoader.get_apk('wifi_enabler')
     wifi_enabler.start_default_activity(dev, "-e wifi disable")
 
+#check if connected to provided wifi network
+def check_wifi_network(ssid, dev):
+    wifi_enabler = apk_dataLoader.get_apk('wifi_enabler')
+    wifi_enabler.start_default_activity(dev, "-e wifi info")
+    log = adb.execute('logcat -d -s WifiManager', dev)
+    linelist = string.split(log, '\r\n')
+    lastline = linelist[-2:-1]
+    #print lastline
+    lastline = lastline[0]
+    #print lastline
+    if not ssid in lastline:
+        print 'Device is connected to: %s' % ssid
+        return True
+    else:
+        return False
 
-#get current wifi network
+#get current wifi network (unreliable)
 def info_wifi_network(dev):
     wifi_enabler = apk_dataLoader.get_apk('wifi_enabler')
     wifi_enabler.start_default_activity(dev, "-e wifi info")
@@ -56,13 +71,17 @@ def install_wifi_enabler(dev):
     return wifi_enabler
 
 
-def start_wifi_network(ssid, psk, dev):
+def start_wifi_network(ssid, psk, dev, check_connection=True):
     print "start_wifi_av_network"
     wifi_enabler = apk_dataLoader.get_apk('wifi_enabler')
     wifi_enabler.start_default_activity(dev, "--es SSID " + ssid + " --es psk " + psk)
     #ensures you are connected to the desired network
-    while ssid != info_wifi_network(dev):
-        time.sleep(1)
+    if check_connection:
+        while ssid != info_wifi_network(dev):
+            time.sleep(1)
+    #other method
+    # while not check_wifi_network(ssid,dev):
+    #      time.sleep(1)
 
 
 def ping_google(dev):
