@@ -292,3 +292,94 @@ Expected
 Uninstall
 	uninstall: False
 	running: False
+Installation
+	time: 2014-09-23 13:58:47.773259
+	installed: True
+	executed: True
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 
+Device
+	device: samsung GT-I9100
+	id: 359585044604160
+	release: 2.3.5
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+Installation
+	time: 2014-09-23 14:18:58.654869
+	installed: True
+	executed: True
+	instance_name: Android (31) samsung GT-I9100
+	info: True
+	uptime_first: up time: 06:08:39, idle time: 05:42:51, sleep time: 03:03:54
+
+	uptime_last: up time: 00:02:18, idle time: 00:02:20, sleep time: 00:00:00
+
+	error: 
+	exception: 
+Device
+	device: samsung GT-I9100
+	id: 359585044604160
+	release: 2.3.5
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: 3.1.1
+
+	selinux: 
+Evidences
+	evidences_first: 
+		addressbook: 11
+			telegram
+			phone
+			viber
+			wechat
+			skype
+			whatsapp
+			gmail
+		application: 1
+		call: 0
+		camera: 0
+		chat: 0
+		device: 2
+		position: 4
+
+	evidences_last: 
+		addressbook: 11
+			telegram
+			phone
+			viber
+			wechat
+			skype
+			whatsapp
+			gmail
+		application: 1
+		call: 0
+		camera: 0
+		chat: 0
+		device: 2
+		position: 4
+
+Expected
+	call_supported: False
+	expected: ['telegram', 'android.talk', 'viber', 'facebook', 'line.android', 'skype', 'whatsapp', 'tencent.mm']
+Uninstall
+	uninstall: False
+	running: False
