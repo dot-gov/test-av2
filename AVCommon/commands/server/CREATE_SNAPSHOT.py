@@ -12,6 +12,7 @@ def execute(vm, protocol, args):
     assert vm, "null vm"
 
     # TODO: check
-    vm_manager.execute(vm, "create_snapshot", args)
+    name = str(args)
+    vm_manager.execute(vm, "create_snapshot", name)
     return True, "Snapshot refreshed for VM"
 

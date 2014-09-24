@@ -11,7 +11,8 @@ def execute(vm, protocol, args):
     assert vm, "null vm"
 
     if args:
-        vm_manager.execute(vm, "revert_to_snapshot", args)
+        name = str(args)
+        vm_manager.execute(vm, "revert_named_snapshot", name)
     else:
         vm_manager.execute(vm, "revert_last_snapshot")
 
