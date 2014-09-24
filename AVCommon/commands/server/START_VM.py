@@ -73,6 +73,7 @@ def execute(vm, protocol, args):
     mq = protocol.mq
 
     check_avagent = (args == "AV_AGENT")
+    check = (args != "NO_CHECK")
 
     mq.reset_connection(vm)
     ret = vm_manager.execute(vm, "startup")
@@ -83,43 +84,44 @@ def execute(vm, protocol, args):
     max_install = 10
     max_tries = 10
 
-    for i in range(3):
-        sleep(10)
-        if vm_manager.execute(vm, "is_powered_on"):
-            for i in range(max_tries):
-                if mq.check_connection(vm):
-                    logging.debug("got connection from %s" % vm)
-                    return True, "Started VM"
+    if not check:
+        for i in range(3):
+            sleep(10)
+            if vm_manager.execute(vm, "is_powered_on"):
+                for i in range(max_tries):
+                    if mq.check_connection(vm):
+                        logging.debug("got connection from %s" % vm)
+                        return True, "Started VM"
 
-                for i in range(max_install):
-                    status = get_status(vm)
-                    logging.debug("%s, got status: %s" % (vm, status))
+                    for i in range(max_install):
+                        status = get_status(vm)
+                        logging.debug("%s, got status: %s" % (vm, status))
 
-                    if status == "INSTALL":
-                        logging.debug("waiting for the install to finish: %s/%s" % (i, max_install))
-                        sleep(60)
+                        if status == "INSTALL":
+                            logging.debug("waiting for the install to finish: %s/%s" % (i, max_install))
+                            sleep(60)
+                        else:
+                            break
+
+                    if status == "LOGGED-IN":
+                        logging.debug("%s, executing ipconfig, time: %s/%s" % (vm, i, max_tries))
+                        started = vm_manager.execute(vm, "executeCmd", "c:\\windows\\system32\\ipconfig.exe") == 0
+                        logging.debug("%s, executed ipconfig, ret: %s" % (vm, started))
+
+                    if started and not check_avagent:
+                        return True, "Started VM"
                     else:
-                        break
+                        sleep(20)
 
-                if status == "LOGGED-IN":
-                    logging.debug("%s, executing ipconfig, time: %s/%s" % (vm, i, max_tries))
-                    started = vm_manager.execute(vm, "executeCmd", "c:\\windows\\system32\\ipconfig.exe") == 0
-                    logging.debug("%s, executed ipconfig, ret: %s" % (vm, started))
+                if not started:
+                    logging.debug("%s: reboot requested" % vm)
+                    vm_manager.execute(vm, "reboot")
+                    sleep(60)
+                    continue
 
-                if started and not check_avagent:
-                    return True, "Started VM"
-                else:
-                    sleep(20)
-
-            if not started:
-                logging.debug("%s: reboot requested" % vm)
-                vm_manager.execute(vm, "reboot")
-                sleep(60)
-                continue
-
-            return False, "Not started VM"
-        else:
-            logging.debug("%s: not yet powered" % vm)
+                return False, "Not started VM"
+            else:
+                logging.debug("%s: not yet powered" % vm)
 
     return False, "Error Occurred: Timeout while starting VM"
 

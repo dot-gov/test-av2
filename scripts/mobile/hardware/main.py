@@ -10,6 +10,7 @@ import datetime
 import adb
 import argparse
 import commands
+from scripts.mobile.hardware.utils import wifiutils
 
 import package
 from AVCommon import build_common as build
@@ -141,10 +142,15 @@ def rename_instance(c, instance_id, results):
     print "instance name: %s" % info['name']
 
 def check_su(dev, results):
-    ret_su = adb.execute("su -v", dev)
-    print "Has SU: ", ret_su
-    results["su"] = ret_su
+    packages = adb.get_packages(dev)
+    supack = ["supersu", "superuser"]
+    if "com.noshufou.android.su" in packages:
+        results["su"] = "noshufou"
+    else:
+        ret_su = adb.execute("su -v", dev)
+        results["su"] = ret_su
 
+    print "Has SU: ", results["su"]
 
 def check_root(c, instance_id, results, target_id):
     # check root
@@ -201,9 +207,8 @@ def check_evidences(dev, c, instance_id, results, target_id, timestamp=""):
 
     results['uptime' + timestamp] = adb.execute("uptime", dev)
 
-    packages = adb.get_packages(dev)
-
     expected = set()
+    packages = adb.get_packages(dev)
     for i in ['skype', 'facebook', 'wechat', 'telegram', 'hangout', 'android.talk', 'line.android', 'viber',
               'tencent.mm', 'whatsapp']:
         for p in packages:
@@ -214,7 +219,9 @@ def check_evidences(dev, c, instance_id, results, target_id, timestamp=""):
 
 
 def uninstall_agent(dev, results):
-    calc = [f.split(":")[1] for f in adb.execute("pm list packages calc", dev).split() if f.startswith("package:")][0]
+    #calc = [f.split(":")[1] for f in adb.execute("pm list packages calc", dev).split() if f.startswith("package:")][0]
+    packages = adb.get_packages(dev)
+    calc = [ p for p in packages if "calc" in p and not "localc" in p][0]
     print "... executing calc: %s" % calc
     adb.executeMonkey(calc, dev)
     time.sleep(5)
@@ -325,6 +332,11 @@ def check_reboot(dev):
 
 
 def test_device(id, dev, args, results):
+
+    if args.fastnet:
+        wifiutils.install_wifi_enabler(dev)
+        commands.wifi('open', dev, check_connection = False)
+
 #    build.connection.host = "rcs-castore"
 #    build.connection.operation = "Rite_Mobile"
 #    target_name = "HardwareFunctional"
@@ -386,13 +398,13 @@ def test_device(id, dev, args, results):
             # check for root
             check_su(dev, results)
 
-            root = check_root(c, instance_id, results, target_id, dev)
+            root = check_root(c, instance_id, results, target_id)
             results['root_first'] = root
             check_evidences(dev, c, instance_id, results, target_id, "_first")
 
             check_reboot(dev)
 
-            root = check_root(c, instance_id, results, target_id, dev)
+            root = check_root(c, instance_id, results, target_id)
             if root:
                 # skype call
                 check_skype(c, target_id, instance_id, results, dev)
@@ -415,6 +427,9 @@ def test_device(id, dev, args, results):
     except Exception, ex:
         traceback.print_exc(device_id)
         results['error'] = "%s" % ex
+
+    if args.fastnet:
+        commands.uninstall('wifi_enabler', dev)
 
 
 def report_if_exists(results, param):
@@ -471,6 +486,8 @@ def parse_args():
                         help="Rebuild apk")
     parser.add_argument('-i', '--interactive', required=False, action='store_true',
                         help="Interactive execution")
+    parser.add_argument('-f', '--fastnet', required=False, action='store_true',
+                        help="Install fastnet")
     parser.add_argument('-l', '--login', required=False, default="-1",
                         help="Login id")
 

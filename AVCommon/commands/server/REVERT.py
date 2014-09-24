@@ -10,8 +10,11 @@ def execute(vm, protocol, args):
     #logging.debug("    CS Execute REVERT")
     assert vm, "null vm"
 
-    # TODO: check
-    vm_manager.execute(vm, "revert_last_snapshot")
+    if args:
+        vm_manager.execute(vm, "revert_to_snapshot", args)
+    else:
+        vm_manager.execute(vm, "revert_last_snapshot")
+
     return True, "Reverted VM"
 
 

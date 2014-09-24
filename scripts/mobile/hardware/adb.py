@@ -58,6 +58,10 @@ def skype_call(device = None):
     cmd = "am start -a android.intent.action.VIEW -d skype:echo123?call"
     return execute(cmd, device)
 
+def viber_call(device = None):
+    cmd = "am start -a android.intent.action.VIEW -d viber:"
+    return execute(cmd, device)
+
 
 def execute(cmd, device=None):
     #print "##DEBUG## calling '%s' for device %s" % (cmd, device)
@@ -105,7 +109,8 @@ def get_packages(device = None):
     packages = execute("pm list packages", device)
     p_list=[]
     for p in packages.split():
-        p_list.append(p.split(':')[1])
+        if ":" in p:
+            p_list.append(p.split(':')[1])
     return p_list
 
 def get_prop(property, device):
