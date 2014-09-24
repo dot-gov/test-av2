@@ -196,7 +196,7 @@ SYSTEM_EXPLOIT_ACHILLE:
         mail_recipients: [zeno@hackingteam.com, seppia@hackingteam.com, m.losito@hackingteam.com]
 
     - REPORT:
-        - VM_EXPLOIT_ACHILLE: ['AV Invisibility Experimental', 'Exploits']
+        - VM_EXPLOIT_ACHILLE: ['AV Invisibility Experimental', 'Exploit']
 
     - CALL: VM_GET_LOG
     - CALL: END_DISPATCH
