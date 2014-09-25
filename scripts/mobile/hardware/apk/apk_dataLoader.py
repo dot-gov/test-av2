@@ -177,8 +177,14 @@ apksConf['Norton'] = {'type':    'av',
                                 'start_scan_activity': ''}
 
 
-
-
+apksConf['fsecure'] = {'type':  'av',
+                                'apk_path': 'avassets/fsecure/com.fsecure.ms.dc-1.apk',
+                                'conf_file': '',
+                                'conf_gzip': '',
+                                'launch_activity': 'com.fsecure.ms.dc/com.fsecure.ms.ui.LauncherActivity',
+                                'apk_conf_backup_file': 'avassets/fsecure/fsecure_backup.ab',
+                                'package_name': 'com.fsecure.ms.dc',
+                                'start_scan_activity': ''}
 
 #template
 #simple apksConf['agent'] = {'type': '', 'apk_path': '', 'conf_file': '', 'launch_activity': '', 'package_name': '',...}
