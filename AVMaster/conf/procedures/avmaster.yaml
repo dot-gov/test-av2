@@ -124,8 +124,11 @@ INSTALL_ZEUS_MASTER:
 
 
 PUSH_ZEUS:
-    - VM: [ z_shard ]
-    - SET-SERVER:
+    - VM: [ z_master, z_conn, z_coll_1, z_coll_2, z_shard ]
+    - REVERT: ready
+    - START_VM: NO_CHECK
+    - SLEEP: 30
+    - SET_SERVER:
         USERNAME: administrator
         PASSWORD: rcs-test0
-    - PUSH: [ unzip.exe, assets, /RCS ]
+    - PUSH: [assets/rcs-setup-2014093001.exe]
