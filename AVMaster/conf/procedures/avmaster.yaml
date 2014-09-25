@@ -114,7 +114,7 @@ SYSTEM_SOLDIER_ACHILLE_AVMASTER:
     - CALL: END_DISPATCH
 
 
-INSTALL_ZEUS_MASTER:
+INSTALL_ZEUS:
     - VM: [ z_anon_1, z_anon_2, z_anon_3, z_anon_4, z_conn, z_coll_1, z_coll_2, z_master, z_shard ]
     - STOP_VM
     - CREATE_SNAPSHOT: v9_4
@@ -122,13 +122,20 @@ INSTALL_ZEUS_MASTER:
     - START_VM: NO_CHECK
     - SLEEP: 30
 
+#DANGEROUS loses current status
+REVERT_ZEUS:
+    - VM: [ z_anon_1, z_anon_2, z_anon_3, z_anon_4, z_conn, z_coll_1, z_coll_2, z_master, z_shard ]
+    - STOP_VM
+    - REVERT: ready
+    - START_VM: NO_CHECK
+    - SLEEP: 30
 
 PUSH_ZEUS:
     - VM: [ z_master, z_conn, z_coll_1, z_coll_2, z_shard ]
     - REVERT: ready
     - START_VM: NO_CHECK
-    - SLEEP: 30
+    - SLEEP: 60
     - SET_SERVER:
         USERNAME: administrator
         PASSWORD: rcs-test0
-    - PUSH: [assets/rcs-setup-2014093001.exe]
+    - PUSH: [ assets/rcs-setup-2014093001.exe ]
