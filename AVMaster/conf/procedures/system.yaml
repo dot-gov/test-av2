@@ -296,6 +296,28 @@ SYSTEM_DAILY_FAST:
     - CALL: VM_GET_LOG
     - CALL: END_DISPATCH
 
+
+VM_STATIC_ANDROID:
+    - CROP: True
+    - ON_ERROR: CONTINUE
+    - CALL: BUILD_MOBILE
+    - CROP: False
+    - ON_ERROR: SKIP
+
+SYSTEM_ANDROID_FAST:
+    - VM_ALL
+    - ON_ERROR: SKIP
+    - SLEEP: [1, 300]
+    - CALL: INIT_DISPATCH
+    - CALL: VM_CLEAN_EVIDENCES
+    - CALL: SET_MAIL
+    - REPORT:
+        - VM_STATIC_ANDROID: ['AV Invisibility Static', 'Static check on builds']
+
+    - UNINSTALL
+    - CALL: VM_GET_LOG
+    - CALL: END_DISPATCH
+
 SYSTEM_DAILY_POSITIVE:
     - VM_ALL
     - ON_ERROR: SKIP
