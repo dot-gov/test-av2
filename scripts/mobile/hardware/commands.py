@@ -254,7 +254,7 @@ def wifi(mode, dev, check_connection=True):
     elif mode == 'av':
         wifiutils.start_wifi_av_network(dev, check_connection)
     else:
-        wifiutils.disable_wifi_network(dev, check_connection)
+        wifiutils.disable_wifi_network(dev)
 
 
 #this checks which wifi network is active and return the SSID

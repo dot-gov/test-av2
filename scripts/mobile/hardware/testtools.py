@@ -73,12 +73,15 @@ def main(argv):
             print 'What operation do you want to perform?'
             print '1  - get new configuration from installed av'
             print '2  - use net Fastnet'
+            print '2a  - use net Fastnet - no network check'
             print '3  - use net TPLINK'
+            print '3a  - use net TPLINK - no network check'
             print '4  - disable net'
             print '5  - get wifi network name'
             print '6  - ping google'
             print '7  - test all avs'
             print '8  - test a single av'
+            print '8a  - test a single av (no update)'
             print '9 - is infected?'
             print '10 - got r00t?'
             print '11 - pull file'
@@ -115,14 +118,14 @@ def main(argv):
             elif operation == '2':
                 commands.wifi('open', dev)
 
-            #hidden test: network no check
+            #no network check
             elif operation == '2a':
                 commands.wifi('open', dev, False)
 
             elif operation == '3':
                 commands.wifi('av', dev)
 
-            #hidden test: network no check
+            #no network check
             elif operation == '3a':
                 commands.wifi('av', dev, False)
 
@@ -147,6 +150,11 @@ def main(argv):
                 # TODO: andrebbe spostato il do_test
                 av = get_which_av()
                 do_test(device, av)
+
+            elif operation == '8a':
+                # TODO: andrebbe spostato il do_test
+                av = get_which_av()
+                do_test(device, av, av_update=False)
 
             elif operation == '9':
                 if commands.check_infection(dev):
@@ -239,7 +247,7 @@ push
 '''
 
 
-def test_av(device, antivirus_apk_instance, results):
+def test_av(device, antivirus_apk_instance, results, av_update=True):
     print "##################################################"
     print "#### STAGE 1 : TESTING ANTIVIRUS %s ####" % antivirus_apk_instance.apk_file
     print "##################################################"
@@ -252,9 +260,12 @@ def test_av(device, antivirus_apk_instance, results):
     print "#STEP 1.2: starting AV"
     antivirus_apk_instance.start_default_activity(dev)
 
-    print "#STEP 1.3: going online for updates"
-    wifiutils.start_wifi_open_network(dev)
-    raw_input('Now update the av signatures and press Return to continue')
+    if av_update:
+        print "#STEP 1.3: going online for updates"
+        wifiutils.start_wifi_open_network(dev)
+        raw_input('Now update the av signatures and press Return to continue')
+    else:
+        print "#STEP 1.3: SKIPPED: no av update"
 
     print "#STEP 1.4: setting the local network to install agent"
     wifiutils.start_wifi_av_network(dev)
@@ -286,7 +297,7 @@ def test_av(device, antivirus_apk_instance, results):
     antivirus_apk_instance.clean(dev)
 
 
-def do_test(device_id, av):
+def do_test(device_id, av, av_update=True):
     # device_id = device #utils.get_deviceId(device)
     # assert device_id
     # assert len(device_id) >= 8
@@ -302,7 +313,7 @@ def do_test(device_id, av):
 
         # adds results to csv
         try:
-            ret = test_device(device_id, av, props)
+            ret = test_device(device_id, av, props, av_update)
             props["return"] = ret
             print "return: %s " % ret
         except Exception, ex:
@@ -313,12 +324,12 @@ def do_test(device_id, av):
         devicelist.writerow(props.values())
 
 
-def test_device(device, av, results):
+def test_device(device, av, results, av_update=True):
     # extracts serial number (cannot pass an object to command line!)
     # dev = device.serialno
 
     # Starts av installation and stealth check)
-    test_av(device, apk_dataLoader.get_apk_av(av), results)
+    test_av(device, apk_dataLoader.get_apk_av(av), results, av_update)
 
 
 if __name__ == "__main__":

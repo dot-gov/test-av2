@@ -147,13 +147,13 @@ class VMachine:
     def revert_named_snapshot(self, name):
         if type(name) == tuple:
             name = name[0]
-        logging.debug(type(name))
+        #logging.debug(type(name))
         return self._run_task("revert_to_named_snapshot", name)
 
     def create_snapshot(self, name):
         if type(name) == tuple:
             name = name[0]
-        logging.debug(type(name))
+        #logging.debug(type(name))
         return self._run_task("create_snapshot", name)
 
     def delete_snapshot(self, name):

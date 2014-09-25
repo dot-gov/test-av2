@@ -18,8 +18,10 @@ def execute(vm, protocol, args):
 
     if isinstance(args[0], list):
         src_files, src_dir, dst_dir = args
+        explicit = True
     elif isinstance(args[0], basestring):
         src_files, src_dir, dst_dir = args, config.basedir_server, config.basedir_av
+        explicit = False
     else:
         raise RuntimeError("wrong arguments")
 
@@ -33,6 +35,8 @@ def execute(vm, protocol, args):
         g = glob.glob(os.path.join(src_dir, src_file))
         if not g:
             logging.warn("Empty glob")
+
+        logging.debug("    file: %s" % str(g))
         # if you arrive here, then you already found the file on the filesystem.
         # typically the file have a relative path
         for f in g:
@@ -50,7 +54,8 @@ def execute(vm, protocol, args):
 
             # add all the parents to the relative_parents set, to avoid repetitions
             p = os.path.split(s)[0]
-            while p and p != src_dir:
+            while p and p != src_dir and p != "/":
+                logging.debug("    p: %s" % str(p))
                 relative_parents.add(p)
                 #print("1_relative parents")
                 p = os.path.split(p)[0]

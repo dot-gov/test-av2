@@ -63,35 +63,8 @@ results.txt
 /.idea/workspace.xml
 
 /.idea/RCSAVTest.iml
-<<<<<<< HEAD
 
 profiles_settings.xml
-=======
->>>>>>> d0f022192247f58bbbbf4241b14047f8284b9d20
 
-/scripts/mobile/hardware/avassets/360security/com.qihoo.security-1.apk
-/scripts/mobile/hardware/avassets/avast/com.avast.android.mobilesecurity-1.apk
-/scripts/mobile/hardware/avassets/AVG/com.antivirus-1.apk
-/scripts/mobile/hardware/avassets/AVG/data/com.antivirus/shared_prefs/av.xml
-/scripts/mobile/hardware/avassets/AVG/data/com.antivirus/shared_prefs/av_protection.xml
-/scripts/mobile/hardware/avassets/AVG/data/com.antivirus/shared_prefs/OCM_CAMPAIGN.xml
-/scripts/mobile/hardware/avassets/AVG/data/com.antivirus/shared_prefs/ui_configurations_prefs.xml
-/scripts/mobile/hardware/avassets/AVG/data/com.antivirus/shared_prefs/uuid.prefs.xml
-/scripts/mobile/hardware/avassets/avira/com.avira.android-1.apk
-/scripts/mobile/hardware/avassets/avira/data/com.avira.android.tar.gz
-/scripts/mobile/hardware/avassets/avira/data/com.avira.android/databases/idsafeguard
-/scripts/mobile/hardware/avassets/avira/data/com.avira.android/databases/mixpanel
-/scripts/mobile/hardware/avassets/avira/data/com.avira.android/databases/MobileSecurityDb
-/scripts/mobile/hardware/avassets/avira/data/com.avira.android/files/gaClientId
-/scripts/mobile/hardware/avassets/avira/data/com.avira.android/shared_prefs/com.avira.android.sauth.preference.xml
-/scripts/mobile/hardware/avassets/avira/data/com.avira.android/shared_prefs/com.avira.android_preferences.xml
-/scripts/mobile/hardware/avassets/avira/data/com.avira.android/shared_prefs/com.google.android.gcm.xml
-/scripts/mobile/hardware/avassets/avira/data/com.avira.android/shared_prefs/com.mixpanel.android.mpmetrics.MixpanelAPI_56191eab88e45c63fbbdc56ca6cc5dc0.xml
-/scripts/mobile/hardware/avassets/avira/data/com.avira.android/shared_prefs/idsafeguard_shared_preferences.xml
 
-/scripts/mobile/hardware/avassets/360security/360security_backup.ab
-/scripts/mobile/hardware/avassets/Lookout/com.lookout-1.apk
-/scripts/mobile/hardware/avassets/Lookout/Lookout_backup.ab
-/scripts/mobile/hardware/avassets/Norton/com.symantec.mobilesecurity-1.apk
-/scripts/mobile/hardware/avassets/Norton/com.symantec.mobilesecurity.tar.gz
-/scripts/mobile/hardware/avassets/Norton/Norton_backup.ab
+/scripts/mobile/hardware/avassets/
