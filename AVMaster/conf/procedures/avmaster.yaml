@@ -115,7 +115,7 @@ SYSTEM_SOLDIER_ACHILLE_AVMASTER:
 
 
 INSTALL_ZEUS_MASTER:
-    - VM: [ z_conn ]
+    - VM: [ z_anon_1, z_anon_2, z_anon_3, z_anon_4, z_conn, z_coll_1, z_coll_2, z_master, z_shard ]
     - STOP_VM
     - CREATE_SNAPSHOT: v9_4
     - REVERT: ready
