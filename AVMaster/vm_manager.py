@@ -2,6 +2,7 @@ import os
 import sys
 import socket
 from AVCommon.logger import logging
+from AVCommon import command
 
 sys.path.append(os.path.split(os.getcwd())[0])
 sys.path.append(os.getcwd())
@@ -38,6 +39,11 @@ def execute(vm_name, cmd, *args):
         vm = VMachine(vm_name)
         vm.get_params(vm_conf_file)
 
+        if command.context is not None:
+            vm.user = command.context.get("USERNAME", vm.user)
+            vm.passwd = command.context.get("PASSWORD", vm.user)
+
+        logging.debug("USER: %s, PASSDW: %s" % (vm.user, vm.passwd))
         assert vm.config
 
         if cmd in vmrun_cmds:
