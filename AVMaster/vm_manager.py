@@ -43,7 +43,7 @@ def execute(vm_name, cmd, *args):
             vm.user = command.context.get("USERNAME", vm.user)
             vm.passwd = command.context.get("PASSWORD", vm.user)
 
-        logging.debug("USER: %s, PASSDW: %s" % (vm.user, vm.passwd))
+        #logging.debug("USER: %s, PASSDW: %s" % (vm.user, vm.passwd))
         assert vm.config
 
         if cmd in vmrun_cmds:

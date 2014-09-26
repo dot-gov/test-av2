@@ -72,6 +72,9 @@ def execute(vm, protocol, args):
     assert vm, "null vm"
     mq = protocol.mq
 
+    if not args:
+        args = ""
+
     check_avagent = ("AV_AGENT" in args)
     no_check = ("NO_CHECK" in args)
 
