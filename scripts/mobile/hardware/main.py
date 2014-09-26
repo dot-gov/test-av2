@@ -344,7 +344,7 @@ def test_device(id, dev, args, results):
     build.connection.operation = "Rite_Mobile"
     target_name = "Functional"
 #    factory = 'RCS_0000002050'
-    factory = "RCS_0000000046"
+    factory = "RCS_0000000008"
 
     if int(args.login) >= 0:
         login = "qa_android_test_%s" % args.login
