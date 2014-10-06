@@ -32,6 +32,8 @@ def init(report = "", logname_arg = "avmonitor.log", quiet=False):
 
     if report:
         logdir = "%s/%s" % (logdir_base, report)
+        if not os.path.exists(logdir):
+            os.mkdir(logdir)
         logname = logname_arg
         if not quiet:
             setStreamLogger()

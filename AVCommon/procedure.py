@@ -34,6 +34,11 @@ class Procedure:
             self.command_list = [command.factory(c) for c in command_list]
             assert self.command_list, "empty command_list"
 
+    def dup(self):
+        copy = Procedure(self.name)
+        copy.command_list = self.command_list[:]
+        return copy
+
     def add_begin_end(self):
         if self.command_list[0].name != "BEGIN":
             self.command_list.insert(0, command.factory("BEGIN"))
@@ -45,6 +50,10 @@ class Procedure:
 
     def append_command(self, new_command):
         self.command_list.append(command.factory(new_command))
+
+    # def append_command_no_duplicates(self, new_command):
+    #     if self.command_list[-1] != command.factory(new_command):
+    #         self.command_list.append(command.factory(new_command))
 
     def insert(self, new_proc):
         self.command_list = new_proc.command_list + self.command_list

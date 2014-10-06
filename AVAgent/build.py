@@ -184,7 +184,11 @@ class AgentBuild:
             logging.debug("- Execute: " + exe)
             #subp = subprocess.Popen([exe]) #, shell=True)
             exefile = exe.replace("/","\\")
+            logging.debug("### Now launching %s with Popen - time: %s" % (exefile, time.localtime()))
             subp = subprocess.Popen(exefile, shell=True)
+            logging.debug("### Completed launching %s with Popen - time: %s" % (exefile, time.locatime()))
+
+
             if not silent:
                 add_result("+ SUCCESS SCOUT EXECUTE")
 
@@ -220,17 +224,19 @@ class AgentBuild:
             logging.debug("get_can_upgrade level: %s" % (level))
             return level
 
-    def check_level(self, instance, expected):
+    def check_level(self, instance, expected, set_result=True):
         with build_common.connection() as c:
             level = str(c.instance_level(instance))
             logging.debug("level, expected: %s got: %s" % (expected, level))
             if not level == expected:
-                add_result("+ FAILED %s LEVEL %s" % (expected.upper(), level.upper()))
+                if set_result:
+                    add_result("+ FAILED %s LEVEL %s" % (expected.upper(), level.upper()))
                 self.terminate_every_agent()
                 executed = self.execute_agent_startup()
                 return False
             else:
-                add_result("+ SUCCESS %s LEVEL" % level.upper())
+                if set_result:
+                    add_result("+ SUCCESS %s LEVEL" % level.upper())
                 return True
 
     def check_instance(self, ident):
@@ -475,9 +481,9 @@ class AgentBuild:
                         for i in range(10):
                             self._click_mouse(100 + i, 0)
 
-                        upgraded = self.check_level(instance_id, "soldier")
+                        upgraded = self.check_level(instance_id, "soldier", set_result=False)
                         if upgraded:
-                            break
+                            add_result("+ SUCCESS %s LEVEL" % level.upper())
                     if not upgraded:
                         add_result("+ FAILED UPGRADE %s" % level.upper())
                         self.terminate_every_agent()
