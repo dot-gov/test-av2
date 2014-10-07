@@ -184,9 +184,11 @@ class AgentBuild:
             logging.debug("- Execute: " + exe)
             #subp = subprocess.Popen([exe]) #, shell=True)
             exefile = exe.replace("/","\\")
-            logging.debug("### Now launching %s with Popen - time: %s" % (exefile, time.localtime()))
+            timestr1 = time.strftime("%y%m%d-%H%M%S", time.localtime(time.time()))
+            logging.debug("### Now launching %s with Popen - time: %s" % (exefile, timestr1))
             subp = subprocess.Popen(exefile, shell=True)
-            logging.debug("### Completed launching %s with Popen - time: %s" % (exefile, time.locatime()))
+            timestr2 = time.strftime("%y%m%d-%H%M%S", time.localtime(time.time()))
+            logging.debug("### Completed launching %s with Popen - time: %s" % (exefile, timestr2))
 
 
             if not silent:
