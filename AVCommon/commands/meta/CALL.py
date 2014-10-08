@@ -5,7 +5,7 @@ import command
 def execute(vm, protocol, proc_name):
     logging.debug("    CS Execute: %s" % proc_name)
 
-    proc = Procedure.procedures[proc_name]
+    proc = Procedure.procedures[proc_name].dup()
 
     assert protocol
     assert protocol.procedure

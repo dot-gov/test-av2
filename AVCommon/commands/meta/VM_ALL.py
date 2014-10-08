@@ -13,8 +13,10 @@ def execute(vm, protocol, level):
     assert command.context is not None
 
     #vm_first = "avast,avast32,avg,avg32,avira,kis,kis14,kis32,mcafee,norton,panda,comodo,eset,msessential".split(',')
-    vm_first = "avast,avast32,avg,avg32,avira15,avira,kis,kis14,kis32,kis15,mcafee,norton,comodo,eset,eset7,msessential,bitdef15,panda15".split(',')
-    vm_second = "drweb,360cn5,adaware,syscare,bitdef,panda,fsecure,gdata,iobit32,vba32,fortinet,mbytes,norman,risint,trendm,trendm15,zoneal,clamav,fprot".split(',')
+    vm_first = "avast,avast32,avg,avg32,avira,avira15,kis,kis14,kis32,kis15,mcafee,norton,comodo,eset,eset7,msessential,panda,panda15".split(',')
+    #disattivato temporaneamente norman
+    vm_second = "drweb,360cn5,adaware,ahnlab,bitdef,bitdef15,fsecure,gdata,iobit32,vba32,fortinet,mbytes,risint,syscare,trendm,trendm15,zoneal,clamav,fprot".split(',')
+
     vm_ignored = ""
 
     if level and level.lower() == "important":
