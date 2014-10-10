@@ -265,3 +265,65 @@ Expected
 Uninstall
 	uninstall: True
 	running: False
+Installation
+	time: 2014-09-26 14:11:00.435459
+	installed: True
+	executed: True
+	instance_name: android (9) samsung GT-I9505
+	info: True
+	uptime_first: up time: 04:01:21, idle time: 00:09:29, sleep time: 03:51:03
+
+	uptime_last: up time: 00:02:03, idle time: 00:02:12, sleep time: 00:00:-1
+
+	error: 
+	exception: 
+Device
+	device: samsung GT-I9505
+	id: 356845056078692
+	release: 4.4.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: 2.00:SUPERSU
+
+	selinux: 1
+Evidences
+	evidences_first: 
+		addressbook: 21
+			phone
+			gmail
+			skype
+		application: 0
+		calendar: 3
+		call: 0
+		camera: 16
+		chat: 15
+			skype
+		device: 2
+		message: 33
+		position: 4
+		screenshot: 10
+
+	evidences_last: 
+		addressbook: 21
+			phone
+			gmail
+			skype
+		application: 0
+		calendar: 3
+		call: 0
+		camera: 26
+		chat: 15
+			skype
+		device: 3
+		message: 33
+		position: 6
+		screenshot: 20
+
+Expected
+	call_supported: False
+	expected: ['android.talk', 'viber', 'skype']
+Uninstall
+	uninstall: True
+	running: False
