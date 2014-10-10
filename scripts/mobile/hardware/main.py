@@ -241,13 +241,26 @@ def uninstall_agent(dev, results):
         print "uninstall: OK"
 
 
-def check_uninstall(dev, results):
-    print ".... reboot"
-    adb.reboot(dev)
-    time.sleep(60)
+def check_uninstall(dev, results, reboot = True):
+    if reboot:
+        print ".... reboot"
+        adb.reboot(dev)
+        time.sleep(60)
+
     processes = adb.ps(dev)
     running = "still running: %s" % service in processes
     results['running'] = running
+
+    res = adb.execute("ls /sdcard/1 /sdcard/2 /system/bin/debuggered /system/bin/ddf /data/data/com.android.deviceinfo/ /data/data/com.android.dvci/ /sdcard/.lost.found /sdcard/.ext4_log /data/local/tmp/log /data/dalvik-cache/*StkDevice*  /data/dalvik-cache/*com.android.dvci* /data/app/com.android.dvci*.apk /system/app/StkDevice*.apk 2>/dev/null")
+
+    results["files_remained"] = res
+
+    #res = adb.executeSU('cat /data/system/packages.list  | grep -i -e "dvci" -e "deviceinfo" -e "StkDevice"')
+    #res += adb.executeSU('cat /data/system/packages.xml  | grep -i -e "dvci" -e "device" -e "StkDevice"')
+    res = adb.execute('pm path com.android.deviceinfo')
+    res += adb.execute('pm path com.android.dvci')
+
+    results["packages_remained"] = res
 
 def check_skype(c, target_id, instance_id, results, dev=None):
     supported = ['4.0', '4.1', '4.2', '4.3']
@@ -328,7 +341,7 @@ def check_reboot(dev, results):
     print "... reboot"
     adb.reboot(dev)
     time.sleep(60)
-    inst = adb.executeSU("pm path com.android.dvci")
+    inst = adb.execute("pm path com.android.dvci")
     if "/data/app/" in inst:
         results["persistence"] = "No";
     elif "/system/app/" in inst:
@@ -470,7 +483,7 @@ def report_test_rail(results):
     report += "Expected\n"
     report += report_if_exists(results, ["call_supported", "expected"])
     report += "Uninstall\n"
-    report += report_if_exists(results, ["uninstall", "running"])
+    report += report_if_exists(results, ["uninstall", "running", "files_remained", "packages_remained"])
 
     print report
     return report
@@ -507,7 +520,6 @@ def parse_args():
                         help="Login id")
 
     args = parser.parse_args()
-
 
     return args
 
