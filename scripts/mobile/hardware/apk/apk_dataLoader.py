@@ -45,6 +45,7 @@ apksConf['wifi_enabler'] = {'type': 'apk',
 #*avira adb backup (done 16/09/14 @ 18:30PM)
 #*Lookout: fck
 #*Norton: no adb, no gzip
+#*fsecure: adb (done 25/09/14 @ 11AM)
 
 apksConf['avast'] = {'type': 'av',
                      'apk_path': 'avassets/avast/com.avast.android.mobilesecurity-1.apk',

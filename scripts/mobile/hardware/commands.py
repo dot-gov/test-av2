@@ -142,11 +142,11 @@ def build_apk_ruby(rebuild=False, user="avmonitor", password="testriteP123", ser
         os.remove(apk_path_and_filename)
     if not os.path.exists(apk_path_and_filename):
         srv_params = servers[server]
-        #TODO ho cablato RCS_0000002050 perche' non so di cosa sia questo ident
+        #TODO RCS_0000002135 e RCS_0000002050 sono ident della factory
         os.system(
             #'ruby assets/rcs-core.rb -u zenobatch -p castoreP123 -d rcs-castore -f RCS_0000002050 -b build.and.json -o and.zip'
             #Rite_Mobile->HardwareFunctional
-            'ruby assets/rcs-core.rb -u %s -p %s -d %s -f %s -b %s -o %s' % (user, password, srv_params["backend"], "RCS_0000002050", conf_json_filename, zipfilenamebackend))
+            'ruby assets/rcs-core.rb -u %s -p %s -d %s -f %s -b %s -o %s' % (user, password, srv_params["backend"], "RCS_0000002135", conf_json_filename, zipfilenamebackend))
         os.system('unzip -o  %s -d assets' % zipfilenamebackend)
         os.remove(zipfilenamebackend)
     if not os.path.exists(apk_path_and_filename):
