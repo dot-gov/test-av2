@@ -475,6 +475,8 @@ def test_device(id, dev, args, results):
                 root = check_root(c, instance_id, results, target_id)
                 results['root_first'] = root
                 check_evidences(dev, c, instance_id, results, target_id, "_first")
+            else:
+                time.sleep(20)
 
             if "persistence" in tests:
                 check_persistence(dev, results, delay=40)
