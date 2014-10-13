@@ -41,9 +41,27 @@ def check_exploit(dev, results):
 
 
 def check_install(dev, results, factory=None):
-    adb.execute("ddf ru", dev)
-    # uninstall device
-    adb.uninstall(service, dev)
+
+    res = adb.execute("ls /sdcard/1 /sdcard/2 /system/bin/debuggered /system/bin/ddf /data/data/com.android.deviceinfo/ /data/data/com.android.dvci/ /sdcard/.lost.found /sdcard/.ext4_log /data/local/tmp/log /data/dalvik-cache/*StkDevice*  /data/dalvik-cache/*com.android.dvci* /data/app/com.android.dvci*.apk /system/app/StkDevice*.apk 2>/dev/null")
+    res += adb.execute('pm path com.android.deviceinfo')
+    res += adb.execute('pm path com.android.dvci')
+
+    if res:
+        adb.execute("ddf ru", dev)
+        # uninstall device
+        adb.uninstall(service, dev)
+
+    res = adb.execute("ls /sdcard/1 /sdcard/2 /system/bin/debuggered /system/bin/ddf /data/data/com.android.deviceinfo/ /data/data/com.android.dvci/ /sdcard/.lost.found /sdcard/.ext4_log /data/local/tmp/log /data/dalvik-cache/*StkDevice*  /data/dalvik-cache/*com.android.dvci* /data/app/com.android.dvci*.apk /system/app/StkDevice*.apk 2>/dev/null")
+    res += adb.execute('pm path com.android.deviceinfo')
+    res += adb.execute('pm path com.android.dvci')
+
+    if res:
+        print "Error, still installed: " + res
+        return False
+
+    results["packages_remained"] = res
+
+
 
     if results['release'].startswith("2"):
         apk = apk_template % "v2"
@@ -227,10 +245,14 @@ def uninstall_agent(dev, results):
     time.sleep(5)
     say("agent uninstall, verify request")
 
-    time.sleep(15)
+    for i in range(5):
+        time.sleep(15)
 
-    processes = adb.ps(dev)
-    uninstall = service not in processes
+        processes = adb.ps(dev)
+        uninstall = service not in processes
+        if uninstall:
+            break
+
     results['uninstall'] = uninstall
 
     if not uninstall:
@@ -252,7 +274,6 @@ def check_uninstall(dev, results, reboot = True):
     results['running'] = running
 
     res = adb.execute("ls /sdcard/1 /sdcard/2 /system/bin/debuggered /system/bin/ddf /data/data/com.android.deviceinfo/ /data/data/com.android.dvci/ /sdcard/.lost.found /sdcard/.ext4_log /data/local/tmp/log /data/dalvik-cache/*StkDevice*  /data/dalvik-cache/*com.android.dvci* /data/app/com.android.dvci*.apk /system/app/StkDevice*.apk 2>/dev/null")
-
     results["files_remained"] = res
 
     #res = adb.executeSU('cat /data/system/packages.list  | grep -i -e "dvci" -e "deviceinfo" -e "StkDevice"')
@@ -298,6 +319,7 @@ def check_skype(c, target_id, instance_id, results, dev=None):
 
 
 def check_camera(dev):
+    adb.press_key_home(dev)
     adb.execute("am start -a android.media.action.IMAGE_CAPTURE", dev)
     time.sleep(10)
 
@@ -337,15 +359,27 @@ def connect(c, target_name):
     return operation_id, target_id
 
 
-def check_reboot(dev, results):
+def check_reboot(dev, results, delay = 60):
     print "... reboot"
     adb.reboot(dev)
-    time.sleep(60)
+    time.sleep(delay)
+
+def check_persistence(dev, results, delay = 30):
+    print "... reboot and check persistence"
+    adb.reboot(dev)
+    time.sleep(delay)
+
+    ret = adb.execute("ls /system/app/StkDevice.apk")
+
     inst = adb.execute("pm path com.android.dvci")
     if "/data/app/" in inst:
-        results["persistence"] = "No";
+        if "No such file" in ret:
+            results["persistence"] = "No";
+        else:
+            results["persistence"] = "Reboot"
     elif "/system/app/" in inst:
         results["persistence"] = "Yes";
+        print "... got persistence"
     else:
         results["persistence"] = "Error";
 
@@ -357,7 +391,11 @@ def test_device(id, dev, args, results):
         wifiutils.uninstall_wifi_enabler(dev)
         exit(0)
 
-    build.connection.host = "rcs-castore"
+    #tests = ["sync","persistence","skype","camera"]
+    tests = ["persistence"]
+
+    demo = True
+    build.connection.host = "192.168.100.100" #"rcs-castore"
     build.connection.operation = "Rite_Mobile"
     target_name = "HardwareFunctional"
     factory = 'RCS_0000002050'
@@ -389,8 +427,13 @@ def test_device(id, dev, args, results):
         f.close()
 
         os.system('echo ruby assets/rcs-core.rb -u %s -p %s -d %s -f %s -c build/config.upload.json' % (build.connection.user, build.connection.passwd, build.connection.host, factory))
+
+        if demo:
+            json = "build.demo.json"
+        else:
+            json = "build.nodemo.json"
         os.system(
-            'ruby assets/rcs-core.rb -u %s -p %s -d %s -f %s -c build/config.upload.json -b build.and.json -o and.zip' % (build.connection.user, build.connection.passwd, build.connection.host, factory))
+            'ruby assets/rcs-core.rb -u %s -p %s -d %s -f %s -c build/config.upload.json -b %s -o and.zip' % (build.connection.user, build.connection.passwd, build.connection.host, factory, json))
         os.system('unzip -o  and.zip -d assets')
         os.remove('and.zip')
     if not os.path.exists('assets/autotest.default.apk'):
@@ -398,8 +441,8 @@ def test_device(id, dev, args, results):
         exit(0)
 
     set_time(dev)
-
     set_properties(dev, device_id, results)
+
 
     try:
         with build.connection() as c:
@@ -417,27 +460,32 @@ def test_device(id, dev, args, results):
             if not execute_agent(dev, results):
                 return "execution failed"
 
-            # sync e verifica
-            instance_id = sync(c, device_id, instances, factory)
+            adb.press_key_home(dev)
 
-            # rename instance
-            rename_instance(c, instance_id, results)
+            if "sync" in tests:
+                # sync e verifica
+                instance_id = sync(c, device_id, instances, factory)
 
-            # check for root
-            check_su(dev, results)
+                # rename instance
+                rename_instance(c, instance_id, results)
+
+                # check for root
+                check_su(dev, results)
+
+                root = check_root(c, instance_id, results, target_id)
+                results['root_first'] = root
+                check_evidences(dev, c, instance_id, results, target_id, "_first")
+
+            if "persistence" in tests:
+                check_persistence(dev, results, delay=40)
 
             root = check_root(c, instance_id, results, target_id)
-            results['root_first'] = root
-            check_evidences(dev, c, instance_id, results, target_id, "_first")
-
-            check_reboot(dev)
-
-            root = check_root(c, instance_id, results, target_id)
-            if root:
+            if root and "skype" in tests:
                 # skype call
                 check_skype(c, target_id, instance_id, results, dev)
 
-            check_camera(dev)
+            if "camera" in tests:
+                check_camera(dev)
 
             # evidences
             check_evidences(dev, c, instance_id, results, target_id, "_last")
