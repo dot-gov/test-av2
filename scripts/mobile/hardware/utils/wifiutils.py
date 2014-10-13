@@ -70,6 +70,10 @@ def install_wifi_enabler(dev):
     wifi_enabler.install(dev)
     return wifi_enabler
 
+def uninstall_wifi_enabler(dev):
+    wifi_enabler = apk_dataLoader.get_apk('wifi_enabler')
+    wifi_enabler.uninstall(dev)
+    return wifi_enabler
 
 def start_wifi_network(ssid, psk, dev, check_connection=True):
     print "start_wifi_av_network"

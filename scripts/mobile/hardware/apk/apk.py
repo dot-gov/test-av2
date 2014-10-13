@@ -38,6 +38,10 @@ class Apk(object):
         print self.apk_file
         adb.install(self.apk_file, dev)
 
+    def uninstall(self, dev):
+        print self.apk_file
+        adb.uninstall(self.package_name, dev)
+
     #installs apk and configuration
     def full_install(self, device):
         dev = device.serialno

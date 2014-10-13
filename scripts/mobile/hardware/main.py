@@ -336,6 +336,8 @@ def test_device(id, dev, args, results):
     if args.fastnet:
         wifiutils.install_wifi_enabler(dev)
         commands.wifi('open', dev, check_connection = False)
+        wifiutils.uninstall_wifi_enabler(dev)
+        exit(0)
 
 #    build.connection.host = "rcs-castore"
 #    build.connection.operation = "Rite_Mobile"
