@@ -207,10 +207,6 @@ apks = {}
 # def SET(key, value):
 #     apksConf[key] = value
 
-#TODO: boh???
-#def build()
-
-
 def get_generic_apk(apk_id):
     if apk_id in apks.keys():
         return apks[apk_id]
