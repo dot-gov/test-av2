@@ -391,7 +391,7 @@ def test_device(id, dev, args, results):
         wifiutils.uninstall_wifi_enabler(dev)
         exit(0)
 
-    #tests = ["sync","persistence","skype","camera"]
+    #tests = ["sync","persistence","root", "skype","camera"]
     tests = ["persistence"]
 
     demo = True
@@ -481,10 +481,11 @@ def test_device(id, dev, args, results):
             if "persistence" in tests:
                 check_persistence(dev, results, delay=40)
 
-            root = check_root(c, instance_id, results, target_id)
-            if root and "skype" in tests:
-                # skype call
-                check_skype(c, target_id, instance_id, results, dev)
+            if "root" in tests:
+                root = check_root(c, instance_id, results, target_id)
+                if root and "skype" in tests:
+                    # skype call
+                    check_skype(c, target_id, instance_id, results, dev)
 
             if "camera" in tests:
                 check_camera(dev)
