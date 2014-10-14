@@ -62,6 +62,13 @@ def viber_call(device = None):
     cmd = "am start -a android.intent.action.VIEW -d viber:"
     return execute(cmd, device)
 
+def open_url(url, device = None):
+    cmd = "am start -a android.intent.action.VIEW -d " + url
+    return execute(cmd, device)
+
+def press_key_home(device = None):
+    cmd = "input keyevent 3"
+    return execute(cmd, device)
 
 def execute(cmd, device=None):
     #print "##DEBUG## calling '%s' for device %s" % (cmd, device)
