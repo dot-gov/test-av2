@@ -15,6 +15,58 @@ import datetime
 
 from multiprocessing import Process
 
+# useful adb command which can be implemented
+#Unlock your Android screen
+#adb shell input keyevent 82
+
+#Lock your Android screen
+#adb shell input keyevent 6
+#adb shell input keyevent 26
+
+#Open default browser
+#adb shell input keyevent 23
+
+#Keep your android phone volume up(+)
+#adb shell input keyevent 24
+
+#Keep your android phone volume down(-)
+#adb shell input keyevent 25
+
+#Go to your Android Home screen
+#adb shell input keyevent 3
+
+#Take Screenshot from adb
+#adb shell screenshot /sdcard/test.png
+#Another Screen capture command
+#screencap [-hp] [-d display-id] [FILENAME]
+# -h: this message
+# -p: save the file as a png.
+# -d: specify the display id to capture, default 0
+
+#start clock app
+#adb shell am start com.google.android.deskclock
+
+#stop clock app
+#adb shell am force-stop com.google.android.deskclock
+
+#start wifi settings manager
+#adb shell am start -a android.intent.action.MAIN -n com.android.settings/.wifi.WifiSettings
+
+
+#adb shell am start -n com.android.settings/.wifi.WifiStatusTest
+
+
+#wifi on
+#adb shell svc wifi enable
+
+#wifi off
+#adb shell svc wifi disable
+
+#Mobile Data on
+#adb shell svc data enable
+
+#Mobile Data off
+#adb shell svc data disable
 
 #adb_path = "/Users/olli/Documents/work/android/android-sdk-macosx/platform-tools/adb"
 devices = []  # we found with usb devices actually connected
@@ -70,6 +122,49 @@ def press_key_home(device = None):
     cmd = "input keyevent 3"
     return execute(cmd, device)
 
+def press_key_enter(device = None):
+    cmd = "input keyevent 66"
+    return execute(cmd, device)
+
+
+def press_key_tab(device = None):
+    cmd = "input keyevent 61"
+    return execute(cmd, device)
+
+
+def press_key_power(device = None):
+    cmd = "input keyevent 26"
+    return execute(cmd, device)
+
+
+def is_screen_off(device = None):
+    cmd = "dumpsys power "
+    cmd = execute(cmd, device)
+    match=re.findall('mScreenOn+=\S+', cmd)
+    if len(match) > 0:
+        return match[0].lower().find("false") != -1
+    return False
+
+def wait_and_click(dev_target, x=750, y=130):
+    # (x, y, w, h) = dev_target.getRestrictedScreen()
+    # width = int(w)
+    # height = int(h)
+    # print 'h = %s, w = %s' % (height, width)
+    time.sleep(2)
+    os.system(adb_path + " shell input tap %d %d") % (x, y)
+    #dev_target.touch(750, 1230)
+    time.sleep(6)
+
+def unlock(device = None):
+    cmd = "input keyevent 82"
+    return execute(cmd, device)
+
+def set_screen_on_and_unlocked(device = None):
+    if is_screen_off(device):
+        press_key_power(device)
+    unlock(device)
+
+
 def execute(cmd, device=None):
     #print "##DEBUG## calling '%s' for device %s" % (cmd, device)
 
@@ -93,7 +188,60 @@ def ps(device=None):
     pp = execute("ps", device).strip()
     return pp
 
-def reboot(device = None):
+
+def check_remote_process_change_pid(name, timeout=1, device=None, pid=-1):
+    if pid == -1:
+        while timeout > 0:
+            pid = check_remote_process(name, device=device)
+            if pid != -1:
+                break
+            timeout -= 1
+    newPid = check_remote_process(name, timeout=timeout, device=device)
+    if newPid != -1 and newPid != pid:
+        return True
+    print "Timout checking process %s change " % name
+    return False
+
+
+def check_remote_process_died(name, timeout=1, device=None):
+    while timeout > 0:
+        processes = ps(device)
+        if len(processes) > 0 and processes.find(name) == -1:
+            return True
+        sleep(1)
+        timeout -= 1
+    print "Timout checking process %s death " % name
+    return False
+
+
+def check_remote_process(name, timeout=1, device=None):
+    while timeout > 0:
+        processes = ps(device)
+        if len(processes) > 0 and processes.find(name) != -1:
+            for i in processes.splitlines():
+                if i.find(name) != -1:
+                    return int(i.split()[1])
+        sleep(1)
+        timeout -= 1
+    print "Timout checking process %s " % name
+    return -1
+
+
+def check_remote_activity(name, timeout=1, device=None):
+    while timeout > 0:
+        cmd = "dumpsys activity"
+        cmd = execute(cmd, device)
+        match = re.findall('mFocusedActivity+:.*', cmd)
+        if len(match) > 0:
+            if match[0].find(name) != -1:
+                return True
+        sleep(1)
+        timeout -= 1
+    print "Timout checking activity %s " % name
+    return False
+
+
+def reboot(device=None):
     call("reboot", device)
 
 def get_deviceid(device=None):
@@ -216,16 +364,24 @@ def executeGui(apk, device=None):
         return False
     return True
 
+def uninstall_with_calc(device_serial=None):
+    packages = get_packages(device_serial)
+    if len(packages)>0:
+        calc = [ p for p in packages if "calc" in p and not "localc" in p][0]
+        executeMonkey(calc, device_serial)
+        return check_remote_process(calc, 5, device_serial) != -1
+    return False
 
-def uninstall(apk, device=None):
+
+def uninstall(apk, device_serial=None):
     """ Execute melted apk on phone
     @param apk class name to run (eg. com.roxy.angrybirds)
     @return True/False
     """
     #print "##DEBUG## calling uninstall for device %s" % device
-    if device:
+    if device_serial:
         proc = subprocess.call([adb_path,
-                            "-s", device,
+                            "-s", device_serial,
                             "uninstall", apk], stdout=subprocess.PIPE)
     else:
         #print "adb uninstall %s" % apk
@@ -331,6 +487,22 @@ def get_remote_file(remote_source_filename, remote_source_path, local_destinatio
     get_remote_temp_file(remote_source_filename, local_destination_path, device)
 
     remove_temp_file(remote_source_filename, device)
+
+
+def check_remote_file(remote_source_filename, remote_source_path, timeout=1, device=None):
+
+    remote_file_fullpath_src = remote_source_path + "/" + remote_source_filename
+
+    while timeout:
+        #print "checking %s" % "ls -l %s " % remote_file_fullpath_src
+        res = executeSU("ls -l %s " % remote_file_fullpath_src, root=False, device=device)
+        if len(res) > 0 and res.find("No such file or directory") == -1:
+            return True
+        sleep(1)
+        #print "result: %s" % res
+        timeout -= 1
+    print "Timout checking %s " % "ls -l %s " % remote_file_fullpath_src
+    return False
 
 
 #ML
@@ -458,15 +630,6 @@ def __backup_restore_app_data(apk_conf_backup_file, device, backup, package_name
     # print os.path.abspath(apk_conf_backup_file)
     # print package_name
 
-    def wait_and_click(dev_target):
-        # (x, y, w, h) = dev_target.getRestrictedScreen()
-        # width = int(w)
-        # height = int(h)
-        # print 'h = %s, w = %s' % (height, width)
-        time.sleep(2)
-        os.system(adb_path + " shell input tap 750 1230")
-        #dev_target.touch(750, 1230)
-        time.sleep(6)
 
     p = Process(target=wait_and_click, args=(device,))
     p.start()
