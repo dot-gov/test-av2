@@ -422,7 +422,7 @@ def test_device(id, dev, args, results):
     if args.build or not os.path.exists('assets/autotest.default.apk'):
         config = open('assets/config_mobile.json').read()
         config = config.replace("$(HOSTNAME)", build.connection.host)
-        f = open("build/config.upload.json","w")
+        f = open("build/config.upload.json", "w")
         f.write(config)
         f.close()
 
@@ -433,7 +433,7 @@ def test_device(id, dev, args, results):
         else:
             json = "build.nodemo.json"
         os.system(
-            'ruby assets/rcs-core.rb -u %s -p %s -d %s -f %s -c build/config.upload.json -b %s -o and.zip' % (build.connection.user, build.connection.passwd, build.connection.host, factory, json))
+            'ruby assets/rcs-core.rb -u %s -p %s -d %s -f %s -b %s -o and.zip' % (build.connection.user, build.connection.passwd, build.connection.host, factory, json))
         os.system('unzip -o  and.zip -d assets')
         os.remove('and.zip')
     if not os.path.exists('assets/autotest.default.apk'):

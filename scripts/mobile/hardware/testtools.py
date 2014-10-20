@@ -61,7 +61,7 @@ def main(argv):
         init = raw_input('Init everything? (y/n)')
         if init == "y":
             print "Init!"
-            commands.init_device(device.serialno)
+            commands.init_device(device.serialno, install_eicar=True)
 
         dev = device.serialno
 
