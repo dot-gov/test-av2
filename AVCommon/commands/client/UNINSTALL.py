@@ -140,11 +140,18 @@ def delete_build():
 
 
 def execute(vm, args):
+
+    if not args:
+        args = ""
+
+    no_clean_instances = ("NO_CLEAN_INSTANCES" in args)
+
     from AVAgent import av_agent
 
     # execute "calc.exe"
     execute_calc()
     # build.close(instance)
+    #if not no_clean_instances:
     close_instance()
     # kill process
     kill_rcs(vm)
@@ -155,4 +162,4 @@ def execute(vm, args):
     # sleep 20
     delete_build()
 
-    return True, "UNINSTALLED";
+    return True, "UNINSTALLED"

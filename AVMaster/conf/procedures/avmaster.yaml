@@ -102,7 +102,7 @@ SYSTEM_SOLDIER_ACHILLE_AVMASTER:
     - SET:
         backend: 172.20.20.119
         frontend: 172.20.20.119
-    - CLEAN_EVIDENCES
+    - CLEAN_EVIDENCES: [ Ok ]
 
     - SET_SERVER:
         mail_recipients: [zeno@hackingteam.com, seppia@hackingteam.com, m.losito@hackingteam.com]

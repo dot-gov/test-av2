@@ -2,7 +2,6 @@ __author__ = 'mlosito,fabrizio'
 
 
 from AVCommon.logger import logging
-import time
 import socket
 
 from AVCommon import command
@@ -25,35 +24,92 @@ def on_init(protocol, args):
     puppet = socket.gethostname()
     operation = "AOP_%s" % puppet
 
-    # FACTORY CREATION
-    #factory = create_factory(args)
-    action, platform, kind = args
+    #I pick the first 4 args, there can be a fifth one that is the server name (aka puppet)
+    action, platform, kind, final_action = args[:4]
     hostname = helper.get_hostname()
     ftype = 'desktop'
-    factory_id = '%s_%s_%s_%s' % (hostname, ftype, platform, kind)
-    logging.debug("creating factory: %s", factory_id)
-    config = "%s/config_%s.json" % (asset_dir, ftype)
-    target_id, factory_id, ident = build_common.create_new_factory(ftype, command.context["frontend"], command.context["backend"], operation, build.get_target_name(), factory_id, config)
-    factory = target_id, factory_id, ident
-    logging.debug("created factory: %s", factory)
 
-    # EXE CREATION
-    zipfilename = 'build/%s/build.zip' % platform
-    params_all = command.context["build_parameters"].copy()
-    params = params_all[platform]
-    build_common.build_agent(factory_id, hostname, params, logging.debug, zipfilename)
+    factory_name = '%s_%s_%s_%s_%s' % (hostname, ftype, platform, kind, final_action)
 
-    #unzip OVERWRITES the files
-    exe = utils.unzip(zipfilename, "build/%s" % platform, logging.debug)
+    # elite_fast and soldier_fast assumes that you already have a scout in execution.
+    # So you have not to create a new factory, you should get the current factory
+    #and also you have NOT to build, store, unzip and push anything!
+    if action not in ['elite_fast', 'soldier_fast']:
+        #FACTORY CREATION
 
-    # push_exe(exe)
-    logging.debug("Pushing file: %s", exe[0])
-    build_server_with_cache.push_file(protocol.vm, exe[0])
+        logging.debug("creating factory: %s", factory_name)
+        config = "%s/config_%s.json" % (asset_dir, ftype)
 
+        #Tries to see if there is already a factory
+        factory_data = build_common.get_factory(factory_name, command.context["backend"], operation)
 
-    args.append(puppet)
-    args.append(factory)
-    args.append(exe)
+        if factory_data is None:
+
+            target_id, factory_id, ident = build_common.create_new_factory(ftype, command.context["frontend"], command.context["backend"], operation, build.get_target_name(), factory_name, config)
+            factory = target_id, factory_id, ident
+            logging.debug("created factory: %s", factory)
+        else:
+            logging.debug("reusing factory with name: %s", factory_name)
+            factory_data = build_common.get_factory(factory_name, command.context["backend"], operation)
+            factory = (factory_data[2][1], factory_data[0], factory_data[1])
+            factory_id = factory[1]
+            logging.debug("reusing factory - ID: %s", factory_id)
+
+        # EXE CREATION
+        zipfilename = 'build_cache/build_%s_%s_%s_%s.zip' % (platform, action, kind, final_action)
+        params_all = command.context["build_parameters"].copy()
+        params = params_all[platform]
+        meltfile = params.get('meltfile', None)
+        #TODO should be: build.add_result but does not works!
+        build_common.build_agent(factory_id, hostname, params, None, zipfilename, melt=meltfile, kind=kind, use_cache=True)
+
+        #unzip OVERWRITES the files
+        exe = utils.unzip(zipfilename, "build/%s" % platform, logging.debug)
+
+        # push_exe(exe)
+        logging.debug("Pushing file: %s", exe[0])
+        build_server_with_cache.push_file(protocol.vm, exe[0])
+
+    else:
+        logging.debug("reusing factory: %s", factory_name)
+        factory_data = build_common.get_factory(factory_name, command.context["backend"], operation)
+        factory = (factory_data[2][1], factory_data[0], factory_data[1])
+        logging.debug("reusing factory - DETAILS: %s", factory)
+        #no need for factory
+        #factory = "aa", "bb", "cc"
+        #factory_id = factory_data[0] # also is factory[1]
+        #logging.debug("factory_id for buildinge: %s", factory_id)
+        exe = "no-exe-for-elite_fast-or-soldier_fast"
+
+    #no puppet
+    if len(args) < 4:
+        logging.error("Wrong args number. Args: %s", str(args))
+        return False
+    if len(args) == 4:
+        args.append(puppet)
+        args.append(factory)
+        args.append(exe)
+    #puppet but no other params
+    elif len(args) == 5:
+        args[4] = puppet
+        args.append(factory)
+        args.append(exe)
+    #puppet and factory
+    elif len(args) == 6:
+        args[4] = puppet
+        args[5] = factory
+        args.append(exe)
+    #there are only old params
+    else:
+        args[4] = puppet
+        args[5] = factory
+        args[6] = exe
+
+    # #args.append(puppet)
+    # if len(args) == 5:
+    #     args.append(factory)
+    # if len(args) == 6:
+    #     args.append(exe)
 
     return True
 
@@ -68,7 +124,7 @@ def on_answer(vm, success, answer):
 
 def execute(vm, args):
     """ client side, returns (bool,*) """
-    logging.debug("    BUILD %s" % args)
+    logging.debug("    BUILD SRV (CLIENT SIDE) - Args: %s" % args)
     assert vm, "null vm"
     assert command.context, "Null context"
 
@@ -82,7 +138,7 @@ def execute(vm, args):
     report = command.context["report"]
 
     logging.debug("args: %s", args)
-    action, platform, kind, puppet, factory, exe = args
+    action, platform, kind, final_action, puppet, factory, exe = args
 
     operation = "AOP_%s" % puppet
 
@@ -115,6 +171,7 @@ def execute(vm, args):
     args.factory = factory
     args.exe = exe
     args.server_side = True
+    args.final_action = final_action
 
     results, success, errors = build.build(args, report)
 

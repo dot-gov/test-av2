@@ -131,14 +131,25 @@ def check_internet(address, queue):
     queue.put(ret)
 
 
-def get_target_name():
-    return 'VM_%s' % helper.get_hostname()
+def get_target_name(build_server=False, puppet="avmaster"):
+    if build_server:
+        return 'VM_%s' % puppet
+    else:
+        return 'VM_%s' % helper.get_hostname()
+
+
+def terminate_every_agent():
+    logging.debug("Killing every agent...T1000 mode")
+    for name in names:
+        name_exe = name + ".exe"
+        logging.debug(" - killing agent %s" % name_exe)
+        os.system("taskkill /F /T /IM %s" % name_exe)
 
 
 class AgentBuild:
     def __init__(self, backend, frontend=None, platform='windows', kind='silent',
                  ftype='desktop', blacklist=[], soldierlist=[], param=None,
-                 puppet="puppet", asset_dir="AVAgent/assets", factory=None, server_side=False):
+                 puppet="puppet", asset_dir="AVAgent/assets", factory=None, server_side=False, final_action="unknown"):
         self.kind = kind
         self.host = (backend, frontend)
 
@@ -153,6 +164,7 @@ class AgentBuild:
         self.param = param
         self.factory = factory
         self.server_side = server_side
+        self.final_action = final_action
 
         logging.debug("DBG blacklist: %s" % self.blacklist)
         logging.debug("DBG soldierlist: %s" % self.soldierlist)
@@ -219,11 +231,11 @@ class AgentBuild:
         except:
             logging.exception("cannot get usertime")
 
-
-    def get_can_upgrade(self, instance):
+    def get_can_upgrade(self, instance_id):
         with build_common.connection() as c:
-            level = str(c.instance_can_upgrade(instance))
-            logging.debug("get_can_upgrade level: %s" % (level))
+            logging.debug("instance %s - getting get_can_upgrade level" % instance_id)
+            level = str(c.instance_can_upgrade(instance_id))
+            logging.debug("get_can_upgrade level: %s" % level)
             return level
 
     def check_level(self, instance, expected, set_result=True):
@@ -232,7 +244,7 @@ class AgentBuild:
             logging.debug("level, expected: %s got: %s" % (expected, level))
             if not level == expected:
                 if set_result:
-                    add_result("+ FAILED %s LEVEL %s" % (expected.upper(), level.upper()))
+                    add_result("+ FAILED EXPECTED LEVEL: %s BUT GOT LEVEL: %s" % (expected.upper(), level.upper()))
                 self.terminate_every_agent()
                 executed = self.execute_agent_startup()
                 return False
@@ -241,25 +253,30 @@ class AgentBuild:
                     add_result("+ SUCCESS %s LEVEL" % level.upper())
                 return True
 
-    def check_instance(self, ident):
+    def check_instance(self, ident, device=None):
         with build_common.connection() as c:
-            instances = c.instances(ident)
-            logging.debug("DBG instances: %s" % instances)
-            logging.debug("DBG rcs: %s" % str(build_common.connection.rcs))
 
-            assert len(instances) <= 1, "too many instances"
+            if device is None:
+                instances_id = c.instances(ident)
+                logging.debug("DBG instances_id: %s" % instances_id)
+            else:
+                instances_id = c.instances_by_deviceid_and_ident(device, ident)
+                logging.debug("DBG instances_id: %s - device: %s, ident:%s" % (instances_id, device, ident))
 
-            if len(instances) == 1:
+            #logging.debug("DBG rcs: %s" % str(build_common.connection.rcs))
+
+            #assert len(instances) <= 1, "too many instances"
+
+            if len(instances_id) == 1:
                 add_result("+ SUCCESS SCOUT SYNC")
-                c.instance = instances[0]
-                return instances[0]
-            elif len(instances) > 1:
+                c.instance = instances_id[0]
+                return instances_id[0]
+            elif len(instances_id) > 1:
                 add_result("+ FAILED SCOUT SYNC, TOO MANY INSTANCES")
-                c.instance = instances[0]
-                return instances[0]
+                c.instance = instances_id[0]
+                return instances_id[0]
 
             add_result("+ NO SCOUT SYNC")
-            # self._
             return None
 
     @DeprecationWarning
@@ -357,11 +374,16 @@ class AgentBuild:
 
     def execute_soldier_fast(self, instance_id = None, fast = True):
 
+        logging.debug("- instance_id: %s" % instance_id)
+
         if not instance_id:
+            logging.debug("No instance_id, so I'll get it from connection")
             with build_common.connection() as c:
-                instance_id, target_id = get_instance(c)
+                instance_id, target_id = get_instance(c, device=helper.get_hostname(), build_server=self.server_side, puppet=self.prefix)
+            logging.debug("- instance_id: %s, target_id: %s" % (instance_id, target_id))
+
         if not instance_id:
-            logging.debug("- exiting execute_soldier because did't sync")
+            add_result("+ FAILED NO INSTANCE_ID")
             return
 
         level = self.get_can_upgrade(instance_id)
@@ -370,7 +392,7 @@ class AgentBuild:
                 add_result("+ SUCCESS BLACKLIST: %s" % level)
             else:
                 add_result("+ FAILED CANUPGRADE: %s" % level)
-            return #TODO rimettere
+            return
 
         logging.debug("- Try upgrade to soldier")
         upgradable = self._upgrade(instance_id, force_soldier=True)
@@ -390,11 +412,15 @@ class AgentBuild:
 
     def execute_elite_fast(self, instance_id = None, fast = True):
 
+        logging.debug("- instance_id: %s" % instance_id)
+
         if not instance_id:
+            logging.debug("No instance_id, so I'll get it from connection")
             with build_common.connection() as c:
-                instance_id, target_id = get_instance(c)
+                instance_id, target_id = get_instance(c, device=helper.get_hostname(), build_server=self.server_side, puppet=self.prefix)
+                logging.debug("- instance_id: %s, target_id: %s" % (instance_id or 'NO_INSTANCE', target_id or 'NO_TARGET'))
         if not instance_id:
-            add_result("+ FAILED DID NOT SYNC")
+            add_result("+ FAILED NO INSTANCE_ID")
             logging.debug("- exiting execute_elite_fast because did't sync")
             return
 
@@ -402,6 +428,8 @@ class AgentBuild:
         if level in ["elite", "soldier"]:
             if self.hostname in self.blacklist:
                 add_result("+ FAILED ALLOW BLACKLISTED")
+                logging.debug("- Uninstalling and closing instance: %s" % instance_id)
+                self.uninstall(instance_id)
                 return
         else: #error
             if self.hostname in self.blacklist:
@@ -411,12 +439,16 @@ class AgentBuild:
                     add_result("+ FAILED CANUPGRADE, NO DEVICE EVIDENCE")
                 else:
                     add_result("+ FAILED CANUPGRADE: %s" % level)
+            logging.debug("- Uninstalling and closing instance: %s" % instance_id)
+            self.uninstall(instance_id)
             return
 
         logging.debug("- Try upgrade to %s" % level)
         upgradable = self._upgrade(instance_id)
         if not upgradable:
             add_result("+ FAILED UPGRADE")
+            logging.debug("- Uninstalling and closing instance: %s" % instance_id)
+            self.uninstall(instance_id)
             return
 
         logging.debug("DBG %s in %s and %s" % (self.hostname, self.blacklist, self.soldierlist))
@@ -426,10 +458,15 @@ class AgentBuild:
                 add_result("+ SUCCESS SOLDIER BLACKLISTED")
             else:
                 add_result("+ FAILED ELITE UPGRADE")
+
+            logging.debug("- Uninstalling and closing instance: %s" % instance_id)
+            self.uninstall(instance_id)
             return
         else:
             if self.hostname in self.soldierlist:
                 add_result("+ FAILED SOLDIER BLACKLISTED")
+                logging.debug("- Uninstalling and closing instance: %s" % instance_id)
+                self.uninstall(instance_id)
                 return
 
         return self.check_upgraded(instance_id, level, fast)
@@ -486,6 +523,7 @@ class AgentBuild:
                         upgraded = self.check_level(instance_id, "soldier", set_result=False)
                         if upgraded:
                             add_result("+ SUCCESS %s LEVEL" % level.upper())
+                            break
                     if not upgraded:
                         add_result("+ FAILED UPGRADE %s" % level.upper())
                         self.terminate_every_agent()
@@ -500,7 +538,7 @@ class AgentBuild:
             sleep(5 * 60)
             logging.debug("- %s, uninstall: %s" % (level, time.ctime()))
             #sleep(60)
-            self.uninstall(instance_id)
+            # self.uninstall(instance_id)
             sleep(60)
             if upgraded:
                 add_result("+ SUCCESS %s UNINSTALLED" % level.upper())
@@ -508,6 +546,9 @@ class AgentBuild:
             output = self._list_processes()
             logging.debug(output)
             add_result("+ FAILED %s INSTALL" % level.upper())
+
+        logging.debug("- Uninstalling and closing instance: %s" % instance_id)
+        self.uninstall(instance_id)
 
         logging.debug("- Result: %s" % upgraded)
         logging.debug("- sending Results to Master")
@@ -554,11 +595,6 @@ class AgentBuild:
         """ build and execute the  """
         factory_id, ident, exe = self.execute_pull()
 
-        # TODO: e' davvero inutile, no?
-        # new_exe = "build\\scout.exe"
-        #
-        # shutil.copy(exe, new_exe)
-
         logging.debug("execute_scout: %s" % exe)
 
         self._execute_build(exe)
@@ -573,6 +609,7 @@ class AgentBuild:
         logging.debug("- Scout, Wait for 5 minutes: %s" % time.ctime())
         sleep(300)
 
+
         for tries in range(1, 10):
             logging.debug("- Scout, Trigger sync for 30 seconds, try %s" % tries)
             self._trigger_sync(timeout=30)
@@ -580,7 +617,11 @@ class AgentBuild:
             logging.debug("- Scout, wait for 1 minute: %s" % time.ctime())
             sleep(60 * 1)
 
-            instance_id = self.check_instance(ident)
+            #logging.debug("- self.server_side: %s" % self.server_side)
+            if self.server_side:
+                instance_id = self.check_instance(ident, device=helper.get_full_hostname())
+            else:
+                instance_id = self.check_instance(ident)
             if instance_id:
                 break
 
@@ -591,6 +632,7 @@ class AgentBuild:
             add_result("+ FAILED SCOUT SYNC")
             output = self._list_processes()
             logging.debug(output)
+            return None
         else:
             self.check_level(instance_id, "scout")
             if self.kind == "melt":
@@ -608,19 +650,24 @@ class AgentBuild:
                 except:
                     pass
 
+            if self.kind == "melt":
+                logging.debug("- melt, uninstall: %s" % (time.ctime()))
+                #sleep(60)
+                self.uninstall(instance_id)
+
         logging.debug("- Result: %s" % instance_id)
         return instance_id
 
-    def execute_pull_server(self):
+    #this is executed  ONLY when the build IS NOT A BUILD_SRV
+    def execute_pull_client(self):
         """ build and execute the build without extraction and static check """
 
         logging.debug("- Host: %s %s\n" % (self.hostname, time.ctime()))
         operation = build_common.connection.operation
         target = get_target_name()
         if not self.factory:
-            # desktop_exploit_melt, desktop_scout_
-            factory = '%s_%s_%s_%s' % (
-                self.hostname, self.ftype, self.platform, self.kind)
+            factory = '%s_%s_%s_%s_%s' % (
+                self.hostname, self.ftype, self.platform, self.kind, self.final_action)
         else:
             factory = self.factory
 
@@ -665,10 +712,10 @@ class AgentBuild:
         if self.server_side:
             # logging.debug("factory = %s" % self.factory)
             target_id, factory_id, ident = self.factory
-            # TODO: il file per ora e' cablato per il caso server side
+            #il file e' cablato per il caso server side
             exe = "C:\\AVTest\\AVAgent\\buildsrv.exe"
         else:
-            factory_id, ident, zipfilename = self.execute_pull_server()
+            factory_id, ident, zipfilename = self.execute_pull_client()
             exe = self._execute_extraction_and_static_check(zipfilename)
 
         return factory_id, ident, exe
@@ -704,6 +751,7 @@ class AgentBuild:
 results = []
 report_send = None
 
+
 def add_result(result):
     global results, report_send
     logging.debug(result)
@@ -714,6 +762,7 @@ def add_result(result):
 
 internet_checked = False
 
+
 # args: platform_type, backend, frontend, kind, blacklist
 def execute_agent(args, level, platform):
     """ starts the vm and execute elite,scout or pull, depending on the level """
@@ -722,8 +771,16 @@ def execute_agent(args, level, platform):
     ftype = args.platform_type
     logging.debug("DBG ftype: %s" % ftype)
 
-    vmavtest = AgentBuild(args.backend, args.frontend,
-                          platform, args.kind, ftype, args.blacklist, args.soldierlist, args.param, args.puppet, args.asset_dir, args.factory, args.server_side)
+    if args.server_side:
+        vmavtest = AgentBuild(args.backend, frontend=args.frontend,
+                        platform=platform, kind=args.kind, ftype=ftype, blacklist=args.blacklist,
+                        soldierlist=args.soldierlist, param=args.param, puppet=args.puppet, asset_dir=args.asset_dir,
+                        factory=args.factory, server_side=args.server_side, final_action=args.final_action)
+    else:
+        vmavtest = AgentBuild(args.backend, frontend=args.frontend,
+                        platform=platform, kind=args.kind, ftype=ftype, blacklist=args.blacklist,
+                        soldierlist=args.soldierlist, param=args.param, puppet=args.puppet, asset_dir=args.asset_dir,
+                        factory=args.factory, server_side=args.server_side)
 
     """ starts a scout """
     if socket.gethostname().lower() not in args.nointernetcheck:
@@ -745,8 +802,9 @@ def execute_agent(args, level, platform):
                 logging.warn("Server errors")
 
             #add_result("+ SUCCESS SERVER CONNECT")
+            #deleted: "pull_server": vmavtest.execute_pull_client,
             action = {"elite": vmavtest.execute_elite, "scout": vmavtest.execute_scout,
-                      "pull": vmavtest.execute_pull, "pull_server": vmavtest.execute_pull_server, "elite_fast": vmavtest.execute_elite_fast,
+                      "pull": vmavtest.execute_pull, "elite_fast": vmavtest.execute_elite_fast,
                       "soldier_fast": vmavtest.execute_soldier_fast, "soldier": vmavtest.execute_soldier }
             sleep(5)
             action[level]()
@@ -756,16 +814,22 @@ def execute_agent(args, level, platform):
 
     return True
 
-def get_instance(client, imei=None):
-    print 'passed imei to get_isntance ', imei
+def get_instance(client, device=None, build_server=False, puppet=None):
+    print 'passed imei to get_isntance ', device
     #logging.debug("client: %s" % client)
     operation_id, group_id = client.operation(build_common.connection.operation)
-    target = get_target_name()
+
+
+
+    if build_server:
+        target = get_target_name(build_server=build_server, puppet=puppet)
+    else:
+        target = get_target_name()
 
     targets = client.targets(operation_id, target)
 
     if len(targets) != 1:
-        return False, "not one target: %s" % len(targets)
+        return False, "not one target: %s, target name: %s, operation_id: %s, group_id:%s, operation name: %s" % (len(targets), target, operation_id, group_id, build_common.connection.operation)
 
     target_id = targets[0]
     instances = client.instances_by_target_id(target_id)
@@ -775,7 +839,7 @@ def get_instance(client, imei=None):
     if len(instances) == 0:
         return False, "no open instances"
 
-    if not imei:
+    if not device:
         print "not imei"
         if len(instances) > 1:
             #return False, "not one instance: %s" % len(instances)
@@ -789,8 +853,9 @@ def get_instance(client, imei=None):
     else:
         #print "instance 0: ", instances[0]
         try:
-            instance = [ inst for inst in instances if inst["stat"]['device'] == imei][0]
+            instance = [ inst for inst in instances if inst["stat"]['device'].lower().endswith(device.lower())][0]
         except:
+            logging.debug("No instance found for device: %s - Returning None, None" % device)
             return None, None
 
     instance_id = instance['_id']
@@ -807,6 +872,7 @@ def check_evidences(backend, type_ev, key=None, value=None):
     with build_common.connection() as client:
         logging.debug("connected")
 
+        #instance_id, target_id = get_instance(c, self.server_side, self.prefix, device=helper.get_hostname())
         instance_id, target_id = get_instance(client)
         print "on build instance_id: ", instance_id
         if not instance_id:
@@ -841,7 +907,7 @@ def uninstall(backend):
     build_common.connection.host = backend
 
     target = get_target_name()
-    logging.debug("target: %s" % (target))
+    logging.debug("target: %s" % target)
 
     with build_common.connection() as client:
         logging.debug("connected")
@@ -852,23 +918,60 @@ def uninstall(backend):
             return False, "not one target: %s" % len(targets)
 
         target_id = targets[0]
-        instances = client.instances_by_target_id(target_id)
-        #logging.debug("found these instances: %s" % instances)
+        #instances = client.instances_by_target_id(target_id)
+        instances = client.instances_by_deviceid_and_ident(target_id, device=helper.get_full_hostname())
+
+        logging.debug("found these instances: %s" % instances)
         if len(instances) != 1:
             logging.warn("more than one instance")
 
         for instance in instances:
             instance_id = instance['_id']
             target_id = instance['path'][1]
-            #logging.debug('closing instance: %s' % instance)
+            logging.debug('closing instance: %s' % instance)
             client.instance_close(instance_id)
         return True, "Instance closed"
 
-def clean(backend):
-    logging.debug("- Clean Server: %s" % (backend))
+# def clean_factories_and_instances(backend):
+#     logging.debug("- Clean Server: %s" % (backend))
+#     build_common.connection.host = backend
+#
+#     target = get_target_name()
+#     logging.debug("target: %s" % target)
+#
+#     with build_common.connection() as client:
+#         logging.debug("connected")
+#
+#         operation_id, group_id = client.operation(build_common.connection.operation)
+#         targets = client.targets(operation_id, target)
+#         if len(targets) != 1:
+#             return False, "not one target: %s" % len(targets)
+#
+#         target_id = targets[0]
+#         instances = client.instances_by_deviceid_and_ident(target_id, device=helper.get_full_hostname())
+#
+#         logging.debug("found these instances: %s" % instances)
+#         ins_num = 0
+#         for instance in instances:
+#             instance_id = instance['_id']
+#             target_id = instance['path'][1]
+#             logging.debug('deleting instance: %s' % instance)
+#             client.instance_delete(instance_id)
+#             ins_num += 1
+#
+#         fac_num = 0
+#             client.fac
+#
+#
+#
+#         return (fac_num, ins_num)
+
+def clean(backend, puppet):
+    operation = "AOP_" + puppet
+    logging.debug("- Clean Server: %s - Operation: %s" % (backend, operation))
     build_common.connection.host = backend
-    vmavtest = AgentBuild(backend)
-    return vmavtest._delete_targets(build_common.connection.operation)
+    vmavtest = AgentBuild(backend, puppet=puppet)
+    return vmavtest._delete_targets(operation)
 
 def disable_analysis(backend):
     logging.debug("- Disable Analysis: %s" % (backend))
@@ -896,8 +999,9 @@ def build(args, report):
         #check_blacklist(blacklist)
         if action in ["pull", "scout", "elite", "elite_fast", "soldier", "soldier_fast"]:
             success_ret = execute_agent(args, action, args.platform)
+        #probably doesn't works because the backend is not the right parameter
         elif action == "clean":
-            clean(args.backend)
+            clean(args.backend, args.puppet)
         else:
             add_result("+ ERROR, Unknown action %s, %s, %s" % (action, platform, kind))
     except Exception as ex:

@@ -35,7 +35,7 @@ TEST_CLEAN:
     #- CALL: INIT_DISPATCH
     - START_AGENT
     #- CALL: SET_SERVERS
-    - CLEAN_EVIDENCES
+    - CLEAN_EVIDENCES: [ Ok ]
     - STOP_AGENT
     #- CALL: END_DISPATCH
 
@@ -123,7 +123,7 @@ TEST_ELITE:
     #- START_AGENT
     - RELOG
 
-    - CLEAN_EVIDENCES
+    - CLEAN_EVIDENCES: [ Ok ]
     - BUILD: [ scout, windows, silent ]
     - SLEEP: 60
     - RELOG
@@ -464,12 +464,31 @@ TEST_BUILD_SRV_ELITE:
     - ON_ERROR: SKIP
     #- SLEEP: [1, 600]
     - BUILD_SRV: [ elite, windows, silent ]
-
     #- REPORT:
     #    - TEST_PDF
     #- UNINSTALL
     #- CALL: END_DISPATCH
 
+UPD_AVAGENT:
+    - VM: [bitdef]
+    - INTERNET: True
+    - REVERT
+    - START_VM
+    - CHECK_INFECTION # questo non e' necessario, ma e' meglio assicurarsene
+    - CALL: VM_PUSH_AGENT
+    - PUSH: [assets/update_system.bat, assets/update_theme.bat]
+    - INSTALL_AGENT
+    - STOP_VM: 30
+    - WAIT_SHUTDOWN
+
+TEST_UPDATE_BUILD_SRV_ELITE:
+    - VM: [avira]
+    - ON_ERROR: SKIP
+    - CALL: SET_MAIL
+    - CALL: UPD_AVAGENT
+    - REFRESH_SNAPSHOT
+    - START_VM
+    - BUILD_SRV: [ elite, windows, silent ]
 
 TEST_BUILD_CLI:
     - VM: [bitdef]
@@ -494,7 +513,7 @@ TEST_BUILD_CLI_PULL:
     #- CALL: END_DISPATCH
 
 TEST_BUILD_CLI_ELITE:
-    - VM: [bitdef]
+    - VM: [avira]
     #- VM_ALL
     - ON_ERROR: SKIP
     #- SLEEP: [1, 600]
