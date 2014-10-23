@@ -3,6 +3,7 @@ __author__ = 'olli', 'mlosito'
 import sys
 import socket
 import os
+import re
 
 sys.path.append("/Users/olli/Documents/work/AVTest/")
 sys.path.append("/Users/mlosito/Sviluppo/Rite/")
@@ -16,6 +17,7 @@ import adb
 
 from AVCommon import build_common
 from AVAgent import build
+
 #from AVCommon import logger
 #from AVAgent.build import build
 
@@ -135,18 +137,32 @@ def build_apk(kind, srv, factory):
     print "after build", results, success, errors
     return success
 
+def modify_json_app_name(app_name, to_json, from_json):
+    #TODO: make a method to build ad hoc json, instead of this shit
+    assert os.path.exists(from_json)
+    config = open(from_json).read()
+    config = re.sub(r'({"appname":")([^"]*)',r'\1%s' % app_name, config)
+    config = config.replace('{"appname":".*"}', '{"appname":"%s"}' % app_name)
+    f = open(to_json, "w")
+    f.write(config)
+    f.close()
 
-def build_apk_ruby(rebuild=False, user="avmonitor", password="testriteP123", server="castore", conf_json_filename="build.and.json", zipfilenamebackend="and.zip"):
-    apk_path_and_filename = 'assets/autotest.default.apk'
+
+def build_apk_ruby(rebuild=False, user="avmonitor", password="testriteP123", server="castore",
+                   conf_json_filename="build.and.json", zipfilenamebackend="and.zip",
+                   factory_id="RCS_0000002135", apk_path_and_filename='assets/autotest.default.apk'):
+
     if rebuild:
         os.remove(apk_path_and_filename)
     if not os.path.exists(apk_path_and_filename):
         srv_params = servers[server]
-        #TODO RCS_0000002135 e RCS_0000002050 sono ident della factory
+        #factory_id e' l'ident della factory
         os.system(
             #'ruby assets/rcs-core.rb -u zenobatch -p castoreP123 -d rcs-castore -f RCS_0000002050 -b build.and.json -o and.zip'
             #Rite_Mobile->HardwareFunctional
-            'ruby assets/rcs-core.rb -u %s -p %s -d %s -f %s -b %s -o %s' % (user, password, srv_params["backend"], "RCS_0000002135", conf_json_filename, zipfilenamebackend))
+            'ruby assets/rcs-core.rb -u %s -p %s -d %s -f %s -b %s -o %s' % (user, password, srv_params["backend"],
+                                                                             factory_id, conf_json_filename,
+                                                                             zipfilenamebackend))
         os.system('unzip -o  %s -d assets' % zipfilenamebackend)
         os.remove(zipfilenamebackend)
     if not os.path.exists(apk_path_and_filename):
@@ -285,7 +301,7 @@ def check_infection(dev):
         return False
 
 
-def init_device(dev):
+def init_device(dev, install_eicar=False):
     reset_device(dev)
 
     #install everythings!
@@ -294,8 +310,9 @@ def init_device(dev):
     if not superuserutils.install_ddf_shell(dev):
         exit()
 
-    #install eircar
-    install('eicar', dev)
+    if install_eicar:
+        #install eicar
+        install('eicar', dev)
 
     #install BusyBox
     adb.install_busybox('assets/busybox-android', dev)
