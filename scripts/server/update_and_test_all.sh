@@ -16,7 +16,7 @@ sh update.sh -e $today
 killall -9 vmrun
 
 echo "Executing tests"
-./run.sh SYSTEM_DAILY -c -e $today -p 16
+./run.sh SYSTEM_DAILY_SRV -c -e $today -p 16
 
 chmod 755 /opt/AVTest2/rite_retest.sh
 /opt/AVTest2/rite_retest.sh -p 16

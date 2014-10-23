@@ -140,3 +140,29 @@ class Procedure:
             return ret
         except:
             logging.exception("Check")
+
+    @staticmethod
+    def check_procedure(procedure):
+        procedure_to_check = Procedure.procedures[procedure]
+        logging.debug("\n\n  #######  Procedure to check: %s  #######  \n" % procedure_to_check.name)
+        flat_command_list = []
+        Procedure.print_proc(procedure_to_check, flat_command_list, limit=80)
+        logging.debug("\n\n  #######  Flat command list: %s  #######  \n" % flat_command_list)
+        return flat_command_list
+
+    @staticmethod
+    def print_proc(proc, flat_command_list, space="", limit=999):
+        for c in proc.command_list:
+            if c.name == "CALL":
+                logging.debug(space + "|----, (%s)" % str(c)[:limit])
+                flat_command_list.append(c.name)
+                called_proc = c.args
+                Procedure.print_proc(Procedure.procedures[called_proc], flat_command_list, space=space + "     ", limit=limit)
+            elif c.name == "REPORT":
+                logging.debug(space + "|----, (%s)" % str(c)[:limit])
+                for called_proc in c.args:
+                    flat_command_list.append(c.name)
+                    Procedure.print_proc(Procedure.procedures[called_proc.keys()[0]], flat_command_list, space=space + "     ", limit=limit)
+            else:
+                logging.debug(space + "|----> %s" % str(c)[:limit])
+                flat_command_list.append(c.name)

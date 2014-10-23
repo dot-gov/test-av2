@@ -135,9 +135,12 @@ def remove_readonly(func, path, excinfo):
 
 def delete_build():
     logging.debug("deleting build")
-    if os.path.exists("build"):
-        shutil.rmtree("build", onerror=remove_readonly)
-
+    try:
+        if os.path.exists("build"):
+            shutil.rmtree("build", onerror=remove_readonly)
+    #if the system cannot delete build...not a so big problem
+    except:
+        pass
 
 def execute(vm, args):
 

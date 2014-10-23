@@ -32,6 +32,8 @@ def main():
 
     parser.add_argument('-q', '--quiet', action='store_true', default=False,
                         help="Quiet")
+    parser.add_argument('-k', '--check', action='store_true', default="",
+                        help="Static Check Context -does not execute")
 
     args = parser.parse_args()
 

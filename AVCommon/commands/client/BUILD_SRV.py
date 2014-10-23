@@ -1,3 +1,5 @@
+import os
+
 __author__ = 'mlosito,fabrizio'
 
 
@@ -63,12 +65,27 @@ def on_init(protocol, args):
         #TODO should be: build.add_result but does not works!
         build_common.build_agent(factory_id, hostname, params, None, zipfilename, melt=meltfile, kind=kind, use_cache=True)
 
-        #unzip OVERWRITES the files
-        exe = utils.unzip(zipfilename, "build/%s" % platform, logging.debug)
+        destzipfilename = "C:\\AVTest\\AVAgent\\%s" % os.path.basename(zipfilename)
 
-        # push_exe(exe)
-        logging.debug("Pushing file: %s", exe[0])
-        build_server_with_cache.push_file(protocol.vm, exe[0])
+        build_server_with_cache.push_file(protocol.vm, zipfilename, destzipfilename)
+
+        exe = destzipfilename
+
+        # OLD BUT NOT OK
+        #
+        # #unzip OVERWRITES the files
+        # exe = utils.unzip(zipfilename, "build/%s" % platform, logging.debug)
+        #
+        # # push_exe(exe)
+        # logging.debug("Pushing file: %s", exe[0])
+        # build_server_with_cache.push_file(protocol.vm, exe[0])
+
+        # NEW BUT BAD:
+        # for i in range(len(exe)):
+        #     logging.debug("Pushing file: %s", exe[i])
+        #     remote_name = exe[i].replace("/", "_")
+        #     build_server_with_cache.push_file(protocol.vm, exe[i], remote_name)
+        #     exe[i] = remote_name
 
     else:
         logging.debug("reusing factory: %s", factory_name)

@@ -149,7 +149,7 @@ def terminate_every_agent():
 class AgentBuild:
     def __init__(self, backend, frontend=None, platform='windows', kind='silent',
                  ftype='desktop', blacklist=[], soldierlist=[], param=None,
-                 puppet="puppet", asset_dir="AVAgent/assets", factory=None, server_side=False, final_action="unknown"):
+                 puppet="puppet", asset_dir="AVAgent/assets", factory=None, server_side=False, final_action="unknown", zipfilename=""):
         self.kind = kind
         self.host = (backend, frontend)
 
@@ -165,6 +165,7 @@ class AgentBuild:
         self.factory = factory
         self.server_side = server_side
         self.final_action = final_action
+        self.zipfilename = zipfilename
 
         logging.debug("DBG blacklist: %s" % self.blacklist)
         logging.debug("DBG soldierlist: %s" % self.soldierlist)
@@ -595,6 +596,9 @@ class AgentBuild:
         """ build and execute the  """
         factory_id, ident, exe = self.execute_pull()
 
+        if type(exe) is list:
+            exe = exe[0]
+
         logging.debug("execute_scout: %s" % exe)
 
         self._execute_build(exe)
@@ -663,7 +667,8 @@ class AgentBuild:
         """ build and execute the build without extraction and static check """
 
         logging.debug("- Host: %s %s\n" % (self.hostname, time.ctime()))
-        operation = build_common.connection.operation
+        # operation = build_common.connection.operation
+        operation = "AOP_%s" % self.prefix #prefix e' uguale a puppet
         target = get_target_name()
         if not self.factory:
             factory = '%s_%s_%s_%s_%s' % (
@@ -694,8 +699,10 @@ class AgentBuild:
 
     def _execute_extraction_and_static_check(self, zipfilename):
         #ML qui sono state messe le parti di check statica
-        exefilenames = unzip(zipfilename, "build/%s" % self.platform)
-
+        if os.path.exists(zipfilename):
+            exefilenames = unzip(zipfilename, "build/%s" % self.platform)
+        else:
+            logging.debug("cannot find zip file: %s" % zipfilename)
         # CHECK FOR DELETED FILES
         failed = check_static(exefilenames)
 
@@ -712,8 +719,9 @@ class AgentBuild:
         if self.server_side:
             # logging.debug("factory = %s" % self.factory)
             target_id, factory_id, ident = self.factory
-            #il file e' cablato per il caso server side
-            exe = "C:\\AVTest\\AVAgent\\buildsrv.exe"
+            #  #il file e' cablato per il caso server side
+            #  exe = "C:\\AVTest\\AVAgent\\buildsrv.exe"
+            exe = self._execute_extraction_and_static_check(self.zipfilename)
         else:
             factory_id, ident, zipfilename = self.execute_pull_client()
             exe = self._execute_extraction_and_static_check(zipfilename)
@@ -775,7 +783,7 @@ def execute_agent(args, level, platform):
         vmavtest = AgentBuild(args.backend, frontend=args.frontend,
                         platform=platform, kind=args.kind, ftype=ftype, blacklist=args.blacklist,
                         soldierlist=args.soldierlist, param=args.param, puppet=args.puppet, asset_dir=args.asset_dir,
-                        factory=args.factory, server_side=args.server_side, final_action=args.final_action)
+                        factory=args.factory, server_side=args.server_side, final_action=args.final_action, zipfilename=args.exe)
     else:
         vmavtest = AgentBuild(args.backend, frontend=args.frontend,
                         platform=platform, kind=args.kind, ftype=ftype, blacklist=args.blacklist,

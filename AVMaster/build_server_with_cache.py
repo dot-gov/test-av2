@@ -16,7 +16,9 @@ sys.path.append("/Users/zeno/AVTest/")
 
 
 #pushes the file to client, to be executed
-def push_file(vm, exefilename):
-    remote_name = "C:\\AVTest\\AVAgent\\buildsrv.exe"
+def push_file(vm, exefilename,remote_name):
+    # remote_name = "C:\\AVTest\\AVAgent\\buildsrv.exe"
+    # remote_name = exefilename.replace("/", "_")
     vm_manager.execute(vm, "copyFileToGuest", exefilename, remote_name)
     logging.debug("Pushed file: %s to: %s" % (exefilename, remote_name))
+
