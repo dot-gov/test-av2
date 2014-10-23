@@ -135,16 +135,26 @@ def remove_readonly(func, path, excinfo):
 
 def delete_build():
     logging.debug("deleting build")
-    if os.path.exists("build"):
-        shutil.rmtree("build", onerror=remove_readonly)
-
+    try:
+        if os.path.exists("build"):
+            shutil.rmtree("build", onerror=remove_readonly)
+    #if the system cannot delete build...not a so big problem
+    except:
+        pass
 
 def execute(vm, args):
+
+    if not args:
+        args = ""
+
+    no_clean_instances = ("NO_CLEAN_INSTANCES" in args)
+
     from AVAgent import av_agent
 
     # execute "calc.exe"
     execute_calc()
     # build.close(instance)
+    #if not no_clean_instances:
     close_instance()
     # kill process
     kill_rcs(vm)
@@ -155,4 +165,4 @@ def execute(vm, args):
     # sleep 20
     delete_build()
 
-    return True, "UNINSTALLED";
+    return True, "UNINSTALLED"

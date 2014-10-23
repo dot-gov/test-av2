@@ -42,6 +42,14 @@ BUILD_DESKTOP:
     - BUILD: [ pull, linux, silent ]
     - ON_ERROR: SKIP
 
+BUILD_DESKTOP_SRV:
+    - CALL: CHECK_STATIC_MODULES
+    - ON_ERROR: CONTINUE
+    - BUILD_SRV: [ pull, windows, silent, pull ]
+    - BUILD_SRV: [ pull, osx, silent, pull ]
+    - BUILD_SRV: [ pull, linux, silent, pull ]
+    - ON_ERROR: SKIP
+
 BUILD_MOBILE:
     - ON_ERROR: CONTINUE
     - BUILD: [ pull, blackberry, silent ]
@@ -50,9 +58,21 @@ BUILD_MOBILE:
     - BUILD: [ pull, winphone, silent ]
     - ON_ERROR: SKIP
 
+BUILD_MOBILE_SRV:
+    - ON_ERROR: CONTINUE
+    - BUILD_SRV: [ pull, blackberry, silent, pull ]
+    - BUILD_SRV: [ pull, android, silent, pull ]
+    - BUILD_SRV: [ pull, ios, silent, pull ]
+    - BUILD_SRV: [ pull, winphone, silent, pull ]
+    - ON_ERROR: SKIP
+
 BUILD_EXPLOIT:
     - BUILD: [ pull, exploit, melt ]
     #- BUILD: [ pull, exploit_docx, melt ]
+
+BUILD_EXPLOIT_SRV:
+    - BUILD_SRV: [ pull, exploit, melt, pull ]
+    #- BUILD_SRV: [ pull, exploit_docx, melt, pull ]
 
 # -------------- VM COMMANDS -------------- #
 
@@ -93,13 +113,23 @@ VM_ELITE:
     - CHECK_INFECTION
     - RELOG
 
+VM_ELITE_BUILD_SRV:
+    - CROP: True
+    - BUILD_SRV: [ elite, windows, silent ]
+    - SLEEP: 30
+    - SCREENSHOT
+    - CROP: False
+    - UNINSTALL
+    - CHECK_INFECTION
+    - RELOG
+
 VM_STATIC_MOBILE:
     - CROP: True
     - CALL: BUILD_MOBILE
     - CROP: False
 
 VM_CLEAN_EVIDENCES:
-    - CLEAN_EVIDENCES
+    - CLEAN_EVIDENCES: [ Ok ]
 
 BUILD_MELT_FAST:
     - BUILD: [ pull, windows, melt ]

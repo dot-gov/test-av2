@@ -139,7 +139,7 @@ SYSTEM_SOLDIER_ACHILLE:
     - SET:
         backend: 172.20.20.119
         frontend: 172.20.20.119
-    - CLEAN_EVIDENCES
+    - CLEAN_EVIDENCES: [ Ok ]
 
     - SET_SERVER:
         mail_recipients: [zeno@hackingteam.com, seppia@hackingteam.com, m.losito@hackingteam.com]
@@ -190,7 +190,7 @@ SYSTEM_EXPLOIT_ACHILLE:
     - SET:
         backend: 172.20.20.119
         frontend: 172.20.20.119
-    - CLEAN_EVIDENCES
+    - CLEAN_EVIDENCES: [ Ok ]
 
     - SET_SERVER:
         mail_recipients: [zeno@hackingteam.com, seppia@hackingteam.com, m.losito@hackingteam.com]
@@ -227,7 +227,7 @@ SYSTEM_SOLDIER_CASTORE:
     - SET:
         backend: 192.168.100.100
         frontend: 192.168.100.100
-    - CLEAN_EVIDENCES
+    - CLEAN_EVIDENCES: [ Ok ]
 
     - SET_SERVER:
         mail_recipients: [zeno@hackingteam.com, seppia@hackingteam.com, m.losito@hackingteam.com]

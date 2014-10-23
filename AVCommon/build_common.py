@@ -47,14 +47,16 @@ def create_new_factory(ftype, frontend, backend, operation, target, factory, con
 
         # gets all the target with our name in an operation
         targets = c.targets(operation_id, target)
-
+        logging.debug("Existing targets: %s with operation id: %s" % (targets, operation_id))
         if len(targets) > 0:
             # keep only one target
+
             for t in targets[1:]:
+                logging.debug("Deleting target: %s" % t)
                 c.target_delete(t)
 
             target_id = targets[0]
-
+            logging.debug("Using target: %s" % target_id)
             agents = c.agents(target_id)
 
             for agent_id, ident, name in agents:
@@ -88,10 +90,33 @@ def create_new_factory(ftype, frontend, backend, operation, target, factory, con
         return (target_id, factory_id, ident)
 
 
-def build_agent(factory, hostname, param, result_adder_function, zipfilename, melt=None, kind="silent", tries=0):
+def get_factory(factory_id, backend, operation):
+    connection.host = backend
+    connection.operation = operation
+    with connection() as c:
+        factories = c.search_factories_by_name(factory_id)
+        logging.debug("- factories: %s" % factories)
+        #I also assume there is only a single factory with that name
+        #this is partially guaranteed because the factory contains the useful part of the operation name
+        if len(factories) == 0:
+            return None
+        else:
+            return factories[0]
+
+
+def build_agent(factory, hostname, param, result_adder_function, zipfilename, melt=None, kind="silent", tries=0, use_cache=False):
     with connection() as c:
 
         try:
+            #nel caso di una build server, voglio usare un caching, quindi controllo se c'e' gia' un build pronto
+            if use_cache:
+                if os.path.exists(zipfilename):
+                    logging.debug("- Using file '%s' from cache" % zipfilename)
+                    return zipfilename
+                else:
+                    logging.debug("- Creating new file '%s' and storing to cache" % zipfilename)
+            else:
+                logging.debug("- Creating new file '%s' (no cache)" % zipfilename)
             if os.path.exists(zipfilename):
                 os.remove(zipfilename)
             if not os.path.exists(os.path.dirname(zipfilename)):
@@ -105,7 +130,7 @@ def build_agent(factory, hostname, param, result_adder_function, zipfilename, me
                     param['deliver']['user'] = c.myid
                 r = c.build_melt(factory, param, melt, zipfilename)
             else:
-                logging.debug("- Silent build")
+                logging.debug("- Silent build for factory: %s", factory)
                 r = c.build(factory, param, zipfilename)
 
         #here ML removed lines to statiacally check extraction
@@ -117,12 +142,17 @@ def build_agent(factory, hostname, param, result_adder_function, zipfilename, me
                 logging.debug("DBG problem building scout. tries number %s" % tries)
                 build_agent(factory, result_adder_function, zipfilename, melt, kind, tries)
             else:
-                result_adder_function("+ ERROR SCOUT BUILD AFTER %s BUILDS" % tries)
+                if result_adder_function is not None:
+                    result_adder_function("+ ERROR SCOUT BUILD AFTER %s BUILDS" % tries)
+                else:
+                    logging.debug("+ ERROR SCOUT BUILD AFTER %s BUILDS" % tries)
                 raise err
         except Exception, e:
             logging.debug("DBG trace %s" % traceback.format_exc())
-            result_adder_function("+ ERROR SCOUT BUILD EXCEPTION RETRIEVED")
-
+            if result_adder_function is not None:
+                result_adder_function("+ ERROR SCOUT BUILD EXCEPTION RETRIEVED")
+            else:
+                logging.debug("+ ERROR SCOUT BUILD EXCEPTION RETRIEVED")
             raise e
         return zipfilename
 
