@@ -115,3 +115,181 @@ Expected
 Uninstall
 	uninstall: True
 	running: False
+Installation
+	time: 2014-10-23 11:58:50.080755
+	installed: True
+	executed: True
+	instance_name: Android (191) samsung SM-G900F
+	info: True
+	uptime_first: up time: 00:03:11, idle time: 00:04:13, sleep time: 00:00:08
+
+	uptime_last: up time: 00:03:03, idle time: 00:04:12, sleep time: 00:00:00
+
+	error: 
+	exception: 
+Device
+	device: samsung SM-G900F
+	id: 352558067106725
+	release: 4.4.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Started
+	root_first: True
+	su: 
+	selinux: 1
+	persistence: Error
+Evidences
+	evidences_first: 
+		addressbook: 8
+			phone
+		application: 1
+		call: 0
+		camera: 6
+		chat: 0
+		device: 3
+		message: 2
+		position: 6
+
+	evidences_last: 
+		addressbook: 9
+			phone
+			gmail
+		application: 36
+		call: 0
+		camera: 6
+		chat: 0
+		device: 5
+		message: 9
+		position: 10
+		screenshot: 3
+
+Expected
+	call_supported: False
+	expected: ['facebook', 'android.talk']
+Uninstall
+	uninstall: True
+	running: False
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 2014-10-23 14:10:47.697300
+	installed: 
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 
+Device
+	device: samsung SM-G900F
+	id: 352558067106725
+	release: 4.4.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 1
+	persistence: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 2014-10-23 14:15:51.580923
+	installed: 
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 
+Device
+	device: samsung SM-G900F
+	id: 352558067106725
+	release: 4.4.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 1
+	persistence: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 2014-10-23 14:17:02.034988
+	installed: True
+	executed: True
+	instance_name: Android (193) samsung SM-G900F
+	info: True
+	uptime_first: up time: 00:03:06, idle time: 00:04:30, sleep time: 00:00:00
+
+	uptime_last: up time: 00:03:03, idle time: 00:03:09, sleep time: 00:00:00
+
+	error: 
+	exception: 
+Device
+	device: samsung SM-G900F
+	id: 352558067106725
+	release: 4.4.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Started
+	root_first: True
+	su: /system/bin/sh: su: not found
+
+	selinux: 1
+	persistence: Yes
+Evidences
+	evidences_first: 
+		addressbook: 8
+			phone
+		application: 1
+		call: 0
+		camera: 9
+		chat: 0
+		device: 3
+		message: 9
+		position: 6
+		screenshot: 2
+
+	evidences_last: 
+		addressbook: 9
+			phone
+			gmail
+		application: 10
+		call: 0
+		camera: 10
+		chat: 0
+		device: 5
+		message: 9
+		position: 10
+		screenshot: 6
+
+Expected
+	call_supported: False
+	expected: ['facebook', 'android.talk']
+Uninstall
+	uninstall: True
+	running: False
+	files_remained: 
+	packages_remained: 

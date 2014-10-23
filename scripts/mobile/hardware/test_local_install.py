@@ -21,10 +21,8 @@ sys.path.append("/home/zad/work/devel/test-rite/")
 def main(argv):
     devices = adb.get_attached_devices()
 
-
-    if len(sys.argv) < 3:
-        print "Usage:%s device init" %sys.argv[0]
-        print "device= serial number or '.*'"
+    if len(sys.argv) > 2:
+        print "Usage:%s [init]" %sys.argv[0]
         print "init=y|n"
         exit(0)
 
@@ -39,9 +37,12 @@ def main(argv):
         if len(devices) > 1:
             dev = raw_input("su quale device si vuole eseguire il test? ")
             print "Eseguo il test su %s" % dev
+        else:
+            dev = devices[0]
 
-    serialno = sys.argv[1]
-    init = sys.argv[2]
+    serialno = dev
+    #init = sys.argv[2]
+    init = False
 
     device = AdbClient(serialno=serialno)
 

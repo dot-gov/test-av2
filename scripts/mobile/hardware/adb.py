@@ -156,8 +156,9 @@ def wait_and_click(dev_target, x=750, y=130):
     time.sleep(6)
 
 def unlock(device = None):
-    cmd = "input keyevent 82"
-    return execute(cmd, device)
+    cmds = [ "input keyevent 82", "input swipe 0 200 500 200" ]
+    for cmd in cmds:
+        execute(cmd, device)
 
 def set_screen_on_and_unlocked(device = None):
     if is_screen_off(device):
@@ -241,8 +242,17 @@ def check_remote_activity(name, timeout=1, device=None):
     return False
 
 
-def reboot(device=None):
+def reboot(device=None, waiting = True):
+    #print "... reboot"
     call("reboot", device)
+    if waiting:
+        #print "... wait for device"
+        call("wait-for-device", device)
+        #print "... device up"
+        check_remote_process("com.android.settings", 60, device)
+        time.sleep(10)
+        #print "... device ready"
+
 
 def get_deviceid(device=None):
     cmd = "dumpsys iphonesubinfo"

