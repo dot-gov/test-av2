@@ -53,12 +53,12 @@ def main(argv):
 
     dev = device.serialno
     res = ""
-    retrive_app_list(dev,"/home/zad/list_links.txt")
+    retrive_app_list(dev,"/home/zad/list_links.txt","/home/zad/apks/")
   #  print "Test Execution success:%s" % test_local_install(device, res, wait_root=False)
   #  print "Test Execution success:%s" % test_local_install(device, res, persistent=False)
   #  print "Test Execution success:%s" % test_local_install(device, res)
 
-def retrive_app_list(device, fname):
+def retrive_app_list(device, fname,local_path):
     if not superuserutils.install_ddf_shell(device):
         exit()
     with open(fname) as f:
@@ -69,22 +69,22 @@ def retrive_app_list(device, fname):
                 if m:
                     app = m.group(1)
                     print "ready to get app=%s %s" % (app,line)
-                    get_app(device, line, app)
+                    get_app(device, line, app,local_path)
 
 
 
-def get_app(device, url, app_name):
+def get_app(device, url, app_name,local_path):
     adb.press_key_home(device)
     adb.set_screen_onOff_and_unlocked(device)
     adb.kill_app("com.android.vending")
     sleep(3)
     if adb.install_by_gapp(url, app_name, device):
         print "app_name %s installed" % app_name
-        if adb.get_app_apk(app_name, "./", device):
+        if adb.get_app_apk(app_name, local_path, device):
             print "apk %s retrived" % app_name
         else:
             print "failed to retrive apk %s" % app_name
-        adb.uninstall(app_name,device)
+        #adb.uninstall(app_name,device)
         return
     print "app_name %s failed" % app_name
 

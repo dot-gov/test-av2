@@ -556,10 +556,17 @@ def get_app_apk(app, localDir, device):
     if (len(remote_apk) <= 0):
         print "no apk found for %s" % app
         return -1;
-    remote_apk = remote_apk.split(":")[1].replace(":","")
+    remote_apk = remote_apk.split(":")[1].replace(":","").rstrip()
     print "apk found for %s:\n%s" % (app,remote_apk)
-    get_remote_file( os.path.basename(remote_apk).rstrip(),os.path.dirname(remote_apk).rstrip(),localDir, True, device)
-    return os.path.isfile(localDir + "/" + os.path.basename(remote_apk));
+
+    print "check local file %s" % localDir + os.path.basename(remote_apk)
+    present = os.path.exists(localDir + os.path.basename(remote_apk))
+    print "check local file %s is present %s" % (localDir + os.path.basename(remote_apk), present)
+    if present:
+        print "apk already present for %s:\n%s" % (app,remote_apk)
+        return True
+    get_remote_file( os.path.basename(remote_apk),os.path.dirname(remote_apk), localDir, True, device)
+    return os.path.exists(localDir + os.path.basename(remote_apk));
 
 
 def remove_app(app, device):
