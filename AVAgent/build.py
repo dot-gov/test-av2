@@ -536,7 +536,8 @@ class AgentBuild:
             logging.debug("re executing scout")
             self._execute_build(["build/scout.exe"], silent=True)
 
-            sleep(5 * 60)
+            # sleep(5 * 60)
+            sleep(60)
             logging.debug("- %s, uninstall: %s" % (level, time.ctime()))
             #sleep(60)
             # self.uninstall(instance_id)
