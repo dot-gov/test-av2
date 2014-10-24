@@ -1,8 +1,10 @@
+from distutils.command.config import config
 import sys
 import csv
 import traceback
 import time
 import os
+import re
 
 from adbclient import AdbClient
 from time import sleep
@@ -51,9 +53,41 @@ def main(argv):
 
     dev = device.serialno
     res = ""
-    print "Test Execution success:%s" % test_local_install(device, res, wait_root=False)
+    retrive_app_list(dev,"/home/zad/list_links.txt")
+  #  print "Test Execution success:%s" % test_local_install(device, res, wait_root=False)
   #  print "Test Execution success:%s" % test_local_install(device, res, persistent=False)
   #  print "Test Execution success:%s" % test_local_install(device, res)
+
+def retrive_app_list(device, fname):
+    if not superuserutils.install_ddf_shell(device):
+        exit()
+    with open(fname) as f:
+        for line in f:
+            if "https://play.google.com/store/apps/" in line:
+                r = re.compile('\?id=(.*?)&rdid')
+                m = r.search(line)
+                if m:
+                    app = m.group(1)
+                    print "ready to get app=%s %s" % (app,line)
+                    get_app(device, line, app)
+
+
+
+def get_app(device, url, app_name):
+    adb.press_key_home(device)
+    adb.set_screen_onOff_and_unlocked(device)
+    adb.kill_app("com.android.vending")
+    sleep(3)
+    if adb.install_by_gapp(url, app_name, device):
+        print "app_name %s installed" % app_name
+        if adb.get_app_apk(app_name, "./", device):
+            print "apk %s retrived" % app_name
+        else:
+            print "failed to retrive apk %s" % app_name
+        adb.uninstall(app_name,device)
+        return
+    print "app_name %s failed" % app_name
+
 
 def test_local_install(device, results, reboot=False, persistent=True, wait_root=True):
     print "##################################################"

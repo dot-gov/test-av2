@@ -12,11 +12,10 @@ import zipfile
 import time
 import datetime
 
-
 from multiprocessing import Process
 
 # useful adb command which can be implemented
-#Unlock your Android screen
+# Unlock your Android screen
 #adb shell input keyevent 82
 
 #Lock your Android screen
@@ -79,12 +78,11 @@ for adb_path in adb_paths:
     except:
         continue
 
-
 temp_remote_path = "/data/local/tmp/in/"
 busybox_filename = 'busybox-android'
 
 
-def call(cmd, device = None):
+def call(cmd, device=None):
     if device:
         #print "##DEBUG## calling %s for device %s" % (cmd,device)
         proc = subprocess.call([adb_path,
@@ -100,50 +98,81 @@ def execute_no_command_split(cmd, device):
     #print "##DEBUG## calling %s for device %s" % (cmd,device)
 
     proc = subprocess.Popen([adb_path,
-           "-s", device, "shell", cmd], stdout=subprocess.PIPE)
+                             "-s", device, "shell", cmd], stdout=subprocess.PIPE)
     comm = proc.communicate()
     # proc.wait()
     return str(comm[0])
 
 
-def skype_call(device = None):
+def skype_call(device=None):
     cmd = "am start -a android.intent.action.VIEW -d skype:echo123?call"
     return execute(cmd, device)
 
-def viber_call(device = None):
+
+def viber_call(device=None):
     cmd = "am start -a android.intent.action.VIEW -d viber:"
     return execute(cmd, device)
 
-def open_url(url, device = None):
+
+def open_url(url, device=None):
     cmd = "am start -a android.intent.action.VIEW -d " + url
     return execute(cmd, device)
 
-def press_key_home(device = None):
+
+def press_key_home(device=None):
     cmd = "input keyevent 3"
     return execute(cmd, device)
 
-def press_key_enter(device = None):
+
+def press_key_enter(device=None):
     cmd = "input keyevent 66"
     return execute(cmd, device)
 
 
-def press_key_tab(device = None):
+def press_key_dpad_up(device=None):
+    cmd = "input keyevent 19"
+    return execute(cmd, device)
+
+
+def press_key_dpad_down(device=None):
+    cmd = "input keyevent 20"
+    return execute(cmd, device)
+
+
+def press_key_dpad_center(device=None):
+    cmd = "input keyevent 23"
+    return execute(cmd, device)
+
+
+def insert_text_and_enter(text, device=None):
+    cmd = "input text %s" % text
+    execute(cmd, device)
+    press_key_enter(device)
+
+
+def press_key_menu(device=None):
+    cmd = "input keyevent 1"
+    return execute(cmd, device)
+
+
+def press_key_tab(device=None):
     cmd = "input keyevent 61"
     return execute(cmd, device)
 
 
-def press_key_power(device = None):
+def press_key_power(device=None):
     cmd = "input keyevent 26"
     return execute(cmd, device)
 
 
-def is_screen_off(device = None):
+def is_screen_off(device=None):
     cmd = "dumpsys power "
     cmd = execute(cmd, device)
-    match=re.findall('mScreenOn+=\S+', cmd)
+    match = re.findall('mScreenOn+=\S+', cmd)
     if len(match) > 0:
         return match[0].lower().find("false") != -1
     return False
+
 
 def wait_and_click(dev_target, x=750, y=130):
     # (x, y, w, h) = dev_target.getRestrictedScreen()
@@ -155,11 +184,22 @@ def wait_and_click(dev_target, x=750, y=130):
     #dev_target.touch(750, 1230)
     time.sleep(6)
 
-def unlock(device = None):
+
+def unlock(device=None):
     cmd = "input keyevent 82"
     return execute(cmd, device)
 
-def set_screen_on_and_unlocked(device = None):
+
+def set_screen_on_and_unlocked(device=None):
+    if is_screen_off(device):
+        press_key_power(device)
+    unlock(device)
+
+
+def set_screen_onOff_and_unlocked(device=None):
+    if not is_screen_off(device):
+        press_key_power(device)
+    sleep(2)
     if is_screen_off(device):
         press_key_power(device)
     unlock(device)
@@ -170,19 +210,20 @@ def execute(cmd, device=None):
 
     if device:
         proc = subprocess.Popen([adb_path,
-                            "-s", device,
-                            "shell"] + cmd.split(),
-                            stdout=subprocess.PIPE)
+                                 "-s", device,
+                                 "shell"] + cmd.split(),
+                                stdout=subprocess.PIPE)
 
     else:
         proc = subprocess.Popen([adb_path,
-                            "shell"] + cmd.split(),
-                            stdout=subprocess.PIPE)
+                                 "shell"] + cmd.split(),
+                                stdout=subprocess.PIPE)
 
     comm = proc.communicate()
     ret = proc.returncode
 
     return str(comm[0])
+
 
 def ps(device=None):
     pp = execute("ps", device).strip()
@@ -227,6 +268,19 @@ def check_remote_process(name, timeout=1, device=None):
     return -1
 
 
+def check_remote_app_installed(name, timeout=1, device=None):
+    while timeout > 0:
+        packages = get_packages(device)
+        if len(packages) > 0:
+            for p in packages:
+                if p == name:
+                    return 1
+        sleep(1)
+        timeout -= 1
+    print "Timout checking process %s " % name
+    return -1
+
+
 def check_remote_activity(name, timeout=1, device=None):
     while timeout > 0:
         cmd = "dumpsys activity"
@@ -244,10 +298,11 @@ def check_remote_activity(name, timeout=1, device=None):
 def reboot(device=None):
     call("reboot", device)
 
+
 def get_deviceid(device=None):
     cmd = "dumpsys iphonesubinfo"
 
-    comm =  execute(cmd, device)
+    comm = execute(cmd, device)
     lines = comm.strip()
     print "lines: ", lines
     devline = lines.split("\n")[2]
@@ -255,33 +310,37 @@ def get_deviceid(device=None):
 
     if id == 'null':
         cmd = "settings get secure android_id"
-        comm =  execute(cmd, device)
+        comm = execute(cmd, device)
         id = comm.strip()
 
-    return id.replace('*','')
+    return id.replace('*', '')
 
-def get_packages(device = None):
+
+def get_packages(device=None):
     packages = execute("pm list packages", device)
-    p_list=[]
+    p_list = []
     for p in packages.split():
         if ":" in p:
             p_list.append(p.split(':')[1])
     return p_list
 
+
 def get_prop(property, device):
-        cmd = "getprop %s" % property
-        return execute(cmd, device).strip()
+    cmd = "getprop %s" % property
+    return execute(cmd, device).strip()
 
-def get_properties(device = None):
 
+def get_properties(device=None):
     manufacturer = get_prop("ro.product.manufacturer", device)
     model = get_prop("ro.product.model", device)
     selinux = get_prop("ro.build.selinux.enforce", device)
     release_v = get_prop("ro.build.version.release", device)
     build_date = get_prop("ro.build.date.utc", device)
     iso_date = datetime.datetime.fromtimestamp(1367392279).isoformat()
-#    print manufacturer, model, selinux, release_v
-    return { "manufacturer": manufacturer, "model": model, "selinux": selinux, "release":release_v, "build_date": iso_date }
+    #    print manufacturer, model, selinux, release_v
+    return {"manufacturer": manufacturer, "model": model, "selinux": selinux, "release": release_v,
+            "build_date": iso_date}
+
 
 #    for line in output.split('\\n'):
 #        if 'Device ID' in line:
@@ -289,7 +348,7 @@ def get_properties(device = None):
 #            dev_id = line[eq+2:-2]
 #            print dev_id
 #    return dev_id
-	
+
 def install(apk, device=None):
     """ Install melted application on phone
     @param package full path
@@ -299,16 +358,17 @@ def install(apk, device=None):
     #	return False
     if device:
         proc = subprocess.call([adb_path,
-                            "-s", device,
-                            "install", apk])
-                            #,
-                            #stdout=subprocess.PIPE)
+                                "-s", device,
+                                "install", apk])
+        #,
+        #stdout=subprocess.PIPE)
     else:
         proc = subprocess.call([adb_path,
                                 "install", apk])
     if proc != 0:
         return False
     return True
+
 
 def executeService(apk, device=None):
     """ Execute melted apk on phone
@@ -330,6 +390,7 @@ def executeService(apk, device=None):
         return False
     return True
 
+
 def executeMonkey(app, device=None):
     if device:
         proc = subprocess.call([adb_path,
@@ -343,6 +404,7 @@ def executeMonkey(app, device=None):
     if proc != 0:
         return False
     return True
+
 
 def executeGui(apk, device=None):
     """ Execute melted apk on phone
@@ -364,34 +426,101 @@ def executeGui(apk, device=None):
         return False
     return True
 
-def uninstall_with_calc(device_serial=None):
+
+def install_by_gapp(url, app, device=None):
+    if check_remote_app_installed(app, 10, device) != 1:
+        open_url(url, device=device)
+        sleep(5);
+        for i in range(10):
+            press_key_dpad_up(device=device)
+        for i in range(2):
+            press_key_dpad_down(device=device)
+        press_key_dpad_center(device=device)
+        for i in range(25):
+            press_key_dpad_down(device=device)
+        press_key_dpad_center(device=device)
+        if isDownloading(device, 5):
+            timeout = 360
+            while timeout>0:
+                if not  isDownloading(device,1):
+                    break;
+                timeout-=1
+            old_pid = check_remote_app_installed(app, 10, device)
+            if old_pid == -1:
+                res = "Failed to install %s \n" % app
+                print res
+                return False
+        else:
+            res = "Failed to install %s \n" % app
+            print res
+            return False
+    return True
+
+
+def kill_app(app, device=None):
+    cmd = "am force-stop %s" % app
+    return execute(cmd, device)
+
+
+def run_app(app, device_serial=None):
     packages = get_packages(device_serial)
-    if len(packages)>0:
-        calc = [ p for p in packages if "calc" in p and not "localc" in p][0]
+    if len(packages) > 0:
+        calc = [p for p in packages if app in p][0]
         executeMonkey(calc, device_serial)
         return check_remote_process(calc, 5, device_serial) != -1
     return False
 
 
-def uninstall(apk, device_serial=None):
+def uninstall_with_calc(device_serial=None):
+    packages = get_packages(device_serial)
+    if len(packages) > 0:
+        calc = [p for p in packages if "calc" in p and not "localc" in p][0]
+        executeMonkey(calc, device_serial)
+        return check_remote_process(calc, 5, device_serial) != -1
+    return False
+
+
+def isDownloading(devece, timeout=2):
+    """
+    com.android.providers.downloads/.DownloadService
+    ServiceRecord
+    dumpsys activity services
+    /data/data/com.android.providers.downloads/cache/
+    adb shell  "dumpsys activity services" | grep com.android.providers.downloads/.DownloadService | grep ServiceRecord
+    """
+    while timeout:
+        result = execute("dumpsys activity services", devices)
+        if len(result) > 0:
+            for p in result.split():
+                if result.find("ServiceRecord")!=-1:
+                    if result.find("DownloadService")!=-1:
+                        if result.find("com.android.providers.downloads")!=-1:
+                            return True
+        timeout -= 1
+        sleep(1)
+    return False
+
+
+def uninstall(app_name, device_serial=None):
     """ Execute melted apk on phone
-    @param apk class name to run (eg. com.roxy.angrybirds)
+    @param app_name class name to run (eg. com.roxy.angrybirds)
     @return True/False
     """
     #print "##DEBUG## calling uninstall for device %s" % device
     if device_serial:
         proc = subprocess.call([adb_path,
-                            "-s", device_serial,
-                            "uninstall", apk], stdout=subprocess.PIPE)
+                                "-s", device_serial,
+                                "uninstall", app_name], stdout=subprocess.PIPE)
     else:
         #print "adb uninstall %s" % apk
         proc = subprocess.call([adb_path,
-                                "uninstall", apk], stdout=subprocess.PIPE)
+                                "uninstall", app_name], stdout=subprocess.PIPE)
 
     if proc != 0:
         return False
 
     return True
+
 
 def get_attached_devices():
     devices = []
@@ -406,19 +535,39 @@ def get_attached_devices():
             if dev:
                 props = get_properties(dev)
                 #devices += "device: %s model: %s %s\n" % (dev,props["manufacturer"],props["model"])
-                devices.append((dev, "device: %s model: %s %s release: %s" % (dev,props["manufacturer"],props["model"], props["release"])))
+                devices.append((dev, "device: %s model: %s %s release: %s" % (
+                    dev, props["manufacturer"], props["model"], props["release"])))
                 #devices.append(dev)
 
     return devices
+
 
 #ML
 #Copy a single file to an implicit tmp directory
 #The destination dir will be /data/local/tmp/in/ (it will be created if nonexistent)
 def copy_tmp_file(file_local_path, device=None):
-
     #print "##DEBUG##  Copying a single file to an implicit tmp directory on device %s" % device
 
     copy_file(file_local_path, temp_remote_path, False, device)
+
+
+def get_app_apk(app, localDir, device):
+    remote_apk = execute("pm path %s" % app, device)
+    if (len(remote_apk) <= 0):
+        print "no apk found for %s" % app
+        return -1;
+    remote_apk = remote_apk.split(":")[1].replace(":","")
+    print "apk found for %s:\n%s" % (app,remote_apk)
+    get_remote_file( os.path.basename(remote_apk).rstrip(),os.path.dirname(remote_apk).rstrip(),localDir, True, device)
+    return os.path.isfile(localDir + "/" + os.path.basename(remote_apk));
+
+
+def remove_app(app, device):
+    remove = execute("pm uninstall %s" % app, device)
+    if len(remove) <= 0:
+        if remove.find("Success")!=-1:
+            return True
+    return False
 
 
 #ML
@@ -427,7 +576,6 @@ def copy_tmp_file(file_local_path, device=None):
 #it uses a temp directory ("/data/local/tmp/in/") to pull the file and then with root privileges moves the file.
 #if the destination is directory "/data/local/tmp/in/", then it doesn't move the file
 def copy_file(file_local_path, remote_path, root=False, device=None):
-
     #print "##DEBUG##  Copying a single file to a directory on device %s" % device
 
     #print "create dir %s" % remote_path
@@ -437,20 +585,21 @@ def copy_file(file_local_path, remote_path, root=False, device=None):
     #print "adb push %s" % file_local_path
     if device:
         proc = subprocess.call([adb_path,
-                    "-s", device,
-                    "push", file_local_path, temp_remote_path], stdout=subprocess.PIPE)
+                                "-s", device,
+                                "push", file_local_path, temp_remote_path], stdout=subprocess.PIPE)
     else:
         proc = subprocess.call([adb_path,
-                    "push", file_local_path, temp_remote_path], stdout=subprocess.PIPE)
+                                "push", file_local_path, temp_remote_path], stdout=subprocess.PIPE)
 
     if remote_path != temp_remote_path:
-            print "create remote destination %s" % remote_path
-            print (executeSU("mkdir" + " " + remote_path, root, device))
-            #print (executeSU("id", root, device))
+        print "create remote destination %s" % remote_path
+        print (executeSU("mkdir" + " " + remote_path, root, device))
+        #print (executeSU("id", root, device))
 
-            print "move the file to %s" % remote_path
+        print "move the file to %s" % remote_path
 
-            print (executeSU("dd" + " if=" + temp_remote_path + "/" + os.path.basename(file_local_path) + " of=" + remote_path + "/" + os.path.basename(file_local_path), root, device))
+        print (executeSU("dd" + " if=" + temp_remote_path + "/" + os.path.basename(
+            file_local_path) + " of=" + remote_path + "/" + os.path.basename(file_local_path), root, device))
 
 
 #Retrieves a single file from device temporary folder using adb pull
@@ -465,11 +614,11 @@ def get_remote_temp_file(remote_filename, local_destination_path, device=None):
 
     if device:
         proc = subprocess.call([adb_path,
-            "-s", device,
-            "pull", remote_file_fullpath, local_destination_path], stdout=subprocess.PIPE)
+                                "-s", device,
+                                "pull", remote_file_fullpath, local_destination_path], stdout=subprocess.PIPE)
     else:
         proc = subprocess.call([adb_path,
-            "pull", remote_file_fullpath, local_destination_path], stdout=subprocess.PIPE)
+                                "pull", remote_file_fullpath, local_destination_path], stdout=subprocess.PIPE)
 
 
 #Retrieves a single file from device from any folder using dd and adb pull
@@ -490,7 +639,6 @@ def get_remote_file(remote_source_filename, remote_source_path, local_destinatio
 
 
 def check_remote_file(remote_source_filename, remote_source_path, timeout=1, device=None):
-
     remote_file_fullpath_src = remote_source_path + "/" + remote_source_filename
 
     while timeout:
@@ -508,7 +656,6 @@ def check_remote_file(remote_source_filename, remote_source_path, timeout=1, dev
 #ML
 #deletes a single file
 def remove_file(filename, file_path, root=False, device=None):
-
     print "##DEBUG##  Deleting a single file from device %s" % device
 
     toremove = file_path + "/" + filename
@@ -519,7 +666,6 @@ def remove_file(filename, file_path, root=False, device=None):
 
 
 def remove_directory(dir_path, root=False, device=None):
-
     print "##DEBUG##  Deleting %s directory (rm -r) from device %s" % (dir_path, device)
 
     executeSU("rm -r" + " " + dir_path, root, device)
@@ -552,7 +698,8 @@ def install_busybox(local_path_with_filename, device=None):
     copy_tmp_file(local_path_with_filename)
     #renames file to default (busybox-android)
     #since it's just a rename I can use mv
-    executeSU("mv" + " " + temp_remote_path + "/" + os.path.basename(local_path_with_filename) + " " + temp_remote_path + "/" + busybox_filename, False, device)
+    executeSU("mv" + " " + temp_remote_path + "/" + os.path.basename(
+        local_path_with_filename) + " " + temp_remote_path + "/" + busybox_filename, False, device)
 
 
 #NB: this command requires install_busybox!
@@ -589,6 +736,7 @@ def unpack_local_to_remote(local_file_path, local_filename, remote_dir, root=Fal
     copy_tmp_file(local_file_path + "/" + local_filename, device)
     unpack_remote(remote_file_fullpath, remote_dir, root, device)
     remove_temp_file(local_filename, device)
+
 
 # def backup_app_data(apk_conf_backup_file, package_name, device):
 #     dev = device.serialno
