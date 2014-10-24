@@ -462,6 +462,14 @@ def kill_app(app, device=None):
     return execute(cmd, device)
 
 
+def set_rotation(state, device=None):
+    s=0
+    if state:
+        s=1
+    cmd = " content insert --uri content://settings/system --bind name:s:accelerometer_rotation --bind value:i:%d" % s
+    return execute(cmd, device)
+
+
 def run_app(app, device_serial=None):
     packages = get_packages(device_serial)
     if len(packages) > 0:
@@ -558,7 +566,6 @@ def get_app_apk(app, localDir, device):
         return -1;
     remote_apk = remote_apk.split(":")[1].replace(":","").rstrip()
     print "apk found for %s:\n%s" % (app,remote_apk)
-
     print "check local file %s" % localDir + os.path.basename(remote_apk)
     present = os.path.exists(localDir + os.path.basename(remote_apk))
     print "check local file %s is present %s" % (localDir + os.path.basename(remote_apk), present)
