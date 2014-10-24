@@ -462,7 +462,7 @@ def kill_app(app, device=None):
     return execute(cmd, device)
 
 
-def set_rotation(state, device=None):
+def set_auto_rotate_enabled(state, device=None):
     s=0
     if state:
         s=1

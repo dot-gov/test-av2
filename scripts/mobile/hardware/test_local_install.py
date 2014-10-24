@@ -62,7 +62,7 @@ def retrive_app_list(device, fname,local_path):
     if not superuserutils.install_ddf_shell(device):
         exit()
 
-    adb.set_rotation(False, device)
+    adb.set_auto_rotate_enabled(False, device)
     with open(fname) as f:
         for line in f:
             if "https://play.google.com/store/apps/" in line:
@@ -72,7 +72,7 @@ def retrive_app_list(device, fname,local_path):
                     app = m.group(1)
                     print "ready to get app=%s %s" % (app,line)
                     get_app(device, line, app,local_path)
-    adb.set_rotation(True, device)
+    adb.set_auto_rotate_enabled(True, device)
 
 
 def get_app(device, url, app_name,local_path):
