@@ -164,13 +164,26 @@ def press_key_power(device=None):
     cmd = "input keyevent 26"
     return execute(cmd, device)
 
+def is_screen_locked(device=None):
+    cmd = "dumpsys power "
+    cmd = execute(cmd, device)
+    match = re.findall('mLocks\.gather=\S+', cmd)
+    if len(match) > 0 and match[0].lower().find("on_") != -1:
+        return True
+    return False
 
 def is_screen_off(device=None):
     cmd = "dumpsys power "
     cmd = execute(cmd, device)
     match = re.findall('mScreenOn+=\S+', cmd)
     if len(match) > 0:
-        return match[0].lower().find("false") != -1
+        if match[0].lower().find("false") != -1:
+            return True
+        else:
+            return False
+    elif cmd.find("SCREEN_ON_BIT") == -1:
+        return True
+
     return False
 
 
@@ -186,8 +199,16 @@ def wait_and_click(dev_target, x=750, y=130):
 
 
 def unlock(device=None):
+    if is_screen_locked(device):
+        return True
     cmd = "input keyevent 82"
-    return execute(cmd, device)
+    execute(cmd, device)
+    sleep(1)
+    if not is_screen_locked(device):
+        cmd = "input swipe 0 200 500 200"
+        execute(cmd, device)
+        sleep(1)
+    return not is_screen_locked(device)
 
 
 def set_screen_on_and_unlocked(device=None):
@@ -198,11 +219,13 @@ def set_screen_on_and_unlocked(device=None):
 
 def set_screen_onOff_and_unlocked(device=None):
     if not is_screen_off(device):
+        print "screen was on powering off"
         press_key_power(device)
     sleep(2)
     if is_screen_off(device):
+        print "screen was off"
         press_key_power(device)
-    unlock(device)
+    return unlock(device)
 
 
 def execute(cmd, device=None):

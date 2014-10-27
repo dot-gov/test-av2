@@ -78,7 +78,7 @@ def retrive_app_list(device, fname,local_path):
 
 def get_app(device, url, app_name,local_path):
     adb.press_key_home(device)
-    adb.set_screen_onOff_and_unlocked(device)
+    print "unlock %s" % adb.set_screen_onOff_and_unlocked(device)
     adb.kill_app("com.android.vending")
     sleep(3)
     if adb.install_by_gapp(url, app_name, device):
