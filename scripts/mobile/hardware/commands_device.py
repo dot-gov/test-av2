@@ -1,9 +1,7 @@
 __author__ = 'olli', 'mlosito'
 
 import sys
-import socket
-import os
-import re
+from adbclient import AdbClient
 
 sys.path.append("/Users/olli/Documents/work/AVTest/")
 sys.path.append("/Users/mlosito/Sviluppo/Rite/")
@@ -18,7 +16,7 @@ import adb
 from AVCommon import build_common
 from AVAgent import build
 
-#from AVCommon import logger
+# from AVCommon import logger
 #from AVAgent.build import build
 
 
@@ -50,15 +48,33 @@ from AVAgent import build
 
 
 class CommandsDevice:
-    """Commands_device requires the device object to be istantiated (not the device serial number)"""
+    """Commands_device requires the a "device" object aka already instantiated AdbClient object
+     OR the device serial number.
+     AdbClient wins in case you have both.
+     In case you have none, an assertion terminates the execution"""
 
-    def __init__(self, device_object):
-        self.device_object = device_object
-        self.device_serialno = device_object.serialno
+    def __init__(self, adb_client=None, dev_serialno=None):
+
+        assert adb_client or dev_serialno, "You should provide at least one optional argument (adb_client or dev_serialno)"
+
         #used for set variables
         self.client_context = {}
 
+        if adb_client:
+            self.device_object = adb_client
+            self.device_serialno = adb_client.serialno
+            return
+        else:
+            self.device_object = AdbClient(serialno=dev_serialno)
+            self.device_serialno = self.device_object.serialno
+
     # server_context = {}
+
+    def get_adb_client(self):
+        return self.device_object
+
+    def get_dev_serialno(self):
+        return self.device_serialno
 
     @staticmethod
     def _set_util(context_elements, context):
@@ -235,7 +251,7 @@ class CommandsDevice:
 
     #Nota: (per l'agente fa anche: rm -r /sdcard/.lost.found, rm -r /data/data/com.android.dvci)
     def uninstall_agent(self):
-        self.uninstall('agent', self.device_serialno)
+        self.uninstall('agent')
 
     def backup_app_data(self, apk_id):
         apk_instance = apk_dataLoader.get_apk(apk_id)
@@ -285,7 +301,7 @@ class CommandsDevice:
 
     def check_infection(self):
         apk_instance = apk_dataLoader.get_apk('agent')
-        result = adb.execute('pm list packages -3 '+apk_instance.package_name, self.device_serialno)
+        result = adb.execute('pm list packages -3 ' + apk_instance.package_name, self.device_serialno)
         print "Package = " + result
         if result.strip() == "package:" + apk_instance.package_name:
             return True
