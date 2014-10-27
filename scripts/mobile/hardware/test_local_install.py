@@ -9,7 +9,8 @@ import re
 from adbclient import AdbClient
 from time import sleep
 # our files
-import commands
+
+from scripts.mobile.hardware.commands_device import CommandsDevice
 from scripts.mobile.hardware.apk import apk_dataLoader
 from scripts.mobile.hardware.utils import wifiutils, superuserutils, utils
 import testmain
@@ -37,10 +38,7 @@ def main(argv):
     if not devices:
         print "non ci sono device connessi"
         exit(0)
-    else:
-        if len(devices) > 1:
-            dev = raw_input("su quale device si vuole eseguire il test? ")
-            print "Eseguo il test su %s" % dev
+
 
     serialno = sys.argv[1]
     init = sys.argv[2]
@@ -49,7 +47,8 @@ def main(argv):
 
     if init == "y":
         print "Init!"
-        commands.init_device(device.serialno, install_eicar=False)
+        commands_dev = CommandsDevice(adb_client=device)
+        commands_dev.init_device()
 
     dev = device.serialno
     res = ""
@@ -113,8 +112,9 @@ def test_local_install(device, results, reboot=False, persistent=True, wait_root
 
     print "#STEP %d BUILD AGENT \"%s\" " % (step, apk_out_name)
 #   commands.can_ping_google(dev)
-    commands.modify_json_app_name(app_name, json_to, json)
-    commands.build_apk_ruby(rebuild=False, user="zenobatch", password="castoreP123", server="castore",
+    commands_dev = CommandsDevice(dev_serialno=dev)
+    commands_dev.modify_json_app_name(app_name, json_to, json)
+    commands_dev.build_apk_ruby(rebuild=False, user="zenobatch", password="castoreP123", server="castore",
                                 conf_json_filename=json_to, factory_id=factory, apk_path_and_filename=apk_out_name)
     if not os.path.exists(apk_out_name):
         print "ERROR, cannot build apk"

@@ -300,7 +300,7 @@ def check_remote_app_installed(name, timeout=1, device=None):
                     return 1
         sleep(1)
         timeout -= 1
-    print "Timout checking process %s " % name
+    print "check_remote_app_installed:Timout checking process %s " % name
     return -1
 
 
@@ -314,7 +314,7 @@ def check_remote_activity(name, timeout=1, device=None):
                 return True
         sleep(1)
         timeout -= 1
-    print "Timout checking activity %s " % name
+    print "check_remote_activity:Timout checking activity %s " % name
     return False
 
 
@@ -536,7 +536,7 @@ def uninstall_with_calc(device_serial=None):
     return False
 
 
-def isDownloading(devece, timeout=2):
+def isDownloading(devices, timeout=2):
     """
     com.android.providers.downloads/.DownloadService
     ServiceRecord
