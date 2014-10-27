@@ -142,14 +142,14 @@ def build_agent(factory, hostname, param, result_adder_function, zipfilename, me
                 logging.debug("DBG problem building scout. tries number %s" % tries)
                 build_agent(factory, result_adder_function, zipfilename, melt, kind, tries)
             else:
-                if result_adder_function is not None:
+                if result_adder_function:
                     result_adder_function("+ ERROR SCOUT BUILD AFTER %s BUILDS" % tries)
                 else:
                     logging.debug("+ ERROR SCOUT BUILD AFTER %s BUILDS" % tries)
                 raise err
         except Exception, e:
             logging.debug("DBG trace %s" % traceback.format_exc())
-            if result_adder_function is not None:
+            if result_adder_function:
                 result_adder_function("+ ERROR SCOUT BUILD EXCEPTION RETRIEVED")
             else:
                 logging.debug("+ ERROR SCOUT BUILD EXCEPTION RETRIEVED")

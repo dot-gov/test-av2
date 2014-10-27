@@ -136,48 +136,7 @@ class CommandsDevice:
             ret_su = adb.execute("su -v", self.device_serialno)
             return ret_su
 
-    # """
-    #     build apk on given server with given configuration
-    # """
-    # def build_apk(kind, srv, factory):
-    #     class Args:
-    #         pass
-    #
-    #     report = None
-    #
-    #     try:
-    #         srv_params = servers[srv]
-    #     except KeyError:
-    #         return False
-    #
-    #
-    #     args = Args()
-    #
-    #     args.action = "pull"
-    #     args.platform = "android"
-    #     args.kind = kind
-    #     args.backend = srv_params["backend"]
-    #     args.frontend = srv_params["frontend"]
-    #     args.platform_type = "mobile"
-    #     args.operation = srv_params["operation"]
-    #     args.param = params
-    #     args.asset_dir = "assets"
-    #
-    #     # servono??
-    #     args.blacklist = ""
-    #     args.soldierlist = ""
-    #     args.nointernetcheck = socket.gethostname()
-    #     args.puppet = "rite"
-    #     args.factory = factory
-    #     args.server_side = False
-    #
-    #     build_common.connection.host = srv_params["backend"]
-    #     #build.connection.user = "avmonitor"
-    #     build_common.connection.passwd = "testriteP123"
-    #
-    #     results, success, errors = build.build(args, report)
-    #     print "after build", results, success, errors
-    #     return success
+
     #
     # def modify_json_app_name(app_name, to_json, from_json):
     #     #TODO: make a method to build ad hoc json, instead of this shit
@@ -265,13 +224,16 @@ class CommandsDevice:
     #           Implementare un'execute generica e' molto smplice ma tende a spargere in giro activity da lanciare...
     #           Piuttosto possiamo arricchire l'apk_dataloader con altre activity (gli AV ne hanno gia' una in piu'
     #           ma non viene usata)
-    def execute(self, apk_id):
+    def launch_default_activity(self, apk_id):
         apk_instance = apk_dataLoader.get_apk(apk_id)
         apk_instance.start_default_activity(self.device_serialno)
 
     def execute_agent(self):
         apk_instance = apk_dataLoader.get_apk('agent')
         apk_instance.start_default_activity(self.device_serialno)
+
+    def execute_cmd(self, app):
+        return adb.executeSU(app, False, self.device_serialno)
 
     def execute_root(self, app):
         return adb.executeSU(app, True, self.device_serialno)
@@ -579,7 +541,7 @@ class CommandsDevice:
         adb shell  "dumpsys activity services" | grep com.android.providers.downloads/.DownloadService | grep ServiceRecord
         """
         while timeout:
-            result = self.execute("dumpsys activity services")
+            result = self.execute_cmd("dumpsys activity services")
             if len(result) > 0:
                 for p in result.split():
                     if result.find("ServiceRecord") != -1:

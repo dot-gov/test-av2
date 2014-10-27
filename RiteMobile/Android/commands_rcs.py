@@ -1,4 +1,5 @@
 import abc
+import socket
 
 __author__ = 'zeno'
 import time
@@ -8,8 +9,6 @@ from AVAgent.rcs_client import Rcs_client
 
 
 from AVCommon import build_common as build
-
-
 
 
 class CommandsRCS:
@@ -54,6 +53,7 @@ class CommandsRCS:
 
         self.operation_id, self.group_id = self.conn.operation(self.operation)
         self.target_id = self.conn.targets(self.operation_id, self.target_name)[0]
+        self.factory_id = self.conn.get_factory_id_by_ident(self.factory, self.target_id)
 
         return self
 
@@ -73,6 +73,22 @@ class CommandsRCS:
         self.instances = self.conn.instances_by_factory(self.device_id, self.factory)
         assert not self.instances
         return self.instances
+
+
+    """
+        build apk on given server with given configuration
+    """
+    def build_melt_apk(self, melt_file):
+
+        params = {
+            'platform': 'android',
+            'binary': {'demo': True, 'admin': True},
+            'sign': {},
+            'melt': {}
+        }
+
+        ret = build.build_agent(self.factory_id, self.host, params, None, "build/melt.zip", melt=melt_file, kind="melt", use_cache=False)
+        print ret
 
     def wait_for_sync(self):
         print "... sleeping for sync"
@@ -197,20 +213,22 @@ class CommandsRCS:
 class CommandsRCSCastore(CommandsRCS):
     def __init__(self, device_id, login_id = 0):
         super(self.__class__, self).__init__(host = "192.168.100.100", login_id = login_id, device_id = device_id, operation = "Rite_Mobile", target_name = "HardwareFunctional", factory = 'RCS_0000002050')
+        #self.server_params = servers['castore']
 
 
 class CommandsRCSPolluce(CommandsRCS):
     def __init__(self, device_id, login_id = 0):
         super(self.__class__, self).__init__(host = "192.168.100.179", login_id = login_id, device_id = device_id, password = "testriteP123", operation = "Rite_Mobile", target_name = "HardwareFunctional", factory = 'RCS_0000000529')
+        #self.server_params = servers['polluce']
 
 
 # servers = {
-# "castore": { "backend": "192.168.100.100",
+#     "castore": { "backend": "192.168.100.100",
 #                  "frontend": "192.168.100.100",
 #                  "operation": "QA",
 #                  "target_name": "HardwareFunctional"},
-#     "polluce": { "backend": "",
-#                  "frontend": "",
+#     "polluce": { "backend": "192.168.100.179",
+#                  "frontend": "192.168.100.179",
 #                  "operation": "QA",
 #                  "target_name": "HardwareFunctional"},
 #     "zeus": { "backend": "",
@@ -221,7 +239,7 @@ class CommandsRCSPolluce(CommandsRCS):
 #               "frontend": "192.168.100.204",
 #               "target_name": "QA",
 #               "operation": "HardwareFunctional"},
-# }
+#}
 #
 # params = {
 #     'platform': 'android',

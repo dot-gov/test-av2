@@ -119,14 +119,14 @@ def check_uninstall(commands_device, results, reboot=True):
     running = "still running: %s" % service in processes
     results['running'] = running
 
-    res = commands_device.execute(
+    res = commands_device.execute_cmd(
         "ls /sdcard/1 /sdcard/2 /system/bin/debuggered /system/bin/ddf /data/data/com.android.deviceinfo/ /data/data/com.android.dvci/ /sdcard/.lost.found /sdcard/.ext4_log /data/local/tmp/log /data/dalvik-cache/*StkDevice*  /data/dalvik-cache/*com.android.dvci* /data/app/com.android.dvci*.apk /system/app/StkDevice*.apk 2>/dev/null")
     results["files_remained"] = res
 
     # res = adb.executeSU('cat /data/system/packages.list  | grep -i -e "dvci" -e "deviceinfo" -e "StkDevice"')
     #res += adb.executeSU('cat /data/system/packages.xml  | grep -i -e "dvci" -e "device" -e "StkDevice"')
-    res = commands_device.execute('pm path com.android.deviceinfo')
-    res += commands_device.execute('pm path com.android.dvci')
+    res = commands_device.execute_cmd('pm path com.android.deviceinfo')
+    res += commands_device.execute_cmd('pm path com.android.dvci')
 
     results["packages_remained"] = res
 
@@ -168,7 +168,7 @@ def check_skype(command_dev, c, results):
 
 def check_camera(command_dev):
     command_dev.press_key_home()
-    command_dev.execute("am start -a android.media.action.IMAGE_CAPTURE")
+    command_dev.execute_cmd("am start -a android.media.action.IMAGE_CAPTURE")
     time.sleep(10)
 
 
@@ -192,7 +192,7 @@ def check_persistence(command_dev, c, results, delay=10):
     print "... check persistence and reboot"
     command_dev.press_key_home()
 
-    if not command_dev.execute("ls /system/app/StkDevice.apk"):
+    if not command_dev.execute_cmd("ls /system/app/StkDevice.apk"):
         results["persistence"] = "No";
         return
 
@@ -203,9 +203,9 @@ def check_persistence(command_dev, c, results, delay=10):
 
     command_dev.unlock_screen()
 
-    ret = command_dev.execute("ls /system/app/StkDevice.apk")
+    ret = command_dev.execute_cmd("ls /system/app/StkDevice.apk")
 
-    inst = command_dev.execute("pm path com.android.dvci")
+    inst = command_dev.execute_cmd("pm path com.android.dvci")
     if "/data/app/" in inst:
         if "No such file" in ret:
             results["persistence"] = "No";

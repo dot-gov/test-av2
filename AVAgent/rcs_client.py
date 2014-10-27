@@ -186,6 +186,15 @@ class Rcs_client:
         logging.debug("Printing all the factories with name: '%s' - data: %s:" % (factory_name, ret))
         return ret
 
+    def get_factory_id_by_ident(self, ident, target_id):
+        """ gets the factories """
+        factories = self._call_get('factory')
+        ret = [op['_id']
+               for op in factories if op['ident'] == ident and target_id in op['path'] ]
+        logging.debug("Printing all the factories with ident: '%s' - data: %s:" % (ident, ret))
+        assert len(ret) == 1
+        return ret[0]
+
     def factories(self, target_id, all_factories=None):
         """ gets the factories of an operation, matching the target id """
         if not all_factories:
