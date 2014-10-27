@@ -1,0 +1,21 @@
+[Errno 2] No such file or directory: 'and.zip'
+HTTP Error 403: Forbidden
+'module' object has no attribute 'uninstall_wifi_enabler'
+'module' object has no attribute 'uninstall_wifi_enabler'
+[Errno 2] No such file or directory: 'build/config.upload.json'
+[Errno 2] No such file or directory: 'and.zip'
+[Errno 2] No such file or directory: 'and.zip'
+[Errno 2] No such file or directory: 'and.zip'
+[Errno 2] No such file or directory: 'and.zip'
+list index out of range
+list index out of range
+list index out of range
+list index out of range
+list index out of range
+CommandsRCS instance has no attribute 'connection'
+__init__() takes at least 3 arguments (5 given)
+__init__() takes at least 3 arguments (5 given)
+CommandsDevice instance has no attribute 'get_deviceid'
+CommandsDevice instance has no attribute 'set_time'
+super does not take keyword arguments
+super does not take keyword arguments

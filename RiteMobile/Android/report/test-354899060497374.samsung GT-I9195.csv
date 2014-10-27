@@ -1,0 +1,138 @@
+2014-09-19 11:07:17.044237;samsung GT-I9195;354899060497374;4.2.2;1;2013-05-01T09:11:19;;;True;True;Android (158) samsung GT-I9195;True;Root;True;|
+		addressbook: 49
+			telegram
+			phone
+			viber
+			skype
+			whatsapp
+			gmail
+		application: 1
+		calendar: 3
+		call: 0
+		camera: 0
+		chat: 34
+			telegram
+			whatsapp
+			viber
+			skype
+		device: 2
+		message: 3
+		position: 4
+		screenshot: 3
+|;[u'screenshot', u'addressbook', 'application', 'camera', 'call', 'chat', u'device', u'position', u'calendar', u'message'];|up time: 00:06:16, idle time: 00:08:32, sleep time: 00:00:00
+|;['telegram', 'android.talk', 'viber', 'line.android', 'skype', 'whatsapp'];True;|
+		addressbook: 49
+			telegram
+			phone
+			viber
+			skype
+			whatsapp
+			gmail
+		application: 8
+		calendar: 3
+		call: 0
+		camera: 0
+		chat: 34
+			telegram
+			whatsapp
+			viber
+			skype
+		device: 3
+		message: 3
+		position: 6
+		screenshot: 5
+|;[u'screenshot', u'addressbook', 'application', 'camera', 'call', 'chat', u'device', u'position', u'calendar', u'message'];|up time: 00:03:19, idle time: 00:03:20, sleep time: 00:00:00
+|;True;False
+2014-09-19 11:27:55.259968;samsung GT-I9195;354899060497374;4.2.2;1;2013-05-01T09:11:19;;;True;True;Android (160) samsung GT-I9195;True;Root;True;|
+		addressbook: 49
+			telegram
+			phone
+			viber
+			skype
+			whatsapp
+			gmail
+		application: 1
+		calendar: 3
+		call: 0
+		camera: 0
+		chat: 34
+			telegram
+			whatsapp
+			viber
+			skype
+		device: 2
+		message: 3
+		position: 4
+		screenshot: 3
+|;[u'screenshot', u'addressbook', 'application', 'camera', 'call', 'chat', u'device', u'position', u'calendar', u'message'];|up time: 00:16:33, idle time: 00:25:44, sleep time: 00:00:00
+|;['telegram', 'android.talk', 'viber', 'line.android', 'skype', 'whatsapp'];True;|
+		addressbook: 49
+			telegram
+			phone
+			viber
+			skype
+			whatsapp
+			gmail
+		application: 8
+		calendar: 3
+		call: 1
+			skype
+		camera: 0
+		chat: 34
+			telegram
+			whatsapp
+			viber
+			skype
+		device: 3
+		message: 3
+		position: 6
+		screenshot: 5
+|;[u'screenshot', u'addressbook', 'application', 'camera', 'call', 'chat', u'device', u'position', u'calendar', u'message'];|up time: 00:03:19, idle time: 00:03:37, sleep time: 00:00:00
+|;True;False
+2014-09-23 13:58:51.519922;samsung GT-I9195;354899060497374;4.2.2;1;2013-05-01T09:11:19;;;True;True;Android (29) samsung GT-I9195;|2.00:SUPERSU
+|;True;Root;True;|
+		addressbook: 49
+			telegram
+			phone
+			viber
+			skype
+			whatsapp
+			gmail
+		application: 1
+		calendar: 3
+		call: 0
+		camera: 0
+		chat: 35
+			telegram
+			whatsapp
+			viber
+			skype
+		device: 2
+		message: 3
+		position: 4
+		screenshot: 3
+|;[u'screenshot', u'addressbook', 'application', 'camera', 'call', 'chat', u'device', u'position', u'calendar', u'message'];|up time: 1 days, 03:23:15, idle time: 03:00:23, sleep time: 1 days, 01:37:02
+|;['telegram', 'android.talk', 'viber', 'line.android', 'skype', 'whatsapp'];True;|
+		addressbook: 49
+			telegram
+			phone
+			viber
+			skype
+			whatsapp
+			gmail
+		application: 6
+		calendar: 3
+		call: 1
+			skype
+		camera: 0
+		chat: 35
+			telegram
+			whatsapp
+			viber
+			skype
+		device: 3
+		message: 3
+		position: 6
+		screenshot: 6
+|;[u'screenshot', u'addressbook', 'application', 'camera', 'call', 'chat', u'device', u'position', u'calendar', u'message'];|up time: 00:03:40, idle time: 00:04:09, sleep time: 00:00:00
+|;True;False

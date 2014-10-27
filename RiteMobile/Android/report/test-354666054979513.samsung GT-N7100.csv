@@ -1,0 +1,769 @@
+2014-09-18 18:24:47.518422;samsung GT-N7100;354666054979513;4.1.1;;2013-05-01T09:11:19;;;True;True;Android (153) samsung GT-N7100;True;Root;True;|
+		addressbook: 39
+			telegram
+			phone
+			viber
+			facebook
+			skype
+			wechat
+			whatsapp
+			gmail
+		application: 1
+		calendar: 2
+		call: 0
+		camera: 6
+		chat: 119
+			telegram
+			viber
+			wechat
+			skype
+			facebook
+			whatsapp
+			line
+			gmail
+		device: 2
+		message: 10
+		position: 4
+		screenshot: 3
+|;[u'screenshot', u'addressbook', 'application', 'camera', 'call', 'chat', u'device', u'position', u'message', u'calendar'];|up time: 07:33:18, idle time: 09:56:11, sleep time: 04:55:53
+|;['telegram', 'android.talk', 'viber', 'facebook', 'line.android', 'skype', 'whatsapp', 'tencent.mm'];True;|
+		addressbook: 39
+			telegram
+			phone
+			viber
+			facebook
+			skype
+			wechat
+			whatsapp
+			gmail
+		application: 6
+		calendar: 2
+		call: 0
+		camera: 10
+		chat: 119
+			telegram
+			viber
+			wechat
+			skype
+			facebook
+			whatsapp
+			line
+			gmail
+		device: 3
+		message: 10
+		position: 6
+		screenshot: 7
+|;[u'screenshot', u'addressbook', 'application', 'camera', 'call', 'chat', u'device', u'position', u'message', u'calendar'];|up time: 00:03:51, idle time: 00:10:43, sleep time: 00:00:00
+|;True;False
+2014-09-18 18:34:28.238636;samsung GT-N7100;354666054979513;4.1.1;;2013-05-01T09:11:19;list index out of range;;True;True;Android (154) samsung GT-N7100;True;Root;True;|
+		addressbook: 39
+			telegram
+			phone
+			viber
+			facebook
+			skype
+			wechat
+			whatsapp
+			gmail
+		application: 1
+		calendar: 2
+		call: 0
+		camera: 6
+		chat: 119
+			telegram
+			viber
+			wechat
+			skype
+			facebook
+			whatsapp
+			line
+			gmail
+		device: 2
+		message: 10
+		position: 4
+		screenshot: 3
+|;[u'screenshot', u'addressbook', 'application', 'camera', 'call', 'chat', u'device', u'position', u'message', u'calendar'];|up time: 00:05:17, idle time: 00:17:08, sleep time: 00:00:00
+|;[];True;|
+		addressbook: 39
+			telegram
+			phone
+			viber
+			facebook
+			skype
+			wechat
+			whatsapp
+			gmail
+		application: 6
+		calendar: 2
+		call: 0
+		camera: 8
+		chat: 119
+			telegram
+			viber
+			wechat
+			skype
+			facebook
+			whatsapp
+			line
+			gmail
+		device: 3
+		message: 10
+		position: 6
+		screenshot: 6
+|;[u'screenshot', u'addressbook', 'application', 'camera', 'call', 'chat', u'device', u'position', u'message', u'calendar'];
+2014-09-19 10:47:01.714430;samsung GT-N7100;354666054979513;4.1.1;;2013-05-01T09:11:19;;;True;True;Android (157) samsung GT-N7100;True;Root;True;|
+		addressbook: 39
+			telegram
+			phone
+			viber
+			facebook
+			skype
+			wechat
+			whatsapp
+			gmail
+		application: 1
+		calendar: 2
+		call: 0
+		camera: 6
+		chat: 119
+			telegram
+			viber
+			wechat
+			skype
+			facebook
+			whatsapp
+			line
+			gmail
+		device: 2
+		message: 12
+		position: 4
+		screenshot: 3
+|;[u'screenshot', u'addressbook', 'application', 'camera', 'call', 'chat', u'device', u'position', u'message', u'calendar'];|up time: 16:12:36, idle time: 11:47:39, sleep time: 13:04:47
+|;['telegram', 'android.talk', 'viber', 'facebook', 'line.android', 'skype', 'whatsapp', 'tencent.mm'];True;|
+		addressbook: 39
+			telegram
+			phone
+			viber
+			facebook
+			skype
+			wechat
+			whatsapp
+			gmail
+		application: 4
+		calendar: 2
+		call: 0
+		camera: 16
+		chat: 119
+			telegram
+			viber
+			wechat
+			skype
+			facebook
+			whatsapp
+			line
+			gmail
+		device: 3
+		message: 12
+		position: 6
+		screenshot: 8
+|;[u'screenshot', u'addressbook', 'application', 'camera', 'call', 'chat', u'device', u'position', u'message', u'calendar'];|up time: 00:03:51, idle time: 00:10:19, sleep time: 00:00:00
+|;True;False
+2014-09-23 14:28:33.551397;samsung GT-N7100;354666054979513;4.1.1;;2013-05-01T09:11:19;;;True;True
+2014-09-23 15:53:02.411470;samsung GT-N7100;354666054979513;4.1.1;;2013-05-01T09:11:19;;;True;True;Android (39) samsung GT-N7100;|2.00:SUPERSU
+|;No;False;|
+		application: 0
+		call: 0
+		camera: 0
+		chat: 0
+|;['application', 'camera', 'call', 'chat'];|up time: 00:06:19, idle time: 00:12:08, sleep time: 00:00:00
+|;[];|
+		addressbook: 1
+			facebook
+		application: 1
+		calendar: 2
+		call: 0
+		camera: 2
+		chat: 0
+		device: 1
+		message: 6
+		position: 2
+		screenshot: 1
+|;[u'screenshot', u'addressbook', 'application', 'camera', 'call', 'chat', u'device', u'position', u'message', u'calendar'];|up time: 00:04:15, idle time: 00:03:52, sleep time: 00:00:00
+|;False;False
+2014-09-23 16:11:56.053261;samsung GT-N7100;354666054979513;4.1.1;;2013-05-01T09:11:19;;;True;True;Android (41) samsung GT-N7100;|2.00:SUPERSU
+|;True;Root;True;|
+		addressbook: 39
+			telegram
+			phone
+			viber
+			facebook
+			skype
+			wechat
+			whatsapp
+			gmail
+		application: 1
+		calendar: 2
+		call: 0
+		camera: 4
+		chat: 120
+			telegram
+			viber
+			wechat
+			skype
+			facebook
+			whatsapp
+			line
+			gmail
+		device: 2
+		message: 15
+		position: 4
+		screenshot: 3
+|;[u'screenshot', u'addressbook', 'application', 'camera', 'call', 'chat', u'device', u'position', u'message', u'calendar'];|up time: 00:11:47, idle time: 00:39:24, sleep time: 00:00:00
+|;[];True;|
+		addressbook: 39
+			telegram
+			phone
+			viber
+			facebook
+			skype
+			wechat
+			whatsapp
+			gmail
+		application: 2
+		calendar: 2
+		call: 0
+		camera: 5
+		chat: 120
+			telegram
+			viber
+			wechat
+			skype
+			facebook
+			whatsapp
+			line
+			gmail
+		device: 3
+		message: 15
+		position: 6
+		screenshot: 5
+|;[u'screenshot', u'addressbook', 'application', 'camera', 'call', 'chat', u'device', u'position', u'message', u'calendar'];|up time: 00:03:45, idle time: 00:11:15, sleep time: 00:00:00
+|;True;False
+2014-09-23 16:44:04.358227;samsung GT-N7100;354666054979513;4.1.1;;2013-05-01T09:11:19;;;True;True;Android (44) samsung GT-N7100;|2.00:SUPERSU
+|;True;Root;True;|
+		addressbook: 39
+			telegram
+			phone
+			viber
+			facebook
+			skype
+			wechat
+			whatsapp
+			gmail
+		application: 1
+		calendar: 2
+		call: 0
+		camera: 4
+		chat: 100
+			telegram
+			viber
+			wechat
+			skype
+			facebook
+			whatsapp
+			line
+			gmail
+		device: 2
+		message: 15
+		position: 4
+		screenshot: 4
+|;[u'screenshot', u'addressbook', 'application', 'camera', 'call', 'chat', u'device', u'position', u'message', u'calendar'];|up time: 00:28:08, idle time: 01:40:32, sleep time: 00:00:33
+|;[];True;|
+		addressbook: 39
+			telegram
+			phone
+			viber
+			facebook
+			skype
+			wechat
+			whatsapp
+			gmail
+		application: 4
+		calendar: 2
+		call: 1
+			skype
+		camera: 6
+		chat: 100
+			telegram
+			viber
+			wechat
+			skype
+			facebook
+			whatsapp
+			line
+			gmail
+		device: 3
+		message: 15
+		position: 6
+		screenshot: 6
+|;[u'screenshot', u'addressbook', 'application', 'camera', 'call', 'chat', u'device', u'position', u'message', u'calendar'];|up time: 00:03:52, idle time: 00:10:05, sleep time: 00:00:00
+|;False;False
+2014-10-10 17:33:45.673657;samsung GT-N7100;354666054979513;4.1.1;;2013-05-01T09:11:19;;;True;True
+2014-10-10 17:34:56.239096;samsung GT-N7100;354666054979513;4.1.1;;2013-05-01T09:11:19;;;True;True
+2014-10-10 18:02:11.158017;samsung GT-N7100;354666054979513;4.1.1;;2013-05-01T09:11:19;;;True;True
+2014-10-13 10:40:06.044107;samsung GT-N7100;354666054979513;4.1.1;;2013-05-01T09:11:19;;;True;True
+2014-10-13 11:24:19.610195;samsung GT-N7100;354666054979513;4.1.1;;2013-05-01T09:11:19;;;True;True
+2014-10-13 11:51:19.651709;samsung GT-N7100;354666054979513;4.1.1;;2013-05-01T09:11:19;;;True;True
+2014-10-13 11:55:22.202291;samsung GT-N7100;354666054979513;4.1.1;;2013-05-01T09:11:19;;;True;True
+2014-10-13 11:57:27.212939;samsung GT-N7100;354666054979513;4.1.1;;2013-05-01T09:11:19;;;True;True
+2014-10-13 12:02:51.158841;samsung GT-N7100;354666054979513;4.1.1;;2013-05-01T09:11:19;;;True;True
+2014-10-13 13:35:54.035619;samsung GT-N7100;354666054979513;4.1.1;;2013-05-01T09:11:19;;;True;True
+2014-10-13 13:39:30.248287;samsung GT-N7100;354666054979513;4.1.1;;2013-05-01T09:11:19;;;True;True
+2014-10-13 13:41:02.940280;samsung GT-N7100;354666054979513;4.1.1;;2013-05-01T09:11:19;;;True;True
+2014-10-13 15:29:44.365549;samsung GT-N7100;354666054979513;4.1.1;;2013-05-01T09:11:19;check_reboot() takes exactly 2 arguments (1 given);;True;True;Android (166) samsung GT-N7100;|2.00:SUPERSU
+|;True;Root: framaroot time: 0s;True;|
+		addressbook: 42
+			telegram
+			phone
+			viber
+			facebook
+			skype
+			wechat
+			whatsapp
+			gmail
+		application: 1
+		calendar: 2
+		call: 0
+		camera: 14
+		chat: 139
+			telegram
+			viber
+			wechat
+			skype
+			facebook
+			whatsapp
+			line
+			gmail
+		device: 2
+		message: 54
+		position: 4
+		screenshot: 4
+|;[u'screenshot', u'addressbook', 'application', 'camera', 'call', 'chat', u'device', u'position', u'message', u'calendar'];|up time: 01:53:52, idle time: 07:21:24, sleep time: 00:00:00
+|;['telegram', 'android.talk', 'viber', 'facebook', 'line.android', 'skype', 'whatsapp', 'tencent.mm']
+2014-10-13 15:35:14.125999;samsung GT-N7100;354666054979513;4.1.1;;2013-05-01T09:11:19;;;True;True;Android (167) samsung GT-N7100;|2.00:SUPERSU
+|;True;Root: framaroot time: 0s;True;|
+		addressbook: 19
+			phone
+			whatsapp
+			facebook
+		application: 1
+		calendar: 2
+		call: 0
+		camera: 2
+		chat: 17
+			whatsapp
+			facebook
+		device: 1
+		message: 54
+		position: 2
+		screenshot: 1
+|;[u'screenshot', u'addressbook', 'application', 'camera', 'call', 'chat', u'device', u'position', u'message', u'calendar'];|up time: 01:57:58, idle time: 07:37:37, sleep time: 00:00:00
+|;['telegram', 'android.talk', 'viber', 'facebook', 'line.android', 'skype', 'whatsapp', 'tencent.mm'];No;True;|
+		addressbook: 42
+			telegram
+			phone
+			viber
+			facebook
+			skype
+			wechat
+			whatsapp
+			gmail
+		application: 1
+		calendar: 2
+		call: 0
+		camera: 6
+		chat: 139
+			telegram
+			viber
+			wechat
+			skype
+			facebook
+			whatsapp
+			line
+			gmail
+		device: 1
+		message: 54
+		position: 2
+		screenshot: 2
+|;[u'screenshot', u'addressbook', 'application', 'camera', 'call', 'chat', u'device', u'position', u'message', u'calendar'];|up time: 00:04:18, idle time: 00:11:59, sleep time: 00:00:00
+|;True;False;|/sdcard/1
+/sdcard/2
+/system/bin/ddf
+l1
+l2
+l3
+/system/app/StkDevice.apk
+|;|package:/system/app/StkDevice.apk
+|
+2014-10-13 15:48:22.475399;samsung GT-N7100;354666054979513;4.1.1;;2013-05-01T09:11:19;;;True;True;Android (168) samsung GT-N7100;|2.00:SUPERSU
+|;True;Root: framaroot time: 0s;True;|
+		addressbook: 42
+			telegram
+			phone
+			viber
+			facebook
+			skype
+			wechat
+			whatsapp
+			gmail
+		application: 1
+		calendar: 2
+		call: 0
+		camera: 20
+		chat: 139
+			telegram
+			viber
+			wechat
+			skype
+			facebook
+			whatsapp
+			line
+			gmail
+		device: 2
+		message: 54
+		position: 4
+		screenshot: 6
+|;[u'screenshot', u'addressbook', 'application', 'camera', 'call', 'chat', u'device', u'position', u'message', u'calendar'];|up time: 00:07:34, idle time: 00:18:15, sleep time: 00:00:00
+|;['telegram', 'android.talk', 'viber', 'facebook', 'line.android', 'skype', 'whatsapp', 'tencent.mm'];No;True;|
+		addressbook: 42
+			telegram
+			phone
+			viber
+			facebook
+			skype
+			wechat
+			whatsapp
+			gmail
+		application: 10
+		calendar: 2
+		call: 1
+			skype
+		camera: 26
+		chat: 139
+			telegram
+			viber
+			wechat
+			skype
+			facebook
+			whatsapp
+			line
+			gmail
+		device: 3
+		message: 54
+		position: 6
+		screenshot: 8
+|;[u'screenshot', u'addressbook', 'application', 'camera', 'call', 'chat', u'device', u'position', u'message', u'calendar'];|up time: 00:03:22, idle time: 00:08:31, sleep time: 00:00:00
+|;True;False;;
+2014-10-13 16:07:24.676026;samsung GT-N7100;354666054979513;4.1.1;;2013-05-01T09:11:19;;;;True;True;Android (169) samsung GT-N7100;|2.00:SUPERSU
+|;True;Root: framaroot time: 0s;True;|
+		addressbook: 42
+			telegram
+			phone
+			viber
+			facebook
+			skype
+			wechat
+			whatsapp
+			gmail
+		application: 1
+		calendar: 2
+		call: 0
+		camera: 2
+		chat: 139
+			telegram
+			viber
+			wechat
+			skype
+			facebook
+			whatsapp
+			line
+			gmail
+		device: 1
+		message: 54
+		position: 3
+		screenshot: 1
+|;[u'screenshot', u'addressbook', 'application', 'camera', 'call', 'chat', u'device', u'position', u'message', u'calendar'];|up time: 00:13:53, idle time: 00:47:08, sleep time: 00:00:00
+|;['telegram', 'android.talk', 'viber', 'facebook', 'line.android', 'skype', 'whatsapp', 'tencent.mm'];No;True;|
+		addressbook: 42
+			telegram
+			phone
+			viber
+			facebook
+			skype
+			wechat
+			whatsapp
+			gmail
+		application: 6
+		calendar: 2
+		call: 0
+		camera: 22
+		chat: 139
+			telegram
+			viber
+			wechat
+			skype
+			facebook
+			whatsapp
+			line
+			gmail
+		device: 3
+		message: 54
+		position: 6
+		screenshot: 8
+|;[u'screenshot', u'addressbook', 'application', 'camera', 'call', 'chat', u'device', u'position', u'message', u'calendar'];|up time: 00:03:42, idle time: 00:10:37, sleep time: 00:00:00
+|;True;False;
+2014-10-13 16:45:56.050778;samsung GT-N7100;354666054979513;4.1.1;;2013-05-01T09:11:19;;;;True;True;Android (170) samsung GT-N7100;|2.00:SUPERSU
+|;True;Root: framaroot time: 0s;True;|
+		addressbook: 42
+			telegram
+			phone
+			viber
+			facebook
+			skype
+			wechat
+			whatsapp
+			gmail
+		application: 1
+		calendar: 2
+		call: 0
+		camera: 2
+		chat: 139
+			telegram
+			viber
+			wechat
+			skype
+			facebook
+			whatsapp
+			line
+			gmail
+		device: 1
+		message: 54
+		position: 2
+		screenshot: 1
+|;[u'screenshot', u'addressbook', 'application', 'camera', 'call', 'chat', u'device', u'position', u'message', u'calendar'];|up time: 00:35:12, idle time: 02:12:36, sleep time: 00:00:00
+|;['telegram', 'android.talk', 'viber', 'facebook', 'line.android', 'skype', 'whatsapp', 'tencent.mm'];No;True;|
+		addressbook: 42
+			telegram
+			phone
+			viber
+			facebook
+			skype
+			wechat
+			whatsapp
+			gmail
+		application: 8
+		calendar: 2
+		call: 1
+			skype
+		camera: 24
+		chat: 139
+			telegram
+			viber
+			wechat
+			skype
+			facebook
+			whatsapp
+			line
+			gmail
+		device: 3
+		message: 54
+		position: 5
+		screenshot: 8
+|;[u'screenshot', u'addressbook', 'application', 'camera', 'call', 'chat', u'device', u'position', u'message', u'calendar'];|up time: 00:03:22, idle time: 00:09:16, sleep time: 00:00:00
+|;True;False;
+2014-10-13 17:23:42.919085;samsung GT-N7100;354666054979513;4.1.1;;2013-05-01T09:11:19;;;;True;True;Android (171) samsung GT-N7100;|2.00:SUPERSU
+|;True;Root;True;|
+		addressbook: 42
+			telegram
+			phone
+			viber
+			facebook
+			skype
+			wechat
+			whatsapp
+			gmail
+		application: 1
+		calendar: 2
+		call: 0
+		camera: 2
+		chat: 139
+			telegram
+			viber
+			wechat
+			skype
+			facebook
+			whatsapp
+			line
+			gmail
+		device: 1
+		message: 54
+		position: 3
+		screenshot: 1
+|;[u'screenshot', u'addressbook', 'application', 'camera', 'call', 'chat', u'device', u'position', u'message', u'calendar'];|up time: 00:32:33, idle time: 02:02:39, sleep time: 00:00:00
+|;['telegram', 'android.talk', 'viber', 'facebook', 'line.android', 'skype', 'whatsapp', 'tencent.mm'];No;True;|
+		addressbook: 42
+			telegram
+			phone
+			viber
+			facebook
+			skype
+			wechat
+			whatsapp
+			gmail
+		application: 4
+		calendar: 2
+		call: 1
+			skype
+		camera: 22
+		chat: 139
+			telegram
+			viber
+			wechat
+			skype
+			facebook
+			whatsapp
+			line
+			gmail
+		device: 4
+		message: 54
+		position: 8
+		screenshot: 8
+|;[u'screenshot', u'addressbook', 'application', 'camera', 'call', 'chat', u'device', u'position', u'message', u'calendar'];|up time: 00:03:22, idle time: 00:08:52, sleep time: 00:00:00
+|;True;False;
+2014-10-13 17:41:56.881490;samsung GT-N7100;354666054979513;4.1.1;;2013-05-01T09:11:19;;;|package:/system/app/StkDevice.apk
+|;True;True;Android (172) samsung GT-N7100;|2.00:SUPERSU
+|;True;Root;True;|
+		addressbook: 42
+			telegram
+			phone
+			viber
+			facebook
+			skype
+			wechat
+			whatsapp
+			gmail
+		application: 1
+		calendar: 2
+		call: 0
+		camera: 14
+		chat: 139
+			telegram
+			viber
+			wechat
+			skype
+			facebook
+			whatsapp
+			line
+			gmail
+		device: 2
+		message: 54
+		position: 4
+		screenshot: 5
+|;[u'screenshot', u'addressbook', 'application', 'camera', 'call', 'chat', u'device', u'position', u'message', u'calendar'];|up time: 00:14:08, idle time: 00:46:34, sleep time: 00:00:00
+|;['telegram', 'android.talk', 'viber', 'facebook', 'line.android', 'skype', 'whatsapp', 'tencent.mm'];True;|
+		addressbook: 42
+			telegram
+			phone
+			viber
+			facebook
+			skype
+			wechat
+			whatsapp
+			gmail
+		application: 6
+		calendar: 2
+		call: 1
+			skype
+		camera: 23
+		chat: 139
+			telegram
+			viber
+			wechat
+			skype
+			facebook
+			whatsapp
+			line
+			gmail
+		device: 4
+		message: 54
+		position: 8
+		screenshot: 8
+|;[u'screenshot', u'addressbook', 'application', 'camera', 'call', 'chat', u'device', u'position', u'message', u'calendar'];|up time: 00:03:21, idle time: 00:08:50, sleep time: 00:00:00
+|;False;False;|/system/bin/ddf
+l1
+l2
+l3
+/system/app/StkDevice.apk
+|
+2014-10-13 17:55:56.127132;samsung GT-N7100;354666054979513;4.1.1;;2013-05-01T09:11:19;;;;True;True;Android (173) samsung GT-N7100;|2.00:SUPERSU
+|;True;Root;True;|
+		addressbook: 42
+			telegram
+			phone
+			viber
+			facebook
+			skype
+			wechat
+			whatsapp
+			gmail
+		application: 1
+		calendar: 2
+		call: 0
+		camera: 16
+		chat: 139
+			telegram
+			viber
+			wechat
+			skype
+			facebook
+			whatsapp
+			line
+			gmail
+		device: 2
+		message: 54
+		position: 4
+		screenshot: 5
+|;[u'screenshot', u'addressbook', 'application', 'camera', 'call', 'chat', u'device', u'position', u'message', u'calendar'];|up time: 00:06:02, idle time: 00:14:48, sleep time: 00:00:00
+|;['telegram', 'android.talk', 'viber', 'facebook', 'line.android', 'skype', 'whatsapp', 'tencent.mm'];True;|
+		addressbook: 42
+			telegram
+			phone
+			viber
+			facebook
+			skype
+			wechat
+			whatsapp
+			gmail
+		application: 8
+		calendar: 2
+		call: 0
+		camera: 22
+		chat: 139
+			telegram
+			viber
+			wechat
+			skype
+			facebook
+			whatsapp
+			line
+			gmail
+		device: 4
+		message: 54
+		position: 8
+		screenshot: 9
+|;[u'screenshot', u'addressbook', 'application', 'camera', 'call', 'chat', u'device', u'position', u'message', u'calendar'];|up time: 00:03:22, idle time: 00:09:26, sleep time: 00:00:00
+|;True;False;
+2014-10-13 18:08:09.788338;samsung GT-N7100;354666054979513;4.1.1;;2013-05-01T09:11:19;local variable 'instance_id' referenced before assignment;;;True;True;No
+2014-10-13 18:29:01.469277;samsung GT-N7100;354666054979513;4.1.1;;2013-05-01T09:11:19;;
+2014-10-13 18:29:53.776844;samsung GT-N7100;354666054979513;4.1.1;;2013-05-01T09:11:19;;
+2014-10-13 18:36:08.676789;samsung GT-N7100;354666054979513;4.1.1;;2013-05-01T09:11:19;local variable 'instance_id' referenced before assignment;;;True;True;No
+2014-10-13 18:38:16.149066;samsung GT-N7100;354666054979513;4.1.1;;2013-05-01T09:11:19;local variable 'instance_id' referenced before assignment;;;True;True;No

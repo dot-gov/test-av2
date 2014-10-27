@@ -1,0 +1,1927 @@
+Installation
+	time: 2014-09-17 16:38:31.201125
+	installed: 
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 
+Device
+	device: samsung GT-I8190
+	id: 354784051181692
+	release: 4.1.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+Installation
+	time: 2014-09-17 16:39:25.984857
+	installed: 
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 
+Device
+	device: samsung GT-I8190
+	id: 354784051181692
+	release: 4.1.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+Installation
+	time: 2014-09-17 17:09:51.849482
+	installed: 
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 
+Device
+	device: samsung GT-I8190
+	id: 354784051181692
+	release: 4.1.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+Installation
+	time: 2014-09-18 11:39:32.548978
+	installed: True
+	executed: True
+	instance_name: Android (6) samsung GT-I8190
+	info: True
+	uptime_first: up time: 2 days, 02:37:13, idle time: 20:46:58, sleep time: 1 days, 14:37:43
+
+	uptime_last: up time: 00:03:22, idle time: 00:00:43, sleep time: 00:00:00
+
+	error: 
+	exception: 
+Device
+	device: samsung GT-I8190
+	id: 354784051181692
+	release: 4.1.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: 
+	selinux: 
+Evidences
+	evidences_first: 
+		addressbook: 23
+			phone
+			whatsapp
+		application: 1
+		calendar: 6
+		call: 0
+		camera: 8
+		chat: 0
+		device: 3
+		message: 12
+		position: 3
+		screenshot: 1
+
+	evidences_last: 
+		addressbook: 106
+			phone
+			whatsapp
+			skype
+		application: 1
+		calendar: 6
+		call: 0
+		camera: 8
+		chat: 21
+			whatsapp
+		device: 3
+		message: 13
+		position: 3
+		screenshot: 1
+
+Expected
+	call_supported: True
+	expected: ['telegram', 'android.talk', 'viber', 'facebook', 'line.android', 'skype', 'whatsapp', 'tencent.mm']
+Uninstall
+	uninstall: False
+	running: False
+Installation
+	time: 2014-10-20 12:20:51.650266
+	installed: 
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 
+Device
+	device: samsung GT-I8190
+	id: 354784051181692
+	release: 4.1.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	persistence: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 2014-10-20 12:22:07.925349
+	installed: True
+	executed: True
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: local variable 'instance_id' referenced before assignment
+	exception: 
+Device
+	device: samsung GT-I8190
+	id: 354784051181692
+	release: 4.1.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	persistence: No
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 2014-10-20 13:10:55.516630
+	installed: True
+	executed: True
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: local variable 'instance_id' referenced before assignment
+	exception: 
+Device
+	device: samsung GT-I8190
+	id: 354784051181692
+	release: 4.1.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	persistence: No
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 2014-10-20 13:12:37.487226
+	installed: 
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 
+Device
+	device: samsung GT-I8190
+	id: 354784051181692
+	release: 4.1.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	persistence: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 2014-10-20 13:15:27.513130
+	installed: True
+	executed: True
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 
+Device
+	device: samsung GT-I8190
+	id: 354784051181692
+	release: 4.1.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	persistence: No
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: True
+	running: False
+	files_remained: l1
+l2
+l3
+
+	packages_remained: package:/data/app/com.android.dvci-1.apk
+
+Installation
+	time: 2014-10-20 13:19:32.325691
+	installed: 
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 
+Device
+	device: samsung GT-I8190
+	id: 354784051181692
+	release: 4.1.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	persistence: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 2014-10-20 13:21:32.269220
+	installed: 
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 
+Device
+	device: samsung GT-I8190
+	id: 354784051181692
+	release: 4.1.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	persistence: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 2014-10-21 13:53:45.202144
+	installed: 
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 
+Device
+	device: samsung GT-I8190
+	id: 354784051181692
+	release: 4.1.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	persistence: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 2014-10-21 13:55:01.935533
+	installed: 
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 
+Device
+	device: samsung GT-I8190
+	id: 354784051181692
+	release: 4.1.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	persistence: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 2014-10-21 14:00:17.527751
+	installed: 
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 
+Device
+	device: samsung GT-I8190
+	id: 354784051181692
+	release: 4.1.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	persistence: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 2014-10-21 14:00:47.601977
+	installed: True
+	executed: True
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 
+Device
+	device: samsung GT-I8190
+	id: 354784051181692
+	release: 4.1.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	persistence: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 2014-10-21 14:08:01.897458
+	installed: True
+	executed: True
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 
+Device
+	device: samsung GT-I8190
+	id: 354784051181692
+	release: 4.1.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	persistence: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 2014-10-21 17:52:04.205494
+	installed: True
+	executed: True
+	instance_name: Android (178) samsung GT-I8190
+	info: True
+	uptime_first: up time: 04:03:28, idle time: 07:16:13, sleep time: 00:00:-1
+
+	uptime_last: up time: 00:03:15, idle time: 00:01:11, sleep time: 00:00:-1
+
+	error: 
+	exception: 
+Device
+	device: samsung GT-I8190
+	id: 354784051181692
+	release: 4.1.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: 2.00:SUPERSU
+
+	selinux: 
+	persistence: Yes
+Evidences
+	evidences_first: 
+		addressbook: 63
+			phone
+			facebook
+			skype
+		application: 2
+		calendar: 6
+		call: 0
+		camera: 7
+		chat: 18
+			facebook
+		device: 3
+		message: 39
+		position: 3
+		screenshot: 1
+
+	evidences_last: 
+		addressbook: 159
+			telegram
+			phone
+			viber
+			facebook
+			skype
+			wechat
+			gmail
+		application: 2
+		calendar: 6
+		call: 0
+		camera: 9
+		chat: 87
+			telegram
+			viber
+			facebook
+			skype
+			wechat
+			line
+			gmail
+		device: 4
+		message: 39
+		position: 3
+		screenshot: 1
+
+Expected
+	call_supported: True
+	expected: ['telegram', 'android.talk', 'viber', 'facebook', 'line.android', 'skype', 'whatsapp', 'tencent.mm']
+Uninstall
+	uninstall: True
+	running: False
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 2014-10-21 18:05:01.808888
+	installed: True
+	executed: True
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 
+Device
+	device: samsung GT-I8190
+	id: 354784051181692
+	release: 4.1.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	persistence: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 2014-10-21 18:16:58.516622
+	installed: True
+	executed: True
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 
+Device
+	device: samsung GT-I8190
+	id: 354784051181692
+	release: 4.1.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	persistence: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 2014-10-22 14:53:06.494967
+	installed: True
+	executed: True
+	instance_name: Android (179) samsung GT-I8190
+	info: True
+	uptime_first: up time: 20:41:50, idle time: 1 days, 16:34:27, sleep time: 00:00:00
+
+	uptime_last: up time: 00:03:44, idle time: 00:01:39, sleep time: 00:00:00
+
+	error: 
+	exception: 
+Device
+	device: samsung GT-I8190
+	id: 354784051181692
+	release: 4.1.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: 2.00:SUPERSU
+
+	selinux: 
+	persistence: No
+Evidences
+	evidences_first: 
+		addressbook: 19
+			phone
+			facebook
+		application: 1
+		calendar: 6
+		call: 0
+		camera: 9
+		chat: 0
+		device: 3
+		message: 10
+		position: 3
+		screenshot: 1
+
+	evidences_last: 
+		addressbook: 19
+			phone
+			facebook
+		application: 1
+		calendar: 6
+		call: 0
+		camera: 9
+		chat: 0
+		device: 3
+		message: 37
+		position: 3
+		screenshot: 1
+
+Expected
+	call_supported: True
+	expected: ['telegram', 'android.talk', 'viber', 'facebook', 'line.android', 'skype', 'whatsapp', 'tencent.mm']
+Uninstall
+	uninstall: False
+	running: False
+	files_remained: /system/bin/ddf
+l1
+l2
+l3
+/system/app/StkDevice.apk
+
+	packages_remained: package:/system/app/StkDevice.apk
+
+Installation
+	time: 2014-10-22 15:42:27.774304
+	installed: True
+	executed: True
+	instance_name: Android (180) samsung GT-I8190
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: check_root() takes exactly 5 arguments (4 given)
+	exception: 
+Device
+	device: samsung GT-I8190
+	id: 354784051181692
+	release: 4.1.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 2.00:SUPERSU
+
+	selinux: 
+	persistence: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 2014-10-22 15:53:24.051560
+	installed: 
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 
+Device
+	device: samsung GT-I8190
+	id: 354784051181692
+	release: 4.1.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	persistence: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 2014-10-22 16:27:54.344485
+	installed: True
+	executed: True
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 
+Device
+	device: samsung GT-I8190
+	id: 354784051181692
+	release: 4.1.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	persistence: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 2014-10-22 16:31:05.151598
+	installed: True
+	executed: True
+	instance_name: Android (182) samsung GT-I8190
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: check_root() takes exactly 5 arguments (4 given)
+	exception: 
+Device
+	device: samsung GT-I8190
+	id: 354784051181692
+	release: 4.1.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 2.00:SUPERSU
+
+	selinux: 
+	persistence: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 2014-10-22 16:43:16.410624
+	installed: True
+	executed: True
+	instance_name: Android (183) samsung GT-I8190
+	info: True
+	uptime_first: up time: 00:05:19, idle time: 00:04:18, sleep time: 00:00:00
+
+	uptime_last: up time: 00:05:11, idle time: 00:02:57, sleep time: 00:00:00
+
+	error: 
+	exception: 
+Device
+	device: samsung GT-I8190
+	id: 354784051181692
+	release: 4.1.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Started
+	root_first: True
+	su: 2.00:SUPERSU
+
+	selinux: 
+	persistence: No
+Evidences
+	evidences_first: 
+		addressbook: 18
+			phone
+		application: 1
+		calendar: 6
+		call: 0
+		camera: 7
+		chat: 0
+		device: 2
+		message: 3
+		position: 2
+
+	evidences_last: 
+		addressbook: 159
+			telegram
+			phone
+			viber
+			facebook
+			skype
+			wechat
+			gmail
+		application: 14
+		calendar: 6
+		call: 1
+			skype
+		camera: 21
+		chat: 88
+			telegram
+			viber
+			facebook
+			skype
+			wechat
+			line
+			gmail
+		device: 4
+		message: 39
+		position: 4
+		screenshot: 4
+
+Expected
+	call_supported: True
+	expected: ['telegram', 'android.talk', 'viber', 'facebook', 'line.android', 'skype', 'whatsapp', 'tencent.mm']
+Uninstall
+	uninstall: True
+	running: False
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 2014-10-22 17:13:52.962159
+	installed: True
+	executed: True
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 
+Device
+	device: samsung GT-I8190
+	id: 354784051181692
+	release: 4.1.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	persistence: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 2014-10-22 17:19:12.210858
+	installed: True
+	executed: True
+	instance_name: Android (185) samsung GT-I8190
+	info: True
+	uptime_first: up time: 00:04:11, idle time: 00:02:23, sleep time: 00:00:00
+
+	uptime_last: up time: 00:06:12, idle time: 00:05:12, sleep time: 00:00:00
+
+	error: 
+	exception: 
+Device
+	device: samsung GT-I8190
+	id: 354784051181692
+	release: 4.1.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Started
+	root_first: True
+	su: 2.00:SUPERSU
+
+	selinux: 
+	persistence: No
+Evidences
+	evidences_first: 
+		addressbook: 18
+			phone
+		application: 5
+		calendar: 6
+		call: 0
+		camera: 8
+		chat: 0
+		device: 2
+		message: 3
+		position: 2
+
+	evidences_last: 
+		addressbook: 159
+			telegram
+			phone
+			viber
+			facebook
+			skype
+			wechat
+			gmail
+		application: 12
+		calendar: 6
+		call: 1
+			skype
+		camera: 14
+		chat: 88
+			telegram
+			viber
+			facebook
+			skype
+			wechat
+			line
+			gmail
+		device: 5
+		message: 39
+		position: 5
+		screenshot: 5
+
+Expected
+	call_supported: True
+	expected: ['telegram', 'android.talk', 'viber', 'facebook', 'line.android', 'skype', 'whatsapp', 'tencent.mm']
+Uninstall
+	uninstall: True
+	running: False
+	files_remained: /sdcard/1
+/sdcard/2
+/system/bin/ddf
+/system/app/StkDevice.apk
+
+	packages_remained: package:/system/app/StkDevice.apk
+
+Installation
+	time: 2014-10-23 08:55:49.504947
+	installed: True
+	executed: True
+	instance_name: Android (186) samsung GT-I8190
+	info: True
+	uptime_first: up time: 00:03:28, idle time: 00:00:17, sleep time: 00:00:00
+
+	uptime_last: up time: 00:05:00, idle time: 00:02:54, sleep time: 00:00:00
+
+	error: 
+	exception: 
+Device
+	device: samsung GT-I8190
+	id: 354784051181692
+	release: 4.1.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Started
+	root_first: True
+	su: 2.00:SUPERSU
+
+	selinux: 
+	persistence: Yes
+Evidences
+	evidences_first: 
+		addressbook: 18
+			phone
+		application: 3
+		calendar: 6
+		call: 0
+		camera: 8
+		chat: 0
+		device: 2
+		message: 3
+		position: 2
+
+	evidences_last: 
+		addressbook: 159
+			telegram
+			phone
+			viber
+			facebook
+			skype
+			wechat
+			gmail
+		application: 16
+		calendar: 6
+		call: 1
+			skype
+		camera: 15
+		chat: 88
+			telegram
+			viber
+			facebook
+			skype
+			wechat
+			line
+			gmail
+		device: 5
+		message: 40
+		position: 5
+		screenshot: 6
+
+Expected
+	call_supported: True
+	expected: ['telegram', 'android.talk', 'viber', 'facebook', 'line.android', 'skype', 'whatsapp', 'tencent.mm']
+Uninstall
+	uninstall: True
+	running: False
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 2014-10-23 09:08:02.874301
+	installed: True
+	executed: True
+	instance_name: Android (187) samsung GT-I8190
+	info: True
+	uptime_first: up time: 00:03:30, idle time: 00:00:49, sleep time: 00:00:00
+
+	uptime_last: up time: 00:06:48, idle time: 00:07:10, sleep time: 00:00:00
+
+	error: 
+	exception: 
+Device
+	device: samsung GT-I8190
+	id: 354784051181692
+	release: 4.1.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Started
+	root_first: True
+	su: 2.00:SUPERSU
+
+	selinux: 
+	persistence: Yes
+Evidences
+	evidences_first: 
+		addressbook: 18
+			phone
+		application: 1
+		calendar: 6
+		call: 0
+		camera: 8
+		chat: 0
+		device: 2
+		message: 3
+		position: 2
+
+	evidences_last: 
+		addressbook: 18
+			phone
+		application: 1
+		calendar: 6
+		call: 0
+		camera: 8
+		chat: 0
+		device: 2
+		message: 3
+		position: 2
+
+Expected
+	call_supported: True
+	expected: ['telegram', 'android.talk', 'viber', 'facebook', 'line.android', 'skype', 'whatsapp', 'tencent.mm']
+Uninstall
+	uninstall: False
+	running: False
+	files_remained: /sdcard/1
+/sdcard/2
+/system/bin/ddf
+l1
+l2
+l3
+/system/app/StkDevice.apk
+
+	packages_remained: package:/system/app/StkDevice.apk
+
+Installation
+	time: 2014-10-23 10:33:34.486241
+	installed: True
+	executed: True
+	instance_name: Android (188) samsung GT-I8190
+	info: True
+	uptime_first: up time: 00:03:32, idle time: 00:00:55, sleep time: 00:00:00
+
+	uptime_last: up time: 00:05:25, idle time: 00:03:58, sleep time: 00:00:00
+
+	error: 
+	exception: 
+Device
+	device: samsung GT-I8190
+	id: 354784051181692
+	release: 4.1.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Started
+	root_first: True
+	su: 2.00:SUPERSU
+
+	selinux: 
+	persistence: Yes
+Evidences
+	evidences_first: 
+		addressbook: 18
+			phone
+		application: 3
+		calendar: 6
+		call: 0
+		camera: 7
+		chat: 0
+		device: 2
+		message: 3
+		position: 2
+
+	evidences_last: 
+		addressbook: 159
+			telegram
+			phone
+			viber
+			facebook
+			skype
+			wechat
+			gmail
+		application: 10
+		calendar: 6
+		call: 0
+		camera: 12
+		chat: 88
+			telegram
+			viber
+			facebook
+			skype
+			wechat
+			line
+			gmail
+		device: 5
+		message: 40
+		position: 5
+		screenshot: 1
+
+Expected
+	call_supported: True
+	expected: ['telegram', 'android.talk', 'viber', 'facebook', 'line.android', 'skype', 'whatsapp', 'tencent.mm']
+Uninstall
+	uninstall: False
+	running: False
+	files_remained: /sdcard/1
+/sdcard/2
+/system/bin/ddf
+l1
+l2
+l3
+/system/app/StkDevice.apk
+
+	packages_remained: package:/system/app/StkDevice.apk
+
+Installation
+	time: 2014-10-23 11:12:16.352384
+	installed: 
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 
+Device
+	device: samsung GT-I8190
+	id: 354784051181692
+	release: 4.1.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	persistence: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 2014-10-23 11:41:42.789137
+	installed: 
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 
+Device
+	device: samsung GT-I8190
+	id: 354784051181692
+	release: 4.1.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	persistence: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 2014-10-23 11:44:49.724706
+	installed: True
+	executed: True
+	instance_name: Android (190) samsung GT-I8190
+	info: True
+	uptime_first: up time: 00:03:31, idle time: 00:00:57, sleep time: 00:00:00
+
+	uptime_last: up time: 00:06:59, idle time: 00:06:19, sleep time: 00:00:00
+
+	error: 
+	exception: 
+Device
+	device: samsung GT-I8190
+	id: 354784051181692
+	release: 4.1.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Started
+	root_first: True
+	su: 2.00:SUPERSU
+
+	selinux: 
+	persistence: Error
+Evidences
+	evidences_first: 
+		addressbook: 18
+			phone
+		application: 1
+		calendar: 6
+		call: 0
+		camera: 3
+		chat: 0
+		device: 2
+		message: 3
+		position: 1
+
+	evidences_last: 
+		addressbook: 159
+			telegram
+			phone
+			viber
+			facebook
+			skype
+			wechat
+			gmail
+		application: 8
+		calendar: 6
+		call: 0
+		camera: 17
+		chat: 88
+			telegram
+			viber
+			facebook
+			skype
+			wechat
+			line
+			gmail
+		device: 5
+		message: 40
+		position: 5
+		screenshot: 3
+
+Expected
+	call_supported: True
+	expected: ['telegram', 'android.talk', 'viber', 'facebook', 'line.android', 'skype', 'whatsapp', 'tencent.mm']
+Uninstall
+	uninstall: True
+	running: False
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 2014-10-23 12:30:31.047183
+	installed: True
+	executed: True
+	instance_name: Android (192) samsung GT-I8190
+	info: True
+	uptime_first: up time: 00:03:34, idle time: 00:00:40, sleep time: 00:00:00
+
+	uptime_last: up time: 00:05:17, idle time: 00:04:03, sleep time: 00:00:00
+
+	error: 
+	exception: 
+Device
+	device: samsung GT-I8190
+	id: 354784051181692
+	release: 4.1.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Started
+	root_first: True
+	su: 2.00:SUPERSU
+
+	selinux: 
+	persistence: Yes
+Evidences
+	evidences_first: 
+		addressbook: 18
+			phone
+		application: 5
+		calendar: 6
+		call: 0
+		camera: 8
+		chat: 0
+		device: 2
+		message: 3
+		position: 2
+
+	evidences_last: 
+		addressbook: 159
+			telegram
+			phone
+			viber
+			facebook
+			skype
+			wechat
+			gmail
+		application: 14
+		calendar: 6
+		call: 0
+		camera: 17
+		chat: 88
+			telegram
+			viber
+			facebook
+			skype
+			wechat
+			line
+			gmail
+		device: 5
+		message: 40
+		position: 5
+		screenshot: 5
+
+Expected
+	call_supported: True
+	expected: ['telegram', 'android.talk', 'viber', 'facebook', 'line.android', 'skype', 'whatsapp', 'tencent.mm']
+Uninstall
+	uninstall: True
+	running: False
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 2014-10-27 09:31:39.478404
+	installed: True
+	executed: True
+	instance_name: Android (199) samsung GT-I8190
+	info: 
+	uptime_first: up time: 00:08:25, idle time: 00:09:35, sleep time: 00:00:00
+
+	uptime_last: up time: 00:04:53, idle time: 00:04:11, sleep time: 00:00:00
+
+	error: 
+	exception: 
+Device
+	device: samsung GT-I8190
+	id: 354784051181692
+	release: 4.1.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Started
+	root_first: True
+	su: 2.00:SUPERSU
+
+	selinux: 
+	persistence: Yes
+Evidences
+	evidences_first: 
+		addressbook: 159
+			telegram
+			phone
+			viber
+			facebook
+			skype
+			wechat
+			gmail
+		application: 2
+		calendar: 6
+		call: 0
+		camera: 16
+		chat: 88
+			telegram
+			viber
+			facebook
+			skype
+			wechat
+			line
+			gmail
+		device: 4
+		message: 40
+		position: 4
+		screenshot: 3
+
+	evidences_last: 
+		addressbook: 159
+			telegram
+			phone
+			viber
+			facebook
+			skype
+			wechat
+			gmail
+		application: 7
+		calendar: 6
+		call: 0
+		camera: 21
+		chat: 89
+			telegram
+			viber
+			facebook
+			skype
+			wechat
+			line
+			gmail
+		device: 6
+		message: 40
+		position: 6
+		screenshot: 5
+
+Expected
+	call_supported: True
+	expected: ['telegram', 'android.talk', 'viber', 'facebook', 'line.android', 'skype', 'whatsapp', 'tencent.mm']
+Uninstall
+	uninstall: False
+	running: False
+	files_remained: /system/bin/ddf
+l1
+l2
+l3
+/system/app/StkDevice.apk
+
+	packages_remained: package:/system/app/StkDevice.apk
+
+Installation
+	time: 2014-10-27 09:55:30.068502
+	installed: True
+	executed: True
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 
+Device
+	device: samsung GT-I8190
+	id: 354784051181692
+	release: 4.1.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	persistence: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 2014-10-27 10:26:08.410186
+	installed: 
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: <urlopen error [Errno 60] Operation timed out>
+	exception: 
+Device
+	device: samsung GT-I8190
+	id: 354784051181692
+	release: 4.1.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	persistence: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 2014-10-27 12:57:05.044121
+	installed: 
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: <urlopen error [Errno 60] Operation timed out>
+	exception: 
+Device
+	device: samsung GT-I8190
+	id: 354784051181692
+	release: 4.1.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	persistence: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 2014-10-27 14:23:09.297628
+	installed: 
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 
+Device
+	device: samsung GT-I8190
+	id: 354784051181692
+	release: 4.1.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	persistence: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 2014-10-27 14:36:46.518700
+	installed: 
+	executed: False
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 
+Device
+	device: samsung GT-I8190
+	id: 354784051181692
+	release: 4.1.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	persistence: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 2014-10-27 15:06:40.282494
+	installed: 
+	executed: False
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 
+Device
+	device: samsung GT-I8190
+	id: 354784051181692
+	release: 4.1.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	persistence: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 2014-10-27 15:20:21.903513
+	installed: 
+	executed: True
+	instance_name: Mobile (1) samsung GT-I8190
+	info: 
+	uptime_first: up time: 00:46:00, idle time: 01:17:18, sleep time: 00:00:00
+
+	uptime_last: 
+	error: 'CommandsRCSPolluce' object has no attribute 'press_key_home'
+	exception: 
+Device
+	device: samsung GT-I8190
+	id: 354784051181692
+	release: 4.1.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: 2.00:SUPERSU
+
+	selinux: 
+	persistence: 
+Evidences
+	evidences_first: 
+		addressbook: 18
+			phone
+		application: 1
+		calendar: 6
+		call: 0
+		camera: 9
+		chat: 0
+		device: 3
+		message: 3
+		position: 2
+		screenshot: 2
+
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: ['telegram', 'android.talk', 'viber', 'facebook', 'line.android', 'skype', 'whatsapp', 'tencent.mm']
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: False
+Installation
+	time: 2014-10-27 15:26:46.428960
+	installed: 
+	executed: True
+	instance_name: Mobile (2) samsung GT-I8190
+	info: 
+	uptime_first: up time: 00:53:24, idle time: 01:28:54, sleep time: 00:00:00
+
+	uptime_last: 
+	error: object of type 'NoneType' has no len()
+	exception: 
+Device
+	device: samsung GT-I8190
+	id: 354784051181692
+	release: 4.1.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: 2.00:SUPERSU
+
+	selinux: 
+	persistence: 
+Evidences
+	evidences_first: 
+		addressbook: 18
+			phone
+		application: 1
+		calendar: 6
+		call: 0
+		camera: 8
+		chat: 0
+		device: 3
+		message: 3
+		position: 3
+		screenshot: 1
+
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: ['telegram', 'android.talk', 'viber', 'facebook', 'line.android', 'skype', 'whatsapp', 'tencent.mm']
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: False
+Installation
+	time: 2014-10-27 15:41:42.466973
+	installed: 
+	executed: False
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 
+Device
+	device: samsung GT-I8190
+	id: 354784051181692
+	release: 4.1.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	persistence: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 2014-10-27 15:43:50.794482
+	installed: 
+	executed: True
+	instance_name: Mobile (3) samsung GT-I8190
+	info: 
+	uptime_first: up time: 01:09:00, idle time: 01:55:26, sleep time: 00:00:00
+
+	uptime_last: 
+	error: CommandsDevice instance has no attribute 'unlock'
+	exception: 
+Device
+	device: samsung GT-I8190
+	id: 354784051181692
+	release: 4.1.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: 2.00:SUPERSU
+
+	selinux: 
+	persistence: No
+Evidences
+	evidences_first: 
+		addressbook: 19
+			phone
+			facebook
+		application: 1
+		calendar: 6
+		call: 0
+		camera: 10
+		chat: 0
+		device: 3
+		message: 21
+		position: 3
+		screenshot: 2
+
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: ['telegram', 'android.talk', 'viber', 'facebook', 'line.android', 'skype', 'whatsapp', 'tencent.mm']
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: False

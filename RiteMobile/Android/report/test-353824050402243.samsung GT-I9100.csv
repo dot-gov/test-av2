@@ -1,0 +1,56 @@
+2014-09-23 11:19:35.462847;samsung GT-I9100;353824050402243;4.0.3;;2013-05-01T09:11:19;;;True;True
+2014-09-23 11:27:56.038375;samsung GT-I9100;353824050402243;4.0.3;;2013-05-01T09:11:19;;;True;True;Android (27) samsung GT-I9100;|1.93:SUPERSU
+|;True;Root;True;|
+		addressbook: 56
+			telegram
+			phone
+			viber
+			facebook
+			skype
+			whatsapp
+			gmail
+		application: 1
+		calendar: 12
+		call: 0
+		camera: 1
+		chat: 191
+			telegram
+			viber
+			facebook
+			skype
+			line
+			whatsapp
+			gmail
+		device: 2
+		message: 8
+		position: 3
+		screenshot: 2
+|;[u'screenshot', u'addressbook', 'application', 'camera', 'call', 'chat', u'device', u'position', u'calendar', u'message'];| 11:31:33 up 4 min,  load average: 0.45, 1.15, 0.58
+|;['telegram', 'android.talk', 'viber', 'facebook', 'line.android', 'skype', 'whatsapp', 'tencent.mm'];True;|
+		addressbook: 56
+			telegram
+			phone
+			viber
+			facebook
+			skype
+			whatsapp
+			gmail
+		application: 10
+		calendar: 12
+		call: 1
+			skype
+		camera: 5
+		chat: 194
+			telegram
+			viber
+			facebook
+			skype
+			line
+			whatsapp
+			gmail
+		device: 3
+		message: 8
+		position: 6
+		screenshot: 7
+|;[u'screenshot', u'addressbook', 'application', 'camera', 'call', 'chat', u'device', u'position', u'calendar', u'message'];| 11:35:20 up 3 min,  load average: 0.96, 1.23, 0.55
+|;True;False

@@ -1,0 +1,69 @@
+2014-10-23 14:27:50.589623;LGE Nexus 4;357541051264523;4.3;;2013-05-01T09:11:19;;;;True;True;Android (194) LGE Nexus 4;|2.00:SUPERSU
+|;True;Started;True;|
+		addressbook: 15
+			phone
+		application: 1
+		call: 0
+		camera: 7
+		chat: 0
+		device: 2
+		message: 1
+		position: 2
+|;[u'addressbook', 'application', 'camera', 'call', 'chat', u'device', u'position', u'message'];|up time: 00:03:10, idle time: 00:07:40, sleep time: 00:00:00
+|;['whatsapp', 'android.talk', 'viber', 'skype'];Yes;True;|
+		addressbook: 31
+			phone
+			whatsapp
+			viber
+			gmail
+			skype
+		application: 9
+		call: 1
+			skype
+		camera: 21
+		chat: 150
+			whatsapp
+			viber
+			skype
+		device: 6
+		message: 7
+		position: 7
+		screenshot: 7
+|;[u'screenshot', u'addressbook', 'application', 'camera', 'call', 'chat', u'device', u'position', u'message'];|up time: 00:04:37, idle time: 00:12:07, sleep time: 00:00:00
+|;True;False;
+2014-10-23 14:48:28.737043;LGE Nexus 4;357541051264523;4.3;;2013-05-01T09:11:19;;;;True;True;Android (195) LGE Nexus 4;|2.00:SUPERSU
+|;True;Started;True;|
+		addressbook: 16
+			phone
+			whatsapp
+		application: 2
+		call: 0
+		camera: 8
+		chat: 61
+			whatsapp
+		device: 3
+		message: 1
+		position: 3
+		screenshot: 1
+|;[u'screenshot', u'addressbook', 'application', 'camera', 'call', 'chat', u'device', u'position', u'message'];|up time: 00:03:21, idle time: 00:08:55, sleep time: 00:00:00
+|;['whatsapp', 'android.talk', 'viber', 'skype'];Yes;True;|
+		addressbook: 30
+			phone
+			whatsapp
+			viber
+			gmail
+			skype
+		application: 7
+		call: 1
+			skype
+		camera: 24
+		chat: 150
+			whatsapp
+			viber
+			skype
+		device: 6
+		message: 7
+		position: 7
+		screenshot: 6
+|;[u'screenshot', u'addressbook', 'application', 'camera', 'call', 'chat', u'device', u'position', u'message'];|up time: 00:04:38, idle time: 00:13:49, sleep time: 00:00:00
+|;True;False;

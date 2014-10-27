@@ -1,0 +1,32 @@
+Installation
+	time: 2014-10-27 12:56:36.244652
+	installed: 
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: CommandsDevice instance has no attribute 'get_device_id'
+Device
+	device: samsung GT-I8190
+	id: 
+	release: 
+	build_date: 
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	persistence: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
