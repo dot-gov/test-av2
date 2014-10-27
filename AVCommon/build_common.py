@@ -156,8 +156,9 @@ def build_agent(factory, hostname, param, result_adder_function, zipfilename, me
             raise e
         return zipfilename
 
-def create_user(user_name, passwd = connection.passwd):
+def create_user(user_name, passwd = connection.passwd, operation = connection.operation):
     logging.debug("create_user_machine")
+
     privs = [
         'ADMIN', 'ADMIN_USERS', 'ADMIN_OPERATIONS', 'ADMIN_TARGETS', 'ADMIN_AUDIT',
         'ADMIN_LICENSE', 'SYS', 'SYS_FRONTEND', 'SYS_BACKEND', 'SYS_BACKUP',
@@ -184,7 +185,7 @@ def create_user(user_name, passwd = connection.passwd):
         logging.debug("creating user")
         connection.user, connection.passwd = connection.DEFAULT
         with connection() as c:
-            ret = c.operation(connection.operation)
+            ret = c.operation(operation)
             op_id, group_id = ret
             assert op_id and group_id
 

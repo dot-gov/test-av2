@@ -12,7 +12,7 @@ import argparse
 import commands_device
 from scripts.mobile.hardware.commands_device import CommandsDevice
 from scripts.mobile.hardware.utils import wifiutils
-from commands_rcs import CommandsRCS
+from commands_rcs import CommandsRCS, CommandsRCSPolluce
 
 import package
 
@@ -231,7 +231,8 @@ def test_device(id, command_dev, args, results):
     demo = True
     device_id = command_dev.get_dev_deviceid()
 
-    commands_rcs = CommandsRCS(host = "192.168.100.100", login_id = id, device_id = device_id, operation = "Rite_Mobile", target_name = "HardwareFunctional", factory = 'RCS_0000002050')
+    #commands_rcs = CommandsRCS(host = "192.168.100.100", login_id = id, device_id = device_id, operation = "Rite_Mobile", target_name = "HardwareFunctional", factory = 'RCS_0000002050')
+    commands_rcs = CommandsRCSPolluce(login_id = id, device_id = device_id)
 
     #build.connection.host = "rcs-zeus-master.hackingteam.local"
     #build.connection.operation = "Rite_Mobile"
@@ -246,7 +247,7 @@ def test_device(id, command_dev, args, results):
         f.close()
 
         # push new conf
-        os.system('echo ruby assets/rcs-core.rb -u %s -p %s -d %s -f %s -c build/config.upload.json' % (commands_rcs.login, commands_rcs.password, commands_rcs.host, commands_rcs.factory))
+        os.system('ruby assets/rcs-core.rb -u %s -p %s -d %s -f %s -c build/config.upload.json' % (commands_rcs.login, commands_rcs.password, commands_rcs.host, commands_rcs.factory))
 
         if demo:
             json = "build.demo.json"

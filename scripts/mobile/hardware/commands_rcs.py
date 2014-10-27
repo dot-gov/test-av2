@@ -1,3 +1,5 @@
+import abc
+
 __author__ = 'zeno'
 import sys, time
 import csv
@@ -18,7 +20,11 @@ from AVAgent.rcs_client import Rcs_client
 
 from AVCommon import build_common as build
 
+
+
+
 class CommandsRCS:
+    __metaclass__ = abc.ABCMeta
 
     def __init__(self, host, device_id, login_id = "0", login = "avtest", password = "avtest", operation = "Rite_Mobile", target_name = "HardwareFunctional", factory = 'RCS_0000002050'):
         self.host = host
@@ -40,7 +46,7 @@ class CommandsRCS:
 
     def create_login(self, id = 0):
         login = "qa_android_test_%s" % id
-        build.create_user(login)
+        build.create_user(login, operation = self.operation)
         build.connection.user = login
         return login
 
@@ -198,3 +204,39 @@ class CommandsRCS:
         ret = self.wait_for_next_sync()
         assert ret
 
+
+class CommandsRCSCastore(CommandsRCS):
+    def __init__(self, device_id, login_id = 0):
+        super(self.__class__, self).__init__(host = "192.168.100.100", login_id = login_id, device_id = device_id, operation = "Rite_Mobile", target_name = "HardwareFunctional", factory = 'RCS_0000002050')
+
+
+class CommandsRCSPolluce(CommandsRCS):
+    def __init__(self, device_id, login_id = 0):
+        super(self.__class__, self).__init__(host = "192.168.100.179", login_id = login_id, device_id = device_id, password = "testriteP123", operation = "Rite_Mobile", target_name = "HardwareFunctional", factory = 'RCS_0000000529')
+
+
+# servers = {
+# "castore": { "backend": "192.168.100.100",
+#                  "frontend": "192.168.100.100",
+#                  "operation": "QA",
+#                  "target_name": "HardwareFunctional"},
+#     "polluce": { "backend": "",
+#                  "frontend": "",
+#                  "operation": "QA",
+#                  "target_name": "HardwareFunctional"},
+#     "zeus": { "backend": "",
+#               "frontend": "",
+#               "target_name": "QA",
+#               "operation": "HardwareFunctional"},
+#     "minotauro": { "backend": "192.168.100.201",
+#               "frontend": "192.168.100.204",
+#               "target_name": "QA",
+#               "operation": "HardwareFunctional"},
+# }
+#
+# params = {
+#     'platform': 'android',
+#     'binary': {'demo': False, 'admin': True},
+#     'sign': {},
+#     'melt': {}
+# }

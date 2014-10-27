@@ -17,42 +17,6 @@ from scripts.mobile.hardware.utils import wifiutils, superuserutils, utils
 
 import adb
 
-from AVCommon import build_common
-from AVAgent import build
-
-# from AVCommon import logger
-# from AVAgent.build import build
-
-
-# servers = {
-# "castore": { "backend": "192.168.100.100",
-#                  "frontend": "192.168.100.100",
-#                  "operation": "QA",
-#                  "target_name": "HardwareFunctional"},
-#     "polluce": { "backend": "",
-#                  "frontend": "",
-#                  "operation": "QA",
-#                  "target_name": "HardwareFunctional"},
-#     "zeus": { "backend": "",
-#               "frontend": "",
-#               "target_name": "QA",
-#               "operation": "HardwareFunctional"},
-#     "minotauro": { "backend": "192.168.100.201",
-#               "frontend": "192.168.100.204",
-#               "target_name": "QA",
-#               "operation": "HardwareFunctional"},
-# }
-#
-# params = {
-#     'platform': 'android',
-#     'binary': {'demo': False, 'admin': True},
-#     'sign': {},
-#     'melt': {}
-# }
-
-
-
-
 
 class CommandsDevice:
     """Commands_device requires the a "device" object aka already instantiated AdbClient object

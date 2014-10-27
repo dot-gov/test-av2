@@ -121,7 +121,7 @@ def test_local_install(device, results, reboot=False, persistent=True, wait_root
 
     step += 1
 
-    adb.set_screen_on_and_unlocked(dev)
+    adb.unlock(dev)
     print "#STEP %d GET ZYGOTE " % step
     zygote_pid = adb.check_remote_process("zygote", 30, dev)
     if zygote_pid == -1:
