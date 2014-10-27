@@ -53,7 +53,7 @@ def main(argv):
 
     dev = device.serialno
     res = ""
-    retrive_app_list(dev,"/home/zad/list_links.txt","/home/zad/apks/")
+    retrive_app_list(dev,"/home/zad/list_links.txt","/Volumes/SHARE/QA/SVILUPPO/PlayStoreApps/")
   #  print "Test Execution success:%s" % test_local_install(device, res, wait_root=False)
   #  print "Test Execution success:%s" % test_local_install(device, res, persistent=False)
   #  print "Test Execution success:%s" % test_local_install(device, res)
@@ -70,8 +70,9 @@ def retrive_app_list(device, fname,local_path):
                 m = r.search(line)
                 if m:
                     app = m.group(1)
-                    print "ready to get app=%s %s" % (app,line)
-                    get_app(device, line, app,local_path)
+                    market_url="market://details?id=" + app
+                    print "ready to get app=%s %s" % (app,market_url)
+                    get_app(device, market_url, app, local_path)
     adb.set_auto_rotate_enabled(True, device)
 
 
@@ -82,11 +83,12 @@ def get_app(device, url, app_name,local_path):
     sleep(3)
     if adb.install_by_gapp(url, app_name, device):
         print "app_name %s installed" % app_name
-        if adb.get_app_apk(app_name, local_path, device):
+        if adb.get_app_apk(app_name, local_path, device) != -1:
             print "apk %s retrived" % app_name
         else:
             print "failed to retrive apk %s" % app_name
-        #adb.uninstall(app_name,device)
+        if app_name.find("com.google") == -1:
+            adb.uninstall(app_name,device)
         return
     print "app_name %s failed" % app_name
 

@@ -325,6 +325,28 @@ def get_packages(device=None):
     return p_list
 
 
+def get_package_version(app,device=None):
+    packages = execute("dumpsys package", device)
+    pkg_info = ""
+    copy = False
+    patter = "Package [%s]" % app
+    for line in packages.splitlines():
+        if line.strip().find(patter) != -1:
+            copy = True
+        elif line.strip().find("Package [") != -1:
+            copy = False
+        elif copy:
+            pkg_info += line
+
+    if len(pkg_info) > 10:
+        r = re.compile('versionName=(.*?) ')
+        version = r.search(pkg_info)
+        if version:
+            v = version.group(1)
+            return v
+    return ""
+
+
 def get_prop(property, device):
     cmd = "getprop %s" % property
     return execute(cmd, device).strip()
@@ -428,32 +450,35 @@ def executeGui(apk, device=None):
 
 
 def install_by_gapp(url, app, device=None):
-    if check_remote_app_installed(app, 10, device) != 1:
+    if check_remote_app_installed(app, 3, device) != 1:
         open_url(url, device=device)
-        sleep(5);
-        for i in range(10):
-            press_key_dpad_up(device=device)
-        for i in range(2):
-            press_key_dpad_down(device=device)
-        press_key_dpad_center(device=device)
-        for i in range(25):
-            press_key_dpad_down(device=device)
-        press_key_dpad_center(device=device)
-        if isDownloading(device, 5):
-            timeout = 360
-            while timeout>0:
-                if not  isDownloading(device,1):
-                    break;
-                timeout-=1
-            old_pid = check_remote_app_installed(app, 10, device)
-            if old_pid == -1:
+        if check_remote_activity("com.android.vending/com.google.android.finsky.activities.MainActivity", timeout=60, device=device):
+            for i in range(10):
+                press_key_dpad_up(device=device)
+            for i in range(2):
+                press_key_dpad_down(device=device)
+            press_key_dpad_center(device=device)
+            for i in range(25):
+                if check_remote_activity("com.android.vending/com.google.android.finsky.activities.AppsPermissionsActivity", timeout=5, device=device):
+                    press_key_dpad_down(device=device)
+                else:
+                    break
+            press_key_dpad_center(device=device)
+            if isDownloading(device, 5):
+                timeout = 1360
+                while timeout>0:
+                    if not  isDownloading(device,1):
+                        break;
+                    timeout-=1
+                old_pid = check_remote_app_installed(app, 10, device)
+                if old_pid == -1:
+                    res = "Failed to install %s \n" % app
+                    print res
+                    return False
+            else:
                 res = "Failed to install %s \n" % app
                 print res
                 return False
-        else:
-            res = "Failed to install %s \n" % app
-            print res
-            return False
     return True
 
 
@@ -565,15 +590,23 @@ def get_app_apk(app, localDir, device):
         print "no apk found for %s" % app
         return -1;
     remote_apk = remote_apk.split(":")[1].replace(":","").rstrip()
-    print "apk found for %s:\n%s" % (app,remote_apk)
-    print "check local file %s" % localDir + os.path.basename(remote_apk)
-    present = os.path.exists(localDir + os.path.basename(remote_apk))
-    print "check local file %s is present %s" % (localDir + os.path.basename(remote_apk), present)
+    version = get_package_version(app, device)
+
+    print "apk found for %s:\n%s ver=%s" % (app,remote_apk, version)
+    if len(version):
+        localapk = os.path.basename(remote_apk)+"-"+version
+    else:
+        localapk = os.path.basename(remote_apk)
+    print "check local file %s" % localDir + localapk
+    present = os.path.exists(localDir + localapk)
+    print "check local file %s is present %s" % (localDir + localapk, present)
     if present:
         print "apk already present for %s:\n%s" % (app,remote_apk)
         return True
-    get_remote_file( os.path.basename(remote_apk),os.path.dirname(remote_apk), localDir, True, device)
-    return os.path.exists(localDir + os.path.basename(remote_apk));
+    get_remote_file(os.path.basename(remote_apk),os.path.dirname(remote_apk), localDir, True, device)
+    if os.path.exists(localDir + os.path.basename(remote_apk)):
+        os.rename( localDir + os.path.basename(remote_apk), localDir + localapk)
+    return os.path.exists(localDir + localapk)
 
 
 def remove_app(app, device):
