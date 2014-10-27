@@ -617,7 +617,8 @@ def get_app_apk(app, localDir, device):
 
     print "apk found for %s:\n%s ver=%s" % (app,remote_apk, version)
     if len(version):
-        localapk = os.path.basename(remote_apk)+"-"+version
+        #remove verison hiphen es:com.google.android.apps.books-2.apk to com.google.android.apps.books.apk
+        localapk = app+"-"+version+".apk"
     else:
         localapk = os.path.basename(remote_apk)
     print "check local file %s" % localDir + localapk
