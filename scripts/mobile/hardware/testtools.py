@@ -7,7 +7,7 @@ import os
 from adbclient import AdbClient
 
 # our files
-import commands
+from commands_device import CommandsDevice
 from scripts.mobile.hardware.apk import apk_dataLoader
 from scripts.mobile.hardware.utils import wifiutils, superuserutils, utils
 import testmain
@@ -54,16 +54,17 @@ def main(argv):
         else:
             serialno = '.*'
 
-        device = AdbClient(serialno=serialno)
-        # print 'Args=', (str(sys.argv))
-        # operation = sys.argv[1]
+        comm_dev = CommandsDevice(dev_serialno=serialno)
+
+        #some debug
+        # print comm_dev.get_adb_client()
+        # print comm_dev.get_adb_client().serialno
+        # print comm_dev.get_dev_serialno()
 
         init = raw_input('Init everything? (y/n)')
         if init == "y":
             print "Init!"
-            commands.init_device(device.serialno, install_eicar=True)
-
-        dev = device.serialno
+            comm_dev.init_device(install_eicar=True)
 
         operation = -1
 
@@ -88,8 +89,8 @@ def main(argv):
             print '12 - push file'
             print ''
             print '#################     INTERNAL TESTS    #################'
-            print '20 - test get_server'
-            print '21 - test set_server'
+            print '20 - DEPRECATED test get_server'
+            print '21 - DEPRECATED test set_server'
             print '22 - test get_client'
             print '23 - test set_client'
             print '24 - test install (test on wifi_enabler)'
@@ -98,8 +99,8 @@ def main(argv):
             print '27 - test uninstall_agent'
             print '28 - test execute (test on wifi_enabler)'
             print '29 - test execute_agent'
-            print '30 - test build_agent'
-            print '31 - test build_agent (overwrite)'
+            print '30 - DEPRECATED test build_agent'
+            print '31 - DEPRECATED test build_agent (overwrite)'
             print '32 - test backup app data'
             print '33 - test restore app data from backup'
             print '34 - test restore app data from one of the sources'
@@ -113,30 +114,30 @@ def main(argv):
 
             if operation == '1':
                 av = get_which_av()
-                commands.update(av, dev)
+                comm_dev.update(av)
 
             elif operation == '2':
-                commands.wifi('open', dev)
+                comm_dev.wifi('open')
 
             #no network check
             elif operation == '2a':
-                commands.wifi('open', dev, False)
+                comm_dev.wifi('open', False)
 
             elif operation == '3':
-                commands.wifi('av', dev)
+                comm_dev.wifi('av')
 
             #no network check
             elif operation == '3a':
-                commands.wifi('av', dev, False)
+                comm_dev.wifi('av', False)
 
             elif operation == '4':
-                commands.wifi('disable', dev)
+                comm_dev.wifi('disable')
 
             elif operation == '5':
-                print commands.info_wifi_network(dev)
+                print comm_dev.info_wifi_network()
 
             elif operation == '6':
-                if commands.can_ping_google(dev):
+                if comm_dev.can_ping_google():
                     print "I can ping google"
                 else:
                     print "I canNOT ping google"
@@ -144,32 +145,32 @@ def main(argv):
             elif operation == '7':
                 # TODO: andrebbe spostato il do_test
                 for av in apk_dataLoader.get_av_list():
-                    do_test(device, av)
+                    do_test(comm_dev.get_adb_client(), av)
 
             elif operation == '8':
                 # TODO: andrebbe spostato il do_test
                 av = get_which_av()
-                do_test(device, av)
+                do_test(comm_dev.get_adb_client(), av)
 
             elif operation == '8a':
                 # TODO: andrebbe spostato il do_test
                 av = get_which_av()
-                do_test(device, av, av_update=False)
+                do_test(comm_dev.get_adb_client(), av, av_update=False)
 
             elif operation == '9':
-                if commands.check_infection(dev):
+                if comm_dev.check_infection():
                     print "Infected"
                 else:
                     print "Clean"
 
             elif operation == '10':
-                if commands.check_su_permissions(dev):
+                if comm_dev.check_su_permissions():
                     print "Root!"
                 else:
                     print "Not root :("
             elif operation == '11':
                 print '12 - pull file'
-                commands.pull(['file.png'], '/sdcard/', 'tmp', dev)
+                comm_dev.pull(['file.png'], '/sdcard/', 'tmp')
                 if os.path.exists('tmp/file.png'):
                     print 'Pull OK!'
                     #debug: time.sleep(20)
@@ -179,47 +180,48 @@ def main(argv):
 
             elif operation == '12':
                 print '13 - push file'
-                commands.push(['file.png'], 'assets', '/sdcard/', dev)
-
-            elif operation == '20':
-                print "testvarsrv= " + commands.get_server('testvarsrv')
-            elif operation == '21':
-                commands.set_server({'testvarsrv': 'testvaluesrv'})
+                comm_dev.push(['file.png'], 'assets', '/sdcard/')
+            #DEPRECATED
+            # elif operation == '20':
+            #     print "testvarsrv= " + comm_dev.get_server('testvarsrv')
+            # elif operation == '21':
+            #     comm_dev.set_server({'testvarsrv': 'testvaluesrv'})
             elif operation == '22':
-                print "testvarcli= " + commands.get_client('testvarcli')
+                print "testvarcli= " + comm_dev.get_client('testvarcli')
             elif operation == '23':
-                commands.set_client({'testvarcli': 'testvaluecli'})
+                comm_dev.set_client({'testvarcli': 'testvaluecli'})
             elif operation == '24':
-                commands.install('wifi_enabler', dev)
+                comm_dev.install('wifi_enabler', )
             elif operation == '25':
-                commands.install_agent(dev)
+                comm_dev.install_agent()
             elif operation == '26':
-                commands.uninstall('wifi_enabler', dev)
+                comm_dev.uninstall('wifi_enabler')
             elif operation == '27':
-                commands.uninstall_agent(dev)
+                comm_dev.uninstall_agent()
             elif operation == '28':
-                commands.execute('wifi_enabler', dev)
+                comm_dev.execute('wifi_enabler')
             elif operation == '29':
-                commands.execute_agent(dev)
-            elif operation == '30':
-                commands.build_apk_ruby()
-            elif operation == '31':
-                commands.build_apk_ruby(rebuild=True)
+                comm_dev.execute_agent()
+            #DEPRECATED
+            # elif operation == '30':
+            #     comm_dev.build_apk_ruby()
+            # elif operation == '31':
+            #     commands.build_apk_ruby(rebuild=True)
             elif operation == '32':
                 av = get_which_av()
-                commands.backup_app_data(av, device)
+                comm_dev.backup_app_data(av)
             elif operation == '33':
                 av = get_which_av()
-                commands.restore_app_data(av, device)
+                comm_dev.restore_app_data(av)
             elif operation == '34':
                 av = get_which_av()
-                commands.install_configuration(av, device)
+                comm_dev.install_configuration(av)
             elif operation == '35':
                 av = get_which_av()
-                commands.update_apk(av,dev)
+                comm_dev.update_apk(av)
         if operation == '99':
             print "Operazioni terminate, cleaning time"
-            commands.reset_device(dev)
+            comm_dev.reset_device()
         elif operation == '69':
             print "Operazioni terminate, esco senza pulire!"
 
@@ -296,6 +298,8 @@ def test_av(device, antivirus_apk_instance, results, av_update=True):
     print "#STEP 1.10 Uninstalling AV"
     antivirus_apk_instance.clean(dev)
 
+    return "Invisibility test terminated"
+
 
 def do_test(device_id, av, av_update=True):
     # device_id = device #utils.get_deviceId(device)
@@ -329,7 +333,7 @@ def test_device(device, av, results, av_update=True):
     # dev = device.serialno
 
     # Starts av installation and stealth check)
-    test_av(device, apk_dataLoader.get_apk_av(av), results, av_update)
+    return test_av(device, apk_dataLoader.get_apk_av(av), results, av_update)
 
 
 if __name__ == "__main__":

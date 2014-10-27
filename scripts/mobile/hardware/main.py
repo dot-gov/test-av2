@@ -9,7 +9,8 @@ import collections
 import datetime
 import adb
 import argparse
-import commands
+import commands_device
+from scripts.mobile.hardware.commands_device import CommandsDevice
 from scripts.mobile.hardware.utils import wifiutils
 
 import package
@@ -387,7 +388,8 @@ def test_device(id, dev, args, results):
 
     if args.fastnet:
         wifiutils.install_wifi_enabler(dev)
-        commands.wifi('open', dev, check_connection = False)
+        commands_dev = CommandsDevice(dev_serialno=dev)
+        commands_dev.wifi('open', check_connection=False)
         wifiutils.uninstall_wifi_enabler(dev)
         exit(0)
 
