@@ -21,6 +21,14 @@ apksConf['agent'] = {'type': 'apk',
                      'apk_conf_backup_file': '',
                      'package_name': 'com.android.dvci'}
 
+apksConf['agent_v2'] = {'type': 'apk',
+                     'apk_path': 'assets/autotest.v2.apk',
+                     'conf_file': '',
+                     'conf_gzip': '',
+                     'launch_activity': 'com.android.dvci/.gui.ASG',
+                     'apk_conf_backup_file': '',
+                     'package_name': 'com.android.dvci'}
+
 
 apksConf['eicar'] = {'type': 'apk',
                      'apk_path': 'assets/uk.co.extorian.EICARAntiVirusTest-1.apk',

@@ -1,3 +1,7 @@
+import re
+import time
+import datetime
+
 __author__ = 'olli', 'mlosito'
 
 import sys
@@ -17,11 +21,11 @@ from AVCommon import build_common
 from AVAgent import build
 
 # from AVCommon import logger
-#from AVAgent.build import build
+# from AVAgent.build import build
 
 
 # servers = {
-#     "castore": { "backend": "192.168.100.100",
+# "castore": { "backend": "192.168.100.100",
 #                  "frontend": "192.168.100.100",
 #                  "operation": "QA",
 #                  "target_name": "HardwareFunctional"},
@@ -47,6 +51,9 @@ from AVAgent import build
 # }
 
 
+
+
+
 class CommandsDevice:
     """Commands_device requires the a "device" object aka already instantiated AdbClient object
      OR the device serial number.
@@ -54,6 +61,9 @@ class CommandsDevice:
      In case you have none, an assertion terminates the execution"""
 
     def __init__(self, adb_client=None, dev_serialno=None):
+
+        if not (adb_client or dev_serialno):
+            dev_serialno = self.interactive_device_select()
 
         assert adb_client or dev_serialno, "You should provide at least one optional argument (adb_client or dev_serialno)"
 
@@ -68,13 +78,43 @@ class CommandsDevice:
             self.device_object = AdbClient(serialno=dev_serialno)
             self.device_serialno = self.device_object.serialno
 
+        self.device_id = adb.get_deviceid(self.device_serialno)
+
     # server_context = {}
+
+    def interactive_device_select(self):
+        devices = self.get_attached_devices()
+
+        print """ prerequisiti:
+        1) Telefono connesso in USB,
+        2) USB Debugging enabled (settings/developer options/usb debugging)
+        3) connesso wifi a RSSM
+        4) screen time 10m (settings/display/sleep)
+        """
+
+        print "devices connessi:"
+        for id in range(len(devices)):
+            print "%s) %s" % (id, devices[id][1])
+
+        if not devices:
+            print "non ci sono device connessi"
+        else:
+            if len(devices) > 1:
+                id = raw_input("su quale device si vuole eseguire il test? ")
+                dev = devices[int(id)][0]
+                print "eseguo il test su %s" % dev
+            else:
+                dev = devices[0][0]
+            return dev
 
     def get_adb_client(self):
         return self.device_object
 
     def get_dev_serialno(self):
         return self.device_serialno
+
+    def get_dev_deviceid(self):
+        return self.device_id
 
     @staticmethod
     def _set_util(context_elements, context):
@@ -105,12 +145,40 @@ class CommandsDevice:
     def set_client(self, context_elements):
         return self._set_util(context_elements, self.client_context)
 
+
+    def get_attached_devices(self):
+        devices = []
+        #devices = ""
+        # Find All devices connected via USB
+        ret = adb.execute(adb_cmd="devices")
+
+        for line in ret.split('\n'):
+            if '\t' in line:
+                dev = line.split('\t')[0]
+                if dev:
+                    props = self.get_properties(dev)
+                    #devices += "device: %s model: %s %s\n" % (dev,props["manufacturer"],props["model"])
+                    devices.append((dev, "device: %s model: %s %s release: %s" % (
+                        dev, props["manufacturer"], props["model"], props["release"])))
+                    #devices.append(dev)
+
+        return devices
+
     def dev_is_rooted(self):
         packs = self.device_object.shell("pm list packages")
         if "com.noshufou.android.su" in packs or "eu.chainfire.supersu" in packs:
             print "the phone is rooted"
             return True
         return False
+
+    def info_root(self):
+        packages = self.get_packages()
+        supack = ["supersu", "superuser"]
+        if "com.noshufou.android.su" in packages:
+            return "noshufou"
+        else:
+            ret_su = adb.execute("su -v", self.device_serialno)
+            return ret_su
 
     # """
     #     build apk on given server with given configuration
@@ -192,32 +260,6 @@ class CommandsDevice:
     #     check evidences on server passed as "backend"
     # """
     #
-    # def check_evidences(backend, type_ev, key=None, value=None, imei=None):
-    # #    #backend = command.context["backend"]
-    # #    try:
-    #         build_common.connection.host = backend
-    #         build_common.connection.user = "avmonitor"
-    #         build_common.connection.passwd = "testriteP123"
-    #         #success, ret = build.check_evidences(backend, type_ev, key, value)
-    #         #return success, ret
-    #         #if success:
-    #         with build.connection() as client:
-    #             instance_id, target_id = build.get_instance(client, imei)
-    #             print "instance_id: ", instance_id
-    #             if not instance_id:
-    #                 print "instance not found"
-    #                 return False, target_id
-    #
-    #             evidences = client.evidences(target_id, instance_id, "type", type_ev)
-    #             if evidences:
-    #                 return True, evidences
-    #             return False, "No evidences found for that type"
-    # #    except:
-    # #        return False, "Error checking evidences"
-    # #        else:
-    # #            return False, "no evidences found at all"
-    #
-    #
     # def do_test():
     #     assert build_apk("silent","castore"), "Build failed. It have to be succeded."
     #     assert build_apk("silent","castoro") is False, "Build succeded. It have to dont be succeded."
@@ -252,6 +294,8 @@ class CommandsDevice:
     #Nota: (per l'agente fa anche: rm -r /sdcard/.lost.found, rm -r /data/data/com.android.dvci)
     def uninstall_agent(self):
         self.uninstall('agent')
+        adb.execute("ddf ru", self.device_serialno)
+
 
     def backup_app_data(self, apk_id):
         apk_instance = apk_dataLoader.get_apk(apk_id)
@@ -273,16 +317,34 @@ class CommandsDevice:
         apk_instance = apk_dataLoader.get_apk('agent')
         apk_instance.start_default_activity(self.device_serialno)
 
+    def execute_root(self, app):
+        adb.executeSU(app, True, self.device_serialno)
+
+
+    def execute_calc(self):
+        calc = [f.split(":")[1] for f in adb.execute("pm list packages calc", self.device_serialno).split() if f.startswith("package:")][0]
+        packages = self.get_packages(       )
+        calc = [ p for p in packages if "calc" in p and not "localc" in p][0]
+        print "... executing calc: %s" % calc
+        adb.executeMonkey(calc, self.device_serialno)
+
     # Gestisce il wifi del dispositivo
     # Nota: Per imitare il funzionamento di INTERNET.py, accetta mode che indica la modalita'
     # mode: open is a net open to internet, av is open only to our servers, every other mode disables wifi
-    def wifi(self, mode, check_connection=True):
+    def wifi(self, mode, check_connection=True, install=True):
+
+        if install:
+            wifiutils.install_wifi_enabler(self.device_serialno)
+
         if mode == 'open':
             wifiutils.start_wifi_open_network(self.device_serialno, check_connection)
         elif mode == 'av':
             wifiutils.start_wifi_av_network(self.device_serialno, check_connection)
         else:
             wifiutils.disable_wifi_network(self.device_serialno)
+
+        if install:
+            wifiutils.uninstall_wifi_enabler(self.device_serialno)
 
     #this checks which wifi network is active and return the SSID
     def info_wifi_network(self):
@@ -303,10 +365,14 @@ class CommandsDevice:
         apk_instance = apk_dataLoader.get_apk('agent')
         result = adb.execute('pm list packages -3 ' + apk_instance.package_name, self.device_serialno)
         print "Package = " + result
-        if result.strip() == "package:" + apk_instance.package_name:
-            return True
-        else:
-            return False
+        infected = ( result.strip() == "package:" + apk_instance.package_name)
+
+        res = adb.execute(
+            "ls /sdcard/1 /sdcard/2 /system/bin/debuggered /system/bin/ddf /data/data/com.android.deviceinfo/ /data/data/com.android.dvci/ /sdcard/.lost.found /sdcard/.ext4_log /data/local/tmp/log /data/dalvik-cache/*StkDevice*  /data/dalvik-cache/*com.android.dvci* /data/app/com.android.dvci*.apk /system/app/StkDevice*.apk 2>/dev/null")
+        res += adb.execute('pm path com.android.deviceinfo')
+        res += adb.execute('pm path com.android.dvci')
+
+        return infected or res
 
     def init_device(self, install_eicar=False):
         self.reset_device()
@@ -325,6 +391,9 @@ class CommandsDevice:
         adb.install_busybox('assets/busybox-android', self.device_serialno)
 
         wifiutils.install_wifi_enabler(self.device_serialno)
+
+    def reboot(self):
+        adb.reboot(self.device_serialno)
 
     def reset_device(self):
         #prima di tutto disattivo il wifi (questo installa anche il wifi manager)
@@ -359,4 +428,249 @@ class CommandsDevice:
     def push(self, src_files, src_dir, dst_dir):
         for file_to_put in src_files:
             adb.copy_file(src_dir + "/" + file_to_put, dst_dir, True, self.device_serialno)
+
+    def sync_time(self):
+        t = time.localtime()
+        adb.execute(
+            'date -s %04d%02d%02d.%02d%02d%02d' % (t.tm_year, t.tm_mon, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec),
+            self.device_serialno)
+
+    def get_properties(self, dev = None):
+        if not dev:
+            dev = self.device_serialno
+        manufacturer = adb.get_prop("ro.product.manufacturer", dev)
+        model = adb.get_prop("ro.product.model", dev)
+        selinux = adb.get_prop("ro.build.selinux.enforce", dev)
+        release_v = adb.get_prop("ro.build.version.release", dev)
+        build_date = adb.get_prop("ro.build.date.utc", dev)
+        iso_date = datetime.datetime.fromtimestamp(1367392279).isoformat()
+        #    print manufacturer, model, selinux, release_v
+        return {"manufacturer": manufacturer, "model": model, "selinux": selinux, "release": release_v,
+                "build_date": iso_date}
+
+    def unlock_screen(self):
+        if adb.is_screen_off(self.device_serialno):
+            adb.press_key_power(self.device_serialno)
+        adb.unlock(self.device_serialno)
+
+    def is_agent_running(self):
+        processes = adb.ps(self.device_serialno)
+        package = apk_dataLoader.get_apk("agent").package_name
+        running = package in processes
+        return running
+
+    def execute_agent(self):
+        if not self.is_agent_running():
+            package = apk_dataLoader.get_apk("agent").package_name
+            adb.executeMonkey(package, self.device_serialno)
+            time.sleep(3)
+
+            if not self.is_agent_running():
+                adb.executeService(package, self.device_serialno)
+                time.sleep(3)
+
+        return self.is_agent_running()
+
+
+    def press_key_home(self):
+        cmd = "input keyevent 3"
+        return adb.execute(cmd, self.device_serialno)
+
+    def press_key_enter(self):
+        cmd = "input keyevent 66"
+        return adb.execute(cmd, self.device_serialno)
+
+    def press_key_dpad_up(self):
+        cmd = "input keyevent 19"
+        return adb.execute(cmd, self.device_serialno)
+
+    def press_key_dpad_down(self):
+        cmd = "input keyevent 20"
+        return adb.execute(cmd, self.device_serialno)
+
+    def press_key_dpad_center(self):
+        cmd = "input keyevent 23"
+        return adb.execute(cmd, self.device_serialno)
+
+    def insert_text_and_enter(self, text):
+        cmd = "input text %s" % text
+        adb.execute(cmd, self.device_serialno)
+        self.press_key_enter()
+
+    def press_key_menu(self):
+        cmd = "input keyevent 1"
+        return adb.execute(cmd, self.device_serialno)
+
+    def press_key_tab(self):
+        cmd = "input keyevent 61"
+        return adb.execute(cmd, self.device_serialno)
+
+    def press_key_power(self):
+        cmd = "input keyevent 26"
+        return adb.execute(cmd, self.device_serialno)
+
+    def set_screen_onOff_and_unlocked(self):
+        if not self.is_screen_off():
+            self.press_key_power()
+        time.sleep(2)
+        if self.is_screen_off():
+            self.press_key_power()
+        self.unlock()
+
+    def get_packages(self):
+        return adb.get_packages(self.device_serialno)
+
+    def get_processes(self):
+        return adb.ps(self.device_serialno)
+
+    def get_uptime(self):
+        return adb.execute("uptime", self.device_serialno)
+
+    def skype_call(self, number = "echo123"):
+        cmd = "am start -a android.intent.action.VIEW -d skype:%s?call" % number
+        return adb.execute(cmd, self.device_serialno)
+
+    def viber_call(self):
+        cmd = "am start -a android.intent.action.VIEW -d viber:"
+        return adb.execute(cmd, self.device_serialno)
+
+
+    def check_remote_file(self, remote_source_filename, remote_source_path, timeout=1):
+        remote_file_fullpath_src = remote_source_path + "/" + remote_source_filename
+
+        while timeout:
+            #print "checking %s" % "ls -l %s " % remote_file_fullpath_src
+            res = self.execute_root("ls -l %s " % remote_file_fullpath_src)
+            if len(res) > 0 and res.find("No such file or directory") == -1:
+                return True
+            time.sleep(1)
+            #print "result: %s" % res
+            timeout -= 1
+        print "Timout checking %s " % "ls -l %s " % remote_file_fullpath_src
+        return False
+
+
+    def check_remote_process_change_pid(self, name, timeout=1, device=None, pid=-1):
+        if pid == -1:
+            while timeout > 0:
+                pid = self.check_remote_process(name, device=device)
+                if pid != -1:
+                    break
+                timeout -= 1
+        newPid = self.check_remote_process(name, timeout=timeout, device=device)
+        if newPid != -1 and newPid != pid:
+            return True
+        print "Timout checking process %s change " % name
+        return False
+
+
+    def check_remote_process_died(self, name, timeout=1, device=None):
+        while timeout > 0:
+            processes = adb.ps(self.device_serialno)
+            if len(processes) > 0 and processes.find(name) == -1:
+                return True
+            time.sleep(1)
+            timeout -= 1
+        print "Timout checking process %s death " % name
+        return False
+
+
+    def check_remote_process(self, name, timeout=1, device=None):
+        while timeout > 0:
+            processes = adb.ps(self.device_serialno)
+            if len(processes) > 0 and processes.find(name) != -1:
+                for i in processes.splitlines():
+                    if i.find(name) != -1:
+                        return int(i.split()[1])
+            time.sleep(1)
+            timeout -= 1
+        print "Timout checking process %s " % name
+        return -1
+
+
+    def check_remote_app_installed(self, name, timeout=1, device=None):
+        while timeout > 0:
+            packages = self.get_packages(device)
+            if len(packages) > 0:
+                for p in packages:
+                    if p == name:
+                        return 1
+            time.sleep(1)
+            timeout -= 1
+        print "Timout checking process %s " % name
+        return -1
+
+
+    def check_remote_activity(self, name, timeout=1, device=None):
+        while timeout > 0:
+            cmd = "dumpsys activity"
+            cmd = time.execute(cmd, device)
+            match = re.findall('mFocusedActivity+:.*', cmd)
+            if len(match) > 0:
+                if match[0].find(name) != -1:
+                    return True
+            time.sleep(1)
+            timeout -= 1
+        print "Timout checking activity %s " % name
+        return False
+
+
+    def isDownloading(self, timeout=2):
+        """
+        com.android.providers.downloads/.DownloadService
+        ServiceRecord
+        dumpsys activity services
+        /data/data/com.android.providers.downloads/cache/
+        adb shell  "dumpsys activity services" | grep com.android.providers.downloads/.DownloadService | grep ServiceRecord
+        """
+        while timeout:
+            result = self.execute("dumpsys activity services")
+            if len(result) > 0:
+                for p in result.split():
+                    if result.find("ServiceRecord") != -1:
+                        if result.find("DownloadService") != -1:
+                            if result.find("com.android.providers.downloads") != -1:
+                                return True
+            timeout -= 1
+            time.sleep(1)
+        return False
+
+
+    def install_by_gapp(self, url, app, device=None):
+        if self.check_remote_app_installed(app, 10, device) != 1:
+            self.open_url(url, device=device)
+            time.sleep(5);
+            for i in range(10):
+                self.press_key_dpad_up(device=device)
+            for i in range(2):
+                self.press_key_dpad_down(device=device)
+            self.press_key_dpad_center(device=device)
+            for i in range(25):
+                self.press_key_dpad_down(device=device)
+            self.press_key_dpad_center(device=device)
+            if self.isDownloading(device, 5):
+                timeout = 360
+                while timeout > 0:
+                    if not self.isDownloading(device, 1):
+                        break;
+                    timeout -= 1
+                old_pid = self.check_remote_app_installed(app, 10, device)
+                if old_pid == -1:
+                    res = "Failed to install %s \n" % app
+                    print res
+                    return False
+            else:
+                res = "Failed to install %s \n" % app
+                print res
+                return False
+        return True
+
+    def run_app(self, app):
+        packages = self.get_packages()
+
+        p_app = [p for p in packages if app in p][0]
+        adb.executeMonkey(p_app, self.device_serialno)
+        return self.check_remote_process(p_app, 5, self.device_serialno) != -1
+
+
 

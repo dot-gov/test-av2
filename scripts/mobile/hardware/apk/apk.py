@@ -36,7 +36,10 @@ class Apk(object):
 
     def install(self, dev):
         print self.apk_file
-        adb.install(self.apk_file, dev)
+        if not os.path.isfile(self.apk_file):
+            print "not existent file: %s" % self.apk_file
+            return False
+        return adb.install(self.apk_file, dev)
 
     def uninstall(self, dev):
         print self.apk_file

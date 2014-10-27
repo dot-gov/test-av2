@@ -197,3 +197,4 @@ class CommandsRCS:
         self.conn.instance_close(self.instance_id);
         ret = self.wait_for_next_sync()
         assert ret
+
