@@ -42,6 +42,10 @@ def main(argv):
 
     serialno = sys.argv[1]
     init = sys.argv[2]
+    from_line=0
+    if len(sys.argv) > 3:
+        from_line = int(sys.argv[3])
+
 
     device = AdbClient(serialno=serialno)
 
@@ -52,18 +56,22 @@ def main(argv):
 
     dev = device.serialno
     res = ""
-    retrive_app_list(dev,"/home/zad/list_links.txt","/Volumes/SHARE/QA/SVILUPPO/PlayStoreApps/")
+    retrive_app_list(dev,"/home/zad/list_links.txt","/Volumes/SHARE/QA/SVILUPPO/PlayStoreApps/",from_line)
   #  print "Test Execution success:%s" % test_local_install(device, res, wait_root=False)
   #  print "Test Execution success:%s" % test_local_install(device, res, persistent=False)
   #  print "Test Execution success:%s" % test_local_install(device, res)
 
-def retrive_app_list(device, fname,local_path):
+def retrive_app_list(device, fname,local_path,from_line=1):
     if not superuserutils.install_ddf_shell(device):
         exit()
 
     adb.set_auto_rotate_enabled(False, device)
+    count = 0
     with open(fname) as f:
         for line in f:
+            count += 1
+            if count < from_line:
+                continue
             if "https://play.google.com/store/apps/" in line:
                 r = re.compile('\?id=(.*?)&rdid')
                 m = r.search(line)
