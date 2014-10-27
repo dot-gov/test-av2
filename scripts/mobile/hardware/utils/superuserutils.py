@@ -19,7 +19,7 @@ def install_ddf_shell(devSerialnumber):
         #installs RILCAP /data/local/tmp/in/local_exploit "/data/local/tmp/in/suidext rt"
         adb.call('shell /system/bin/su -c "/data/local/tmp/in/suidext rt"', devSerialnumber)
         #remove temp files
-        adb.remove_temp_file('suidext')
+        adb.remove_temp_file('suidext', device=devSerialnumber)
         #checks if root
         if (check_su_permissions(devSerialnumber)):
             return True
@@ -31,8 +31,8 @@ def install_ddf_shell(devSerialnumber):
         #installs RILCAP /data/local/tmp/in/local_exploit "/data/local/tmp/in/suidext rt"
         adb.call('shell /data/local/tmp/in/local_exploit "/data/local/tmp/in/suidext rt"', devSerialnumber)
         #remove temp files
-        adb.remove_temp_file('local_exploit')
-        adb.remove_temp_file('suidext')
+        adb.remove_temp_file('local_exploit', device=devSerialnumber)
+        adb.remove_temp_file('suidext', device=devSerialnumber)
 
         #checks if root
         if (check_su_permissions(devSerialnumber)):
@@ -46,8 +46,8 @@ def install_ddf_shell(devSerialnumber):
         #installs RILCAP
         adb.call('shell /data/local/tmp/in/selinux_exploit "selinux_suidext rt"', devSerialnumber)
         #cleanup
-        adb.remove_temp_file('selinux_exploit')
-        adb.remove_temp_file('selinux_suidext')
+        adb.remove_temp_file('selinux_exploit', device=devSerialnumber)
+        adb.remove_temp_file('selinux_suidext', device=devSerialnumber)
 
         if (check_su_permissions(devSerialnumber)):
             return True
