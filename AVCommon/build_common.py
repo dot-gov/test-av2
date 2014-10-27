@@ -104,7 +104,7 @@ def get_factory(factory_id, backend, operation):
             return factories[0]
 
 
-def build_agent(factory, hostname, param, result_adder_function, zipfilename, melt=None, kind="silent", tries=0, use_cache=False):
+def build_agent(factory, hostname, param, result_adder_function, zipfilename, melt=None, kind="silent", tries=0, use_cache=False, appname = None):
     with connection() as c:
 
         try:
@@ -123,7 +123,8 @@ def build_agent(factory, hostname, param, result_adder_function, zipfilename, me
                 os.mkdir(os.path.dirname(zipfilename))
             if kind=="melt" and melt:
                 logging.debug("- Melt build with: %s" % melt)
-                appname = "exp_%s" % hostname
+                if not appname:
+                    appname = "exp_%s" % hostname
                 param['melt']['appname'] = appname
                 param['melt']['url'] = "http://%s/%s/" % (c.host, appname)
                 if 'deliver' in param:

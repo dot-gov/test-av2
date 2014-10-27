@@ -78,7 +78,7 @@ class CommandsRCS:
     """
         build apk on given server with given configuration
     """
-    def build_melt_apk(self, melt_file):
+    def build_melt_apk(self, melt_file, appname):
 
         params = {
             'platform': 'android',
@@ -87,7 +87,7 @@ class CommandsRCS:
             'melt': {}
         }
 
-        ret = build.build_agent(self.factory_id, self.host, params, None, "build/melt.zip", melt=melt_file, kind="melt", use_cache=False)
+        ret = build.build_agent(self.factory_id, self.host, params, None, "build/melt.zip", melt=melt_file, kind="melt", use_cache=False, appname = appname)
         print ret
 
     def wait_for_sync(self):
