@@ -3,7 +3,6 @@ import csv
 import time
 # import datetime
 import traceback
-from adbclient import AdbClient
 import adb
 
 # our files

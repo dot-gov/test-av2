@@ -20,20 +20,25 @@ import package
 apk_template = "assets/autotest.%s.apk"
 service = 'com.android.dvci'
 
+
 def say(text):
     os.system("say " + text)
 
+
 def check_install(command_dev, results):
+    still_infected = False
     if command_dev.check_infection():
         command_dev.uninstall_agent()
 
-    still_infected = command_dev.check_infection()
+        still_infected = command_dev.check_infection()
+
     if still_infected:
         print "Error, still installed"
         return False
 
     results["packages_remained"] = still_infected
     return True
+
 
 def install(command_dev, results):
     if results['release'].startswith("2"):
@@ -51,15 +56,13 @@ def install(command_dev, results):
     return True
 
 
-
 def check_evidences(command_dev, c, results, timestamp=""):
-
     time.sleep(60)
     evidences, kinds = c.evidences()
 
     for k in ["call", "chat", "camera", "application"]:
-         if k not in kinds.keys():
-             kinds[k]= []
+        if k not in kinds.keys():
+            kinds[k] = []
 
     ev = "\n"
     ok = kinds.keys()
@@ -111,7 +114,7 @@ def uninstall_agent(commands_device, c, results):
         print "uninstall: OK"
 
 
-def check_uninstall(commands_device, results, reboot = True):
+def check_uninstall(commands_device, results, reboot=True):
     if reboot:
         print ".... reboot"
         commands_device.reboot()
@@ -121,15 +124,17 @@ def check_uninstall(commands_device, results, reboot = True):
     running = "still running: %s" % service in processes
     results['running'] = running
 
-    res = commands_device.execute("ls /sdcard/1 /sdcard/2 /system/bin/debuggered /system/bin/ddf /data/data/com.android.deviceinfo/ /data/data/com.android.dvci/ /sdcard/.lost.found /sdcard/.ext4_log /data/local/tmp/log /data/dalvik-cache/*StkDevice*  /data/dalvik-cache/*com.android.dvci* /data/app/com.android.dvci*.apk /system/app/StkDevice*.apk 2>/dev/null")
+    res = commands_device.execute(
+        "ls /sdcard/1 /sdcard/2 /system/bin/debuggered /system/bin/ddf /data/data/com.android.deviceinfo/ /data/data/com.android.dvci/ /sdcard/.lost.found /sdcard/.ext4_log /data/local/tmp/log /data/dalvik-cache/*StkDevice*  /data/dalvik-cache/*com.android.dvci* /data/app/com.android.dvci*.apk /system/app/StkDevice*.apk 2>/dev/null")
     results["files_remained"] = res
 
-    #res = adb.executeSU('cat /data/system/packages.list  | grep -i -e "dvci" -e "deviceinfo" -e "StkDevice"')
+    # res = adb.executeSU('cat /data/system/packages.list  | grep -i -e "dvci" -e "deviceinfo" -e "StkDevice"')
     #res += adb.executeSU('cat /data/system/packages.xml  | grep -i -e "dvci" -e "device" -e "StkDevice"')
     res = commands_device.execute('pm path com.android.deviceinfo')
     res += commands_device.execute('pm path com.android.dvci')
 
     results["packages_remained"] = res
+
 
 def check_skype(command_dev, c, results):
     supported = ['4.0', '4.1', '4.2', '4.3']
@@ -188,7 +193,7 @@ def set_properties(command_dev, results):
     return results
 
 
-def check_persistence(c, command_dev, results, delay = 30):
+def check_persistence(command_dev, c, results, delay=30):
     print "... reboot and check persistence"
     command_dev.press_key_home()
 
@@ -216,8 +221,56 @@ def check_persistence(c, command_dev, results, delay = 30):
     else:
         results["persistence"] = "Error";
 
-def test_device(id, command_dev, args, results):
 
+def report_if_exists(results, param):
+    report = ""
+    for p in param:
+        report += "\t%s: %s\n" % (p, results.get(p, ""))
+    return report
+
+
+def report_test_rail(results):
+    report = ""
+    report += "Installation\n"
+    report += report_if_exists(results,
+                               ["time", "installed", "executed", "instance_name", "info", "uptime_first", "uptime_last",
+                                "error",
+                                "exception"])
+    report += "Device\n"
+    report += report_if_exists(results, ["device", "id", "release", "build_date"])
+    report += "Root\n"
+    report += report_if_exists(results, ["root", "root_first", "su", "selinux", "persistence"])
+    report += "Evidences\n"
+    report += report_if_exists(results, ["evidences_first", "evidences_last"])
+    report += "Expected\n"
+    report += report_if_exists(results, ["call_supported", "expected"])
+    report += "Uninstall\n"
+    report += report_if_exists(results, ["uninstall", "running", "files_remained", "packages_remained"])
+
+    print report
+    return report
+
+
+def report_files(results, report):
+    with open('report/test-%s.%s.txt' % (results.get('id', 0), results.get('device', "device")), 'ab') as tfile:
+        tfile.write(report)
+
+    with open('report/test-%s.%s.csv' % (results.get('id', 0), results.get('device', "device")), 'ab') as csvfile:
+        # write header
+        devicelist = csv.writer(csvfile, delimiter=";",
+                                quotechar="|", quoting=csv.QUOTE_MINIMAL)
+        devicelist.writerow(results.values())
+
+    with open('report/hardware.logs.txt', 'a+') as logfile:
+        logfile.write(str(results))
+        logfile.write("\n")
+
+    with open('report/hardware.logs.py', 'a+') as logfile:
+        logfile.write("h.append(collections." + str(results) + ")")
+        logfile.write("\n")
+
+
+def test_device(id, command_dev, args, results):
     if args.fastnet:
         command_dev.wifi('open', check_connection=False, install=True)
         exit(0)
@@ -225,14 +278,14 @@ def test_device(id, command_dev, args, results):
     if args.reboot:
         command_dev.reboot()
 
-    #tests = ["sync","persistence","root", "skype","camera"]
+    # tests = ["sync","persistence","root", "skype","camera"]
     #tests = ["persistence"]
 
     demo = True
     device_id = command_dev.get_dev_deviceid()
 
     #commands_rcs = CommandsRCS(host = "192.168.100.100", login_id = id, device_id = device_id, operation = "Rite_Mobile", target_name = "HardwareFunctional", factory = 'RCS_0000002050')
-    commands_rcs = CommandsRCSPolluce(login_id = id, device_id = device_id)
+    commands_rcs = CommandsRCSPolluce(login_id=id, device_id=device_id)
 
     #build.connection.host = "rcs-zeus-master.hackingteam.local"
     #build.connection.operation = "Rite_Mobile"
@@ -247,7 +300,8 @@ def test_device(id, command_dev, args, results):
         f.close()
 
         # push new conf
-        os.system('ruby assets/rcs-core.rb -u %s -p %s -d %s -f %s -c build/config.upload.json' % (commands_rcs.login, commands_rcs.password, commands_rcs.host, commands_rcs.factory))
+        os.system('ruby assets/rcs-core.rb -u %s -p %s -d %s -f %s -c build/config.upload.json' % (
+        commands_rcs.login, commands_rcs.password, commands_rcs.host, commands_rcs.factory))
 
         if demo:
             json = "build.demo.json"
@@ -255,7 +309,8 @@ def test_device(id, command_dev, args, results):
             json = "build.nodemo.json"
         # build
         os.system(
-            'ruby assets/rcs-core.rb -u %s -p %s -d %s -f %s -b %s -o and.zip' % (commands_rcs.login, commands_rcs.password, commands_rcs.host, commands_rcs.factory, json))
+            'ruby assets/rcs-core.rb -u %s -p %s -d %s -f %s -b %s -o and.zip' % (
+            commands_rcs.login, commands_rcs.password, commands_rcs.host, commands_rcs.factory, json))
         os.system('unzip -o  and.zip -d assets')
         os.remove('and.zip')
     if not os.path.exists('assets/autotest.default.apk'):
@@ -326,54 +381,6 @@ def test_device(id, command_dev, args, results):
         results['error'] = "%s" % ex
 
 
-def report_if_exists(results, param):
-    report = ""
-    for p in param:
-        report += "\t%s: %s\n" % (p, results.get(p, ""))
-    return report
-
-
-def report_test_rail(results):
-    report = ""
-    report += "Installation\n"
-    report += report_if_exists(results,
-                               ["time", "installed", "executed", "instance_name", "info", "uptime_first", "uptime_last",
-                                "error",
-                                "exception"])
-    report += "Device\n"
-    report += report_if_exists(results, ["device", "id", "release", "build_date"])
-    report += "Root\n"
-    report += report_if_exists(results, ["root", "root_first", "su", "selinux", "persistence"])
-    report += "Evidences\n"
-    report += report_if_exists(results, ["evidences_first", "evidences_last"])
-    report += "Expected\n"
-    report += report_if_exists(results, ["call_supported", "expected"])
-    report += "Uninstall\n"
-    report += report_if_exists(results, ["uninstall", "running", "files_remained", "packages_remained"])
-
-    print report
-    return report
-
-
-def report_files(results, report):
-    with open('report/test-%s.%s.txt' % (results.get('id', 0), results.get('device', "device")), 'ab') as tfile:
-        tfile.write(report)
-
-    with open('report/test-%s.%s.csv' % (results.get('id', 0), results.get('device', "device")), 'ab') as csvfile:
-        # write header
-        devicelist = csv.writer(csvfile, delimiter=";",
-                                quotechar="|", quoting=csv.QUOTE_MINIMAL)
-        devicelist.writerow(results.values())
-
-    with open('report/hardware.logs.txt', 'a+') as logfile:
-        logfile.write(str(results))
-        logfile.write("\n")
-
-    with open('report/hardware.logs.py', 'a+') as logfile:
-        logfile.write("h.append(collections." + str(results) + ")")
-        logfile.write("\n")
-
-
 def parse_args():
     parser = argparse.ArgumentParser(description='AVMonitor master.')
     parser.add_argument('-b', '--build', required=False, action='store_true',
@@ -394,7 +401,7 @@ def main():
     # from AVCommon import logger
     # logger.init()
 
-    command_dev =  CommandsDevice()
+    command_dev = CommandsDevice()
 
     args = parse_args()
     results = collections.OrderedDict()
@@ -412,7 +419,8 @@ def main():
 
     print "Fine."
     say("test ended %s" % id)
-    print "Check manually with the evidences in the instance: %s" % (results.get('instance_name',"NO SYNC"))
+    print "Check manually with the evidences in the instance: %s" % (results.get('instance_name', "NO SYNC"))
+
 
 if __name__ == "__main__":
     main()

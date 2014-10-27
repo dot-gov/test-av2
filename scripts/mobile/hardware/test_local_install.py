@@ -1,3 +1,4 @@
+import argparse
 from distutils.command.config import config
 import sys
 import csv
@@ -6,7 +7,6 @@ import time
 import os
 import re
 
-from adbclient import AdbClient
 from time import sleep
 # our files
 
@@ -16,47 +16,16 @@ from scripts.mobile.hardware.utils import wifiutils, superuserutils, utils
 import testmain
 import adb
 
-
-
 sys.path.append("/home/zad/work/devel/test-rite/")
 
+def main(args):
+    commands_dev = CommandsDevice()
 
-def main(argv):
-    devices = adb.get_attached_devices()
-
-
-    if len(sys.argv) < 3:
-        print "Usage:%s device init" %sys.argv[0]
-        print "device= serial number or '.*'"
-        print "init=y|n"
-        exit(0)
-
-    print "devices connessi:"
-    for device in devices:
-        print device
-
-    if not devices:
-        print "non ci sono device connessi"
-        exit(0)
-
-
-    serialno = sys.argv[1]
-    init = sys.argv[2]
-    from_line=0
-    if len(sys.argv) > 3:
-        from_line = int(sys.argv[3])
-
-
-    device = AdbClient(serialno=serialno)
-
-    if init == "y":
+    if args.init:
         print "Init!"
-        commands_dev = CommandsDevice(adb_client=device)
         commands_dev.init_device()
 
-    dev = device.serialno
-    res = ""
-    retrive_app_list(dev,"/home/zad/list_links.txt","/Volumes/SHARE/QA/SVILUPPO/PlayStoreApps/",from_line)
+    retrive_app_list(commands_dev,"/home/zad/list_links.txt","/Volumes/SHARE/QA/SVILUPPO/PlayStoreApps/", args.line)
   #  print "Test Execution success:%s" % test_local_install(device, res, wait_root=False)
   #  print "Test Execution success:%s" % test_local_install(device, res, persistent=False)
   #  print "Test Execution success:%s" % test_local_install(device, res)
@@ -250,4 +219,8 @@ def test_local_install(device, results, reboot=False, persistent=True, wait_root
 
 
 if __name__ == "__main__":
-    main(sys.argv)
+    parser = argparse.ArgumentParser(description='Rite apk downlaoder.')
+    parser.add_argument('-l', '--line', required=False, default=1)
+    parser.add_argument('-i', '--init', required=False, action='store_true')
+    args = parser.parse_args()
+    main(args)

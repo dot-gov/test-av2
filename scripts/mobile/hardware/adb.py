@@ -103,11 +103,9 @@ def execute_no_command_split(cmd, device):
     # proc.wait()
     return str(comm[0])
 
-
 def open_url(url, device=None):
     cmd = "am start -a android.intent.action.VIEW -d " + url
     return execute(cmd, device)
-
 
 def is_screen_off(device=None):
     cmd = "dumpsys power "

@@ -4,8 +4,6 @@ import traceback
 import time
 import os
 
-from adbclient import AdbClient
-
 # our files
 from commands_device import CommandsDevice
 from scripts.mobile.hardware.apk import apk_dataLoader

@@ -5,7 +5,6 @@ import datetime
 __author__ = 'olli', 'mlosito'
 
 import sys
-from adbclient import AdbClient
 
 sys.path.append("/Users/olli/Documents/work/AVTest/")
 sys.path.append("/Users/mlosito/Sviluppo/Rite/")
@@ -24,23 +23,14 @@ class CommandsDevice:
      AdbClient wins in case you have both.
      In case you have none, an assertion terminates the execution"""
 
-    def __init__(self, adb_client=None, dev_serialno=None):
+    def __init__(self, dev_serialno=None):
 
-        if not (adb_client or dev_serialno):
+        if not dev_serialno:
             dev_serialno = self.interactive_device_select()
-
-        assert adb_client or dev_serialno, "You should provide at least one optional argument (adb_client or dev_serialno)"
+        self.device_serialno = dev_serialno
 
         #used for set variables
         self.client_context = {}
-
-        if adb_client:
-            self.device_object = adb_client
-            self.device_serialno = adb_client.serialno
-            return
-        else:
-            self.device_object = AdbClient(serialno=dev_serialno)
-            self.device_serialno = self.device_object.serialno
 
         self.device_id = adb.get_deviceid(self.device_serialno)
 
@@ -282,8 +272,7 @@ class CommandsDevice:
         apk_instance.start_default_activity(self.device_serialno)
 
     def execute_root(self, app):
-        adb.executeSU(app, True, self.device_serialno)
-
+        return adb.executeSU(app, True, self.device_serialno)
 
     def execute_calc(self):
         calc = [f.split(":")[1] for f in adb.execute("pm list packages calc", self.device_serialno).split() if f.startswith("package:")][0]
@@ -505,7 +494,7 @@ class CommandsDevice:
         while timeout:
             #print "checking %s" % "ls -l %s " % remote_file_fullpath_src
             res = self.execute_root("ls -l %s " % remote_file_fullpath_src)
-            if len(res) > 0 and res.find("No such file or directory") == -1:
+            if res and len(res) > 0 and res.find("No such file or directory") == -1:
                 return True
             time.sleep(1)
             #print "result: %s" % res
