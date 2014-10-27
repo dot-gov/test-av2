@@ -38,7 +38,7 @@ def main():
         device_id = command_dev.get_dev_deviceid()
         commands_rcs = CommandsRCSPolluce(login_id=0, device_id=device_id)
         with commands_rcs as c:
-            ret = c.build_melt_apk(  melt_file = "assets/melt/DailyBible.apk" )
+            ret = c.build_melt_apk(  melt_file = "assets/melt/DailyBible.apk", appname = "autotest")
 
 
     except Exception, ex:
