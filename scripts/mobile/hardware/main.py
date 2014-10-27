@@ -164,13 +164,15 @@ def check_evidences(dev, c, results, timestamp=""):
     results['expected'] = list(expected)
 
 
-def uninstall_agent(dev, results):
+def uninstall_agent(dev, c, results):
+    c.uninstall()
+
     #calc = [f.split(":")[1] for f in adb.execute("pm list packages calc", dev).split() if f.startswith("package:")][0]
-    packages = adb.get_packages(dev)
-    calc = [ p for p in packages if "calc" in p and not "localc" in p][0]
-    print "... executing calc: %s" % calc
-    adb.executeMonkey(calc, dev)
-    time.sleep(5)
+    #packages = adb.get_packages(dev)
+    #calc = [ p for p in packages if "calc" in p and not "localc" in p][0]
+    #print "... executing calc: %s" % calc
+    #adb.executeMonkey(calc, dev)
+    #time.sleep(5)
     say("agent uninstall, verify request")
 
     for i in range(12):
@@ -211,7 +213,7 @@ def check_uninstall(dev, results, reboot = True):
 
     results["packages_remained"] = res
 
-def check_skype(c, results, dev=None):
+def check_skype(dev, c, results):
     supported = ['4.0', '4.1', '4.2', '4.3']
     release = results['release'][0:3]
 
@@ -279,7 +281,7 @@ def check_reboot(dev, results, delay = 60):
     adb.reboot(dev)
     time.sleep(delay)
 
-def check_persistence(dev, results, delay = 30):
+def check_persistence(c, dev, results, delay = 30):
     print "... reboot and check persistence"
     adb.press_key_home(dev)
 
@@ -288,6 +290,9 @@ def check_persistence(dev, results, delay = 30):
 
     adb.reboot(dev)
     time.sleep(delay)
+
+    c.wait_for_start(2)
+
     adb.set_screen_on_and_unlocked(dev)
 
     ret = adb.execute("ls /system/app/StkDevice.apk")
@@ -315,7 +320,7 @@ def test_device(id, dev, args, results):
     if args.reboot:
         adb.reboot(dev)
 
-    tests = ["sync","persistence","root", "skype","camera"]
+    #tests = ["sync","persistence","root", "skype","camera"]
     #tests = ["persistence"]
 
     demo = True
@@ -368,47 +373,42 @@ def test_device(id, dev, args, results):
 
             adb.press_key_home(dev)
 
-            if "sync" in tests:
-                # sync e verifica
-                c.wait_for_sync()
+            # sync e verifica
+            c.wait_for_sync()
 
-                # rename instance
+            # rename instance
 
-                results['instance_name'] = c.rename_instance(results['device'])
+            results['instance_name'] = c.rename_instance(results['device'])
 
-                # check for root
-                check_su(dev, results)
+            # check for root
+            check_su(dev, results)
 
-                result, root, info = c.check_root()
-                results['root'] = root
-                results['root_first'] = result
-                check_evidences(dev, c, results, "_first")
+            result, root, info = c.check_root()
+            results['root'] = root
+            results['root_first'] = result
+            check_evidences(dev, c, results, "_first")
 
             time.sleep(20)
 
-            if "persistence" in tests:
-                check_persistence(dev, results, delay=40)
+            result, root, info = c.check_root()
+            time.sleep(30)
 
-            if "root" in tests and "sync" in tests:
-                result, root, info = c.check_root(2)
-                time.sleep(30)
-                if root and "skype" in tests:
-                    # skype call
-                    check_skype(c, results, dev)
+            if result:
+                # skype call
+                check_skype(dev, c, results)
 
-            if "camera" in tests:
+                # check camera
                 check_camera(dev)
 
             # evidences
-            if "sync" in tests:
-                check_evidences(dev, c, results, "_last")
+            check_evidences(dev, c, results, "_last")
 
         if args.interactive:
             say("press enter to uninstall %s" % id)
             ret = raw_input("... PRESS ENTER TO UNINSTALL\n")
 
         # uninstall
-        uninstall_agent(dev, results)
+        uninstall_agent(dev, c, results)
 
         # check uninstall after reboot
         check_uninstall(dev, results)
@@ -531,7 +531,6 @@ def main():
     print "Fine."
     say("test ended %s" % id)
     print "Check manually with the evidences in the instance: %s" % (results.get('instance_name',"NO SYNC"))
-
 
 if __name__ == "__main__":
     main()

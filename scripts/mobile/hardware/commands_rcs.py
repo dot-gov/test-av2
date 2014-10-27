@@ -92,9 +92,36 @@ class CommandsRCS:
                 break
         assert len(instances) == 1
         self.instance_id = instances[0]['_id']
+        self.stat = instances[0]['stat']
+        self.last_sync = self.stat['last_sync']
         # print "instance_id: %s " % instance_id
+
+        self.wait_for_start()
         print "sync: OK"
         return self.instance_id
+
+    def wait_for_next_sync(self, last_sync = 0):
+        print "... wait for next sync"
+        if not last_sync:
+            last_sync = self.last_sync
+
+        for i in range(18):
+            # print "operation: %s, %s" % (operation_id, group_id)
+            instances = self.conn.instances_by_factory(self.device_id, self.factory)
+            if not instances:
+                print "... waiting for sync"
+                time.sleep(10)
+            else:
+                self.stat = instances[0]['stat']
+                sync = instances[0]['stat']['last_sync']
+                if sync > last_sync:
+                    print "... new sync: %s" % sync
+                    self.last_sync = sync
+                    return True
+
+        print "... no new sync"
+        return False
+
 
     def rename_instance(self, device_info):
         info = self.conn.instance_info(self.instance_id)
@@ -103,24 +130,33 @@ class CommandsRCS:
         print "instance name: %s" % info['name']
         return info['name']
 
-    def check_root(self, starts = 1):
+    def wait_for_start(self, starts = 1):
+        info_evidences = []
+        counter = 0
+        while not info_evidences and counter < 10:
+            infos = self.conn.infos(self.target_id, self.instance_id)
+            info_evidences = [ (e['data']['content'],e['da']) for e in infos if 'Started' in e['data']['content']]
+            counter += 1
+            if len(info_evidences) < starts:
+                print "... waiting for info Started: %s/%s" % (len(info_evidences), starts)
+                time.sleep(10)
+            else:
+                print "... got Started: %s/%s" % (len(info_evidences), starts)
+                self.last_start = info_evidences[-1][1]
+
+    def check_root(self):
         # check root
         info_evidences = []
         counter = 0
         result = False
         root = ""
         info = 0
-        while not info_evidences and counter < 10:
-            infos = self.conn.infos(self.target_id, self.instance_id)
-            info_evidences = [e['data']['content'] for e in infos if 'Started' in e['data']['content']]
-            counter += 1
-            if len(info_evidences) < starts:
-                print "... waiting for info Started: %s/%s" % (len(info_evidences), starts)
-                time.sleep(10)
+        if not self.last_start:
+            self.wait_start()
 
         while not info_evidences and counter < 10:
             infos = self.conn.infos(self.target_id, self.instance_id)
-            info_evidences = [e['data']['content'] for e in infos if 'Root' in e['data']['content'] or 'Started' in e['data']['content']]
+            info_evidences = [e['data']['content'] for e in infos if 'Root' in e['data']['content'] and e['da'] > self.last_start]
             counter += 1
             if not info_evidences or not 'Root' in info_evidences[-1]:
                 print "... waiting for info Root: %s" % info_evidences
@@ -156,3 +192,8 @@ class CommandsRCS:
     def infos(self, keyword = ''):
         infos = self.conn.infos(self.target_id, self.instance_id)
         return [e['data']['content'] for e in infos if keyword in e['data']['content']]
+
+    def uninstall(self):
+        self.conn.instance_close(self.instance_id);
+        ret = self.wait_for_next_sync()
+        assert ret
