@@ -31,6 +31,8 @@ SET_MAIL:
 
 # ------------- SYSTEM COMMANDS -------------- #
 
+
+#seems BROKEN
 VM_EXEC_SOLDIER:
     - CROP: True
     - CALL: BUILD_SOLDIER
@@ -39,7 +41,7 @@ VM_EXEC_SOLDIER:
     #- CHECK_INFECTION: STOP_IF_CLEAN
     - CROP: False
 
-
+#seems BROKEN
 SYSTEM_SOLDIER_BASIC:
     - VM_ALL
     - INTERNET: False
@@ -274,11 +276,13 @@ SYSTEM_STATIC_SRV:
     - SLEEP: [1, 600]
     - CALL: INIT_DISPATCH
     - CALL: VM_CLEAN_EVIDENCES
+    - BUILD_CACHE_CLEAN: False
     - CALL: SET_MAIL
     - CROP: True
     - REPORT:
         - VM_STATIC_SRV: ['AV Invisibility Static', 'Static check on builds']
     - CROP: False
+    - BUILD_CACHE_CLEAN: True
     - CALL: END_DISPATCH
 
 
@@ -302,11 +306,13 @@ SYSTEM_MELT_SRV:
     - SLEEP: [1, 600]
     - CALL: INIT_DISPATCH
     - CALL: VM_CLEAN_EVIDENCES
+    - BUILD_CACHE_CLEAN: False
     - CALL: SET_MAIL
     - REPORT:
         - VM_MELT_SRV: ['AV Invisibility', 'Melt']
     - SCREENSHOT
     - UNINSTALL
+    - BUILD_CACHE_CLEAN: False
     - CALL: END_DISPATCH
 
 
@@ -332,14 +338,12 @@ SYSTEM_ELITE_FAST_SRV:
     - CALL: INIT_DISPATCH
     - CALL: VM_CLEAN_EVIDENCES
     - CALL: SET_MAIL
-#    I reuse the cache!
-#    - BUILD_CACHE_CLEAN: False
+    - BUILD_CACHE_CLEAN: False
     - REPORT:
         - VM_ELITE_FAST_SRV: ['AV Invisibility', 'Elite']
     - SCREENSHOT
     - UNINSTALL
-#    I reuse the cache!
-#    - BUILD_CACHE_CLEAN: True
+    - BUILD_CACHE_CLEAN: True
     - CALL: VM_GET_LOG
     - CALL: END_DISPATCH
 
@@ -380,10 +384,12 @@ SYSTEM_SOLDIER_SRV:
     - CALL: INIT_DISPATCH
     - CALL: VM_CLEAN_EVIDENCES
     - CALL: SET_MAIL
+    - BUILD_CACHE_CLEAN: False
     - REPORT:
         - VM_SOLDIER_SRV: ['AV Invisibility', 'Soldier']
     - SCREENSHOT
     - UNINSTALL
+    - BUILD_CACHE_CLEAN: True
     - CALL: VM_GET_LOG
     - CALL: END_DISPATCH
 
@@ -410,10 +416,12 @@ SYSTEM_EXPLOIT_SRV:
     - CALL: INIT_DISPATCH
     - CALL: VM_CLEAN_EVIDENCES
     - CALL: SET_MAIL
+    - BUILD_CACHE_CLEAN: False
     - REPORT:
         - VM_EXPLOIT_SRV: ['AV Invisibility', 'Exploit']
     - SCREENSHOT
     - UNINSTALL
+    - BUILD_CACHE_CLEAN: True
     - CALL: VM_GET_LOG
     - CALL: END_DISPATCH
 
@@ -786,6 +794,7 @@ SYSTEM_PUSH_EXE:
 # ---------------- #
 
 VM_FUNCTIONAL_EV:
+    - SLEEP: 60
     - CHECK_EVIDENCES: [device]
     - CHECK_EVIDENCES: [url]
     - CHECK_EVIDENCES: [screenshot]
@@ -800,6 +809,7 @@ VM_FUNCTIONAL_ADDRESSBOOK_FB:
 
 VM_FUNCTIONAL_EV_SKYPE:
     - SLEEP: 60
+    # we cannot test skype chats because only chat being sent AND received after installation are extracted
     #- CHECK_EVIDENCES: [chat, program, skype]
     - CHECK_EVIDENCES: [addressbook, program, skype]
     - CHECK_EVIDENCES: [call, program, skype]

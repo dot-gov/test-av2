@@ -23,18 +23,18 @@ class Apk(object):
             adb.remove_directory("/sdcard/.lost.found", False, dev)
             adb.remove_directory("/data/data/com.android.dvci", True, dev)
 
-    def install_configuration(self, device):
+    def install_configuration(self, device_serialno):
         if self.apk_conf_backup_file != '':
-             print 'Restoring from ADB backup'
-             adb.restore_app_data(self.apk_conf_backup_file, device)
+            print 'Restoring from ADB backup'
+            adb.restore_app_data(self.apk_conf_backup_file, device_serialno)
         elif self.apk_conf_gzip != '':
             print 'Restoring from gzip archive'
             local_path, local_filename = os.path.split(self.apk_conf_gzip)
-            adb.unpack_local_to_remote(local_path, local_filename, '/', True, device.serialno)
+            adb.unpack_local_to_remote(local_path, local_filename, '/', True, device_serialno)
         else:
             print 'Restoring from single files'
             for conf_file in self.apk_conf_files:
-                adb.copy_file(conf_file[0], conf_file[1], True, device.serialno)
+                adb.copy_file(conf_file[0], conf_file[1], True, device_serialno)
 
     def install(self, dev):
         print self.apk_file
@@ -65,11 +65,11 @@ class Apk(object):
         local_path, local_filename = os.path.split(self.apk_conf_gzip)
         adb.pack_remote_to_local('/data/data/' + self.package_name, local_path, local_filename, True, dev)
 
-    def backup_app_data(self, dev):
-        adb.backup_app_data(self.apk_conf_backup_file, self.package_name, dev)
+    def backup_app_data(self, device_serialno):
+        adb.backup_app_data(self.apk_conf_backup_file, self.package_name, device_serialno)
 
-    def restore_app_data(self, dev):
-        adb.restore_app_data(self.apk_conf_backup_file, dev)
+    def restore_app_data(self, device_serialno):
+        adb.restore_app_data(self.apk_conf_backup_file, device_serialno)
 
     def unpack_app_data(self, dev):
         local_path, local_filename = os.path.split(self.apk_conf_gzip)

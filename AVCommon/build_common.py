@@ -106,7 +106,9 @@ def get_factory(factory_id, backend, operation):
 
 def build_agent(factory, hostname, param, result_adder_function, zipfilename, melt=None, kind="silent", tries=0, use_cache=False, appname = None):
     with connection() as c:
-
+        # print "melt %s:" % melt
+        # print "zipfilename %s:" % zipfilename
+        # print "appname %s:" % appname
         try:
             #nel caso di una build server, voglio usare un caching, quindi controllo se c'e' gia' un build pronto
             if use_cache:
@@ -127,6 +129,9 @@ def build_agent(factory, hostname, param, result_adder_function, zipfilename, me
                     appname = "exp_%s" % hostname
                 param['melt']['appname'] = appname
                 param['melt']['url'] = "http://%s/%s/" % (c.host, appname)
+                # print "melt %s:" % melt
+                # print "zipfilename %s:" % zipfilename
+                # print "appname %s:" % appname
                 if 'deliver' in param:
                     param['deliver']['user'] = c.myid
                 r = c.build_melt(factory, param, melt, zipfilename)
@@ -141,7 +146,7 @@ def build_agent(factory, hostname, param, result_adder_function, zipfilename, me
             if tries <= 3:
                 tries += 1
                 logging.debug("DBG problem building scout. tries number %s" % tries)
-                build_agent(factory, result_adder_function, zipfilename, melt, kind, tries)
+                build_agent(factory, hostname, param, result_adder_function, zipfilename, melt, kind, tries, use_cache, appname)
             else:
                 if result_adder_function:
                     result_adder_function("+ ERROR SCOUT BUILD AFTER %s BUILDS" % tries)

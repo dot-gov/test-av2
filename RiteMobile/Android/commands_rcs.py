@@ -1,4 +1,5 @@
 import abc
+import os
 import socket
 
 __author__ = 'zeno'
@@ -78,7 +79,7 @@ class CommandsRCS:
     """
         build apk on given server with given configuration
     """
-    def build_melt_apk(self, melt_file, appname):
+    def build_melt_apk(self, melt_file, appname, melt_dir="build_melt/"):
 
         params = {
             'platform': 'android',
@@ -87,10 +88,11 @@ class CommandsRCS:
             'melt': {}
         }
 
-        ret = build.build_agent(self.factory_id, self.host, params, None, "build/melt.zip", melt=melt_file, kind="melt", use_cache=False, appname = appname)
+        # tries = 4 MEANS NO RETRIES
+        ret = build.build_agent(self.factory_id, self.host, params, None, os.path.join(melt_dir, "melt_%s.zip" % appname), melt=melt_file, kind="melt", tries=4, use_cache=False, appname=appname)
         print ret
 
-    def wait_for_sync(self):
+    def wait_for_sync(self, trigger_function=None):
         print "... sleeping for sync"
         time.sleep(60)
         for i in range(10):
@@ -98,6 +100,8 @@ class CommandsRCS:
             instances = self.conn.instances_by_factory(self.device_id, self.factory)
             if not instances:
                 print "... waiting for sync"
+                if trigger_function:
+                    trigger_function()
                 time.sleep(10)
             else:
                 break

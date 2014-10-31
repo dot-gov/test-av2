@@ -1,13 +1,13 @@
 import re
 import time
 import datetime
+import os
 
 from RiteMobile.Android import adb
 
 from RiteMobile.Android.apk import apk_dataLoader
 
 from RiteMobile.Android.utils import utils, wifiutils, superuserutils
-
 
 __author__ = 'olli', 'mlosito'
 
@@ -29,6 +29,7 @@ class CommandsDevice:
 
         if not dev_serialno:
             dev_serialno = self.interactive_device_select()
+        assert dev_serialno, "Aborting: non ci sono device connessi"
         self.device_serialno = dev_serialno
 
         #used for set variables
@@ -54,6 +55,7 @@ class CommandsDevice:
 
         if not devices:
             print "non ci sono device connessi"
+            return None
         else:
             if len(devices) > 1:
                 id = raw_input("su quale device si vuole eseguire il test? ")
@@ -190,10 +192,26 @@ class CommandsDevice:
         apk_instance = apk_dataLoader.get_apk(apk_id)
         apk_instance.install(self.device_serialno)
 
+    # Installa uno zip, come buildato dal server. Non utilizza la classe Apk
+    # E' possibile scegliere un pattern contenuto nel nome file in modo da installare il file
+    # corretto. Predefinito e' "default", si puo' usare invece 'v2'
+    # Restituisce il nome dell'apk installato o, in caso di fallimento: False
+    def install_zip(self, zipfile, type_to_install="default"):
+        tempdir = "assets/tmp_zip/"
+        for file_to_del in os.listdir(tempdir):
+            os.remove(os.path.join(tempdir, file_to_del))
+        apkfilenames = utils.unzip(zipfile, "assets/tmp_zip/", None)
+        for apkfile in apkfilenames:
+            if apkfile.find(type_to_install):
+                if adb.install(apkfile, self.device_serialno):
+                    return apkfile
+                else:
+                    return False
+
     #installa la configurazione (la quale puo' essere stata salvata con uno di 3 metodi diversi
     def install_configuration(self, apk_id):
         apk_instance = apk_dataLoader.get_apk(apk_id)
-        apk_instance.install_configuration(self.device_object)
+        apk_instance.install_configuration(self.device_serialno)
 
     #Nota: l'install installa anche l'eventuale configurazione definita nell'apk_dataloader.
     #La confiurazione puo' essere definita come singoli files o come zip (ma non entrambi i metodi)
@@ -205,6 +223,9 @@ class CommandsDevice:
     def uninstall(self, apk_id):
         apk_instance = apk_dataLoader.get_apk(apk_id)
         apk_instance.clean(self.device_serialno)
+
+    def uninstall_package(self, package_name):
+        adb.uninstall(package_name, self.device_serialno)
 
     #Nota: (per l'agente fa anche: rm -r /sdcard/.lost.found, rm -r /data/data/com.android.dvci)
     def uninstall_agent(self):
@@ -228,9 +249,25 @@ class CommandsDevice:
         apk_instance = apk_dataLoader.get_apk(apk_id)
         apk_instance.start_default_activity(self.device_serialno)
 
+    def launch_default_activity_monkey(self, package_name):
+        return adb.executeMonkey(package_name, self.device_serialno)
+
+    # old version
+    # def execute_agent(self):
+    #     apk_instance = apk_dataLoader.get_apk('agent')
+    #     apk_instance.start_default_activity(self.device_serialno)
+
     def execute_agent(self):
-        apk_instance = apk_dataLoader.get_apk('agent')
-        apk_instance.start_default_activity(self.device_serialno)
+        if not self.is_agent_running():
+            package = apk_dataLoader.get_apk("agent").package_name
+            adb.executeMonkey(package, self.device_serialno)
+            time.sleep(3)
+
+            if not self.is_agent_running():
+                adb.executeService(package, self.device_serialno)
+                time.sleep(3)
+
+        return self.is_agent_running()
 
     def execute_cmd(self, app):
         return adb.executeSU(app, False, self.device_serialno)
@@ -365,29 +402,26 @@ class CommandsDevice:
         return {"manufacturer": manufacturer, "model": model, "selinux": selinux, "release": release_v,
                 "build_date": iso_date}
 
+    def lock_and_unlock_screen(self):
+        if not adb.is_screen_off():
+            self.press_key_power()
+        time.sleep(2)
+        if adb.is_screen_off():
+            self.press_key_power()
+        adb.unlock()
+
     def unlock_screen(self):
         if adb.is_screen_off(self.device_serialno):
-            adb.press_key_power(self.device_serialno)
+            self.press_key_power()
         adb.unlock(self.device_serialno)
 
     def is_agent_running(self):
+        self.is_package_runnning(apk_dataLoader.get_apk("agent").package_name)
+
+    def is_package_runnning(self, package_name):
         processes = adb.ps(self.device_serialno)
-        package = apk_dataLoader.get_apk("agent").package_name
-        running = package in processes
+        running = package_name in processes
         return running
-
-    def execute_agent(self):
-        if not self.is_agent_running():
-            package = apk_dataLoader.get_apk("agent").package_name
-            adb.executeMonkey(package, self.device_serialno)
-            time.sleep(3)
-
-            if not self.is_agent_running():
-                adb.executeService(package, self.device_serialno)
-                time.sleep(3)
-
-        return self.is_agent_running()
-
 
     def press_key_home(self):
         cmd = "input keyevent 3"
@@ -426,14 +460,6 @@ class CommandsDevice:
         cmd = "input keyevent 26"
         return adb.execute(cmd, self.device_serialno)
 
-    def set_screen_onOff_and_unlocked(self):
-        if not self.is_screen_off():
-            self.press_key_power()
-        time.sleep(2)
-        if self.is_screen_off():
-            self.press_key_power()
-        self.unlock()
-
     def get_packages(self):
         return adb.get_packages(self.device_serialno)
 
@@ -443,14 +469,13 @@ class CommandsDevice:
     def get_uptime(self):
         return adb.execute("uptime", self.device_serialno)
 
-    def skype_call(self, number = "echo123"):
+    def skype_call(self, number="echo123"):
         cmd = "am start -a android.intent.action.VIEW -d skype:%s?call" % number
         return adb.execute(cmd, self.device_serialno)
 
     def viber_call(self):
         cmd = "am start -a android.intent.action.VIEW -d viber:"
         return adb.execute(cmd, self.device_serialno)
-
 
     def check_remote_file(self, remote_source_filename, remote_source_path, timeout=1):
         remote_file_fullpath_src = remote_source_path + "/" + remote_source_filename
@@ -588,6 +613,7 @@ class CommandsDevice:
         p_app = [p for p in packages if app in p][0]
         adb.executeMonkey(p_app, self.device_serialno)
         return self.check_remote_process(p_app, 5, self.device_serialno) != -1
+
 
 
 
