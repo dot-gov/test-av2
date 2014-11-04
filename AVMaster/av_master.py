@@ -52,7 +52,10 @@ class AVMaster():
         if self.args.clean:
             logging.warn("cleaning mq")
             mq.clean()
-
+        if self.args.check:
+            logging.warn("checking procedure")
+            Procedure.check_procedure(self.procedure)
+            return
         logging.info("mq session: %s" % mq.session)
 
         dispatcher = Dispatcher(mq, self.vm_names)

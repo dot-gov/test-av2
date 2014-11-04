@@ -49,3 +49,9 @@ def get_hostname():
         host = host.replace(d, "")
 
     return host
+
+
+def get_full_hostname():
+    host = socket.gethostname()
+
+    return host

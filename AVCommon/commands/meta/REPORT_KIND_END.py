@@ -50,6 +50,6 @@ def execute(vm, protocol, args):
             testrail_api.add_plan_result(proj_id, plan_id, config, run_name, test_case, result, int(elapsed), errors)
 
     except:
-        logging.exception("error testrail")
+        logging.exception("error testrail - probably could not find plan '%s' on project '%s'" % (plan_name, proj_id))
 
     return success, "%s| %s" % (vm, proc_name)

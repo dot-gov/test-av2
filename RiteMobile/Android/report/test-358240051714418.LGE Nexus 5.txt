@@ -1,0 +1,48 @@
+Installation
+	time: 2014-09-17 16:22:36.912283
+	installed: True
+	executed: True
+	instance_name: Android (141) LGE Nexus 5
+	info: True
+	uptime_first: up time: 6 days, 03:06:26, idle time: 1 days, 15:04:10, sleep time: 4 days, 11:59:39
+
+	uptime_last: up time: 00:02:09, idle time: 00:01:58, sleep time: 00:00:00
+
+	error: 
+	exception: 
+Device
+	device: LGE Nexus 5
+	id: 358240051714418
+	release: 4.4.4
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: 
+	selinux: 
+Evidences
+	evidences_first: 
+		addressbook: 10
+			phone
+		application: 1
+		calendar: 2
+		call: 0
+		camera: 6
+		chat: 0
+		device: 3
+		message: 11
+		position: 3
+		screenshot: 2
+
+	evidences_last: 
+		application: 0
+		call: 0
+		camera: 0
+		chat: 0
+
+Expected
+	call_supported: False
+	expected: ['android.talk']
+Uninstall
+	uninstall: False
+	running: False

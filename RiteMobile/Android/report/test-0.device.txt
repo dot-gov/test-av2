@@ -1,0 +1,650 @@
+Installation
+	time: 
+	installed: 
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: [Errno 2] No such file or directory: 'and.zip'
+Device
+	device: 
+	id: 
+	release: 
+	build_date: 
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+Installation
+	time: 
+	installed: 
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: HTTP Error 403: Forbidden
+Device
+	device: 
+	id: 
+	release: 
+	build_date: 
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+Installation
+	time: 
+	installed: 
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 'module' object has no attribute 'uninstall_wifi_enabler'
+Device
+	device: 
+	id: 
+	release: 
+	build_date: 
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+Installation
+	time: 
+	installed: 
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 'module' object has no attribute 'uninstall_wifi_enabler'
+Device
+	device: 
+	id: 
+	release: 
+	build_date: 
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+Installation
+	time: 
+	installed: 
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: [Errno 2] No such file or directory: 'build/config.upload.json'
+Device
+	device: 
+	id: 
+	release: 
+	build_date: 
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	persistence: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+Installation
+	time: 
+	installed: 
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: [Errno 2] No such file or directory: 'and.zip'
+Device
+	device: 
+	id: 
+	release: 
+	build_date: 
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	persistence: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+Installation
+	time: 
+	installed: 
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: [Errno 2] No such file or directory: 'and.zip'
+Device
+	device: 
+	id: 
+	release: 
+	build_date: 
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	persistence: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+Installation
+	time: 
+	installed: 
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: [Errno 2] No such file or directory: 'and.zip'
+Device
+	device: 
+	id: 
+	release: 
+	build_date: 
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	persistence: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+Installation
+	time: 
+	installed: 
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: [Errno 2] No such file or directory: 'and.zip'
+Device
+	device: 
+	id: 
+	release: 
+	build_date: 
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	persistence: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+Installation
+	time: 
+	installed: 
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: list index out of range
+Device
+	device: 
+	id: 
+	release: 
+	build_date: 
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	persistence: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 
+	installed: 
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: list index out of range
+Device
+	device: 
+	id: 
+	release: 
+	build_date: 
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	persistence: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 
+	installed: 
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: list index out of range
+Device
+	device: 
+	id: 
+	release: 
+	build_date: 
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	persistence: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 
+	installed: 
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: list index out of range
+Device
+	device: 
+	id: 
+	release: 
+	build_date: 
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	persistence: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 
+	installed: 
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: list index out of range
+Device
+	device: 
+	id: 
+	release: 
+	build_date: 
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	persistence: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 
+	installed: 
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: CommandsRCS instance has no attribute 'connection'
+Device
+	device: 
+	id: 
+	release: 
+	build_date: 
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	persistence: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 
+	installed: 
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: __init__() takes at least 3 arguments (5 given)
+Device
+	device: 
+	id: 
+	release: 
+	build_date: 
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	persistence: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 
+	installed: 
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: __init__() takes at least 3 arguments (5 given)
+Device
+	device: 
+	id: 
+	release: 
+	build_date: 
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	persistence: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 
+	installed: 
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: CommandsDevice instance has no attribute 'get_deviceid'
+Device
+	device: 
+	id: 
+	release: 
+	build_date: 
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	persistence: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 
+	installed: 
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: CommandsDevice instance has no attribute 'set_time'
+Device
+	device: 
+	id: 
+	release: 
+	build_date: 
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	persistence: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 
+	installed: 
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: super does not take keyword arguments
+Device
+	device: 
+	id: 
+	release: 
+	build_date: 
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	persistence: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 
+	installed: 
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: super does not take keyword arguments
+Device
+	device: 
+	id: 
+	release: 
+	build_date: 
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	persistence: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 

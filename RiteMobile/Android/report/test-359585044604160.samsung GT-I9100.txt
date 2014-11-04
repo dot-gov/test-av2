@@ -1,0 +1,385 @@
+Installation
+	time: 2014-09-17 17:50:20.195508
+	installed: True
+	executed: True
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 
+Device
+	device: samsung GT-I9100
+	id: 359585044604160
+	release: 2.3.5
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+Installation
+	time: 2014-09-17 17:57:04.425975
+	installed: True
+	executed: True
+	instance_name: Android (149) samsung GT-I9100
+	info: True
+	uptime_first: up time: 05:52:37, idle time: 06:56:38, sleep time: 02:12:44
+
+	uptime_last: up time: 00:02:06, idle time: 00:01:50, sleep time: 00:00:00
+
+	error: 
+	exception: 
+Device
+	device: samsung GT-I9100
+	id: 359585044604160
+	release: 2.3.5
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: 
+	selinux: 
+Evidences
+	evidences_first: 
+		addressbook: 49
+			telegram
+			phone
+			viber
+			wechat
+			skype
+			whatsapp
+			gmail
+		application: 12
+		call: 0
+		camera: 0
+		chat: 124
+			telegram
+			viber
+			wechat
+			skype
+			line
+			whatsapp
+			gmail
+		device: 3
+		position: 6
+
+	evidences_last: 
+		addressbook: 49
+			telegram
+			phone
+			viber
+			wechat
+			skype
+			whatsapp
+			gmail
+		application: 12
+		call: 0
+		camera: 0
+		chat: 124
+			telegram
+			viber
+			wechat
+			skype
+			line
+			whatsapp
+			gmail
+		device: 3
+		position: 6
+
+Expected
+	call_supported: False
+	expected: ['telegram', 'android.talk', 'viber', 'facebook', 'line.android', 'skype', 'whatsapp', 'tencent.mm']
+Uninstall
+	uninstall: False
+	running: False
+Installation
+	time: 2014-09-18 09:26:29.787686
+	installed: True
+	executed: True
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: HTTP Error 403: Forbidden
+	exception: 
+Device
+	device: samsung GT-I9100
+	id: 359585044604160
+	release: 2.3.5
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+Installation
+	time: 2014-09-18 09:29:16.734235
+	installed: True
+	executed: True
+	instance_name: Android (152) samsung GT-I9100
+	info: True
+	uptime_first: up time: 15:28:59, idle time: 1 days, 05:57:49, sleep time: 00:00:00
+
+	uptime_last: up time: 00:02:08, idle time: 00:01:53, sleep time: 00:00:00
+
+	error: 
+	exception: 
+Device
+	device: samsung GT-I9100
+	id: 359585044604160
+	release: 2.3.5
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: 
+	selinux: 
+Evidences
+	evidences_first: 
+		addressbook: 45
+			telegram
+			phone
+			viber
+			wechat
+			skype
+			whatsapp
+			gmail
+		application: 10
+		call: 0
+		camera: 0
+		chat: 49
+			whatsapp
+			viber
+			skype
+		device: 2
+		position: 4
+
+	evidences_last: 
+		addressbook: 49
+			telegram
+			phone
+			viber
+			wechat
+			skype
+			whatsapp
+			gmail
+		application: 17
+		call: 0
+		camera: 0
+		chat: 124
+			telegram
+			viber
+			wechat
+			skype
+			line
+			whatsapp
+			gmail
+		device: 4
+		position: 8
+
+Expected
+	call_supported: False
+	expected: ['telegram', 'android.talk', 'viber', 'facebook', 'line.android', 'skype', 'whatsapp', 'tencent.mm']
+Uninstall
+	uninstall: False
+	running: False
+Installation
+	time: 2014-09-18 10:43:19.251899
+	installed: True
+	executed: True
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 
+Device
+	device: samsung GT-I9100
+	id: 359585044604160
+	release: 2.3.5
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+Installation
+	time: 2014-09-18 11:14:23.227136
+	installed: True
+	executed: True
+	instance_name: Android (5) samsung GT-I9100
+	info: True
+	uptime_first: up time: 01:40:51, idle time: 03:08:27, sleep time: 00:00:00
+
+	uptime_last: up time: 00:02:07, idle time: 00:01:56, sleep time: 00:00:00
+
+	error: 
+	exception: 
+Device
+	device: samsung GT-I9100
+	id: 359585044604160
+	release: 2.3.5
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: 
+	selinux: 
+Evidences
+	evidences_first: 
+		addressbook: 10
+			telegram
+			phone
+			viber
+			wechat
+			skype
+			whatsapp
+			gmail
+		application: 1
+		call: 0
+		camera: 0
+		chat: 0
+		device: 2
+		position: 4
+
+	evidences_last: 
+		addressbook: 10
+			telegram
+			phone
+			viber
+			wechat
+			skype
+			whatsapp
+			gmail
+		application: 1
+		call: 0
+		camera: 0
+		chat: 0
+		device: 2
+		position: 4
+
+Expected
+	call_supported: False
+	expected: ['telegram', 'android.talk', 'viber', 'facebook', 'line.android', 'skype', 'whatsapp', 'tencent.mm']
+Uninstall
+	uninstall: False
+	running: False
+Installation
+	time: 2014-09-23 13:58:47.773259
+	installed: True
+	executed: True
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 
+Device
+	device: samsung GT-I9100
+	id: 359585044604160
+	release: 2.3.5
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+Installation
+	time: 2014-09-23 14:18:58.654869
+	installed: True
+	executed: True
+	instance_name: Android (31) samsung GT-I9100
+	info: True
+	uptime_first: up time: 06:08:39, idle time: 05:42:51, sleep time: 03:03:54
+
+	uptime_last: up time: 00:02:18, idle time: 00:02:20, sleep time: 00:00:00
+
+	error: 
+	exception: 
+Device
+	device: samsung GT-I9100
+	id: 359585044604160
+	release: 2.3.5
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: 3.1.1
+
+	selinux: 
+Evidences
+	evidences_first: 
+		addressbook: 11
+			telegram
+			phone
+			viber
+			wechat
+			skype
+			whatsapp
+			gmail
+		application: 1
+		call: 0
+		camera: 0
+		chat: 0
+		device: 2
+		position: 4
+
+	evidences_last: 
+		addressbook: 11
+			telegram
+			phone
+			viber
+			wechat
+			skype
+			whatsapp
+			gmail
+		application: 1
+		call: 0
+		camera: 0
+		chat: 0
+		device: 2
+		position: 4
+
+Expected
+	call_supported: False
+	expected: ['telegram', 'android.talk', 'viber', 'facebook', 'line.android', 'skype', 'whatsapp', 'tencent.mm']
+Uninstall
+	uninstall: False
+	running: False

@@ -1,0 +1,229 @@
+2014-09-23 14:21:25.878028;HTC Nexus One;354957032342654;2.3.3;;2013-05-01T09:11:19;HTTP Error 403: Forbidden;;True;True;Android (32) HTC Nexus One;|su: access granted, courtesy of www.magicandroidapps.com
+# |
+2014-09-23 15:07:34.002417;HTC Nexus One;354957032342654;2.3.3;;2013-05-01T09:11:19;;;True;True;Android (35) HTC Nexus One;noshufou;True;Root;True;|
+		addressbook: 133
+			telegram
+			whatsapp
+			gmail
+			phone
+			skype
+		application: 1
+		call: 0
+		camera: 0
+		chat: 91
+			telegram
+			whatsapp
+			skype
+			gmail
+		device: 1
+		position: 1
+|;[u'addressbook', 'application', 'camera', 'call', 'chat', u'device', u'position'];|up time: 00:51:11, idle time: 00:36:50, sleep time: 00:00:05
+|;[];False;|
+		addressbook: 247
+			telegram
+			whatsapp
+			gmail
+			phone
+			skype
+		application: 1
+		call: 0
+		camera: 0
+		chat: 91
+			telegram
+			whatsapp
+			skype
+			gmail
+		device: 2
+		position: 2
+|;[u'addressbook', 'application', 'camera', 'call', 'chat', u'device', u'position'];|up time: 00:02:05, idle time: 00:00:32, sleep time: 00:00:00
+|;True;False
+2014-09-23 15:19:15.350905;HTC Nexus One;354957032342654;2.3.3;;2013-05-01T09:11:19;list index out of range;;True;True;Android (38) HTC Nexus One;;True;Root;True;|
+		addressbook: 1
+			whatsapp
+		application: 1
+		call: 0
+		camera: 0
+		chat: 36
+			whatsapp
+		device: 1
+		position: 1
+|;[u'addressbook', 'application', 'camera', 'call', 'chat', u'device', u'position'];;[];False;|
+		addressbook: 125
+			telegram
+			whatsapp
+			gmail
+			phone
+			skype
+		application: 1
+		call: 0
+		camera: 0
+		chat: 91
+			telegram
+			whatsapp
+			skype
+			gmail
+		device: 1
+		position: 1
+|;[u'addressbook', 'application', 'camera', 'call', 'chat', u'device', u'position'];
+2014-09-23 15:52:56.548145;HTC Nexus One;354957032342654;2.3.3;;2013-05-01T09:11:19;;;True;True;Android (40) HTC Nexus One;noshufou;True;Root;True;|
+		addressbook: 191
+			telegram
+			whatsapp
+			gmail
+			phone
+			skype
+		application: 1
+		call: 0
+		camera: 0
+		chat: 91
+			telegram
+			whatsapp
+			skype
+			gmail
+		device: 1
+		position: 1
+|;[u'addressbook', 'application', 'camera', 'call', 'chat', u'device', u'position'];|up time: 00:42:23, idle time: 00:28:39, sleep time: 00:03:01
+|;[];False;|
+		addressbook: 247
+			telegram
+			whatsapp
+			gmail
+			phone
+			skype
+		application: 1
+		call: 0
+		camera: 0
+		chat: 91
+			telegram
+			whatsapp
+			skype
+			gmail
+		device: 3
+		position: 3
+|;[u'addressbook', 'application', 'camera', 'call', 'chat', u'device', u'position'];|up time: 00:02:10, idle time: 00:00:34, sleep time: 00:00:00
+|;True;False
+2014-09-23 16:08:54.051725;HTC Nexus One;354957032342654;2.3.3;;2013-05-01T09:11:19;HTTP Error 403: Forbidden;;True;True
+2014-09-23 16:30:26.913602;HTC Nexus One;354957032342654;2.3.3;;2013-05-01T09:11:19;;;True;True;Android (42) HTC Nexus One;noshufou;True;Root;True;|
+		addressbook: 247
+			telegram
+			whatsapp
+			gmail
+			phone
+			skype
+		application: 1
+		call: 0
+		camera: 0
+		chat: 91
+			telegram
+			whatsapp
+			skype
+			gmail
+		device: 2
+		position: 2
+|;[u'addressbook', 'application', 'camera', 'call', 'chat', u'device', u'position'];|up time: 00:34:42, idle time: 00:12:41, sleep time: 00:13:05
+|;[];False;|
+		addressbook: 247
+			telegram
+			whatsapp
+			gmail
+			phone
+			skype
+		application: 1
+		call: 0
+		camera: 0
+		chat: 91
+			telegram
+			whatsapp
+			skype
+			gmail
+		device: 3
+		position: 3
+|;[u'addressbook', 'application', 'camera', 'call', 'chat', u'device', u'position'];|up time: 00:02:13, idle time: 00:00:38, sleep time: 00:00:00
+|;True;False
+2014-09-23 16:42:58.428412;HTC Nexus One;354957032342654;2.3.3;;2013-05-01T09:11:19;;;True;True;Android (43) HTC Nexus One;noshufou;True;Root;True;|
+		addressbook: 189
+			telegram
+			whatsapp
+			gmail
+			phone
+			skype
+		application: 1
+		call: 0
+		camera: 0
+		chat: 91
+			telegram
+			whatsapp
+			skype
+			gmail
+		device: 1
+		position: 1
+|;[u'addressbook', 'application', 'camera', 'call', 'chat', u'device', u'position'];|up time: 00:08:30, idle time: 00:03:01, sleep time: 00:00:00
+|;[];False;|
+		addressbook: 247
+			telegram
+			whatsapp
+			gmail
+			phone
+			skype
+		application: 1
+		call: 0
+		camera: 0
+		chat: 101
+			telegram
+			whatsapp
+			skype
+			gmail
+		device: 3
+		position: 3
+|;[u'addressbook', 'application', 'camera', 'call', 'chat', u'device', u'position'];|up time: 00:02:47, idle time: 00:01:17, sleep time: 00:00:00
+|;True;False
+2014-09-23 16:57:41.157187;HTC Nexus One;354957032342654;2.3.3;;2013-05-01T09:11:19;<urlopen error [Errno 60] Operation timed out>;;True;True;Android (46) HTC Nexus One;noshufou;True;Root;True;|
+		addressbook: 204
+			telegram
+			whatsapp
+			gmail
+			phone
+			skype
+		application: 1
+		call: 0
+		camera: 0
+		chat: 91
+			telegram
+			whatsapp
+			skype
+			gmail
+		device: 1
+		position: 1
+|;[u'addressbook', 'application', 'camera', 'call', 'chat', u'device', u'position'];|up time: 00:11:17, idle time: 00:04:20, sleep time: 00:00:00
+|;['telegram', 'android.talk', 'viber', 'facebook', 'line.android', 'skype', 'whatsapp']
+2014-09-23 18:05:58.983376;HTC Nexus One;354957032342654;2.3.3;;2013-05-01T09:11:19;;;True;True;Android (48) HTC Nexus One;noshufou;True;Root;True;|
+		addressbook: 5
+			telegram
+			whatsapp
+			gmail
+			phone
+			skype
+		application: 1
+		call: 0
+		camera: 0
+		chat: 19
+			gmail
+		device: 2
+		position: 2
+|;[u'addressbook', 'application', 'camera', 'call', 'chat', u'device', u'position'];|up time: 01:07:25, idle time: 00:29:47, sleep time: 00:00:00
+|;['telegram', 'android.talk', 'viber', 'facebook', 'line.android', 'skype', 'whatsapp'];False;|
+		addressbook: 5
+			telegram
+			whatsapp
+			gmail
+			phone
+			skype
+		application: 1
+		call: 0
+		camera: 0
+		chat: 19
+			gmail
+		device: 2
+		position: 3
+|;[u'addressbook', 'application', 'camera', 'call', 'chat', u'device', u'position'];|up time: 00:02:05, idle time: 00:00:34, sleep time: 00:00:00
+|;True;False

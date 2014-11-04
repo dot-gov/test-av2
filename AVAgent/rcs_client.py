@@ -173,10 +173,27 @@ class Rcs_client:
         """ gets the factories """
         factories = self._call_get('factory')
 
-        # pp.pprint(factories)
         ret = [(op['_id'], op['ident'], op['path'])
                for op in factories]
         return ret
+
+    def search_factories_by_name(self, factory_name):
+        """ gets the factories """
+        factories = self._call_get('factory')
+
+        ret = [(op['_id'], op['ident'], op['path'])
+               for op in factories if op['name'] == factory_name]
+        logging.debug("Printing all the factories with name: '%s' - data: %s:" % (factory_name, ret))
+        return ret
+
+    def get_factory_id_by_ident(self, ident, target_id):
+        """ gets the factories """
+        factories = self._call_get('factory')
+        ret = [op['_id']
+               for op in factories if op['ident'] == ident and target_id in op['path'] ]
+        logging.debug("Printing all the factories with ident: '%s' - data: %s:" % (ident, ret))
+        assert len(ret) == 1
+        return ret[0]
 
     def factories(self, target_id, all_factories=None):
         """ gets the factories of an operation, matching the target id """
@@ -194,6 +211,17 @@ class Rcs_client:
         # instances: [{u'status': u'open', u'scout': False, u'good': True, u'name': u'avtagent_desktop_windows_elite_silent (1)', u'platform': u'windows', u'demo': False, u'_kind': u'agent', u'stat': {u'grid_size': 183088, u'last_sync': 1386874247, u'source': u'172.20.20.151', u'user': u'avtest', u'device': u'AVTAGENT', u'last_sync_status': 0, u'size': 34599}, u'upgradable': False, u'instance': u'7f198461c7ce800381480345cc5d8617b3015c89', u'ident': u'RCS_0000057058', u'version': 2013103102, u'path': [u'51224a314e091305b800005d', u'52a895cc4e0913f2e600b406'], u'_id': u'52aa04d14e0913a56300c604', u'type': u'desktop', u'desc': u'made by vmavtestat at Thu Dec 12 19:46:32 2013'}]
         # pp.pprint(agents)
         ret = [op['_id'] for op in agents if ident in op['ident'] and op['_kind'] == 'agent']
+        return ret
+
+    def instances_by_deviceid_and_ident(self, deviceid, ident):
+        """ gets the instances id of an operation, matching the ident """
+        logging.debug("lookin for instances with deviceid: %s" % deviceid)
+        agents = self._call_get('agent')
+
+        ret = [op['_id'] for op in agents if 'stat' in op and 'device' in op['stat'] and op['stat']['device'].lower() == deviceid.lower()
+               and
+               ident in op['ident'] and op['_kind'] == 'agent']
+        #logging.debug("found instances: %s" % ret)
         return ret
 
     def instances_by_target_id(self, target_id):
@@ -261,6 +289,7 @@ class Rcs_client:
 
     def target_delete(self, target_id):
         """ Delete a given target """
+        logging.debug("Deleting target: %s" % target_id)
         return self._call_post('target/destroy', {'_id': target_id})
 
     def target_create(self, operation_id, name, desc):
@@ -326,6 +355,7 @@ class Rcs_client:
 
     def instance_can_upgrade(self, instance_id):
         try:
+            logging.debug("can_upgrade http call: agent/can_upgrade/%s" % instance_id)
             value = self._call_get('agent/can_upgrade/%s' % instance_id)
             return value
         except HTTPError, ex:

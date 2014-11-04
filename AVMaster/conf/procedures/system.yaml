@@ -27,9 +27,12 @@ END_DISPATCH:
 SET_MAIL:
     - SET_SERVER:
         mail_recipients: [zeno@hackingteam.com, seppia@hackingteam.com, m.losito@hackingteam.com]
+        #mail_recipients: [m.losito@hackingteam.com]
 
 # ------------- SYSTEM COMMANDS -------------- #
 
+
+#seems BROKEN
 VM_EXEC_SOLDIER:
     - CROP: True
     - CALL: BUILD_SOLDIER
@@ -38,7 +41,7 @@ VM_EXEC_SOLDIER:
     #- CHECK_INFECTION: STOP_IF_CLEAN
     - CROP: False
 
-
+#seems BROKEN
 SYSTEM_SOLDIER_BASIC:
     - VM_ALL
     - INTERNET: False
@@ -72,7 +75,7 @@ SYSTEM_STATIC_MOBILE:
     - INTERNET: False
     - SLEEP: [0, 600]
     - CALL: INIT_DISPATCH
-    - CLEAN_EVIDENCES
+    - CLEAN_EVIDENCES: Ok
     - CROP: True
     - REPORT:
         - BUILD_MOBILE
@@ -114,6 +117,24 @@ VM_ELITE_FAST:
     #- UNINSTALL
     #- RELOG
 
+VM_ELITE_FAST_SRV:
+    - CALL: INIT_DISPATCH
+
+    - SLEEP: 60
+    - BUILD_SRV: [ scout, windows, silent, elite_fast ]
+    - SLEEP: 30
+    - RELOG
+
+    - ON_ERROR: CONTINUE
+    - CROP: True
+    - BUILD_SRV: [ elite_fast, windows, silent, elite_fast ]
+    - CROP: False
+
+    #- ON_ERROR: SKIP
+    # not necessary because there is a revert and a final uninstall. Also the build closes the instance
+    #- UNINSTALL
+    #- RELOG
+
 VM_SOLDIER:
     - CALL: INIT_DISPATCH
 
@@ -131,6 +152,26 @@ VM_SOLDIER:
     #- UNINSTALL
     #- RELOG
 
+
+VM_SOLDIER_SRV:
+    - CALL: INIT_DISPATCH
+
+    - SLEEP: 60
+    - BUILD_SRV: [ scout, windows, silent, soldier_fast ]
+    - SLEEP: 30
+    - RELOG
+
+    - ON_ERROR: CONTINUE
+    - CROP: True
+    - BUILD_SRV: [ soldier_fast, windows, silent, soldier_fast ]
+    - CROP: False
+    - ON_ERROR: SKIP
+
+    # not necessary because there is a revert and a final uninstall. Also the build closes the instance
+    #- UNINSTALL
+    #- RELOG
+
+
 VM_MELT:
     - CALL: INIT_DISPATCH
 
@@ -138,6 +179,17 @@ VM_MELT:
     - UNINSTALL
     - SCREENSHOT
     #- RELOG
+
+
+VM_MELT_SRV:
+    - CALL: INIT_DISPATCH
+
+    - BUILD_SRV: [ scout, windows, melt, melt ]
+    - UNINSTALL
+    - SCREENSHOT
+    # not necessary because there is a revert and a final uninstall. Also the build closes the instance
+    #- RELOG
+
 
 VM_EXPLOIT:
     - ON_ERROR: CONTINUE
@@ -165,9 +217,24 @@ VM_EXPLOIT:
     - RELOG
     - BUILD: [ scout, selfdel_exploit, melt ]
 
+    # not necessary because there is a revert and a final uninstall. Also the build closes the instance
     #- UNINSTALL
     #- RELOG
 
+
+VM_EXPLOIT_SRV:
+    - ON_ERROR: CONTINUE
+    - CALL: INIT_DISPATCH
+
+    - BUILD_SRV: [ pull, exploit, melt, exploit ]
+    - BUILD_SRV: [ scout, exploit_pdf, melt, exploit_pdf ]
+    - UNINSTALL
+    - RELOG
+    - BUILD_SRV: [ scout, selfdel_exploit, melt, selfdel_exploit ]
+
+   # not necessary because there is a revert and a final uninstall. Also the build closes the instance
+   # - UNINSTALL
+   # - RELOG
 
 VM_STATIC:
     - CROP: True
@@ -178,6 +245,16 @@ VM_STATIC:
     - CROP: False
     - ON_ERROR: SKIP
 
+VM_STATIC_SRV:
+    - CROP: True
+    - ON_ERROR: CONTINUE
+    - CALL: BUILD_DESKTOP_SRV
+    - CALL: BUILD_MOBILE_SRV
+    - CALL: BUILD_EXPLOIT_SRV
+    - CROP: False
+    - ON_ERROR: SKIP
+
+### 'SYSTEM_' ARE USED ALSO FOR RETESTS
 
 SYSTEM_STATIC:
     - VM_ALL
@@ -192,6 +269,23 @@ SYSTEM_STATIC:
     - CROP: False
     - CALL: END_DISPATCH
 
+
+SYSTEM_STATIC_SRV:
+    - VM_ALL
+    - ON_ERROR: SKIP
+    - SLEEP: [1, 600]
+    - CALL: INIT_DISPATCH
+    - CALL: VM_CLEAN_EVIDENCES
+    - BUILD_CACHE_CLEAN: False
+    - CALL: SET_MAIL
+    - CROP: True
+    - REPORT:
+        - VM_STATIC_SRV: ['AV Invisibility Static', 'Static check on builds']
+    - CROP: False
+    - BUILD_CACHE_CLEAN: True
+    - CALL: END_DISPATCH
+
+
 SYSTEM_MELT:
     - VM_ALL
     - ON_ERROR: SKIP
@@ -205,6 +299,23 @@ SYSTEM_MELT:
     - UNINSTALL
     - CALL: END_DISPATCH
 
+
+SYSTEM_MELT_SRV:
+    - VM_ALL
+    - ON_ERROR: SKIP
+    - SLEEP: [1, 600]
+    - CALL: INIT_DISPATCH
+    - CALL: VM_CLEAN_EVIDENCES
+    - BUILD_CACHE_CLEAN: False
+    - CALL: SET_MAIL
+    - REPORT:
+        - VM_MELT_SRV: ['AV Invisibility', 'Melt']
+    - SCREENSHOT
+    - UNINSTALL
+    - BUILD_CACHE_CLEAN: False
+    - CALL: END_DISPATCH
+
+
 SYSTEM_ELITE_FAST:
     - VM_ALL
     - ON_ERROR: SKIP
@@ -216,6 +327,23 @@ SYSTEM_ELITE_FAST:
         - VM_ELITE_FAST: ['AV Invisibility', 'Elite']
     - SCREENSHOT
     - UNINSTALL
+    - CALL: VM_GET_LOG
+    - CALL: END_DISPATCH
+
+
+SYSTEM_ELITE_FAST_SRV:
+    - VM_ALL
+    - ON_ERROR: SKIP
+    - SLEEP: [1, 600]
+    - CALL: INIT_DISPATCH
+    - CALL: VM_CLEAN_EVIDENCES
+    - CALL: SET_MAIL
+    - BUILD_CACHE_CLEAN: False
+    - REPORT:
+        - VM_ELITE_FAST_SRV: ['AV Invisibility', 'Elite']
+    - SCREENSHOT
+    - UNINSTALL
+    - BUILD_CACHE_CLEAN: True
     - CALL: VM_GET_LOG
     - CALL: END_DISPATCH
 
@@ -233,6 +361,7 @@ SYSTEM_ELITE:
     - UNINSTALL
     - CALL: END_DISPATCH
 
+
 SYSTEM_SOLDIER:
     - VM_ALL
     - ON_ERROR: SKIP
@@ -247,6 +376,24 @@ SYSTEM_SOLDIER:
     - CALL: VM_GET_LOG
     - CALL: END_DISPATCH
 
+
+SYSTEM_SOLDIER_SRV:
+    - VM_ALL
+    - ON_ERROR: SKIP
+    - SLEEP: [1, 600]
+    - CALL: INIT_DISPATCH
+    - CALL: VM_CLEAN_EVIDENCES
+    - CALL: SET_MAIL
+    - BUILD_CACHE_CLEAN: False
+    - REPORT:
+        - VM_SOLDIER_SRV: ['AV Invisibility', 'Soldier']
+    - SCREENSHOT
+    - UNINSTALL
+    - BUILD_CACHE_CLEAN: True
+    - CALL: VM_GET_LOG
+    - CALL: END_DISPATCH
+
+
 SYSTEM_EXPLOIT:
     - VM_ALL
     - ON_ERROR: SKIP
@@ -260,6 +407,24 @@ SYSTEM_EXPLOIT:
     - UNINSTALL
     - CALL: VM_GET_LOG
     - CALL: END_DISPATCH
+
+
+SYSTEM_EXPLOIT_SRV:
+    - VM_ALL
+    - ON_ERROR: SKIP
+    - SLEEP: [1, 600]
+    - CALL: INIT_DISPATCH
+    - CALL: VM_CLEAN_EVIDENCES
+    - CALL: SET_MAIL
+    - BUILD_CACHE_CLEAN: False
+    - REPORT:
+        - VM_EXPLOIT_SRV: ['AV Invisibility', 'Exploit']
+    - SCREENSHOT
+    - UNINSTALL
+    - BUILD_CACHE_CLEAN: True
+    - CALL: VM_GET_LOG
+    - CALL: END_DISPATCH
+
 
 SYSTEM_DAILY:
     - VM_ALL
@@ -278,6 +443,28 @@ SYSTEM_DAILY:
     - CALL: VM_GET_LOG
     - CALL: END_DISPATCH
 
+
+SYSTEM_DAILY_SRV:
+
+    - VM_ALL
+    - ON_ERROR: SKIP
+    - SLEEP: [1, 1800]
+    - CALL: INIT_DISPATCH
+    - CALL: VM_CLEAN_EVIDENCES
+    - CALL: SET_MAIL
+    - BUILD_CACHE_CLEAN: False
+    - REPORT:
+        - VM_STATIC_SRV: ['AV Invisibility Static', 'Static check on builds']
+        - VM_SOLDIER_SRV: ['AV Invisibility', 'Soldier']
+        - VM_ELITE_FAST_SRV: ['AV Invisibility', 'Elite']
+        - VM_MELT_SRV: ['AV Invisibility', 'Melt']
+        - VM_EXPLOIT_SRV: ['AV Invisibility', 'Exploit']
+    - UNINSTALL
+    - BUILD_CACHE_CLEAN: True
+    - CALL: VM_GET_LOG
+    - CALL: END_DISPATCH
+
+
 SYSTEM_DAILY_FAST:
     - VM_ALL
     - ON_ERROR: SKIP
@@ -288,11 +475,30 @@ SYSTEM_DAILY_FAST:
     - REPORT:
         #- VM_STATIC: ['AV Invisibility Static', 'Static check on builds']
         #- VM_SOLDIER: ['AV Invisibility', 'Soldier']
-        #- VM_ELITE_FAST: ['AV Invisibility', 'Elite']
+        - VM_ELITE_FAST: ['AV Invisibility', 'Elite']
         #- VM_MELT: ['AV Invisibility', 'Melt']
-        - VM_EXPLOIT: ['AV Invisibility', 'Exploit']
-
+        #- VM_EXPLOIT: ['AV Invisibility', 'Exploit']
     - UNINSTALL
+    - CALL: VM_GET_LOG
+    - CALL: END_DISPATCH
+
+
+SYSTEM_DAILY_FAST_SRV:
+    - VM_ALL
+    - ON_ERROR: SKIP
+    - SLEEP: [1, 300]
+    - CALL: INIT_DISPATCH
+    - CALL: VM_CLEAN_EVIDENCES
+    - CALL: SET_MAIL
+    - BUILD_CACHE_CLEAN: False
+    - REPORT:
+        #- VM_STATIC_SRV: ['AV Invisibility Static', 'Static check on builds']
+        #- VM_SOLDIER_SRV: ['AV Invisibility', 'Soldier']
+        - VM_ELITE_FAST_SRV: ['AV Invisibility', 'Elite']
+        - VM_MELT_SRV: ['AV Invisibility', 'Melt']
+        #- VM_EXPLOIT_SRV: ['AV Invisibility', 'Exploit']
+    - UNINSTALL
+    - BUILD_CACHE_CLEAN: True
     - CALL: VM_GET_LOG
     - CALL: END_DISPATCH
 
@@ -588,6 +794,7 @@ SYSTEM_PUSH_EXE:
 # ---------------- #
 
 VM_FUNCTIONAL_EV:
+    - SLEEP: 60
     - CHECK_EVIDENCES: [device]
     - CHECK_EVIDENCES: [url]
     - CHECK_EVIDENCES: [screenshot]
@@ -602,6 +809,7 @@ VM_FUNCTIONAL_ADDRESSBOOK_FB:
 
 VM_FUNCTIONAL_EV_SKYPE:
     - SLEEP: 60
+    # we cannot test skype chats because only chat being sent AND received after installation are extracted
     #- CHECK_EVIDENCES: [chat, program, skype]
     - CHECK_EVIDENCES: [addressbook, program, skype]
     - CHECK_EVIDENCES: [call, program, skype]

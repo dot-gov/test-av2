@@ -18,13 +18,7 @@ def execute(vm, protocol, dirname):
     logging.debug("Deleting %s from %s" % (dirname, vm))
     r = vm_manager.execute(vm, "deleteDirectoryInGuest", dirname)
 
-    return True, "%s deleted" % dirname
-
-    # TODO: return True only if directory is deleted for real
-
-    """
-    if r == 0:
-        return True, "Deleted %s" % args
+    if not os.path.exists(dirname):
+        return True, "Direcrory %s deleted" % dirname
     else:
-        return False, "Not deleted %s" % args
-    """
+        return False, "Directory %s not deleted" % dirname

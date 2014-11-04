@@ -107,7 +107,7 @@ UPDATE_AGENT:
     - START_AGENT
     - UNINSTALL
 
-    - CLEAN_EVIDENCES
+    - CLEAN_EVIDENCES: [ Ok ]
     - STOP_VM: 300
     - WAIT_SHUTDOWN
     - REFRESH_SNAPSHOT
@@ -132,7 +132,7 @@ UPD_AGENT:
     - WAIT_SHUTDOWN
     - START_VM: AV_AGENT
     - UNINSTALL
-    - CLEAN_EVIDENCES
+    - CLEAN_EVIDENCES: [ Ok ]
 
 UPD_WAIT:
     - CALL: UPD_AGENT
@@ -192,7 +192,7 @@ UPD_WAIT_FAST:
 
     - START_VM: AV_AGENT
     - UNINSTALL
-    - CLEAN_EVIDENCES
+    - CLEAN_EVIDENCES: [ Ok ]
     - EXECUTE_VM: /AVTest/assets/update_system.bat # scarica gli aggiornamenti windows
     - SLEEP: 300 # attesa per gli update degli av
     - STOP_VM: 300 # cerca di spegnere con shutdown, se non ci riesce, spegne secco

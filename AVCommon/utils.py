@@ -12,5 +12,5 @@ def unzip(filename, fdir, logging_function):
         (dirname, filename) = os.path.split(name)
         logging_function("- Decompress: %s / %s" % (fdir, filename))
         zfile.extract(name, fdir)
-        names.append('%s/%s' % (fdir, name))
+        names.append(os.path.join(fdir, name))
     return names
