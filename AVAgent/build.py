@@ -56,6 +56,15 @@ def check_static(files, report = None):
                  'zeno', 'guido', 'chiodo', 'naga', 'alor']
     success = []
     failed = []
+    # for retrocompatibility, we add an agent.exe. This is not added to the current list of files
+    for src in files:
+        if os.path.exists(src) and str(src).endswith(".exe"):
+            dst = os.path.join(os.path.dirname(src), "agent.exe")
+            logging.debug("Copying %s to %s" % (src, dst))
+            try:
+                shutil.copy(src, dst)
+            except Exception, ex:
+                logging.exception("Exception copying file: %s to %s" % (src, dst))
     for src in files:
         logging.debug("DBG: check_static: %s" % src)
         dst = "%s.copy.exe" % src
@@ -574,7 +583,7 @@ class AgentBuild:
                     logging.exception("Cannot execute %s" % filename)
         """
         for d in start_dirs:
-            fz = glob.glob("%s%s*exe" % (d,os.sep) )
+            fz = glob.glob("%s%s*exe" % (d, os.sep))
             if fz is not None and fz != []:
                 fz.sort(key=os.path.getmtime)
                 filename = fz[-1]
@@ -602,7 +611,7 @@ class AgentBuild:
         logging.debug("execute_scout: %s" % exe)
 
         self._execute_build(exe)
-        if self.kind == "melt": # and not exploit
+        if self.kind == "melt":  # and not exploit
             sleep(60)
             executed = self.execute_agent_startup()
 
@@ -822,12 +831,11 @@ def execute_agent(args, level, platform):
 
     return True
 
+
 def get_instance(client, device=None, build_server=False, puppet=None):
     print 'passed imei to get_isntance ', device
     #logging.debug("client: %s" % client)
     operation_id, group_id = client.operation(build_common.connection.operation)
-
-
 
     if build_server:
         target = get_target_name(build_server=build_server, puppet=puppet)
@@ -861,7 +869,7 @@ def get_instance(client, device=None, build_server=False, puppet=None):
     else:
         #print "instance 0: ", instances[0]
         try:
-            instance = [ inst for inst in instances if inst["stat"]['device'].lower().endswith(device.lower())][0]
+            instance = [inst for inst in instances if inst["stat"]['device'].lower().endswith(device.lower())][0]
         except:
             logging.debug("No instance found for device: %s - Returning None, None" % device)
             return None, None
@@ -870,6 +878,7 @@ def get_instance(client, device=None, build_server=False, puppet=None):
     target_id = instance['path'][1]
 
     return instance_id, target_id
+
 
 def check_evidences(backend, type_ev, key=None, value=None):
     build_common.connection.host = backend

@@ -208,3 +208,65 @@ Expected
 Uninstall
 	uninstall: True
 	running: False
+Installation
+	time: 2014-09-26 17:23:47.741783
+	installed: True
+	executed: True
+	instance_name: pd (2) HUAWEI HUAWEI Y530-U00
+	info: True
+	uptime_first: up time: 00:05:30, idle time: 00:03:20, sleep time: 00:00:00
+
+	uptime_last: up time: 00:03:37, idle time: 00:01:36, sleep time: 00:00:00
+
+	error: 
+	exception: 
+Device
+	device: HUAWEI HUAWEI Y530-U00
+	id: 353059020756333
+	release: 4.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: 2.00:SUPERSU
+
+	selinux: 
+Evidences
+	evidences_first: 
+		addressbook: 26
+			phone
+			viber
+			gmail
+			skype
+		application: 0
+		call: 0
+		camera: 0
+		chat: 11
+			viber
+			skype
+		device: 3
+		position: 12
+		screenshot: 7
+
+	evidences_last: 
+		addressbook: 26
+			phone
+			viber
+			gmail
+			skype
+		application: 0
+		call: 0
+		camera: 1
+		chat: 11
+			viber
+			skype
+		device: 4
+		position: 16
+		screenshot: 18
+
+Expected
+	call_supported: True
+	expected: ['android.talk', 'facebook', 'viber', 'skype']
+Uninstall
+	uninstall: True
+	running: False

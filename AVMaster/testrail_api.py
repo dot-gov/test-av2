@@ -12,7 +12,7 @@ from AVCommon.logger import logging
 from AVCommon import helper
 
 user_hash = base64.encodestring('apitestrail@hackingteam.com:apicoltore').replace('\n', '')
-base_url = "http://172.20.20.168/testrail/index.php?/api"
+base_url = "http://testrail.hackingteam.local/testrail/index.php?/api"
 
 def send_get(url):
     try:

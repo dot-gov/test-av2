@@ -116,7 +116,7 @@ def is_screen_off(device=None):
     return False
 
 
-def wait_and_click(dev_target, x=750, y=130):
+def wait_and_click(x=750, y=130):
     # (x, y, w, h) = dev_target.getRestrictedScreen()
     # width = int(w)
     # height = int(h)
@@ -513,36 +513,34 @@ def unpack_local_to_remote(local_file_path, local_filename, remote_dir, root=Fal
 #     p.join()
 
 
-def backup_app_data(apk_conf_backup_file, package_name, device):
-    __backup_restore_app_data(apk_conf_backup_file, device, True, package_name=package_name)
+def backup_app_data(apk_conf_backup_file, package_name, device_serialno):
+    __backup_restore_app_data(apk_conf_backup_file, device_serialno, True, package_name=package_name)
 
 
-def restore_app_data(apk_conf_backup_file, device):
-    __backup_restore_app_data(apk_conf_backup_file, device, False)
+def restore_app_data(apk_conf_backup_file, device_serialno):
+    __backup_restore_app_data(apk_conf_backup_file, device_serialno, False)
 
 
-def __backup_restore_app_data(apk_conf_backup_file, device, backup, package_name=None):
-    dev = device.serialno
+def __backup_restore_app_data(apk_conf_backup_file, device_serialno, backup, package_name=None):
     #adb backup -f ./test.ab -noapk com.avast.android.mobilesecurity
     # print os.path.abspath(apk_conf_backup_file)
     # print package_name
 
-
-    p = Process(target=wait_and_click, args=(device,))
+    p = Process(target=wait_and_click)
     p.start()
 
     # backup
     if backup:
         if dev:
             #-shared
-            os.system(adb_path + " -s " + dev + " backup " + " -f " + apk_conf_backup_file + " -noapk " + package_name)
+            os.system(adb_path + " -s " + device_serialno + " backup " + " -f " + apk_conf_backup_file + " -noapk " + package_name)
         else:
             os.system(adb_path + " backup " + " -f " + apk_conf_backup_file + " -noapk " + package_name)
 
     # restore
     else:
         if dev:
-            os.system(adb_path + " -s " + dev + " restore " + apk_conf_backup_file)
+            os.system(adb_path + " -s " + device_serialno + " restore " + apk_conf_backup_file)
         else:
             os.system(adb_path + " restore " + apk_conf_backup_file)
 

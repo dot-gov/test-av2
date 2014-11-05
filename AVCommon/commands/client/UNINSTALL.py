@@ -1,19 +1,13 @@
 __author__ = 'fabrizio'
 
-import time
 import os
 import subprocess
 import shutil
 import re
 import stat
 
-from AVCommon.logger import logging
-
 from AVCommon import command
 from AVCommon import process
-
-from AVAgent import build
-
 from AVCommon.logger import logging
 from AVAgent import build
 
@@ -26,9 +20,11 @@ def on_init(vm, args):
 def on_answer(vm, success, answer):
     """ server side """
     from AVMaster import vm_manager
+
     cmd = "/windows/system32/logout.exe"
     arg = []
     ret = vm_manager.execute(vm, "executeCmd", cmd, arg, 40, True, True)
+
 
 def execute_calc():
     logging.debug("executing calc")
@@ -57,10 +53,9 @@ def kill_pid(pid):
 
 
 def kill_proc_by_regex(procs, reagent):
+    exenames = ["%s.exe" % n for n in build.names]
 
-    exenames = [ "%s.exe" % n for n in build.names]
-
-    for caption, pid in [ (e['Caption'],int(e['ProcessId'])) for e in procs]:
+    for caption, pid in [(e['Caption'], int(e['ProcessId'])) for e in procs]:
         if reagent.match(caption) or caption in exenames:
             try:
                 logging.debug("WMI %s: %s" % (caption, pid))
@@ -70,7 +65,6 @@ def kill_proc_by_regex(procs, reagent):
 
 
 def kill_rcs(vm):
-
     logging.debug("Killing rcs")
 
     cmd = 'WMIC PROCESS get Caption,Processid /format:value'
@@ -81,13 +75,12 @@ def kill_rcs(vm):
     for l in wmilines:
         tokens = l.rstrip().split('=')
         if len(tokens) == 2:
-            k,v = tokens
-            p[k]=v
+            k, v = tokens
+            p[k] = v
             if p not in procs:
                 procs.append(p)
         else:
             p = {}
-
 
     logging.debug("procs: %s" % procs)
     expname = "exp_%s" % vm
@@ -104,7 +97,7 @@ def kill_rcs(vm):
     for b in build.names:
         subprocess.Popen("taskkill /f /im %s.exe" % b, shell=True)
 
-    tasklist =  subprocess.Popen(["tasklist"], stdout=subprocess.PIPE).communicate()[0]
+    tasklist = subprocess.Popen(["tasklist"], stdout=subprocess.PIPE).communicate()[0]
     logging.debug(tasklist)
 
 
@@ -112,7 +105,7 @@ def delete_startup():
     logging.debug("deleting startup")
     for d in build.start_dirs:
         for b in build.names:
-            filename = "%s/%s.exe" %(d,b)
+            filename = "%s/%s.exe" % (d, b)
             if os.path.exists(filename):
                 try:
                     os.remove(filename)
@@ -122,7 +115,7 @@ def delete_startup():
 
 def remove_agent_startup():
     start_dirs = ['C:/Users/avtest/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Startup',
-            'C:/Documents and Settings/avtest/Start Menu/Programs/Startup']
+                  'C:/Documents and Settings/avtest/Start Menu/Programs/Startup']
     for startup_dir in start_dirs:
         remote_name = "%s/av_agent.bat" % startup_dir
         if os.path.exists(remote_name):
@@ -133,28 +126,25 @@ def remove_readonly(func, path, excinfo):
     os.chmod(path, stat.S_IWRITE)
     os.unlink(path)
 
+
 def delete_build():
     logging.debug("deleting build")
     try:
         if os.path.exists("build"):
             shutil.rmtree("build", onerror=remove_readonly)
-    #if the system cannot delete build...not a so big problem
+    # if the system cannot delete build...not a so big problem
     except:
         pass
 
-def execute(vm, args):
 
+def execute(vm, args):
     if not args:
         args = ""
-
-    no_clean_instances = ("NO_CLEAN_INSTANCES" in args)
-
-    from AVAgent import av_agent
 
     # execute "calc.exe"
     execute_calc()
     # build.close(instance)
-    #if not no_clean_instances:
+    # if not no_clean_instances:
     close_instance()
     # kill process
     kill_rcs(vm)
