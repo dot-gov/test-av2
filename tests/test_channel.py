@@ -51,7 +51,7 @@ class TestChannel(unittest.TestCase):
         m = ast.literal_eval(r.lpop("channel"))
         print m, type(m)
 
-    def test_ChannelTimeout(self):
+    def no_test_ChannelTimeout(self):
         channel = "test"
         host = "localhost"
         s = Channel(host, channel)

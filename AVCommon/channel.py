@@ -15,10 +15,16 @@ class Channel():
         self.host = host
         self.channel = channel
         self.redis = StrictRedis(host, socket_timeout=None)
-        #logging.debug("  CH init %s %s" % (host, channel))
-        if not self.redis.exists(self.channel):
-            if config.verbose:
-                logging.debug("  CH write, new channel %s" % self.channel)
+        logging.debug("  CH init %s %s" % (host, channel))
+
+        for retry in range(5):
+            try:
+                if not self.redis.exists(self.channel):
+                    if config.verbose:
+                        logging.debug("  CH write, new channel %s" % self.channel)
+            except:
+                logging.debug("  ERROR init %s %s" % (host, channel))
+                time.sleep(10)
 
     def write(self, message):
         """ writes a message to the channel. The channel is created automatically """
@@ -26,18 +32,22 @@ class Channel():
             logging.debug("  CH write: channel: %s  message: %s" % (str(self.channel), str(message)))
 
         while(True):
-            pipe = self.redis.pipeline()
-            l1,ret,l2 = pipe.llen(self.channel).rpush(self.channel, message).llen(self.channel).execute()
-            if not ret:
-                logging.error("not ret: %s" % self.channel)
-                continue
-            if not l2>0:
-                logging.error("not l2>0 %s" % self.channel)
-                continue
-            if l1 and not l2 == l1 +1:
-                logging.error("l1 and not l2 == l1 +1: %s" % self.channel)
-                continue
-            break
+            try:
+                pipe = self.redis.pipeline()
+                l1,ret,l2 = pipe.llen(self.channel).rpush(self.channel, message).llen(self.channel).execute()
+                if not ret:
+                    logging.error("not ret: %s" % self.channel)
+                    continue
+                if not l2>0:
+                    logging.error("not l2>0 %s" % self.channel)
+                    continue
+                if l1 and not l2 == l1 +1:
+                    logging.error("l1 and not l2 == l1 +1: %s" % self.channel)
+                    continue
+                break
+            except ConnectionError, e:
+                logging.exception("  CH TIMEOUT server")
+                ret = None
 
     def read(self, blocking=False, timeout=0):
         """ reads a message from the underlining channel. This method can be blocking or it could timeout in a while
@@ -71,6 +81,7 @@ class Channel():
                 except ConnectionError, e:
                     logging.exception("  CH TIMEOUT server")
                     ret = None
+                    self.__init__(self.host, self.channel)
 
             if not ret and timeout:
                 logging.debug("  CH TIMEOUT read")
