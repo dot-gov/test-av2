@@ -92,6 +92,17 @@ class CommandsRCS:
         ret = build.build_agent(self.factory_id, self.host, params, None, os.path.join(melt_dir, "melt_%s.zip" % appname), melt=melt_file, kind="melt", tries=4, use_cache=False, appname=appname)
         print ret
 
+    def build_melt_apk_ruby(self, input_melt_file, user="avmonitor", password="testriteP123", conf_json_filename="build.nodemo.json", zipfilenamebackend="and.zip",
+                       factory_id="RCS_0000002050"):
+
+        backend = self.host
+        os.system('ruby assets/rcs-core.rb -u %s -p %s -d %s -f %s -b %s -o %s -i %s' % (user, password, backend, factory_id, conf_json_filename, zipfilenamebackend, input_melt_file))
+        zipfilenamebackend = os.path.join("path", zipfilenamebackend)
+        if not os.path.exists(zipfilenamebackend):
+            print "ERROR, cannot melt build apk"
+            return None
+        return zipfilenamebackend
+
     def wait_for_sync(self, trigger_function=None):
         print "... sleeping for sync"
         time.sleep(60)

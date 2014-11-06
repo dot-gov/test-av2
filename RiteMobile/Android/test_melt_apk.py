@@ -138,7 +138,7 @@ def main():
     # from AVCommon import logger
     # logger.init()
 
-    filter_string = ""  #gets all apks
+    filter_string = ""  # gets all apks
 
     print "##### STARTING MELT ANDROID TEST #####"
     print "REMEMBER TO:"
@@ -172,7 +172,7 @@ def main():
                 return
             with commands_rcs as c:
                 for apk_file in os.listdir(apk_share_dir)[:max_test_iterations]:
-                    #quelli da testare, ma che non sia gia' noto che funzionano o non che funzionano
+                    # quelli da testare, ma che non sia gia' noto che funzionano o non che funzionano
                     if apk_file.startswith(filter_string) and os.path.basename(apk_file) in to_test_list and os.path.basename(
                             apk_file) not in these_works_list and os.path.basename(apk_file) not in these_does_not_work_list:
                         is_an_antivirus = False
@@ -190,13 +190,17 @@ def main():
                             time.sleep(10)
                             repeat = 0
                             completed_test = False
-                            while repeat < 3 and completed_test == False:
+                            while repeat < 3 and not completed_test:
                                 repeat += 1
                                 try:
-                                    # print "melt_file = %s " % os.path.join(apk_share_dir, apk_file)
-                                    # print "appname = %s " % "melted_%s" % apk_file
-                                    ret = c.build_melt_apk(melt_file=os.path.join(apk_share_dir, apk_file), appname="melted_%s" % apk_file,
-                                                           melt_dir=build_melt_dir)
+
+                                    # ret = c.build_melt_apk(melt_file=os.path.join(apk_share_dir, apk_file), appname="melted_%s" % apk_file,
+                                    #       melt_dir=build_melt_dir, ruby_build_in_second_stage=True)
+                                    input_melt_file = os.path.join(apk_share_dir, apk_file)
+                                    zipfilenamebackend = os.path.join(build_melt_dir, "melt_%s.zip" % apk_file)
+
+                                    ret = c.build_melt_apk_ruby(input_melt_file, zipfilenamebackend=zipfilenamebackend)
+
                                     installation_result = "Ok"
                                     result_strings_ok.append(apk_file)
                                     fileok.write("%s:\t [ Ok ]\n" % apk_file)
@@ -232,7 +236,7 @@ def main():
             fileok.close()
             fileerror.close()
 
-    #THIST PART GETS ZIPS FROM "build_melt_dir", INSTALLS, RUNS AND CHECK SYNC OF THEM
+    # THIST PART GETS ZIPS FROM "build_melt_dir", INSTALLS, RUNS AND CHECK SYNC OF THEM
     if "zip_run" in test_to_run:
 
         if server == "castore":
