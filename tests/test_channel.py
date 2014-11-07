@@ -34,11 +34,10 @@ def server(s):
 
 #
 class TestChannel(unittest.TestCase):
-
+    host = "rite"
 
     def test_Redis(self):
-        host = "localhost"
-        r = StrictRedis(host, socket_timeout=60)
+        r = StrictRedis(self.host, socket_timeout=60)
         msg = "Hello world"
 
         r.delete("channel")
@@ -49,23 +48,23 @@ class TestChannel(unittest.TestCase):
 
         r.rpush("channel", [1, 2, 3])
         m = ast.literal_eval(r.lpop("channel"))
-        print m, type(m)
+        #print m, type(m)
 
-    def no_test_ChannelTimeout(self):
+    def test_ChannelTimeout(self):
         channel = "test"
-        host = "localhost"
-        s = Channel(host, channel)
+
+        s = Channel(self.host, channel)
         r = s.read(blocking=True, timeout=1)
         assert r is None
 
     def test_ChannelList(self):
         global count
         channel = "response"
-        host = "localhost"
 
-        s = Channel(host, channel)
-        c1 = Channel(host, channel + ".c1")
-        c2 = Channel(host, channel + ".c2")
+
+        s = Channel(self.host, channel)
+        c1 = Channel(self.host, channel + ".c1")
+        c2 = Channel(self.host, channel + ".c2")
 
         c1.write("START")
         c2.write("START")
@@ -89,12 +88,11 @@ class TestChannel(unittest.TestCase):
     def test_ChannelRandom(self):
         global count
         channel = id_generator()
-        host = "localhost"
 
-        s = Channel(host, channel)
-        c1 = Channel(host, channel + ".c1")
+        s = Channel(self.host, channel)
+        c1 = Channel(self.host, channel + ".c1")
 
-        messages = [ id_generator(size=1000) for i in range(10)]
+        messages = [ id_generator(size=1000) for i in range(100)]
 
         for m in messages:
             c1.write(m)
@@ -103,15 +101,48 @@ class TestChannel(unittest.TestCase):
             r = c1.read()
             assert(m == r)
 
+    def test_ChannelMany(self):
+        global count
+        channel = id_generator()
+
+        s = Channel(self.host, channel)
+        c1 = Channel(self.host, channel + ".c1")
+
+        for m in [ id_generator(size=1000) for i in range(1000)]:
+            c1.write(m)
+            r = c1.read()
+            assert(m == r)
+
+    def test_ChannelBlocking(self):
+        global count
+        channel = id_generator()
+
+        s = Channel(self.host, channel)
+        c1 = Channel(self.host, channel + ".c1")
+
+        for m in [ binary_generator(size=1000) for i in range(1000)]:
+            c1.write(m)
+            r = c1.read(blocking=True)
+            assert(m == r)
+
+        messages = [ id_generator(size=10000) for i in range(100)]
+
+        for m in messages:
+            c1.write(m)
+
+        for m in messages:
+            r = c1.read(blocking=True)
+            assert(m == r)
+
+
     def test_ChannelBinary(self):
         global count
         channel = id_generator()
-        host = "localhost"
 
-        s = Channel(host, channel)
-        c1 = Channel(host, channel + ".c1")
+        s = Channel(self.host, channel)
+        c1 = Channel(self.host, channel + ".c1")
 
-        messages = [ binary_generator(size=100) for i in range(10)]
+        messages = [ binary_generator(size=1000) for i in range(100)]
 
         for m in messages:
             c1.write(m)
