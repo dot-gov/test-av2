@@ -9,7 +9,7 @@ SYSTEM_FUNCTIONAL_AVMASTER:
     - SET:
         backend: 192.168.100.201
         frontend: 192.168.100.204
-
+    - CALL: VM_CLEAN_EVIDENCES
     - UNINSTALL
     - PUSH: [ AVAgent/assets/facebook.bat ]
     - BUILD: [ pull, windows_elite, silent ]
@@ -17,7 +17,12 @@ SYSTEM_FUNCTIONAL_AVMASTER:
     - SLEEP: 60
 
     - EXECUTE_VM: [ /AVTest/AVAgent/assets/facebook.bat, [], 40, True, True ]
+    - SLEEP: 60
+    - EXECUTE_VM: [ /avtest/avagent/assets/keyinject.exe, [], 40, True, True ]
+    - SLEEP: 60
+    - EXECUTE_VM: [ /avtest/avagent/assets/keyinject.exe, [], 40, True, True ]
     - SLEEP: 120
+    - EXECUTE_VM: [ /avtest/avagent/assets/keyinject.exe, [], 40, True, True ]
     - CALL: SET_MAIL
     - REPORT:
         - VM_FUNCTIONAL_EV: ['Functional testing', 'Device']
@@ -44,7 +49,14 @@ SYSTEM_FUNCTIONAL_SOLDIER_AVMASTER:
     - SLEEP: 60
 
     - EXECUTE_VM: [ /AVTest/AVAgent/assets/facebook.bat, [], 40, True, True ]
+    - SLEEP: 60
+    - EXECUTE_VM: [ /avtest/avagent/assets/keyinject.exe, [], 40, True, True ]
+    - SLEEP: 60
+    - EXECUTE_VM: [ /avtest/avagent/assets/keyinject.exe, [], 40, True, True ]
+    - SLEEP: 60
+    - EXECUTE_VM: [ /avtest/avagent/assets/keyinject.exe, [], 40, True, True ]
     - SLEEP: 120
+    - EXECUTE_VM: [ /avtest/avagent/assets/keyinject.exe, [], 40, True, True ]
     - CALL: SET_MAIL
     - REPORT:
         - VM_FUNCTIONAL_EV: ['Functional testing', 'Device Soldier']
@@ -64,6 +76,8 @@ SYSTEM_FUNCTIONAL_SKYPE_AVMASTER:
         frontend: 192.168.100.204
 
     - UNINSTALL
+    - CALL: VM_CLEAN_EVIDENCES
+
     - PUSH: [ AVAgent/assets/skype.bat ]
     - BUILD: [ pull, windows_elite, silent ]
     - EXECUTE_VM: [ /AVTest/build/windows_elite/agent.exe, [], 40, True, True ]

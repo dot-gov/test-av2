@@ -405,7 +405,7 @@ class CommandsDevice:
     def lock_and_unlock_screen(self):
         if not adb.is_screen_off():
             self.press_key_power()
-        time.sleep(2)
+        time.sleep(1)
         if adb.is_screen_off():
             self.press_key_power()
         adb.unlock()
@@ -457,7 +457,7 @@ class CommandsDevice:
         return adb.execute(cmd, self.device_serialno)
 
     def press_key_power(self):
-        cmd = "input keyevent 26"
+        cmd = "input keyevent POWER"
         return adb.execute(cmd, self.device_serialno)
 
     def get_packages(self):
@@ -614,6 +614,9 @@ class CommandsDevice:
         adb.executeMonkey(p_app, self.device_serialno)
         return self.check_remote_process(p_app, 5, self.device_serialno) != -1
 
+    def clean_logcat(self):
+        adb.clean_logcat(self.device_serialno)
 
-
+    def save_logcat(self, dest_path_and_file):
+        adb.save_logcat(self, dest_path_and_file)
 
