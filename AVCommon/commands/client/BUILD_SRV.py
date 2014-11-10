@@ -23,6 +23,8 @@ def on_init(protocol, args):
 
     command.load_context_from_file("AVAgent/default.yaml")
 
+    build_common.create_user("avmonitor_buildsrv", build_common.connection.DEFAULT[1])
+
     puppet = socket.gethostname()
     operation = "AOP_%s" % puppet
 

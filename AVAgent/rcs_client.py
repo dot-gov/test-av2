@@ -36,6 +36,7 @@ class Rcs_client:
         @param cookie
         @returns response page
         """
+
         try:
             #print "calling link: %s" % link
             req = urllib2.Request(link)
@@ -517,8 +518,8 @@ if __name__ == "__main__":
 
     host = "rcs-minotauro"
     user = "avmonitor"
-    passwd = "avmonitorp123"
-    operation = 'AVMonitor'
+    passwd = "testriteP123"
+    operation = 'AOP_avmaster'
     rcs=[]
 
     conn = Rcs_client(host, user, passwd)
@@ -526,8 +527,9 @@ if __name__ == "__main__":
 
     try:
         #instance_id = "52efa51d4e0913760f000138"
-        ret = conn.blacklist()
-        print ret.encode('utf-8')
+        ret = conn.all_factories()
+        #print ret.encode('utf-8')
+        print ret
         logging.debug("ret: %s" % ret)
     finally:
         conn.logout()
