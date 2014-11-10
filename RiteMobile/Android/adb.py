@@ -128,7 +128,7 @@ def wait_and_click(x=750, y=130):
 
 
 def unlock(device=None):
-    cmds = ["input keyevent 82", "input swipe 0 200 500 200"]
+    cmds = ["input keyevent 82", "input swipe 30 900 900 900"]
     for cmd in cmds:
         execute(cmd, device)
 
@@ -546,6 +546,13 @@ def __backup_restore_app_data(apk_conf_backup_file, device_serialno, backup, pac
 
     p.join()
 
+
+def clean_logcat(device_serialno):
+    execute(cmd="-c", device=device_serialno, adb_cmd="logcat")
+
+
+def save_logcat(dest_path_and_file, device_serialno):
+    execute(cmd=" -v time -d > %s" % dest_path_and_file, adb_cmd="logcat")
 
 """
 	def run(self):

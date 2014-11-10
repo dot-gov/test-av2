@@ -92,12 +92,13 @@ class CommandsRCS:
         ret = build.build_agent(self.factory_id, self.host, params, None, os.path.join(melt_dir, "melt_%s.zip" % appname), melt=melt_file, kind="melt", tries=4, use_cache=False, appname=appname)
         print ret
 
-    def build_melt_apk_ruby(self, input_melt_file, user="avmonitor", password="testriteP123", conf_json_filename="build.nodemo.json", zipfilenamebackend="and.zip",
+    def build_melt_apk_ruby(self, input_melt_file, user="avmonitor", password="testriteP123", conf_json_filename="assets/build.demo.json", zipfilenamebackend="and.zip",
                        factory_id="RCS_0000002050"):
 
         backend = self.host
+        print("Starting Ruby melt build android apk, using input apk: %s and output zip: %s" % (input_melt_file, zipfilenamebackend))
         os.system('ruby assets/rcs-core.rb -u %s -p %s -d %s -f %s -b %s -o %s -i %s' % (user, password, backend, factory_id, conf_json_filename, zipfilenamebackend, input_melt_file))
-        zipfilenamebackend = os.path.join("path", zipfilenamebackend)
+        # zipfilenamebackend = os.path.join("path", zipfilenamebackend)
         if not os.path.exists(zipfilenamebackend):
             print "ERROR, cannot melt build apk"
             return None
@@ -107,13 +108,15 @@ class CommandsRCS:
         print "... sleeping for sync"
         time.sleep(60)
         for i in range(10):
-            # print "operation: %s, %s" % (operation_id, group_id)
+            print "getting instances"
             instances = self.conn.instances_by_factory(self.device_id, self.factory)
             if not instances:
-                print "... waiting for sync"
+                print "... waiting for sync (now i trigger)"
                 if trigger_function:
                     trigger_function()
+                print "... waiting for sync (triggered, now i sleep)"
                 time.sleep(10)
+                print "... waiting for sync (waited)"
             else:
                 break
         assert len(instances) == 1
