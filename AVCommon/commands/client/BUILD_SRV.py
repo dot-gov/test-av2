@@ -17,11 +17,14 @@ report_level = 1
 
 asset_dir = "AVAgent/assets"
 
+
 def on_init(protocol, args):
     """ server side """
     from AVMaster import build_server_with_cache
 
     command.load_context_from_file("AVAgent/default.yaml")
+
+    build_common.connection.host = command.context["backend"]
 
     build_common.create_user("avmonitor_buildsrv", build_common.connection.DEFAULT[1])
 
