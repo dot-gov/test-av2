@@ -18,6 +18,7 @@ if parent not in sys.path:
     sys.path.insert(0, parent)
 
 from AVCommon import logger
+from AVCommon.logger import logging
 #logger.init()
 
 from AVCommon.mq import MQStar
@@ -150,6 +151,10 @@ def start_agent(args, force=False):
     avagent = AVAgent(vm, redis, session)
     avagent.start_agent(force=force)
 
+def start_agent_force(args):
+    vm, redis, session = args
+    avagent = AVAgent(vm, redis, session)
+    avagent.start_agent(force=True)
 
 def start_agent_args(vm, redis, session, force=False):
     avagent = AVAgent(vm, redis, session)
