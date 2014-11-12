@@ -101,7 +101,7 @@ SYSTEM_STOP:
 # ------------  #
 
 VM_ELITE_FAST:
-    - CALL: INIT_DISPATCH
+    #- CALL: INIT_DISPATCH
 
     - SLEEP: 60
     - BUILD: [ scout, windows, silent ]
@@ -118,13 +118,14 @@ VM_ELITE_FAST:
     #- RELOG
 
 VM_ELITE_FAST_SRV:
-    - CALL: INIT_DISPATCH
+    #- CALL: INIT_DISPATCH
 
     - SLEEP: 60
     - BUILD_SRV: [ scout, windows, silent, elite_fast ]
     - SLEEP: 30
     - RELOG
-
+    - SLEEP: 360
+    - EXECUTE_VM: [ /avtest/avagent/assets/keyinject.exe, [], 40, True, True ]
     - ON_ERROR: CONTINUE
     - CROP: True
     - BUILD_SRV: [ elite_fast, windows, silent, elite_fast ]
@@ -136,7 +137,7 @@ VM_ELITE_FAST_SRV:
     #- RELOG
 
 VM_SOLDIER:
-    - CALL: INIT_DISPATCH
+    #- CALL: INIT_DISPATCH
 
     - SLEEP: 60
     - BUILD: [ scout, windows, silent ]
@@ -154,7 +155,7 @@ VM_SOLDIER:
 
 
 VM_SOLDIER_SRV:
-    - CALL: INIT_DISPATCH
+    #- CALL: INIT_DISPATCH
 
     - SLEEP: 60
     - BUILD_SRV: [ scout, windows, silent, soldier_fast ]
@@ -173,7 +174,7 @@ VM_SOLDIER_SRV:
 
 
 VM_MELT:
-    - CALL: INIT_DISPATCH
+    #- CALL: INIT_DISPATCH
 
     - BUILD: [ scout, windows, melt ]
     - UNINSTALL
@@ -182,7 +183,7 @@ VM_MELT:
 
 
 VM_MELT_SRV:
-    - CALL: INIT_DISPATCH
+    #- CALL: INIT_DISPATCH
 
     - BUILD_SRV: [ scout, windows, melt, melt ]
     - UNINSTALL
@@ -193,7 +194,7 @@ VM_MELT_SRV:
 
 VM_EXPLOIT:
     - ON_ERROR: CONTINUE
-    - CALL: INIT_DISPATCH
+    #- CALL: INIT_DISPATCH
 
     - BUILD: [ pull, exploit, melt ]
     #- BUILD: [ pull, exploit_avi, melt ]
@@ -224,7 +225,7 @@ VM_EXPLOIT:
 
 VM_EXPLOIT_SRV:
     - ON_ERROR: CONTINUE
-    - CALL: INIT_DISPATCH
+    #- CALL: INIT_DISPATCH
 
     - BUILD_SRV: [ pull, exploit, melt, exploit ]
     - BUILD_SRV: [ scout, exploit_pdf, melt, exploit_pdf ]
