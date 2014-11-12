@@ -18,6 +18,8 @@ INIT_DISPATCH:
     - INTERNET: False
     - REVERT
     - START_VM: AV_AGENT
+    # wait for av start
+    - SLEEP: 60
 
 END_DISPATCH:
     - STOP_VM: 60
@@ -31,38 +33,10 @@ SET_MAIL:
 
 # ------------- SYSTEM COMMANDS -------------- #
 
-
-#seems BROKEN
-VM_EXEC_SOLDIER:
-    - CROP: True
-    - CALL: BUILD_SOLDIER
-    - EXECUTE_VM: [ /AVTest/AVAgent/build/windows_elite/agent.exe, [], 40, True, True ]
-    - SLEEP: 60
-    #- CHECK_INFECTION: STOP_IF_CLEAN
-    - CROP: False
-
-#seems BROKEN
-SYSTEM_SOLDIER_BASIC:
-    - VM_ALL
-    - INTERNET: False
-    - SLEEP: [10, 60]
-    - START_VM
-    - CALL: VM_PUSH_AGENT
-    - INSTALL_AGENT
-    - SLEEP: 10
-    - RELOG
-
-    - CALL: SET_MAIL
-    - REPORT:
-        - VM_EXEC_SOLDIER: ['AV Invisibility', 'Soldier']
-    - UNINSTALL
-    - STOP_VM: 60
-
 SYSTEM_STATIC_WINDOWS:
     - VM_ALL
     - INTERNET: False
     - SLEEP: [10, 120]
-    - CALL: INIT_DISPATCH
     - CROP: True
     - CALL: SET_MAIL
     - REPORT:
@@ -74,7 +48,6 @@ SYSTEM_STATIC_MOBILE:
     - VM_ALL: IMPORTANT
     - INTERNET: False
     - SLEEP: [0, 600]
-    - CALL: INIT_DISPATCH
     - CLEAN_EVIDENCES: Ok
     - CROP: True
     - REPORT:
@@ -101,9 +74,7 @@ SYSTEM_STOP:
 # ------------  #
 
 VM_ELITE_FAST:
-    #- CALL: INIT_DISPATCH
-
-    - SLEEP: 60
+    - CALL: INIT_DISPATCH
     - BUILD: [ scout, windows, silent ]
     - SLEEP: 30
     - RELOG
@@ -118,14 +89,11 @@ VM_ELITE_FAST:
     #- RELOG
 
 VM_ELITE_FAST_SRV:
-    #- CALL: INIT_DISPATCH
-
-    - SLEEP: 60
+    - CALL: INIT_DISPATCH
     - BUILD_SRV: [ scout, windows, silent, elite_fast ]
     - SLEEP: 30
     - RELOG
-    - SLEEP: 360
-    - EXECUTE_VM: [ /avtest/avagent/assets/keyinject.exe, [], 40, True, True ]
+
     - ON_ERROR: CONTINUE
     - CROP: True
     - BUILD_SRV: [ elite_fast, windows, silent, elite_fast ]
@@ -137,9 +105,7 @@ VM_ELITE_FAST_SRV:
     #- RELOG
 
 VM_SOLDIER:
-    #- CALL: INIT_DISPATCH
-
-    - SLEEP: 60
+    - CALL: INIT_DISPATCH
     - BUILD: [ scout, windows, silent ]
     - SLEEP: 30
     - RELOG
@@ -155,9 +121,7 @@ VM_SOLDIER:
 
 
 VM_SOLDIER_SRV:
-    #- CALL: INIT_DISPATCH
-
-    - SLEEP: 60
+    - CALL: INIT_DISPATCH
     - BUILD_SRV: [ scout, windows, silent, soldier_fast ]
     - SLEEP: 30
     - RELOG
@@ -174,8 +138,7 @@ VM_SOLDIER_SRV:
 
 
 VM_MELT:
-    #- CALL: INIT_DISPATCH
-
+    - CALL: INIT_DISPATCH
     - BUILD: [ scout, windows, melt ]
     - UNINSTALL
     - SCREENSHOT
@@ -183,8 +146,7 @@ VM_MELT:
 
 
 VM_MELT_SRV:
-    #- CALL: INIT_DISPATCH
-
+    - CALL: INIT_DISPATCH
     - BUILD_SRV: [ scout, windows, melt, melt ]
     - UNINSTALL
     - SCREENSHOT
@@ -194,8 +156,7 @@ VM_MELT_SRV:
 
 VM_EXPLOIT:
     - ON_ERROR: CONTINUE
-    #- CALL: INIT_DISPATCH
-
+    - CALL: INIT_DISPATCH
     - BUILD: [ pull, exploit, melt ]
     #- BUILD: [ pull, exploit_avi, melt ]
     #- BUILD: [ pull, exploit_bmp, melt ]
@@ -225,7 +186,7 @@ VM_EXPLOIT:
 
 VM_EXPLOIT_SRV:
     - ON_ERROR: CONTINUE
-    #- CALL: INIT_DISPATCH
+    - CALL: INIT_DISPATCH
 
     - BUILD_SRV: [ pull, exploit, melt, exploit ]
     - BUILD_SRV: [ scout, exploit_pdf, melt, exploit_pdf ]
@@ -238,6 +199,7 @@ VM_EXPLOIT_SRV:
    # - RELOG
 
 VM_STATIC:
+    - CALL: INIT_DISPATCH
     - CROP: True
     - ON_ERROR: CONTINUE
     - CALL: BUILD_DESKTOP
@@ -247,6 +209,7 @@ VM_STATIC:
     - ON_ERROR: SKIP
 
 VM_STATIC_SRV:
+    - CALL: INIT_DISPATCH
     - CROP: True
     - ON_ERROR: CONTINUE
     - CALL: BUILD_DESKTOP_SRV
@@ -261,7 +224,6 @@ SYSTEM_STATIC:
     - VM_ALL
     - ON_ERROR: SKIP
     - SLEEP: [1, 600]
-    - CALL: INIT_DISPATCH
     - CALL: VM_CLEAN_EVIDENCES
     - CALL: SET_MAIL
     - CROP: True
@@ -275,7 +237,6 @@ SYSTEM_STATIC_SRV:
     - VM_ALL
     - ON_ERROR: SKIP
     - SLEEP: [1, 600]
-    - CALL: INIT_DISPATCH
     - CALL: VM_CLEAN_EVIDENCES
     - BUILD_CACHE_CLEAN: False
     - CALL: SET_MAIL
@@ -291,7 +252,7 @@ SYSTEM_MELT:
     - VM_ALL
     - ON_ERROR: SKIP
     - SLEEP: [1, 600]
-    - CALL: INIT_DISPATCH
+    #- CALL: INIT_DISPATCH
     - CALL: VM_CLEAN_EVIDENCES
     - CALL: SET_MAIL
     - REPORT:
@@ -305,7 +266,7 @@ SYSTEM_MELT_SRV:
     - VM_ALL
     - ON_ERROR: SKIP
     - SLEEP: [1, 600]
-    - CALL: INIT_DISPATCH
+    #- CALL: INIT_DISPATCH
     - CALL: VM_CLEAN_EVIDENCES
     - BUILD_CACHE_CLEAN: False
     - CALL: SET_MAIL
@@ -321,7 +282,7 @@ SYSTEM_ELITE_FAST:
     - VM_ALL
     - ON_ERROR: SKIP
     - SLEEP: [1, 600]
-    - CALL: INIT_DISPATCH
+    #- CALL: INIT_DISPATCH
     - CALL: VM_CLEAN_EVIDENCES
     - CALL: SET_MAIL
     - REPORT:
@@ -336,7 +297,7 @@ SYSTEM_ELITE_FAST_SRV:
     - VM_ALL
     - ON_ERROR: SKIP
     - SLEEP: [1, 600]
-    - CALL: INIT_DISPATCH
+    #- CALL: INIT_DISPATCH
     - CALL: VM_CLEAN_EVIDENCES
     - CALL: SET_MAIL
     - BUILD_CACHE_CLEAN: False
@@ -353,7 +314,7 @@ SYSTEM_ELITE:
     - VM_ALL
     - ON_ERROR: SKIP
     - SLEEP: [1, 600]
-    - CALL: INIT_DISPATCH
+    #- CALL: INIT_DISPATCH
     - CALL: VM_CLEAN_EVIDENCES
     - CALL: SET_MAIL
     - REPORT:
@@ -367,7 +328,7 @@ SYSTEM_SOLDIER:
     - VM_ALL
     - ON_ERROR: SKIP
     - SLEEP: [1, 600]
-    - CALL: INIT_DISPATCH
+    #- CALL: INIT_DISPATCH
     - CALL: VM_CLEAN_EVIDENCES
     - CALL: SET_MAIL
     - REPORT:
@@ -382,7 +343,7 @@ SYSTEM_SOLDIER_SRV:
     - VM_ALL
     - ON_ERROR: SKIP
     - SLEEP: [1, 600]
-    - CALL: INIT_DISPATCH
+    #- CALL: INIT_DISPATCH
     - CALL: VM_CLEAN_EVIDENCES
     - CALL: SET_MAIL
     - BUILD_CACHE_CLEAN: False
@@ -399,7 +360,7 @@ SYSTEM_EXPLOIT:
     - VM_ALL
     - ON_ERROR: SKIP
     - SLEEP: [1, 600]
-    - CALL: INIT_DISPATCH
+    #- CALL: INIT_DISPATCH
     - CALL: VM_CLEAN_EVIDENCES
     - CALL: SET_MAIL
     - REPORT:
@@ -414,7 +375,7 @@ SYSTEM_EXPLOIT_SRV:
     - VM_ALL
     - ON_ERROR: SKIP
     - SLEEP: [1, 600]
-    - CALL: INIT_DISPATCH
+    #- CALL: INIT_DISPATCH
     - CALL: VM_CLEAN_EVIDENCES
     - CALL: SET_MAIL
     - BUILD_CACHE_CLEAN: False
@@ -431,7 +392,6 @@ SYSTEM_DAILY:
     - VM_ALL
     - ON_ERROR: SKIP
     - SLEEP: [1, 1800]
-    - CALL: INIT_DISPATCH
     - CALL: VM_CLEAN_EVIDENCES
     - CALL: SET_MAIL
     - REPORT:
@@ -450,7 +410,6 @@ SYSTEM_DAILY_SRV:
     - VM_ALL
     - ON_ERROR: SKIP
     - SLEEP: [1, 1800]
-    - CALL: INIT_DISPATCH
     - CALL: VM_CLEAN_EVIDENCES
     - CALL: SET_MAIL
     - BUILD_CACHE_CLEAN: False
@@ -470,7 +429,6 @@ SYSTEM_DAILY_FAST:
     - VM_ALL
     - ON_ERROR: SKIP
     - SLEEP: [1, 300]
-    - CALL: INIT_DISPATCH
     - CALL: VM_CLEAN_EVIDENCES
     - CALL: SET_MAIL
     - REPORT:
@@ -488,7 +446,6 @@ SYSTEM_DAILY_FAST_SRV:
     - VM_ALL
     - ON_ERROR: SKIP
     - SLEEP: [1, 300]
-    - CALL: INIT_DISPATCH
     - CALL: VM_CLEAN_EVIDENCES
     - CALL: SET_MAIL
     - BUILD_CACHE_CLEAN: False
@@ -505,6 +462,7 @@ SYSTEM_DAILY_FAST_SRV:
 
 
 VM_STATIC_ANDROID:
+    - CALL: INIT_DISPATCH
     - CROP: True
     - ON_ERROR: CONTINUE
     - CALL: BUILD_MOBILE
@@ -515,7 +473,6 @@ SYSTEM_ANDROID_FAST:
     - VM_ALL
     - ON_ERROR: SKIP
     - SLEEP: [1, 300]
-    - CALL: INIT_DISPATCH
     - CALL: VM_CLEAN_EVIDENCES
     - CALL: SET_MAIL
     - REPORT:
@@ -525,25 +482,9 @@ SYSTEM_ANDROID_FAST:
     - CALL: VM_GET_LOG
     - CALL: END_DISPATCH
 
-SYSTEM_DAILY_POSITIVE:
-    - VM_ALL
-    - ON_ERROR: SKIP
-    - SLEEP: [1, 600]
-    - CALL: INIT_DISPATCH
-    - CALL: VM_CLEAN_EVIDENCES
-    - CALL: SET_MAIL
-    - REPORT:
-        - VM_STATIC: ['AV Invisibility Static', 'Static check on builds']
-        - VM_ELITE_FAST: ['AV Invisibility', 'Elite']
-        - VM_MELT: ['AV Invisibility', 'Melt']
-        - VM_EXPLOIT: ['AV Invisibility', 'Exploit']
-        - SYS_PUSH_VIRUS: ['AVM Update', 'Positive static check', INVERT]
-    - UNINSTALL
-    - CALL: END_DISPATCH
-
 # ------------  #
 
-SYS_PUSH_VIRUS:
+VM_PUSH_VIRUS:
     - ON_ERROR: CONTINUE
     - SLEEP: 300
     - CROP: True
@@ -560,38 +501,9 @@ SYSTEM_POSITIVE:
     - CALL: INIT_DISPATCH
     - CALL: SET_MAIL
     - REPORT:
-        - SYS_PUSH_VIRUS: ['AVM Update', 'Positive static check', INVERT]
+        - VM_PUSH_VIRUS: ['AVM Update', 'Positive static check', INVERT]
     - UNINSTALL
     - CALL: END_DISPATCH
-
-SYSTEM_MANUAL:
-    #- START_VM: AV_AGENT
-    #- SLEEP: [30, 120]
-
-    - BUILD: [ pull, exploit, melt ]
-    - BUILD: [ pull, selfdel_exploit, melt ]
-    - BUILD: [ pull, windows, melt ]
-    - RELOG
-    - BUILD: [ scout, windows, silent ]
-
-SYSTEM_W81:
-    - REVERT
-    - SLEEP: [5, 60]
-
-    - START_VM
-    - CALL: VM_PUSH_AGENT
-    - START_AGENT: 172.20.20.168
-    - SET:
-        backend: 192.168.100.201
-        frontend: 192.168.100.204
-
-    - BUILD: [ pull, windows, silent ]
-
-S_W81:
-    - SET:
-        nointernetcheck: [funwin81]
-
-    - BUILD: [ pull, windows, silent ]
 
 
 SYSTEM_CHECK_150_EXES:
@@ -601,171 +513,12 @@ SYSTEM_CHECK_150_EXES:
         'AVAgent/assets/windows/3D-Modelling.exe',
         'AVAgent/assets/windows/4mb-Laptops.exe',
         'AVAgent/assets/windows/8021X-HOWTO.exe',
-        'AVAgent/assets/windows/ACP-Modem.exe',
-        'AVAgent/assets/windows/ACPI-HOWTO.exe',
-        'AVAgent/assets/windows/ADSL-Bandwidth-Management-HOWTO.exe',
-        'AVAgent/assets/windows/ADSM-Backup.exe',
-        'AVAgent/assets/windows/AI-Alife-HOWTO.exe',
-        'AVAgent/assets/windows/ATA-RAID-HOWTO.exe',
-        'AVAgent/assets/windows/ATM-Linux-HOWTO.exe',
-        'AVAgent/assets/windows/AX25-HOWTO.exe',
-        'AVAgent/assets/windows/Accessibility-Dev-HOWTO.exe',
-        'AVAgent/assets/windows/Accessibility-HOWTO.exe',
-        'AVAgent/assets/windows/Adv-Routing-HOWTO.exe',
-        'AVAgent/assets/windows/Advocacy.exe',
-        'AVAgent/assets/windows/Alpha-HOWTO.exe',
-        'AVAgent/assets/windows/Alsa-sound.exe',
-        'AVAgent/assets/windows/Antares-RAID-sparcLinux-HOWTO.exe',
-        'AVAgent/assets/windows/Apache+SSL+PHP+fp.exe',
-        'AVAgent/assets/windows/Apache-Compile-HOWTO.exe',
-        'AVAgent/assets/windows/Apache-Overview-HOWTO.exe',
-        'AVAgent/assets/windows/Apache-WebDAV-LDAP-HOWTO.exe',
-        'AVAgent/assets/windows/Apache-mods.exe',
-        'AVAgent/assets/windows/Assembly-HOWTO.exe',
-        'AVAgent/assets/windows/Astronomy-HOWTO.exe',
-        'AVAgent/assets/windows/Athlon-Powersaving-HOWTO.exe',
-        'AVAgent/assets/windows/Authentication-Gateway-HOWTO.exe',
-        'AVAgent/assets/windows/Autodir-HOWTO.exe',
-        'AVAgent/assets/windows/Automount.exe',
-        'AVAgent/assets/windows/Aviation-HOWTO.exe',
-        'AVAgent/assets/windows/Avr-Microcontrollers-in-Linux-Howto.exe',
-        'AVAgent/assets/windows/BackspaceDelete.exe',
-        'AVAgent/assets/windows/Backup-With-MSDOS.exe',
-        'AVAgent/assets/windows/Bandwidth-Limiting-HOWTO.exe',
-        'AVAgent/assets/windows/Bangla-HOWTO.exe',
-        'AVAgent/assets/windows/Bash-Prog-Intro-HOWTO.exe',
-        'AVAgent/assets/windows/Bash-Prompt-HOWTO.exe',
-        'AVAgent/assets/windows/Battery-Powered.exe',
-        'AVAgent/assets/windows/Belarusian-HOWTO.exe',
-        'AVAgent/assets/windows/Belgian-HOWTO.exe',
-        'AVAgent/assets/windows/Benchmarking-HOWTO.exe',
-        'AVAgent/assets/windows/Beowulf-HOWTO.exe',
-        'AVAgent/assets/windows/Boca.exe',
-        'AVAgent/assets/windows/BogoMips.exe',
-        'AVAgent/assets/windows/Boot+Root+Raid+LILO.exe',
-        'AVAgent/assets/windows/BootPrompt-HOWTO.exe',
-        'AVAgent/assets/windows/Bootdisk-HOWTO.exe',
-        'AVAgent/assets/windows/Bridge+Firewall.exe',
-        'AVAgent/assets/windows/Bridge.exe',
-        'AVAgent/assets/windows/ExeDoc (1).exe',
-        'AVAgent/assets/windows/ExeDoc (10).exe',
-        'AVAgent/assets/windows/ExeDoc (11).exe',
-        'AVAgent/assets/windows/ExeDoc (12).exe',
-        'AVAgent/assets/windows/ExeDoc (13).exe',
-        'AVAgent/assets/windows/ExeDoc (14).exe',
-        'AVAgent/assets/windows/ExeDoc (15).exe',
-        'AVAgent/assets/windows/ExeDoc (16).exe',
-        'AVAgent/assets/windows/ExeDoc (17).exe',
-        'AVAgent/assets/windows/ExeDoc (18).exe',
-        'AVAgent/assets/windows/ExeDoc (19).exe',
-        'AVAgent/assets/windows/ExeDoc (2).exe',
-        'AVAgent/assets/windows/ExeDoc (20).exe',
-        'AVAgent/assets/windows/ExeDoc (21).exe',
-        'AVAgent/assets/windows/ExeDoc (22).exe',
-        'AVAgent/assets/windows/ExeDoc (23).exe',
-        'AVAgent/assets/windows/ExeDoc (24).exe',
-        'AVAgent/assets/windows/ExeDoc (25).exe',
-        'AVAgent/assets/windows/ExeDoc (26).exe',
-        'AVAgent/assets/windows/ExeDoc (27).exe',
-        'AVAgent/assets/windows/ExeDoc (28).exe',
-        'AVAgent/assets/windows/ExeDoc (29).exe',
-        'AVAgent/assets/windows/ExeDoc (3).exe',
-        'AVAgent/assets/windows/ExeDoc (30).exe',
-        'AVAgent/assets/windows/ExeDoc (31).exe',
-        'AVAgent/assets/windows/ExeDoc (32).exe',
-        'AVAgent/assets/windows/ExeDoc (33).exe',
-        'AVAgent/assets/windows/ExeDoc (34).exe',
-        'AVAgent/assets/windows/ExeDoc (35).exe',
-        'AVAgent/assets/windows/ExeDoc (36).exe',
-        'AVAgent/assets/windows/ExeDoc (37).exe',
-        'AVAgent/assets/windows/ExeDoc (38).exe',
-        'AVAgent/assets/windows/ExeDoc (39).exe',
-        'AVAgent/assets/windows/ExeDoc (4).exe',
-        'AVAgent/assets/windows/ExeDoc (40).exe',
-        'AVAgent/assets/windows/ExeDoc (41).exe',
-        'AVAgent/assets/windows/ExeDoc (42).exe',
-        'AVAgent/assets/windows/ExeDoc (43).exe',
-        'AVAgent/assets/windows/ExeDoc (44).exe',
-        'AVAgent/assets/windows/ExeDoc (45).exe',
-        'AVAgent/assets/windows/ExeDoc (46).exe',
-        'AVAgent/assets/windows/ExeDoc (47).exe',
-        'AVAgent/assets/windows/ExeDoc (48).exe',
-        'AVAgent/assets/windows/ExeDoc (49).exe',
-        'AVAgent/assets/windows/ExeDoc (5).exe',
-        'AVAgent/assets/windows/ExeDoc (50).exe',
-        'AVAgent/assets/windows/ExeDoc (6).exe',
-        'AVAgent/assets/windows/ExeDoc (7).exe',
-        'AVAgent/assets/windows/ExeDoc (8).exe',
-        'AVAgent/assets/windows/ExeDoc (9).exe',
-        'AVAgent/assets/windows/UUCP-HOWTO.exe',
-        'AVAgent/assets/windows/User-Authentication-HOWTO.exe',
-        'AVAgent/assets/windows/User-Group-HOWTO.exe',
-        'AVAgent/assets/windows/VAIO+Linux.exe',
-        'AVAgent/assets/windows/VAR-HOWTO.exe',
-        'AVAgent/assets/windows/VB6-to-Tcl.exe',
-        'AVAgent/assets/windows/VCR-HOWTO.exe',
-        'AVAgent/assets/windows/VME-HOWTO.exe',
-        'AVAgent/assets/windows/VMS-to-Linux-HOWTO.exe',
-        'AVAgent/assets/windows/VMailMgr-HOWTO.exe',
-        'AVAgent/assets/windows/VPN-HOWTO.exe',
-        'AVAgent/assets/windows/VPN-Masquerade-HOWTO.exe',
-        'AVAgent/assets/windows/Valgrind-HOWTO.exe',
-        'AVAgent/assets/windows/VideoLAN-HOWTO.exe',
-        'AVAgent/assets/windows/Virtual-Services-HOWTO.exe',
-        'AVAgent/assets/windows/Virtual-Web.exe',
-        'AVAgent/assets/windows/Visual-Bell.exe',
-        'AVAgent/assets/windows/VoIP-HOWTO.exe',
-        'AVAgent/assets/windows/WWW-mSQL-HOWTO.exe',
-        'AVAgent/assets/windows/Wacom-Tablet-HOWTO.exe',
-        'AVAgent/assets/windows/Wacom-USB-mini-HOWTO.exe',
-        'AVAgent/assets/windows/Wearable-HOWTO.exe',
-        'AVAgent/assets/windows/Web-Browsing-Behind-ISA-Server-HOWTO.exe',
-        'AVAgent/assets/windows/Webcam-HOWTO.exe',
-        'AVAgent/assets/windows/WikiText-HOWTO.exe',
-        'AVAgent/assets/windows/Windows-LAN-Server-HOWTO.exe',
-        'AVAgent/assets/windows/Windows-Newsreaders-under-Linux-HOWTO.exe',
-        'AVAgent/assets/windows/Winmodems-and-Linux-HOWTO.exe',
-        'AVAgent/assets/windows/Wireless-HOWTO.exe',
-        'AVAgent/assets/windows/Wireless-Link-sys-WPC11.exe',
-        'AVAgent/assets/windows/Wireless-Sync-HOWTO.exe',
-        'AVAgent/assets/windows/WordPerfect.exe',
-        'AVAgent/assets/windows/X-Big-Cursor.exe',
-        'AVAgent/assets/windows/XDM-Xterm.exe',
-        'AVAgent/assets/windows/XDMCP-HOWTO.exe',
-        'AVAgent/assets/windows/XFree-Local-multi-user-HOWTO.exe',
-        'AVAgent/assets/windows/XFree86-HOWTO.exe',
-        'AVAgent/assets/windows/XFree86-R200.exe',
-        'AVAgent/assets/windows/XFree86-Second-Mouse.exe',
-        'AVAgent/assets/windows/XFree86-Touch-Screen-HOWTO.exe',
-        'AVAgent/assets/windows/XFree86-Video-Timings-HOWTO.exe',
-        'AVAgent/assets/windows/XFree86-XInside.exe',
-        'AVAgent/assets/windows/XML-RPC-HOWTO.exe',
-        'AVAgent/assets/windows/XWindow-Overview-HOWTO.exe',
-        'AVAgent/assets/windows/XWindow-User-HOWTO.exe',
-        'AVAgent/assets/windows/Xinerama-HOWTO.exe',
-        'AVAgent/assets/windows/Xterm-Title.exe',
-        'AVAgent/assets/windows/Xterminals.exe',
-        'AVAgent/assets/windows/ZIP-Drive.exe',
-        'AVAgent/assets/windows/ZIP-Install.exe']
+        'AVAgent/assets/windows/ACP-Modem.exe'
+        #...
+        ]
 
 
 # ---------------- #
-
-VM_PUSH_EXE:
-    - PUSH: [ assets/agent_no_vm.exe ]
-    - CROP: True
-    - EXECUTE_VM: [ /avtest/assets/agent_no_vm.exe, [], 40, True, True ]
-    - SLEEP: 120
-    - CROP: False
-    - CHECK_INFECTION: STOP_IF_CLEAN
-
-VM_PUSH_S_EXE:
-    - PUSH: [ assets/agent_s_no_vm.exe ]
-    - CROP: True
-    - EXECUTE_VM: [ /avtest/assets/agent_s_no_vm.exe, [], 40, True, True ]
-    - SLEEP: 120
-    - CROP: False
-    - CHECK_INFECTION: STOP_IF_CLEAN
 
 VM_PUSH_T_EXE:
     - PUSH: [ assets/agent_themida.exe ]
