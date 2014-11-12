@@ -41,7 +41,10 @@ class AVMaster():
         self.load_procedures()
         proc = Procedure.procedures[self.procedure]
         assert proc, "cannot find the specified procedure: %s" % self.procedure
-
+        if self.args.check:
+            logging.warn("checking procedure")
+            Procedure.check_procedure(self.procedure)
+            return
         # command line vm list overrides procedures.yaml
         if self.vm_names==[''] and proc.command_list and proc.command_list[0].name.startswith("VM"):
             vm_command = proc.command_list.pop(0)
@@ -52,10 +55,6 @@ class AVMaster():
         if self.args.clean:
             logging.warn("cleaning mq")
             mq.clean()
-        if self.args.check:
-            logging.warn("checking procedure")
-            Procedure.check_procedure(self.procedure)
-            return
         logging.info("mq session: %s" % mq.session)
 
         dispatcher = Dispatcher(mq, self.vm_names)

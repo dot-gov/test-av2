@@ -24,7 +24,7 @@ def execute(vm, protocol, level):
     #in case of "puppet" host, I have different vms
     if "avmaster" == socket.gethostname():
         # 29
-        vm_first = "avast,avast32,avg,avg32,avg8,avira,comodo,kis14,kis,mcafee,msessential,norton,panda,kis32".split(',')
+        vm_first = "avast,avast32,avg,avg32,avira,comodo,kis14,kis,mcafee,msessential,norton,panda,kis32".split(',')
         vm_second = "360cn,adaware,bitdef,drweb,fsecure,gdata,mbytes,norman,risint,trendm,iobit32,zoneal".split(',')
         # just as a documentation
         # vm_not_working_first = "eset".split(',')

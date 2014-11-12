@@ -23,6 +23,8 @@ def execute(vm, protocol, inst_args):
     assert vm, "null vm"
     assert command.context is not None
 
+    failed = False
+
     if inst_args:
         redis = inst_args
     else:
@@ -51,7 +53,11 @@ def execute(vm, protocol, inst_args):
 
     remote_name = "%s/av_agent.bat" % startup_dir
     remote_name= remote_name.replace("/","\\")
+    if os.path.exists(filename):
+        logging.debug("I'll copy %s" % filename)
     r = vm_manager.execute(vm, "copyFileToGuest", filename, remote_name )
+    if r > 0:
+        failed = True
     os.remove(filename)
 
     fd, filename = tempfile.mkstemp(".bat")
@@ -60,16 +66,24 @@ def execute(vm, protocol, inst_args):
     os.close(fd)
 
     remote_name = "C:\\AVTest\\AVAgent\\start.bat"
+    if os.path.exists(filename):
+        logging.debug("I'll copy %s" % filename)
     r = vm_manager.execute(vm, "copyFileToGuest", filename, remote_name )
+    if r > 0:
+        failed = True
     os.remove(filename)
 
     dirname = "%s/avagent/running" % config.basedir_av
     r = vm_manager.execute(vm, "deleteDirectoryInGuest", dirname)
+    if r > 0:
+        failed = True
 
     dirname = "%s/logs" % config.basedir_av
     r = vm_manager.execute(vm, "deleteDirectoryInGuest", dirname)
-
     if r > 0:
+        failed = True
+
+    if failed:
         return False, "Cant Copy %s on VM" % filename
 
     else:
