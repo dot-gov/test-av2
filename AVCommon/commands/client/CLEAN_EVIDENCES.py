@@ -39,7 +39,7 @@ def execute(vm, args):
 
     logging.debug("puppet: %s" % pupp)
 
-    build.create_user(pupp, vm)
+    build.create_user(pupp, vm, backend)
     build.uninstall(backend)
 
     build.disable_analysis(backend)

@@ -552,3 +552,12 @@ TEST_UNINSTALL_CLEAN_EV:
     - RELOG
     - CALL: VM_CLEAN_EVIDENCES
 
+TEST_INSTALL_AG:
+    - VM_ALL
+    - CALL: VM_PUSH_AGENT
+    - INSTALL_AGENT
+    - SLEEP: 10
+    - RELOG
+    - CALL: VM_CLEAN_EVIDENCES
+    - BUILD_SRV: [ scout, windows, silent, scout ]
+    - UNINSTALL

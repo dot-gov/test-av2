@@ -893,7 +893,9 @@ def check_blacklist(blacklist=None):
         report_send("+ BLACKLIST: %s" % blacklist_server)
 
 
-def create_user(puppet, vm):
+def create_user(puppet, vm, backend=None):
+    if backend:
+        build_common.connection.host = backend
     logging.debug("create_user %s, %s" % (puppet, vm))
     user_name = "avmonitor_%s_%s" % (puppet, vm)
     build_common.connection.user = user_name
