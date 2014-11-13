@@ -15,7 +15,7 @@ from AVCommon import build_common as build
 class CommandsRCS:
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, host, device_id, login_id = "0", login = "avtest", password = "avtest", operation = "Rite_Mobile", target_name = "HardwareFunctional", factory = 'RCS_0000002050'):
+    def __init__(self, host, device_id, login_id = "0", login = "avmonitor", password = "testriteP123", operation = "Rite_Mobile", target_name = "HardwareFunctional", factory = 'RCS_0000002050'):
         self.host = host
         self.login = login
         self.password = password

@@ -9,7 +9,7 @@ import datetime
 import argparse
 
 from RiteMobile.Android.commands_device import CommandsDevice
-from RiteMobile.Android.commands_rcs import CommandsRCSPolluce
+from RiteMobile.Android.commands_rcs import CommandsRCSCastore as CommandsRCS
 
 # apk_template = "build/android/install.%s.apk"
 apk_template = "assets/autotest.%s.apk"
@@ -281,7 +281,7 @@ def test_device(id, command_dev, args, results):
     device_id = command_dev.get_dev_deviceid()
 
     #commands_rcs = CommandsRCS(host = "192.168.100.100", login_id = id, device_id = device_id, operation = "Rite_Mobile", target_name = "HardwareFunctional", factory = 'RCS_0000002050')
-    commands_rcs = CommandsRCSPolluce(login_id=id, device_id=device_id)
+    commands_rcs = CommandsRCS(login_id=id, device_id=device_id)
 
     #build.connection.host = "rcs-zeus-master.hackingteam.local"
     #build.connection.operation = "Rite_Mobile"
