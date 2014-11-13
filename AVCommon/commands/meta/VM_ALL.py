@@ -13,9 +13,9 @@ def execute(vm, protocol, level):
     assert command.context is not None
 
     #vm_first = "avast,avast32,avg,avg32,avira,kis,kis14,kis32,mcafee,norton,panda,comodo,eset,msessential".split(',')
-    vm_first = "avast,avast32,avg,avg32,avira,avira15,kis,kis14,kis32,kis15,mcafee,norton,comodo,eset,eset7,msessential,panda,panda15".split(',')
+    vm_first = "eset7,avast,avast32,avg,panda15,avg32,avira,avira15,kis15,kis,kis14,kis32,mcafee,bitdef15,norton,comodo,eset,msessential,panda".split(',')
     #disattivato temporaneamente norman
-    vm_second = "drweb,360cn5,adaware,ahnlab,bitdef,bitdef15,fsecure,gdata,iobit32,vba32,fortinet,mbytes,risint,syscare,trendm,trendm15,zoneal,clamav,fprot".split(',')
+    vm_second = "fortinet,drweb,360cn5,adaware,fprot,ahnlab,bitdef,fsecure,gdata,vba32,iobit32,mbytes,risint,syscare,trendm,trendm15,zoneal,clamav".split(',')
     # just as a documentation
     # vm_not_working_first = "".split(',')
     # vm_not_working_second = "norman".split(',')
