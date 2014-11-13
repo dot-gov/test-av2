@@ -42,7 +42,7 @@ def close_instance(puppet, vm):
         logging.debug("closing instance")
         backend = command.context["backend"]
 
-        build.create_user(puppet, vm)
+        build.create_user(puppet, vm, backend)
         build.uninstall(backend)
     except:
         logging.exception("Cannot close instance")
