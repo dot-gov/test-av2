@@ -162,6 +162,7 @@ class CommandsRCS:
     def wait_for_start(self, starts = 1):
         info_evidences = []
         counter = 0
+        self.last_start = 0
         while not info_evidences and counter < 10:
             infos = self.conn.infos(self.target_id, self.instance_id)
             info_evidences = [ (e['data']['content'],e['da']) for e in infos if 'Started' in e['data']['content']]
@@ -181,7 +182,7 @@ class CommandsRCS:
         root = ""
         info = 0
         if not self.last_start:
-            self.wait_start()
+            self.wait_for_start()
 
         while not info_evidences and counter < 10:
             infos = self.conn.infos(self.target_id, self.instance_id)

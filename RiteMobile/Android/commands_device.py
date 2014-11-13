@@ -416,7 +416,7 @@ class CommandsDevice:
         adb.unlock(self.device_serialno)
 
     def is_agent_running(self):
-        self.is_package_runnning(apk_dataLoader.get_apk("agent").package_name)
+        return self.is_package_runnning(apk_dataLoader.get_apk("agent").package_name)
 
     def is_package_runnning(self, package_name):
         processes = adb.ps(self.device_serialno)
