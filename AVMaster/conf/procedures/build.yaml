@@ -981,6 +981,16 @@ FINALIZE_UPDATE_MANUAL:
     - SLEEP: [10, 60]
     - REFRESH_SNAPSHOT
 
+UPDATE_INSTALL_MANUAL:
+    - VM_ALL
+    - START_VM
+    - CALL: VM_PUSH_AGENT
+    - INSTALL_AGENT
+    - RELOG
+    - STOP_VM: 300
+    - WAIT_SHUTDOWN
+    - REFRESH_SNAPSHOT
+
 UPDATE_MANUAL:
     - CALL: INIT_UPDATE_MANUAL
     - CHECK_INFECTION # questo non e' necessario, ma e' meglio assicurarsene
