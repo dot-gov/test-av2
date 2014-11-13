@@ -1,3 +1,5 @@
+import socket
+
 __author__ = 'fabrizio'
 
 import os
@@ -11,9 +13,10 @@ from AVCommon import process
 from AVCommon.logger import logging
 from AVAgent import build
 
-
 def on_init(vm, args):
     """ server side """
+    puppet =  socket.gethostname()
+    args.append( puppet )
     return True
 
 
@@ -34,10 +37,12 @@ def execute_calc():
     proc.kill()
 
 
-def close_instance():
+def close_instance(puppet, vm):
     try:
         logging.debug("closing instance")
         backend = command.context["backend"]
+
+        build.create_user(puppet, vm, backend)
         build.uninstall(backend)
     except:
         logging.exception("Cannot close instance")
@@ -138,14 +143,16 @@ def delete_build():
 
 
 def execute(vm, args):
-    if not args:
-        args = ""
+    #if not args:
+    #    args = ""
+
+    puppet = args.pop()
 
     # execute "calc.exe"
     execute_calc()
     # build.close(instance)
     # if not no_clean_instances:
-    close_instance()
+    close_instance(puppet, vm)
     # kill process
     kill_rcs(vm)
     # delete startup

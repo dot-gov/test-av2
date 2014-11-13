@@ -336,35 +336,8 @@ class AgentBuild:
             return c.server_status()['error']
 
     def create_user_machine(self, user_name = None):
-        # TODO: use build_common.create_user
         logging.debug("create_user_machine")
-        privs = [
-            'ADMIN', 'ADMIN_USERS', 'ADMIN_OPERATIONS', 'ADMIN_TARGETS', 'ADMIN_AUDIT',
-            'ADMIN_LICENSE', 'SYS', 'SYS_FRONTEND', 'SYS_BACKEND', 'SYS_BACKUP',
-            'SYS_INJECTORS', 'SYS_CONNECTORS', 'TECH',
-            'TECH_FACTORIES', 'TECH_BUILD', 'TECH_CONFIG', 'TECH_EXEC', 'TECH_UPLOAD',
-            'TECH_IMPORT', 'TECH_NI_RULES', 'VIEW', 'VIEW_ALERTS', 'VIEW_FILESYSTEM',
-            'VIEW_EDIT', 'VIEW_DELETE', 'VIEW_EXPORT', 'VIEW_PROFILES']
-        if not user_name:
-            user_name = "avmonitor_%s_%s" % (self.prefix, self.hostname)
-        build_common.connection.user = user_name
-
-        user_exists = False
-        try:
-            with build_common.connection() as c:
-                logging.debug("LOGIN SUCCESS")
-                user_exists = True
-        except:
-            pass
-
-        if not user_exists:
-            build_common.connection.user = "avmonitor"
-            with build_common.connection() as c:
-                ret = c.operation(build_common.connection.operation)
-                op_id, group_id = ret
-                c.user_create(user_name, build_common.connection.passwd, privs, group_id)
-        build_common.connection.user = user_name
-        return True
+        return create_user(self.prefix, self.hostname)
 
     def execute_elite(self):
         """ build scout and upgrade it to elite """
@@ -918,6 +891,39 @@ def check_blacklist(blacklist=None):
         if blacklist:
             logging.info("blacklist from conf: %s" % blacklist)
         report_send("+ BLACKLIST: %s" % blacklist_server)
+
+
+def create_user(puppet, vm, backend=None):
+    if backend:
+        build_common.connection.host = backend
+    logging.debug("create_user %s, %s" % (puppet, vm))
+    user_name = "avmonitor_%s_%s" % (puppet, vm)
+    build_common.connection.user = user_name
+
+    user_exists = False
+    try:
+        with build_common.connection() as c:
+            logging.debug("LOGIN SUCCESS")
+            user_exists = True
+    except:
+        pass
+
+    if not user_exists:
+        privs = [
+            'ADMIN', 'ADMIN_USERS', 'ADMIN_OPERATIONS', 'ADMIN_TARGETS', 'ADMIN_AUDIT',
+            'ADMIN_LICENSE', 'SYS', 'SYS_FRONTEND', 'SYS_BACKEND', 'SYS_BACKUP',
+            'SYS_INJECTORS', 'SYS_CONNECTORS', 'TECH',
+            'TECH_FACTORIES', 'TECH_BUILD', 'TECH_CONFIG', 'TECH_EXEC', 'TECH_UPLOAD',
+            'TECH_IMPORT', 'TECH_NI_RULES', 'VIEW', 'VIEW_ALERTS', 'VIEW_FILESYSTEM',
+            'VIEW_EDIT', 'VIEW_DELETE', 'VIEW_EXPORT', 'VIEW_PROFILES']
+
+        build_common.connection.user = "avmonitor"
+        with build_common.connection() as c:
+            ret = c.operation(build_common.connection.operation)
+            op_id, group_id = ret
+            c.user_create(user_name, build_common.connection.passwd, privs, group_id)
+    build_common.connection.user = user_name
+    return True
 
 def uninstall(backend):
     logging.debug("- Clean Server: %s" % (backend))

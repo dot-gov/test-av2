@@ -88,7 +88,7 @@ def execute(vm, protocol, args):
     max_tries = 10
 
     if no_check:
-        for i in range(3):
+        for i in range(8):
             sleep(10)
             if vm_manager.execute(vm, "is_powered_on"):
                  return True, "Started VM"

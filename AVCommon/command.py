@@ -88,7 +88,7 @@ def normalize(data):
     #assert(ident == "CMD")
     cmd = data
     success = None
-    args = None
+    args = []
     result = None
     vm = None
 

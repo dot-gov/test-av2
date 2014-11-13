@@ -91,6 +91,8 @@ class Protocol(ProtocolClient):
 
     # server side
     def _send_command_mq(self, cmd):
+        if cmd.args is None:
+            cmd.args = []
         accept = cmd.on_init(self, cmd.args)
         if accept == True:
             if config.verbose:
