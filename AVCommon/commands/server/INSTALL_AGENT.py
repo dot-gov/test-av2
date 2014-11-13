@@ -58,6 +58,7 @@ def execute(vm, protocol, inst_args):
     r = vm_manager.execute(vm, "copyFileToGuest", filename, remote_name )
     if r > 0:
         failed = True
+        logging.debug("Cannot copy %s" % filename)
     os.remove(filename)
 
     fd, filename = tempfile.mkstemp(".bat")
@@ -71,17 +72,20 @@ def execute(vm, protocol, inst_args):
     r = vm_manager.execute(vm, "copyFileToGuest", filename, remote_name )
     if r > 0:
         failed = True
+        logging.debug("Cannot copy %s" % filename)
     os.remove(filename)
 
     dirname = "%s/avagent/running" % config.basedir_av
     r = vm_manager.execute(vm, "deleteDirectoryInGuest", dirname)
     if r > 0:
         failed = True
+        logging.debug("Cannot delete %s" % dirname)
 
     dirname = "%s/logs" % config.basedir_av
     r = vm_manager.execute(vm, "deleteDirectoryInGuest", dirname)
     if r > 0:
         failed = True
+        logging.debug("Cannot delete %s" % dirname)
 
     if failed:
         return False, "Cant Copy %s on VM" % filename
