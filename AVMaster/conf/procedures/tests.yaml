@@ -538,3 +538,17 @@ TEST_BUILD_CLI_SOLDIER_FAST:
 
 TEST_NORTON:
     - BUILD: [ scout, windows, silent ]
+
+
+TEST_UNINSTALL_CLEAN_EV:
+    - VM_ALL
+    - INTERNET: True
+    - START_VM
+    - CALL: VM_PUSH_AGENT
+    - INSTALL_AGENT
+    - SLEEP: 10
+    - RELOG
+    - UNINSTALL
+    - RELOG
+    - CALL: VM_CLEAN_EVIDENCES
+
