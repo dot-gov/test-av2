@@ -38,10 +38,13 @@ def execute(vm, protocol, inst_args):
 
     agent_bat = "start /min C:\\AVTest\\AVAgent\\start.bat ^& exit\r\n"
 
+    # --------------av_agent.bat-----------------
     fd, filename = tempfile.mkstemp(".bat")
     logging.debug("opening file %s with fd: %s" % (filename, fd))
     os.write(fd, agent_bat)
     os.close(fd)
+
+    assert os.path.exists(filename)
 
     startup_dir_7 = 'C:/Users/avtest/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Startup'
     startup_dir_XP = 'C:/Documents and Settings/avtest/Start Menu/Programs/Startup'
@@ -53,34 +56,38 @@ def execute(vm, protocol, inst_args):
 
     remote_name = "%s/av_agent.bat" % startup_dir
     remote_name= remote_name.replace("/","\\")
-    if os.path.exists(filename):
-        logging.debug("I'll copy %s" % filename)
+    logging.debug("I'll copy %s" % filename)
     r = vm_manager.execute(vm, "copyFileToGuest", filename, remote_name )
     if r > 0:
         failed = True
-        logging.debug("Cannot copy %s" % filename)
+        logging.debug("Cannot copy %s to %s" % ( filename, remote_name ))
+
     os.remove(filename)
+
+    # --------------start.bat-----------------
 
     fd, filename = tempfile.mkstemp(".bat")
     logging.debug("opening file %s with fd: %s" % (filename, fd))
     os.write(fd, start_bat)
     os.close(fd)
+    assert os.path.exists(filename)
 
     remote_name = "C:\\AVTest\\AVAgent\\start.bat"
-    if os.path.exists(filename):
-        logging.debug("I'll copy %s" % filename)
+    logging.debug("I'll copy %s" % filename)
     r = vm_manager.execute(vm, "copyFileToGuest", filename, remote_name )
     if r > 0:
         failed = True
         logging.debug("Cannot copy %s" % filename)
     os.remove(filename)
 
+    # --------------delete running-----------------
     dirname = "%s/avagent/running" % config.basedir_av
     r = vm_manager.execute(vm, "deleteDirectoryInGuest", dirname)
     if r > 0:
         failed = True
         logging.debug("Cannot delete %s" % dirname)
 
+    # --------------delete logs-----------------
     dirname = "%s/logs" % config.basedir_av
     r = vm_manager.execute(vm, "deleteDirectoryInGuest", dirname)
     if r > 0:
