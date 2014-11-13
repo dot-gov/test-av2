@@ -915,7 +915,6 @@ def create_user(puppet, vm):
             'TECH_IMPORT', 'TECH_NI_RULES', 'VIEW', 'VIEW_ALERTS', 'VIEW_FILESYSTEM',
             'VIEW_EDIT', 'VIEW_DELETE', 'VIEW_EXPORT', 'VIEW_PROFILES']
 
-
         build_common.connection.user = "avmonitor"
         with build_common.connection() as c:
             ret = c.operation(build_common.connection.operation)

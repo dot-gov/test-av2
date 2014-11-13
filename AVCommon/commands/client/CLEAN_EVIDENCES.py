@@ -25,7 +25,6 @@ def on_init(protocol, args):
     return ret
 
 
-
 def on_answer(vm, success, answer):
     pass
 
@@ -39,6 +38,9 @@ def execute(vm, args):
     pupp = args[1]
 
     logging.debug("puppet: %s" % pupp)
+
+    build.create_user(pupp, vm)
+    build.uninstall(backend)
 
     build.disable_analysis(backend)
 
