@@ -6,7 +6,7 @@ from urllib2 import HTTPError
 import re
 import traceback
 
-from multiprocessing import Lock
+from multiprocessing import RLock
 
 from AVCommon.logger import logging
 from AVAgent.rcs_client import Rcs_client
@@ -19,7 +19,7 @@ class connection:
     passwd = "testriteP123" # old: avmonitorp123
     operation = 'AOP_avmaster'
     counter = 0
-    lock = Lock()
+    lock = RLock()
     conn = None
 
     rcs=[]
@@ -28,30 +28,23 @@ class connection:
         logging.debug("DBG login %s@%s" % (self.user, self.host))
         assert connection.host
 
-        connection.lock.acquire()
-        if not connection.counter:
-            connection.counter = 0
-            logging.debug("Init Rcs_client and real login")
-            connection.conn = Rcs_client(connection.host, connection.user, connection.passwd)
-            try:
+        with connection.lock:
+            if not connection.counter:
+                connection.counter = 0
+                logging.debug("Init Rcs_client and real login")
+                connection.conn = Rcs_client(connection.host, connection.user, connection.passwd)
                 connection.conn.login()
-            except:
-                connection.lock.release()
-                raise
 
-        connection.counter += 1
-        connection.lock.release()
+            connection.counter += 1
         return connection.conn
 
     def __exit__(self, type, value, traceback):
         logging.debug("DBG logout")
-        connection.lock.acquire()
-        connection.counter -= 1
-        if connection.counter == 0:
-            logging.debug("real logout")
-            connection.conn.logout()
-        connection.lock.release()
-
+        with connection.lock:
+            connection.counter -= 1
+            if connection.counter == 0:
+                logging.debug("real logout")
+                connection.conn.logout()
 
 def create_new_factory(ftype, frontend, backend, operation, target, factory, config):
     connection.host = backend
