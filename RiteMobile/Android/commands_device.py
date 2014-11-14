@@ -28,14 +28,19 @@ class CommandsDevice:
     def __init__(self, dev_serialno=None):
 
         if not dev_serialno:
-            dev_serialno = self.interactive_device_select()
-        assert dev_serialno, "Aborting: non ci sono device connessi"
-        self.device_serialno = dev_serialno
+            uid, serial_number = self.interactive_device_select()
+        assert serial_number, "Aborting: non ci sono device connessi"
 
         #used for set variables
         self.client_context = {}
+        device_id = adb.get_deviceid(dev_serialno)
 
-        self.device_id = adb.get_deviceid(self.device_serialno)
+        print "serialno: %s deviceid: %s" % (dev_serialno, device_id)
+
+        self.device_serialno = serial_number
+
+        self.device_id = device_id
+        self.uid = uid
 
     # server_context = {}
 
@@ -55,7 +60,7 @@ class CommandsDevice:
 
         if not devices:
             print "non ci sono device connessi"
-            return None
+            return None, None
         else:
             if len(devices) > 1:
                 id = raw_input("su quale device si vuole eseguire il test? ")
@@ -63,7 +68,7 @@ class CommandsDevice:
                 print "eseguo il test su %s" % dev
             else:
                 dev = devices[0][0]
-            return dev
+            return id, dev
 
     def get_adb_client(self):
         return self.device_object

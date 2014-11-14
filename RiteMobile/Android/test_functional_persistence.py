@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import json
 
 import time
 import csv
@@ -52,6 +53,7 @@ def install(command_dev, results):
 
 
 def check_evidences(command_dev, c, results, timestamp=""):
+    print "... check_evidences"
     time.sleep(60)
     evidences, kinds = c.evidences()
 
@@ -124,7 +126,7 @@ def check_uninstall(commands_device, results, reboot=True):
     results["files_remained"] = res
 
     # res = adb.executeSU('cat /data/system/packages.list  | grep -i -e "dvci" -e "deviceinfo" -e "StkDevice"')
-    #res += adb.executeSU('cat /data/system/packages.xml  | grep -i -e "dvci" -e "device" -e "StkDevice"')
+    # res += adb.executeSU('cat /data/system/packages.xml  | grep -i -e "dvci" -e "device" -e "StkDevice"')
     res = commands_device.execute_cmd('pm path com.android.deviceinfo')
     res += commands_device.execute_cmd('pm path com.android.dvci')
 
@@ -188,12 +190,12 @@ def set_properties(command_dev, results):
     return results
 
 
-def check_persistence(command_dev, c, results, delay=10):
-    print "... check persistence and reboot"
+def check_format_resist(command_dev, c, results, delay=60):
+    print "... check format_resist and reboot"
     command_dev.press_key_home()
 
     if not command_dev.execute_cmd("ls /system/app/StkDevice.apk"):
-        results["persistence"] = "No";
+        results["format_resist"] = "No";
         return
 
     command_dev.reboot()
@@ -208,14 +210,14 @@ def check_persistence(command_dev, c, results, delay=10):
     inst = command_dev.execute_cmd("pm path com.android.dvci")
     if "/data/app/" in inst:
         if "No such file" in ret:
-            results["persistence"] = "No";
+            results["format_resist"] = "No";
         else:
-            results["persistence"] = "Reboot"
+            results["format_resist"] = "Reboot"
     elif "/system/app/" in inst:
-        results["persistence"] = "Yes";
-        print "... got persistence"
+        results["format_resist"] = "Yes";
+        print "... got format_resist"
     else:
-        results["persistence"] = "Error";
+        results["format_resist"] = "Error";
 
 
 def report_if_exists(results, param):
@@ -235,7 +237,7 @@ def report_test_rail(results):
     report += "Device\n"
     report += report_if_exists(results, ["device", "id", "release", "build_date"])
     report += "Root\n"
-    report += report_if_exists(results, ["root", "root_first", "su", "selinux", "persistence"])
+    report += report_if_exists(results, ["root", "root_first", "su", "selinux", "format_resist"])
     report += "Evidences\n"
     report += report_if_exists(results, ["evidences_first", "evidences_last"])
     report += "Expected\n"
@@ -266,7 +268,7 @@ def report_files(results, report):
         logfile.write("\n")
 
 
-def test_device(id, command_dev, args, results):
+def test_device(commands_rcs, command_dev, args, results):
     if args.fastnet:
         command_dev.wifi('open', check_connection=False, install=True)
         exit(0)
@@ -274,14 +276,15 @@ def test_device(id, command_dev, args, results):
     if args.reboot:
         command_dev.reboot()
 
-    # tests = ["sync","persistence","root", "skype","camera"]
-    #tests = ["persistence"]
+    # tests = ["sync","format_resist","root", "skype","camera"]
+    # tests = ["format_resist"]
 
     demo = True
-    device_id = command_dev.get_dev_deviceid()
+    persist = True
+    #device_id = command_dev.get_dev_deviceid()
 
     #commands_rcs = CommandsRCS(host = "192.168.100.100", login_id = id, device_id = device_id, operation = "Rite_Mobile", target_name = "HardwareFunctional", factory = 'RCS_0000002050')
-    commands_rcs = CommandsRCS(login_id=id, device_id=device_id)
+
 
     #build.connection.host = "rcs-zeus-master.hackingteam.local"
     #build.connection.operation = "Rite_Mobile"
@@ -297,16 +300,28 @@ def test_device(id, command_dev, args, results):
 
         # push new conf
         os.system('ruby assets/rcs-core.rb -u %s -p %s -d %s -f %s -c build/config.upload.json' % (
-        commands_rcs.login, commands_rcs.password, commands_rcs.host, commands_rcs.factory))
+            commands_rcs.login, commands_rcs.password, commands_rcs.host, commands_rcs.factory))
 
-        if demo:
-            json = "assets/build.demo.json"
-        else:
-            json = "assets/build.nodemo.json"
-        # build
+        params = {u'binary': {u'admin': True, u'demo': False, u'persist': True},
+                  u'melt': {u'appname': u'autotest'},
+                  u'package': {u'type': u'installation'},
+                  u'platform': u'android'}
+
+        params[u'binary'][u'demo'] = demo
+        params[u'binary'][u'persist'] = persist
+
+        if persist:
+            params[u'package'][u'type']
+
+        jparam = json.dumps(params)
+        json_params = "build/params.json"
+        f = open(json_params, "w")
+        f.write(jparam)
+        f.close()
+
         os.system(
             'ruby assets/rcs-core.rb -u %s -p %s -d %s -f %s -b %s -o and.zip' % (
-            commands_rcs.login, commands_rcs.password, commands_rcs.host, commands_rcs.factory, json))
+                commands_rcs.login, commands_rcs.password, commands_rcs.host, commands_rcs.factory, json_params))
         os.system('unzip -o  and.zip -d assets')
         os.remove('and.zip')
     if not os.path.exists('assets/autotest.default.apk'):
@@ -346,10 +361,12 @@ def test_device(id, command_dev, args, results):
             results['root_first'] = result
             check_evidences(command_dev, c, results, "_first")
 
+            print "sleeping 20 seconds"
             time.sleep(20)
-            check_persistence(command_dev, c, results)
+            check_format_resist(command_dev, c, results)
 
-            result, root, info = c.check_root()
+            result, root, info = c.check_root(2)
+            print "sleeping 30 seconds"
             time.sleep(30)
 
             if result:
@@ -373,7 +390,7 @@ def test_device(id, command_dev, args, results):
         check_uninstall(command_dev, results)
 
     except Exception, ex:
-        traceback.print_exc(device_id)
+        traceback.print_exc()
         results['error'] = "%s" % ex
 
 
@@ -402,8 +419,10 @@ def main():
     args = parse_args()
     results = collections.OrderedDict()
 
+    commands_rcs = CommandsRCS(login_id=command_dev.uid, device_id=command_dev.device_id)
+
     try:
-        test_device(id, command_dev, args, results)
+        test_device(commands_rcs, command_dev, args, results)
     except Exception, ex:
         print ex
         traceback.print_exc()
