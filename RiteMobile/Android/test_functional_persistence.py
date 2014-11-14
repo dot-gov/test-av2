@@ -433,7 +433,13 @@ def main():
     report_files(results, report)
 
     print "Fine."
-    say("test ended %s" % id)
+
+    try:
+        uid = command_dev.uid
+    except:
+        uid = 0
+
+    say("test ended %s" % uid)
     print "Check manually with the evidences in the instance: %s" % (results.get('instance_name', "NO SYNC"))
 
 
