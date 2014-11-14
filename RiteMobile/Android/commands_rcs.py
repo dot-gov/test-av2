@@ -1,4 +1,5 @@
 import abc
+from multiprocessing import RLock
 import os
 import socket
 
@@ -15,12 +16,17 @@ from AVCommon import build_common as build
 class CommandsRCS:
     __metaclass__ = abc.ABCMeta
 
+    lock = RLock()
+    counter = 0
+    conn = None
+
     def __init__(self, host, device_id, login_id = "0", login = "avmonitor", password = "testriteP123", operation = "Rite_Mobile", target_name = "HardwareFunctional", factory = 'RCS_0000002050'):
         self.host = host
         self.login = login
         self.password = password
         self.device_id = device_id
         self.login_id = login_id
+        self.last_start = 0
 
         assert device_id
         assert len(device_id) >= 8
@@ -33,8 +39,8 @@ class CommandsRCS:
 
         pass
 
-    def create_login(self, id = 0):
-        login = "qa_android_test_%s" % id
+    def create_login(self, uid = 0):
+        login = "qa_android_test_%s" % uid
         build.create_user(login, operation = self.operation)
         build.connection.user = login
         return login
@@ -45,12 +51,19 @@ class CommandsRCS:
         self.factory = factory
 
     def __enter__(self):
-        print "Connecting to %s @ %s : %s" % (build.connection.user, build.connection.host, build.connection.operation)
-        self.create_login(self.login_id)
+
         logging.debug("DBG login %s@%s" % (build.connection.user, build.connection.host))
+        self.create_login(self.login_id)
+        print "Connecting to %s @ %s : %s" % (build.connection.user, build.connection.host, build.connection.operation)
+
         assert build.connection.host
-        self.conn = Rcs_client(build.connection.host, build.connection.user, build.connection.passwd)
-        self.conn.login()
+        with CommandsRCS.lock:
+            if not CommandsRCS.counter:
+                CommandsRCS.counter = 0
+                CommandsRCS.conn = Rcs_client(build.connection.host, build.connection.user, build.connection.passwd)
+                CommandsRCS.conn.login()
+
+            CommandsRCS.counter += 1
 
         self.operation_id, self.group_id = self.conn.operation(self.operation)
         self.target_id = self.conn.targets(self.operation_id, self.target_name)[0]
@@ -60,7 +73,11 @@ class CommandsRCS:
 
     def __exit__(self, type, value, traceback):
         logging.debug("DBG logout")
-        self.conn.logout()
+        with CommandsRCS.lock:
+            if CommandsRCS.counter == 0:
+                logging.debug("real logout")
+                CommandsRCS.conn.logout()
+
 
     def delete_old_instance(self):
         instances = self.conn.instances_by_factory(self.device_id, self.factory)
@@ -162,7 +179,7 @@ class CommandsRCS:
     def wait_for_start(self, starts = 1):
         info_evidences = []
         counter = 0
-        self.last_start = 0
+
         while not info_evidences and counter < 10:
             infos = self.conn.infos(self.target_id, self.instance_id)
             info_evidences = [ (e['data']['content'],e['da']) for e in infos if 'Started' in e['data']['content']]
@@ -174,7 +191,7 @@ class CommandsRCS:
                 print "... got Started: %s/%s" % (len(info_evidences), starts)
                 self.last_start = info_evidences[-1][1]
 
-    def check_root(self):
+    def check_root(self, starts = 1):
         # check root
         info_evidences = []
         counter = 0
@@ -182,7 +199,7 @@ class CommandsRCS:
         root = ""
         info = 0
         if not self.last_start:
-            self.wait_for_start()
+            self.wait_for_start(starts)
 
         while not info_evidences and counter < 10:
             infos = self.conn.infos(self.target_id, self.instance_id)
