@@ -885,8 +885,6 @@ UPD_AGENT:
     #- CLEAN_EVIDENCES: [ Ok ]
 
 UPD_WAIT:
-    - CALL: UPD_AGENT
-
     - EXECUTE_VM: /AVTest/assets/update_system.bat # scarica gli aggiornamenti windows
     - SLEEP: 3600 # attesa per gli update degli av
     - STOP_VM: 300 # cerca di spegnere con shutdown, se non ci riesce, spegne secco
@@ -920,6 +918,7 @@ UPDATE_FULL:
     - ON_ERROR: STOP
     - CALL: SET_MAIL
     - REPORT:
+        - UPD_AGENT
         - UPD_WAIT: ['AVM Update', 'Update AV']
         - UPD_REFRESH
     - CALL: END_DISPATCH

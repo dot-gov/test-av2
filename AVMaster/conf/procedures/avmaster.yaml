@@ -153,3 +153,30 @@ PUSH_ZEUS:
         USERNAME: administrator
         PASSWORD: rcs-test0
     - PUSH: [ assets/rcs-setup-2014093001.exe ]
+
+
+UPD_AGENT_PUPPET:
+    - INTERNET: True
+    - SLEEP: [10, 60]
+    - REVERT
+    - START_VM
+    - CHECK_INFECTION # questo non e' necessario, ma e' meglio assicurarsene
+    - CALL: VM_PUSH_AGENT
+    - INSTALL_AGENT: 10.1.20.1
+    - SLEEP: 60
+    - STOP_VM: 300
+    - WAIT_SHUTDOWN
+    - START_VM: AV_AGENT
+    - UNINSTALL
+    #- CLEAN_EVIDENCES: [ Ok ]
+
+UPDATE_FULL_PUPPET:
+    - VM_ALL
+    - ON_ERROR: STOP
+    - CALL: SET_MAIL
+    - REPORT:
+        - UPD_AGENT_PUPPET
+        - UPD_WAIT: ['AVM Update', 'Update AV']
+        - UPD_REFRESH
+    - CALL: END_DISPATCH
+
