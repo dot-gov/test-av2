@@ -55,12 +55,21 @@ def execute(vm, protocol, inst_args):
         startup_dir = startup_dir_7
 
     remote_name = "%s/av_agent.bat" % startup_dir
-    remote_name= remote_name.replace("/","\\")
-    logging.debug("I'll copy %s" % filename)
-    r = vm_manager.execute(vm, "copyFileToGuest", filename, remote_name )
-    if r > 0:
-        failed = True
-        logging.debug("Cannot copy %s to %s" % ( filename, remote_name ))
+    remote_name = remote_name.replace("/","\\")
+
+    for i in range(1, 3):
+        logging.debug("I'll copy %s (try %s of 3)" % (filename, i))
+        assert os.path.exists(filename)
+        r = vm_manager.execute(vm, "copyFileToGuest", filename, remote_name)
+        if r > 0:
+            failed = True
+            logging.debug("Cannot copy %s" % filename)
+        else:
+            failed = False
+            break
+
+    if failed:
+        logging.debug("Cannot copy %s: ERROR!" % filename)
 
     os.remove(filename)
 
@@ -73,11 +82,21 @@ def execute(vm, protocol, inst_args):
     assert os.path.exists(filename)
 
     remote_name = "C:\\AVTest\\AVAgent\\start.bat"
-    logging.debug("I'll copy %s" % filename)
-    r = vm_manager.execute(vm, "copyFileToGuest", filename, remote_name )
-    if r > 0:
-        failed = True
-        logging.debug("Cannot copy %s" % filename)
+
+    for i in range(1, 3):
+        logging.debug("I'll copy %s (try %s of 3)" % (filename, i))
+        assert os.path.exists(filename)
+        r = vm_manager.execute(vm, "copyFileToGuest", filename, remote_name)
+        if r > 0:
+            failed = True
+            logging.debug("Cannot copy %s" % filename)
+        else:
+            failed = False
+            break
+
+    if failed:
+        logging.debug("Cannot copy %s: ERROR!" % filename)
+
     os.remove(filename)
 
     # --------------delete running-----------------
