@@ -412,6 +412,8 @@ SYSTEM_DAILY_SRV:
     - VM_ALL
     - ON_ERROR: SKIP
     - SLEEP: [1, 1800]
+    #init is needed by clean_evidences
+    - CALL: INIT_DISPATCH
     - CALL: VM_CLEAN_EVIDENCES
     - CALL: SET_MAIL
     - BUILD_CACHE_CLEAN: False
@@ -434,11 +436,11 @@ SYSTEM_DAILY_FAST:
     - CALL: VM_CLEAN_EVIDENCES
     - CALL: SET_MAIL
     - REPORT:
-        #- VM_STATIC: ['AV Invisibility Static', 'Static check on builds']
-        #- VM_SOLDIER: ['AV Invisibility', 'Soldier']
+        - VM_STATIC: ['AV Invisibility Static', 'Static check on builds']
+        - VM_SOLDIER: ['AV Invisibility', 'Soldier']
         - VM_ELITE_FAST: ['AV Invisibility', 'Elite']
-        #- VM_MELT: ['AV Invisibility', 'Melt']
-        #- VM_EXPLOIT: ['AV Invisibility', 'Exploit']
+        - VM_MELT: ['AV Invisibility', 'Melt']
+        - VM_EXPLOIT: ['AV Invisibility', 'Exploit']
     - UNINSTALL
     - CALL: VM_GET_LOG
     - CALL: END_DISPATCH
@@ -448,15 +450,17 @@ SYSTEM_DAILY_FAST_SRV:
     - VM_ALL
     - ON_ERROR: SKIP
     - SLEEP: [1, 300]
+    #init is needed by clean_evidences
+    - CALL: INIT_DISPATCH
     - CALL: VM_CLEAN_EVIDENCES
     - CALL: SET_MAIL
     - BUILD_CACHE_CLEAN: False
     - REPORT:
-        #- VM_STATIC_SRV: ['AV Invisibility Static', 'Static check on builds']
-        #- VM_SOLDIER_SRV: ['AV Invisibility', 'Soldier']
+        - VM_STATIC_SRV: ['AV Invisibility Static', 'Static check on builds']
+        - VM_SOLDIER_SRV: ['AV Invisibility', 'Soldier']
         - VM_ELITE_FAST_SRV: ['AV Invisibility', 'Elite']
         - VM_MELT_SRV: ['AV Invisibility', 'Melt']
-        #- VM_EXPLOIT_SRV: ['AV Invisibility', 'Exploit']
+        - VM_EXPLOIT_SRV: ['AV Invisibility', 'Exploit']
     - UNINSTALL
     - BUILD_CACHE_CLEAN: True
     - CALL: VM_GET_LOG
@@ -608,6 +612,7 @@ BUILD_SOLDIER:
 
 BUILD_WINDOWS:
     - CALL: CHECK_STATIC_MODULES
+    - CALL: CHECK_STATIC_MODULES_TNI
     - BUILD: [ pull, windows, silent ]
 
 CHECK_STATIC_MODULES:
@@ -631,8 +636,16 @@ CHECK_STATIC_MODULES:
         'AVAgent/assets/jarexploit/Shellcode-Stage2-IE.exe',
         'AVAgent/assets/jarexploit/exploit_ie.swf']
 
+CHECK_STATIC_MODULES_TNI:
+    - PUSHZIP: [ AVAgent/assets/windows/* ]
+    - CHECK_STATIC: ['AVAgent/assets/windows/tni_uTorrent.exe',
+        'AVAgent/assets/windows/tni_torbrowser-install-4.0_it.exe',
+        'AVAgent/assets/windows/tni_FirefoxSetup33.1.exe']
+
+
 BUILD_DESKTOP:
     - CALL: CHECK_STATIC_MODULES
+    - CALL: CHECK_STATIC_MODULES_TNI
     - ON_ERROR: CONTINUE
     - BUILD: [ pull, windows, silent ]
     - BUILD: [ pull, osx, silent ]
@@ -641,6 +654,7 @@ BUILD_DESKTOP:
 
 BUILD_DESKTOP_SRV:
     - CALL: CHECK_STATIC_MODULES
+    - CALL: CHECK_STATIC_MODULES_TNI
     - ON_ERROR: CONTINUE
     - BUILD_SRV: [ pull, windows, silent, pull ]
     - BUILD_SRV: [ pull, osx, silent, pull ]

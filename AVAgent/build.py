@@ -685,6 +685,8 @@ class AgentBuild:
             exefilenames = unzip(zipfilename, "build/%s" % self.platform)
         else:
             logging.debug("cannot find zip file: %s" % zipfilename)
+            add_result("+ FAILED SCOUT BUILD. CANNOT FIND ZIP FILE %s TO UNZIP IT" % zipfilename)
+            raise RuntimeError("No file to unzip")
         # CHECK FOR DELETED FILES
         failed = check_static(exefilenames)
 
