@@ -1072,7 +1072,9 @@ def main():
     platform_mobile = ["android", "blackberry", "ios"]
 
 
-    soldierlist = "bitdef,comodo,gdata,drweb,360cn,kis32,avg,avg32,iobit32".split(',')
+    soldierlist = "adaware,iobit32,bitdef,bitdef15,comodo,fsecure,gdata,drweb,360cn5,kis32,avg,avg32,norman,avira,avira15".split(',')
+    #OLD
+    #soldierlist = "bitdef,comodo,gdata,drweb,360cn,kis32,avg,avg32,iobit32".split(',')
     blacklist = "emsisoft,sophos".split(',')
     demo = False
 
