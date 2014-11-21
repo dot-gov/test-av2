@@ -8,6 +8,25 @@ import traceback
 import collections
 import datetime
 import argparse
+import inspect
+import sys
+
+inspect_getfile = inspect.getfile(inspect.currentframe())
+cmd_folder = os.path.split(os.path.realpath(os.path.abspath(inspect_getfile)))[0]
+os.chdir(cmd_folder)
+
+#print cmd_folder
+
+if cmd_folder not in sys.path:
+    sys.path.insert(0, cmd_folder)
+parent = os.path.split(cmd_folder)[0]
+ancestor = os.path.split(parent)[0]
+if parent not in sys.path:
+    sys.path.insert(0, parent)
+if ancestor not in sys.path:
+    sys.path.insert(0, ancestor)
+
+#print sys.path
 
 from RiteMobile.Android.commands_device import CommandsDevice
 from RiteMobile.Android.commands_rcs import CommandsRCSCastore as CommandsRCS
@@ -172,6 +191,7 @@ def check_camera(command_dev):
     command_dev.press_key_home()
     command_dev.execute_cmd("am start -a android.media.action.IMAGE_CAPTURE")
     time.sleep(10)
+    command_dev.press_key_home()
 
 
 def set_properties(command_dev, results):
