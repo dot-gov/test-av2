@@ -313,7 +313,7 @@ def test_device(commands_rcs, command_dev, args, results):
 
     if args.build or not os.path.exists('assets/autotest.default.apk'):
         config = open('assets/config_mobile.json').read()
-        config = config.replace("$(HOSTNAME)", commands_rcs.host)
+        config = config.replace("$(HOSTNAME)", commands_rcs.endpoint)
         f = open("build/config.upload.json", "w")
         f.write(config)
         f.close()
