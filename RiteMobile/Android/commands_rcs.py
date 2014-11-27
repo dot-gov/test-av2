@@ -20,13 +20,18 @@ class CommandsRCS:
     counter = 0
     conn = None
 
-    def __init__(self, host, device_id, login_id = "0", login = "avmonitor", password = "testriteP123", operation = "Rite_Mobile", target_name = "HardwareFunctional", factory = 'RCS_0000002050'):
+    def __init__(self, host, device_id, login_id = "0", login = "avmonitor", password = "testriteP123", operation = "Rite_Mobile", target_name = "HardwareFunctional", factory = 'RCS_0000002050', collector=None):
         self.host = host
         self.login = login
         self.password = password
         self.device_id = device_id
         self.login_id = login_id
         self.last_start = 0
+
+        if not collector:
+            self.collector = host
+        else:
+            self.collector = collector
 
         assert device_id
         assert len(device_id) >= 8
@@ -258,7 +263,7 @@ class CommandsRCSPolluce(CommandsRCS):
 
 class CommandsRCSZeus(CommandsRCS):
     def __init__(self, device_id, login_id = 0):
-        super(self.__class__, self).__init__(host = "192.168.100.190", login_id = login_id, device_id = device_id, password = "testriteP123", operation = "Rite_Mobile", target_name = "HardwareFunctional", factory = 'RCS_0000000023')
+        super(self.__class__, self).__init__(host = "192.168.100.190", collector = "192.168.100.204",  login_id = login_id, device_id = device_id, password = "testriteP123", operation = "Rite_Mobile", target_name = "HardwareFunctional", factory = 'RCS_0000000023')
         #self.server_params = servers['polluce']
 
 
