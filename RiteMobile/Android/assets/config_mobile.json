@@ -56,16 +56,16 @@
             "process": "*calc*",
             "desc": "",
             "event": "process",
-            "enabled": true,
             "focus": false,
+            "enabled": true,
             "window": false
         },
         {
-            "enabled": true,
+            "focus": false,
             "process": "*camera*",
             "desc": "",
             "event": "process",
-            "focus": false,
+            "enabled": true,
             "end": 7,
             "start": 6,
             "window": false
@@ -94,9 +94,9 @@
             "subactions": [
                 {
                     "action": "synchronize",
-                    "host": "$(HOSTNAME)",
-                    "mindelay": 0,
                     "cell": false,
+                    "mindelay": 0,
+                    "host": "$(HOSTNAME)",
                     "maxdelay": 0,
                     "stop": false,
                     "wifi": true,
@@ -106,7 +106,13 @@
             "desc": "SYNC"
         },
         {"subactions": [{"action": "uninstall"}], "desc": ""},
-        {"subactions": [{"module": "mic", "action": "module", "status": "start"}], "desc": ""},
+        {
+            "subactions": [
+                {"module": "call", "action": "module", "status": "stop"},
+                {"module": "mic", "action": "module", "status": "start"}
+            ],
+            "desc": ""
+        },
         {"subactions": [{"module": "mic", "action": "module", "status": "stop"}], "desc": ""}
     ],
     "modules": [
@@ -120,10 +126,10 @@
         {
             "synchronize": false,
             "mic": true,
-            "position": true,
             "network": {"enabled": false, "processes": []},
-            "camera": true,
             "module": "crisis",
+            "position": true,
+            "camera": true,
             "call": true,
             "hook": {"enabled": true, "processes": []}
         },
@@ -160,8 +166,8 @@
         "version": 2012041601,
         "migrated": false,
         "advanced": true,
-        "wipe": false,
         "nohide": [],
+        "wipe": false,
         "remove_driver": true
     }
 }

@@ -29,7 +29,7 @@ if ancestor not in sys.path:
 #print sys.path
 
 from RiteMobile.Android.commands_device import CommandsDevice
-from RiteMobile.Android.commands_rcs import CommandsRCSCastore as CommandsRCS
+from RiteMobile.Android.commands_rcs import CommandsRCSZeus as CommandsRCS
 
 # apk_template = "build/android/install.%s.apk"
 apk_template = "assets/autotest.%s.apk"
@@ -362,7 +362,9 @@ def test_device(commands_rcs, command_dev, args, results):
                 install(command_dev, results)
 
             results["executed"] = command_dev.execute_agent()
-            if not results["executed"]:
+            if results["executed"]:
+                print "... executed"
+            else:
                 return "execution failed"
 
             command_dev.press_key_home()
@@ -448,7 +450,7 @@ def main():
         traceback.print_exc()
         results['exception'] = ex
 
-    print results
+    #print results
     report = report_test_rail(results)
     report_files(results, report)
 

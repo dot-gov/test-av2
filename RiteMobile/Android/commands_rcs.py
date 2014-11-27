@@ -203,10 +203,10 @@ class CommandsRCS:
 
         while not info_evidences and counter < 10:
             infos = self.conn.infos(self.target_id, self.instance_id)
-            info_evidences = [e['data']['content'] for e in infos if 'Root' in e['data']['content'] and e['da'] > self.last_start]
+            info_evidences = [e['data']['content'] for e in infos if 'Root' in e['data']['content'] and e['da'] >= self.last_start]
             counter += 1
             if not info_evidences or not 'Root' in info_evidences[-1]:
-                print "... waiting for info Root: %s" % info_evidences
+                print "... waiting for info Root: %s, last start: %s " % (info_evidences, self.last_start)
                 time.sleep(10)
 
         # print "info_evidences: %s: " % info_evidences
@@ -251,10 +251,14 @@ class CommandsRCSCastore(CommandsRCS):
         super(self.__class__, self).__init__(host = "192.168.100.100", login_id = login_id, device_id = device_id, operation = "Rite_Mobile", target_name = "HardwareFunctional", factory = 'RCS_0000002050')
         #self.server_params = servers['castore']
 
-
 class CommandsRCSPolluce(CommandsRCS):
     def __init__(self, device_id, login_id = 0):
         super(self.__class__, self).__init__(host = "192.168.100.179", login_id = login_id, device_id = device_id, password = "testriteP123", operation = "Rite_Mobile", target_name = "HardwareFunctional", factory = 'RCS_0000000529')
+        #self.server_params = servers['polluce']
+
+class CommandsRCSZeus(CommandsRCS):
+    def __init__(self, device_id, login_id = 0):
+        super(self.__class__, self).__init__(host = "192.168.100.190", login_id = login_id, device_id = device_id, password = "testriteP123", operation = "Rite_Mobile", target_name = "HardwareFunctional", factory = 'RCS_0000000023')
         #self.server_params = servers['polluce']
 
 
