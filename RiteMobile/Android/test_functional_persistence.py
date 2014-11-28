@@ -76,7 +76,7 @@ def check_evidences(command_dev, c, results, timestamp=""):
     time.sleep(60)
     evidences, kinds = c.evidences()
 
-    for k in ["call", "chat", "camera", "application"]:
+    for k in ["call", "chat", "camera", "application", "mic"]:
         if k not in kinds.keys():
             kinds[k] = []
 
@@ -190,7 +190,7 @@ def check_skype(command_dev, c, results):
 def check_camera(command_dev):
     command_dev.press_key_home()
     command_dev.execute_cmd("am start -a android.media.action.IMAGE_CAPTURE")
-    time.sleep(10)
+    time.sleep(25)
     command_dev.press_key_home()
 
 

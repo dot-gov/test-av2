@@ -33,11 +33,13 @@ class CommandsDevice:
 
         #used for set variables
         self.client_context = {}
+        self.device_serialno = serial_number
+        dev_serialno = serial_number
         device_id = adb.get_deviceid(dev_serialno)
 
         print "serialno: %s deviceid: %s" % (dev_serialno, device_id)
 
-        self.device_serialno = serial_number
+
 
         self.device_id = device_id
         self.uid = uid

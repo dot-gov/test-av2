@@ -149,9 +149,12 @@ def get_deviceid(device=None):
     comm = execute(cmd, device)
     lines = comm.strip()
     print "lines: ", lines
-    devline = lines.split("\n")[2]
-    id = devline.split("=")[1].strip()
-
+    if len(lines.split("\n")) >= 3:
+        devline = lines.split("\n")[2]
+        id = devline.split("=")[1].strip()
+    else:
+        id = 'null'
+        
     if id == 'null':
         cmd = "settings get secure android_id"
         comm = execute(cmd, device)
@@ -252,6 +255,7 @@ def executeGui(apk, device=None):
     return True
 
 
+
 def execute(cmd = "", device=None, adb_cmd = "shell"):
     #print "##DEBUG## calling '%s' for device %s" % (cmd, device)
     if device:
@@ -265,6 +269,45 @@ def execute(cmd = "", device=None, adb_cmd = "shell"):
     ret = proc.returncode
 
     return str(comm[0])
+
+def install_by_gapp(url, app, device=None):
+    if check_remote_app_installed(app, 3, device) != 1:
+        open_url(url, device=device)
+        if check_remote_activity("com.android.vending/com.google.android.finsky.activities.MainActivity", timeout=60, device=device):
+            for i in range(10):
+                press_key_dpad_up(device=device)
+            for i in range(2):
+                press_key_dpad_down(device=device)
+            press_key_dpad_center(device=device)
+            for i in range(25):
+                if check_remote_activity("com.android.vending/com.google.android.finsky.activities.AppsPermissionsActivity", timeout=5, device=device):
+                    press_key_dpad_down(device=device)
+                else:
+                    break
+            press_key_dpad_center(device=device)
+            if isDownloading(device, 5):
+                timeout = 3360
+                time_checked = 0
+                while timeout>0:
+                    if not isDownloading(device, 5):
+                        if time_checked == 5:
+                            break
+                        else:
+                            time_checked += 1
+                    else:
+                        time_checked = 0
+                    timeout -= 5
+                old_pid = check_remote_app_installed(app, 60, device)
+                if old_pid == -1:
+                    res = "Failed to install %s \n" % app
+                    print res
+                    return False
+            else:
+                res = "Failed to install %s \n" % app
+                print res
+                return False
+    return True
+
 
 
 def executeSU(cmd, root=False, device=None):
