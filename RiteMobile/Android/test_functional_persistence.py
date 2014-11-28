@@ -360,6 +360,8 @@ def test_device(commands_rcs, command_dev, args, results):
             commands_rcs.delete_old_instance()
 
             # install agent and check it's running
+            # todo: to install the agent, it'e more secure to
+            # unistall via "calc" and then use pm uninstall
             if check_install(command_dev, results):
                 install(command_dev, results)
 
