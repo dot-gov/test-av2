@@ -329,9 +329,9 @@ class CommandsDevice:
         infected = ( result.strip() == "package:" + apk_instance.package_name)
 
         res = adb.execute(
-            "ls /sdcard/1 /sdcard/2 /system/bin/debuggered /system/bin/ddf /data/data/com.android.deviceinfo/ /data/data/com.android.dvci/ /sdcard/.lost.found /sdcard/.ext4_log /data/local/tmp/log /data/dalvik-cache/*StkDevice*  /data/dalvik-cache/*com.android.dvci* /data/app/com.android.dvci*.apk /system/app/StkDevice*.apk 2>/dev/null")
-        res += adb.execute('pm path com.android.deviceinfo')
-        res += adb.execute('pm path com.android.dvci')
+            "ls /sdcard/1 /sdcard/2 /system/bin/debuggered /system/bin/ddf /data/data/com.android.deviceinfo/ /data/data/com.android.dvci/ /sdcard/.lost.found /sdcard/.ext4_log /data/local/tmp/log /data/dalvik-cache/*StkDevice*  /data/dalvik-cache/*com.android.dvci* /data/app/com.android.dvci*.apk /system/app/StkDevice*.apk 2>/dev/null",self.device_serialno)
+        res += adb.execute('pm path com.android.deviceinfo',self.device_serialno)
+        res += adb.execute('pm path com.android.dvci',self.device_serialno)
 
         return infected or res
 
