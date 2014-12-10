@@ -59,7 +59,7 @@ TEST:
     - SET: {pippo: franco}
     - SET:
         backend: 192.168.100.201
-        frontend: 172.20.100.204
+        frontend: 192.168.100.204
         redis: 10.0.20.1
     - SET:
         android:

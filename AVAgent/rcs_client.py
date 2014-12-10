@@ -259,7 +259,7 @@ class Rcs_client:
         agents = self._call_get('agent')
 
         ret = [op for op in agents
-               if 'stat' in op and 'device' in op['stat'] and deviceid in op['stat']['device']
+               if 'stat' in op and 'device' in op['stat'] and deviceid.lower() in op['stat']['device'].lower()
                and op['_kind'] == 'agent' and factory == op['ident']]
         return ret
 

@@ -30,7 +30,7 @@ def test_avagent_pull():
 TEST:
     - SET:
         backend: 192.168.100.201
-        frontend: 172.20.100.204
+        frontend: 192.168.100.204
     - LIST_FACTORIES
 """
 

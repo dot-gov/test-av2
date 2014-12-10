@@ -168,6 +168,7 @@ def execute(vm, args):
     platform_type = param['platform_type']
 
     assert kind in ['silent', 'melt'], "kind: %s" % kind
+    # 'elite_fast_demo' and 'soldier_fast_demo' are not actions but only FINAL_actions
     assert action in ['pull', 'scout', 'elite', 'elite_fast', 'soldier_fast'], "action: %s" % action
     assert platform_type in ['desktop', 'mobile'], "platform_type: %s" % platform_type
 
@@ -194,6 +195,7 @@ def execute(vm, args):
     args.exe = exe
     args.server_side = True
     args.final_action = final_action
+    args.vm = vm
 
     results, success, errors = build.build(args, report)
 

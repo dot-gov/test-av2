@@ -11,6 +11,8 @@ from AVCommon import package
 
 report_level = 2
 
+import time
+
 #config.verbose = True
 
 def execute(vm, protocol, args):
@@ -93,9 +95,11 @@ def execute(vm, protocol, args):
     vm_manager.execute(vm, "copyFileToGuest", zfname, dst)
 
     logging.debug("Executing unzip on %s" % dst)
-    unzipargs= ( "/AVTest/unzip.exe", [ "-o", "-d", "c:\\avtest", dst], 40, True, True )
+    unzipargs = ("/AVTest/unzip.exe", ["-o", "-d", "c:\\avtest", dst], 40, True, True)
     ret = vm_manager.execute(vm, "executeCmd", *unzipargs )
     logging.debug("ret: %s" % ret)
+
+    time.sleep(5)
 
     logging.debug("Removing zip: %s" % d)
     shutil.rmtree(d)
