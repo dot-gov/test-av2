@@ -113,15 +113,21 @@ def uninstall_agent(commands_device, c, results):
     c.uninstall()
 
     say("agent uninstall, verify request")
+    if 'No' != results['root']:
+        print "uninstall:without DIALOG"
+        for i in range(12):
+            time.sleep(10)
 
-    for i in range(12):
-        time.sleep(10)
+            processes = commands_device.get_processes()
+            uninstall = service not in processes
+            if uninstall:
+                break
+    else:
+        print "uninstall:DIALOG !!!"
+        unistall_dialog_wait_and_press(commands_device, 120)
 
-        processes = commands_device.get_processes()
-        uninstall = service not in processes
-        if uninstall:
-            break
-
+    print "uninstall: wait 30sec"
+    time.sleep(30)
     results['uninstall'] = uninstall
 
     if not uninstall:
@@ -163,6 +169,11 @@ def check_skype(command_dev, c, results):
         print "Call not supported"
         return
 
+    # check if skype is installed
+    if command_dev.check_remote_app_installed("skype", 5) != 1:
+        print "skype not installed, skypping test"
+        return
+
     print "... waiting for call inject"
     info_evidences = []
     counter = 0
@@ -195,10 +206,31 @@ def check_camera(command_dev):
     time.sleep(5)
     command_dev.press_key_home()
 
+def unistall_dialog_wait_and_press(command_dev,timeout=60):
+    if not command_dev.check_remote_activity("UninstallerActivity", timeout):
+        res = "process dvci still running\n"
+        print res
+    else:
+        command_dev.press_key_enter()
+        command_dev.press_key_tab()
+        command_dev.press_key_enter()
+        time.sleep(4)
+
 def check_mic(command_dev):
     command_dev.press_key_home()
     #on contacts start mic
-    command_dev.execute_cmd("am start -a android.intent.action.MAIN -c com.android.contacts/.activities.DialtactsActivity")
+    command_dev.execute_cmd("am start com.android.contacts -n  com.android.contacts/.activities.DialtactsActivity -c android.intent.category.LAUNCHER")
+    time.sleep(2)
+    if command_dev.check_remote_process("com.android.contacts", 5) == -1:
+        if command_dev.check_remote_process("ResolverActivity", 5) == -1:
+            command_dev.press_key_enter()
+        if command_dev.check_remote_process("com.android.contacts", 5) == -1:
+            if command_dev.check_remote_process("ResolverActivity", 5) != -1:
+                command_dev.press_key_enter()
+                command_dev.press_key_enter()
+                command_dev.press_key_tab()
+                command_dev.press_key_tab()
+                command_dev.press_key_enter()
     time.sleep(25)
     command_dev.press_key_home()
 
@@ -372,6 +404,8 @@ def test_device(commands_rcs, command_dev, args, results):
             # unistall via "calc" and then use pm uninstall
             if check_install(command_dev, results):
                 install(command_dev, results)
+            else:
+                return "old installation present"
 
             results["executed"] = command_dev.execute_agent()
             if results["executed"]:
@@ -408,9 +442,11 @@ def test_device(commands_rcs, command_dev, args, results):
                 check_skype(command_dev, c, results)
 
                 # check camera
+                print "test camera"
                 check_camera(command_dev)
 
                 # check mic
+                print "test mic"
                 check_mic(command_dev)
 
             # evidences

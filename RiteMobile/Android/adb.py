@@ -116,6 +116,23 @@ def is_screen_off(device=None):
     return False
 
 
+def get_screen_res(device=None):
+    cmd = "dumpsys window policy "
+    cmd = execute(cmd, device)
+    x = y = 0
+    match = re.findall('.*Screen.*', cmd)
+    if len(match) > 0:
+        p = re.compile(ur'(\d+)x(\d+)')
+        for m in match:
+            res = re.search(p, m)
+            if res and res.lastindex == 2:
+                x = res.group(1)
+                y = res.group(2)
+                if x > 0 and y > 0:
+                    break;
+    return x, y
+
+
 def wait_and_click(x=750, y=130):
     # (x, y, w, h) = dev_target.getRestrictedScreen()
     # width = int(w)
@@ -128,15 +145,32 @@ def wait_and_click(x=750, y=130):
 
 
 def unlock(device=None):
-    cmds = ["input keyevent 82", "input swipe 30 900 900 900"]
-    for cmd in cmds:
+    cmd = "input keyevent 82"
+    execute(cmd, device)
+    x = y = 0
+    (x, y) = get_screen_res(device)
+    if x > 0 and y > 0:
+        #horizontal
+        cmd = "input swipe %d %d %d %d \n" % (int(x)/10, int(y)/2, int(x)-int(x)/10, int(y)/2)
         execute(cmd, device)
+        # vertical
+        cmd = "input swipe %d %d %d %d \n" % (int(x)/2, int(y)-int(y)/8, int(x)/2, int(y)-int(y)/3)
+        execute(cmd, device)
+    else:
+        cmd = "input swipe 30 900 900 900"
+        execute(cmd, device)
+        cmd = "input swipe 500 800 500 500"
+        execute(cmd, device)
+
+    sleep(1)
+
+    #    dumpsys window policy | grep  mUnrestrictedScreen
+    #    mUnrestrictedScreen=(0,0) 1080x1920
 
 
 def ps(device=None):
     pp = execute("ps", device).strip()
     return pp
-
 
 
 def reboot(device=None):

@@ -1,0 +1,102 @@
+Installation
+	time: 2014-11-28 11:38:02.564441
+	installed: 
+	executed: True
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 
+Device
+	device: HUAWEI HUAWEI G6-U10
+	id: BT INFO: 2.2
+open: Permission denied
+7c26893732e58677
+	release: 4.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	format_resist: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: False
+Installation
+	time: 2014-11-28 11:51:43.996874
+	installed: 
+	executed: False
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 
+Device
+	device: HUAWEI HUAWEI G6-U10
+	id: BT INFO: 2.2
+open: Permission denied
+7c26893732e58677
+	release: 4.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	format_resist: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 2014-11-28 14:01:51.156986
+	installed: 
+	executed: False
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 
+Device
+	device: HUAWEI HUAWEI G6-U10
+	id: BT INFO: 2.2
+open: Permission denied
+7c26893732e58677
+	release: 4.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	format_resist: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 

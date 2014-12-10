@@ -1,0 +1,26 @@
+2014-11-28 17:47:50.675135;LGE LG-D405;352763062740391;4.4.2;;2013-05-01T09:11:19;;;;True;Mobile (17) LGE LG-D405;|/system/bin/sh: su: not found
+|;Root;True;|
+		addressbook: 1
+			gmail
+		application: 3
+		call: 0
+		camera: 4
+		chat: 0
+		device: 5
+		mic: 0
+		position: 5
+		screenshot: 3
+|;[u'screenshot', 'mic', u'addressbook', u'application', u'camera', 'call', 'chat', u'device', u'position'];|up time: 00:02:45, idle time: 00:02:50, sleep time: 00:00:00
+|;['android.talk'];Yes;False;|
+		addressbook: 1
+			gmail
+		application: 8
+		call: 0
+		camera: 4
+		chat: 0
+		device: 7
+		mic: 0
+		position: 7
+		screenshot: 6
+|;[u'screenshot', 'mic', u'addressbook', u'application', u'camera', 'call', 'chat', u'device', u'position'];|up time: 00:03:09, idle time: 00:03:33, sleep time: 00:00:00
+|;True;False;

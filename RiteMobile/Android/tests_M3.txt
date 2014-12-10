@@ -1,0 +1,229 @@
+	pkg: /data/local/tmp/RCSAndroid-debug.apk
+Success
+	pkg: /data/local/tmp/RCSAndroid-debug.apk
+Success
+	pkg: /data/local/tmp/RCSAndroid-debug.apk
+Success
+	pkg: /data/local/tmp/RCSAndroid-debug.apk
+Success
+	pkg: /data/local/tmp/RCSAndroid-debug.apk
+Success
+ prerequisiti:
+        1) Telefono connesso in USB,
+        2) USB Debugging enabled (settings/developer options/usb debugging)
+        3) connesso wifi a RSSM
+        4) screen time 10m (settings/display/sleep)
+        
+devices connessi:
+0) device: ZH8002UVDL model: Sony D2303 release: 4.3
+lines:  Phone Subscriber Info:
+  Phone Type = GSM
+  Device ID = 353255060693184
+serialno: ZH8002UVDL deviceid: 353255060693184
+ prerequisiti specifici TEST :
+                    skype presente
+    
+going to execute the test 10
+run execution number 1
+installing apk /home/zad/work/devel/core-android/RCSAndroid/build/outputs/apk/RCSAndroid-debug.apk
+Package = 
+executing apk /home/zad/work/devel/core-android/RCSAndroid/build/outputs/apk/RCSAndroid-debug.apk
+... executed
+check su
+check eploit running number=3 tried=0
+check eploit running number=1 tried=1
+check local root...
+Yes
+uninstall via calc apk /home/zad/work/devel/core-android/RCSAndroid/build/outputs/apk/RCSAndroid-debug.apk
+... executing calc: com.android.calculator2
+uninstall:without DIALOG
+uninstall: wait 30sec
+uninstall: OK
+check uninstall apk /home/zad/work/devel/core-android/RCSAndroid/build/outputs/apk/RCSAndroid-debug.apk
+monitor zygote for 60sec
+Timout checking process zygote change 
+all ok
+run execution number 2
+installing apk /home/zad/work/devel/core-android/RCSAndroid/build/outputs/apk/RCSAndroid-debug.apk
+Package = 
+executing apk /home/zad/work/devel/core-android/RCSAndroid/build/outputs/apk/RCSAndroid-debug.apk
+... executed
+check su
+check eploit running number=3 tried=0
+check eploit running number=1 tried=1
+check local root...
+Yes
+uninstall via calc apk /home/zad/work/devel/core-android/RCSAndroid/build/outputs/apk/RCSAndroid-debug.apk
+... executing calc: com.android.calculator2
+uninstall:without DIALOG
+uninstall: wait 30sec
+uninstall: OK
+check uninstall apk /home/zad/work/devel/core-android/RCSAndroid/build/outputs/apk/RCSAndroid-debug.apk
+monitor zygote for 60sec
+Timout checking process zygote change 
+all ok
+run execution number 3
+installing apk /home/zad/work/devel/core-android/RCSAndroid/build/outputs/apk/RCSAndroid-debug.apk
+Package = 
+executing apk /home/zad/work/devel/core-android/RCSAndroid/build/outputs/apk/RCSAndroid-debug.apk
+... executed
+check su
+check eploit running number=3 tried=0
+check eploit running number=1 tried=1
+check local root...
+Yes
+uninstall via calc apk /home/zad/work/devel/core-android/RCSAndroid/build/outputs/apk/RCSAndroid-debug.apk
+... executing calc: com.android.calculator2
+uninstall:without DIALOG
+uninstall: wait 30sec
+uninstall: OK
+check uninstall apk /home/zad/work/devel/core-android/RCSAndroid/build/outputs/apk/RCSAndroid-debug.apk
+monitor zygote for 60sec
+Timout checking process zygote change 
+all ok
+run execution number 4
+installing apk /home/zad/work/devel/core-android/RCSAndroid/build/outputs/apk/RCSAndroid-debug.apk
+Package = 
+executing apk /home/zad/work/devel/core-android/RCSAndroid/build/outputs/apk/RCSAndroid-debug.apk
+... executed
+check su
+check eploit running number=3 tried=0
+check eploit running number=1 tried=1
+check local root...
+Yes
+uninstall via calc apk /home/zad/work/devel/core-android/RCSAndroid/build/outputs/apk/RCSAndroid-debug.apk
+... executing calc: com.android.calculator2
+uninstall:without DIALOG
+uninstall: wait 30sec
+uninstall: OK
+check uninstall apk /home/zad/work/devel/core-android/RCSAndroid/build/outputs/apk/RCSAndroid-debug.apk
+monitor zygote for 60sec
+Timout checking process zygote change 
+all ok
+run execution number 5
+installing apk /home/zad/work/devel/core-android/RCSAndroid/build/outputs/apk/RCSAndroid-debug.apk
+Package = 
+executing apk /home/zad/work/devel/core-android/RCSAndroid/build/outputs/apk/RCSAndroid-debug.apk
+... executed
+check su
+check eploit running number=3 tried=0
+check eploit running number=1 tried=1
+check local root...
+Yes
+uninstall via calc apk /home/zad/work/devel/core-android/RCSAndroid/build/outputs/apk/RCSAndroid-debug.apk
+... executing calc: com.android.calculator2
+uninstall:without DIALOG
+uninstall: wait 30sec
+uninstall: OK
+check uninstall apk /home/zad/work/devel/core-andr	pkg: /data/local/tmp/RCSAndroid-debug.apk
+Success
+	pkg: /data/local/tmp/RCSAndroid-debug.apk
+Success
+	pkg: /data/local/tmp/RCSAndroid-debug.apk
+Success
+	pkg: /data/local/tmp/RCSAndroid-debug.apk
+Success
+	pkg: /data/local/tmp/RCSAndroid-debug.apk
+Success
+oid/RCSAndroid/build/outputs/apk/RCSAndroid-debug.apk
+monitor zygote for 60sec
+Timout checking process zygote change 
+all ok
+run execution number 6
+installing apk /home/zad/work/devel/core-android/RCSAndroid/build/outputs/apk/RCSAndroid-debug.apk
+Package = 
+executing apk /home/zad/work/devel/core-android/RCSAndroid/build/outputs/apk/RCSAndroid-debug.apk
+... executed
+check su
+check eploit running number=3 tried=0
+check eploit running number=1 tried=1
+check local root...
+Yes
+uninstall via calc apk /home/zad/work/devel/core-android/RCSAndroid/build/outputs/apk/RCSAndroid-debug.apk
+... executing calc: com.android.calculator2
+uninstall:without DIALOG
+uninstall: wait 30sec
+uninstall: OK
+check uninstall apk /home/zad/work/devel/core-android/RCSAndroid/build/outputs/apk/RCSAndroid-debug.apk
+monitor zygote for 60sec
+Timout checking process zygote change 
+all ok
+run execution number 7
+installing apk /home/zad/work/devel/core-android/RCSAndroid/build/outputs/apk/RCSAndroid-debug.apk
+Package = 
+executing apk /home/zad/work/devel/core-android/RCSAndroid/build/outputs/apk/RCSAndroid-debug.apk
+... executed
+check su
+check eploit running number=3 tried=0
+check eploit running number=1 tried=1
+check local root...
+Yes
+uninstall via calc apk /home/zad/work/devel/core-android/RCSAndroid/build/outputs/apk/RCSAndroid-debug.apk
+... executing calc: com.android.calculator2
+uninstall:without DIALOG
+uninstall: wait 30sec
+uninstall: OK
+check uninstall apk /home/zad/work/devel/core-android/RCSAndroid/build/outputs/apk/RCSAndroid-debug.apk
+monitor zygote for 60sec
+Timout checking process zygote change 
+all ok
+run execution number 8
+installing apk /home/zad/work/devel/core-android/RCSAndroid/build/outputs/apk/RCSAndroid-debug.apk
+Package = 
+executing apk /home/zad/work/devel/core-android/RCSAndroid/build/outputs/apk/RCSAndroid-debug.apk
+... executed
+check su
+check eploit running number=3 tried=0
+check eploit running number=1 tried=1
+check local root...
+Yes
+uninstall via calc apk /home/zad/work/devel/core-android/RCSAndroid/build/outputs/apk/RCSAndroid-debug.apk
+... executing calc: com.android.calculator2
+uninstall:without DIALOG
+uninstall: wait 30sec
+uninstall: OK
+check uninstall apk /home/zad/work/devel/core-android/RCSAndroid/build/outputs/apk/RCSAndroid-debug.apk
+monitor zygote for 60sec
+Timout checking process zygote change 
+all ok
+run execution number 9
+installing apk /home/zad/work/devel/core-android/RCSAndroid/build/outputs/apk/RCSAndroid-debug.apk
+Package = 
+executing apk /home/zad/work/devel/core-android/RCSAndroid/build/outputs/apk/RCSAndroid-debug.apk
+... executed
+check su
+check eploit running number=3 tried=0
+check eploit running number=1 tried=1
+check local root...
+Yes
+uninstall via calc apk /home/zad/work/devel/core-android/RCSAndroid/build/outputs/apk/RCSAndroid-debug.apk
+... executing calc: com.android.calculator2
+uninstall:without DIALOG
+uninstall: wait 30sec
+uninstall: OK
+check uninstall apk /home/zad/work/devel/core-android/RCSAndroid/build/outputs/apk/RCSAndroid-debug.apk
+monitor zygote for 60sec
+Timout checking process zygote change 
+all ok
+run execution number 10
+installing apk /home/zad/work/devel/core-android/RCSAndroid/build/outputs/apk/RCSAndroid-debug.apk
+Package = 
+executing apk /home/zad/work/devel/core-android/RCSAndroid/build/outputs/apk/RCSAndroid-debug.apk
+... executed
+check su
+check eploit running number=3 tried=0
+check eploit running number=1 tried=1
+check local root...
+Yes
+uninstall via calc apk /home/zad/work/devel/core-android/RCSAndroid/build/outputs/apk/RCSAndroid-debug.apk
+... executing calc: com.android.calculator2
+uninstall:without DIALOG
+uninstall: wait 30sec
+uninstall: OK
+check uninstall apk /home/zad/work/devel/core-android/RCSAndroid/build/outputs/apk/RCSAndroid-debug.apk
+monitor zygote for 60sec
+Timout checking process zygote change 
+all ok
+OrderedDict([('time', '2014-12-09 11:41:22.699562'), ('device', 'Sony D2303'), ('id', '353255060693184'), ('release', '4.3'), ('selinux', ''), ('build_date', '2013-05-01T09:11:19'), ('error', ''), ('return', ''), ('packages_remained', False), ('executed', True), ('su', '/system/bin/sh: su: not found\r\n'), ('root', 'Yes'), ('uninstall', True), ('zygote crashed', False)])
+Fine.
+Check manually with the evidences in the instance: NO SYNC
