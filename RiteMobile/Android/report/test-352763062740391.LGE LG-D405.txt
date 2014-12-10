@@ -1,0 +1,57 @@
+Installation
+	time: 2014-11-28 17:47:50.675135
+	installed: 
+	executed: True
+	instance_name: Mobile (17) LGE LG-D405
+	info: 
+	uptime_first: up time: 00:02:45, idle time: 00:02:50, sleep time: 00:00:00
+
+	uptime_last: up time: 00:03:09, idle time: 00:03:33, sleep time: 00:00:00
+
+	error: 
+	exception: 
+Device
+	device: LGE LG-D405
+	id: 352763062740391
+	release: 4.4.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: /system/bin/sh: su: not found
+
+	selinux: 
+	format_resist: Yes
+Evidences
+	evidences_first: 
+		addressbook: 1
+			gmail
+		application: 3
+		call: 0
+		camera: 4
+		chat: 0
+		device: 5
+		mic: 0
+		position: 5
+		screenshot: 3
+
+	evidences_last: 
+		addressbook: 1
+			gmail
+		application: 8
+		call: 0
+		camera: 4
+		chat: 0
+		device: 7
+		mic: 0
+		position: 7
+		screenshot: 6
+
+Expected
+	call_supported: False
+	expected: ['android.talk']
+Uninstall
+	uninstall: True
+	running: False
+	files_remained: 
+	packages_remained: 

@@ -1,0 +1,46 @@
+2014-11-28 11:38:04.437246;TCT ALCATEL ONE TOUCH 4030D;869230012414242;4.1.1;;2013-05-01T09:11:19;;;False;False
+2014-11-28 11:51:46.273357;TCT ALCATEL ONE TOUCH 4030D;869230012414242;4.1.1;;2013-05-01T09:11:19;;;False
+2014-11-28 14:01:52.074922;TCT ALCATEL ONE TOUCH 4030D;869230012414242;4.1.1;;2013-05-01T09:11:19;;;;True;Mobile (12) TCT ALCATEL ONE TOUCH 4030D;|3.1.1
+|;Root;True;|
+		application: 1
+		call: 0
+		camera: 7
+		chat: 0
+		device: 3
+		mic: 0
+		position: 3
+		screenshot: 3
+|;[u'screenshot', 'mic', u'application', u'camera', 'call', 'chat', u'device', u'position'];|up time: 00:24:01, idle time: 00:13:49, sleep time: 00:00:00
+|;['android.talk', 'facebook', 'viber', 'skype'];No;True;|
+		application: 4
+		call: 0
+		camera: 12
+		chat: 0
+		device: 5
+		mic: 0
+		position: 5
+		screenshot: 7
+|;[u'screenshot', 'mic', u'application', u'camera', 'call', 'chat', u'device', u'position'];|up time: 00:04:46, idle time: 00:01:34, sleep time: 00:00:00
+|;True;False;
+2014-11-28 17:32:06.043625;TCT ALCATEL ONE TOUCH 4030D;869230012414242;4.1.1;;2013-05-01T09:11:19;;;;True;Mobile (16) TCT ALCATEL ONE TOUCH 4030D;|3.1.1
+|;Root;True;|
+		application: 1
+		call: 0
+		camera: 5
+		chat: 0
+		device: 3
+		mic: 0
+		position: 3
+		screenshot: 2
+|;[u'screenshot', 'mic', u'application', u'camera', 'call', 'chat', u'device', u'position'];|up time: 03:24:04, idle time: 00:06:40, sleep time: 03:13:38
+|;['android.talk', 'facebook', 'viber', 'skype'];No;True;|
+		application: 4
+		call: 0
+		camera: 11
+		chat: 0
+		device: 5
+		mic: 0
+		position: 5
+		screenshot: 7
+|;[u'screenshot', 'mic', u'application', u'camera', 'call', 'chat', u'device', u'position'];|up time: 00:04:55, idle time: 00:02:34, sleep time: 00:00:00
+|;True;False;
