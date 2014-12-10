@@ -109,9 +109,13 @@ def check_evidences(command_dev, c, results, timestamp=""):
     results['expected'] = list(expected)
 
 
-def uninstall_agent(commands_device, c, results):
-    c.uninstall()
+def uninstall_agent_with_calc(commands_device, results, quick):
+    if not commands_device.execute_calc():
+        print "failed to run CALC!!!"
 
+    if quick:
+        time.sleep(5)
+        return
     say("agent uninstall, verify request")
     if 'No' != results['root']:
         print "uninstall:without DIALOG"
@@ -328,7 +332,7 @@ def report_files(results, report):
         logfile.write("\n")
 
 
-def test_device(commands_rcs, command_dev, args, results):
+def test_device(command_dev, args, results):
     if args.fastnet:
         command_dev.wifi('open', check_connection=False, install=True)
         exit(0)
@@ -339,55 +343,9 @@ def test_device(commands_rcs, command_dev, args, results):
     # tests = ["sync","format_resist","root", "skype","camera"]
     # tests = ["format_resist"]
 
-    demo = True
-    persist = True
-    #device_id = command_dev.get_dev_deviceid()
 
-    #commands_rcs = CommandsRCS(host = "192.168.100.100", login_id = id, device_id = device_id, operation = "Rite_Mobile", target_name = "HardwareFunctional", factory = 'RCS_0000002050')
-
-
-    #build.connection.host = "rcs-zeus-master.hackingteam.local"
-    #build.connection.operation = "Rite_Mobile"
-    #target_name = "Functional"
-    #factory = "RCS_0000000008"
-
-    if args.build or not os.path.exists('assets/autotest.default.apk'):
-        config = open('assets/config_mobile.json').read()
-        config = config.replace("$(HOSTNAME)", commands_rcs.endpoint)
-        if not os.path.exists("build"):
-            os.makedirs("build")
-        f = open("build/config.upload.json", "w")
-        f.write(config)
-        f.close()
-
-        # push new conf
-        os.system('ruby assets/rcs-core.rb -u %s -p %s -d %s -f %s -c build/config.upload.json' % (
-            commands_rcs.login, commands_rcs.password, commands_rcs.host, commands_rcs.factory))
-
-        params = {u'binary': {u'admin': True, u'demo': False, u'persist': True},
-                  u'melt': {u'appname': u'autotest'},
-                  u'package': {u'type': u'installation'},
-                  u'platform': u'android'}
-
-        params[u'binary'][u'demo'] = demo
-        params[u'binary'][u'persist'] = persist
-
-        if persist:
-            params[u'package'][u'type']
-
-        jparam = json.dumps(params)
-        json_params = "build/params.json"
-        f = open(json_params, "w")
-        f.write(jparam)
-        f.close()
-
-        os.system(
-            'ruby assets/rcs-core.rb -u %s -p %s -d %s -f %s -b %s -o and.zip' % (
-                commands_rcs.login, commands_rcs.password, commands_rcs.host, commands_rcs.factory, json_params))
-        os.system('unzip -o  and.zip -d assets')
-        os.remove('and.zip')
-    if not os.path.exists('assets/autotest.default.apk'):
-        print "ERROR, cannot build apk"
+    if not os.path.exists(args.apk):
+        print "ERROR, cannot get apk"
         exit(0)
 
     command_dev.sync_time()
@@ -396,71 +354,73 @@ def test_device(commands_rcs, command_dev, args, results):
     command_dev.unlock_screen()
 
     try:
-        with commands_rcs as c:
-            commands_rcs.delete_old_instance()
 
-            # install agent and check it's running
-            # todo: to install the agent, it'e more secure to
-            # unistall via "calc" and then use pm uninstall
-            if check_install(command_dev, results):
-                install(command_dev, results)
-            else:
-                return "old installation present"
+        # install agent and check it's running
+        # todo: to install the agent, it'e more secure to
+        # unistall via "calc" and then use pm uninstall
+        print "installing apk %s" % args.apk
+        if check_install(command_dev, results):
+            command_dev.install_apk_direct(args.apk)
+        else:
+            return "old installation present"
 
-            results["executed"] = command_dev.execute_agent()
-            if results["executed"]:
-                print "... executed"
-            else:
-                return "execution failed"
+        print "executing apk %s" % args.apk
+        results["executed"] = command_dev.execute_agent()
+        if results["executed"]:
+            print "... executed"
+            time.sleep(5)
+        else:
+            return "execution failed"
 
-            command_dev.press_key_home()
+        command_dev.press_key_home()
+        time.sleep(5)
+        print "check su"
+        results["su"] = command_dev.info_root()
+        tried = 0
+        if not args.quick_uninstall:
+            # check for root for 2 minutes at least
+            while True:
+                number = command_dev.check_number_remote_process("dvci", 6)
+                print "check eploit running number=%d tried=%d" % (number, tried)
+                if number < 2 or tried >= 3:
+                    break
+                else:
+                    time.sleep(60)
+                    tried += 1
+            print "check local root..."
 
-            # sync e verifica
-            c.wait_for_sync()
-
-            # rename instance
-            results['instance_name'] = c.rename_instance(results['device'])
-
-            # check for root
-            results["su"] = command_dev.info_root()
-
-            result, root, info = c.check_root()
-            results['root'] = root
-            results['root_first'] = result
-            check_evidences(command_dev, c, results, "_first")
-
-            print "sleeping 20 seconds"
-            time.sleep(20)
-            check_format_resist(command_dev, c, results)
-
-            result, root, info = c.check_root(2)
-            print "sleeping 30 seconds"
-            time.sleep(30)
-
-            if result:
-                # skype call
-                check_skype(command_dev, c, results)
-
-                # check camera
-                print "test camera"
-                check_camera(command_dev)
-
-                # check mic
-                print "test mic"
-                check_mic(command_dev)
-
-            # evidences
-            check_evidences(command_dev, c, results, "_last")
-
-        if args.interactive:
-            say("press enter to uninstall %s" % id)
-            ret = raw_input("... PRESS ENTER TO UNINSTALL\n")
+        result = command_dev.info_local_exploit()
+        if result:
+            results['root'] = "Yes"
+        else:
+            results['root'] = "No"
+        print results['root']
 
         # uninstall
-        uninstall_agent(command_dev, c, results)
+        command_dev.unlock_screen()
+        print "uninstall via calc apk %s" % args.apk
+        uninstall_agent_with_calc(command_dev, results, args.quick_uninstall)
+        if args.quick_uninstall:
+            command_dev.press_key_home()
+            while True:
+
+                number = command_dev.check_number_remote_process("dvci", 6)
+                print "check eploit running number=%d tried=%d" % (number, tried)
+                if number == 0 or tried >= 18:
+                    break
+                else:
+                    command_dev.lock_and_unlock_screen()
+                    time.sleep(10)
+                    tried += 1
 
         # check uninstall after reboot
-        check_uninstall(command_dev, results)
+        print "check uninstall apk %s" % args.apk
+        print "monitor zygote for 60sec"
+        results['zygote crashed'] = command_dev.check_remote_process_change_pid("zygote", 60)
+        if results['zygote crashed']:
+            print "zygote CRASHED !!!!!!"
+        else:
+            print "all ok"
 
     except Exception, ex:
         traceback.print_exc()
@@ -468,16 +428,21 @@ def test_device(commands_rcs, command_dev, args, results):
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description='AVMonitor master.')
-    parser.add_argument('-b', '--build', required=False, action='store_true',
-                        help="Rebuild apk")
+    parser = argparse.ArgumentParser(description='run install and uninstall.')
+    parser.add_argument('-a', '--apk', required=True,
+                        help="apk to use")
+    parser.add_argument('-d', '--device', required=False,
+                        help="choose serial number of the device to use")
     parser.add_argument('-i', '--interactive', required=False, action='store_true',
                         help="Interactive execution")
     parser.add_argument('-f', '--fastnet', required=False, action='store_true',
                         help="Install fastnet")
+    parser.add_argument('-n', '--number', required=False, type=int,
+                        help="number of time to run the test")
     parser.add_argument('-r', '--reboot', required=False, action='store_true',
                         help="Install fastnet")
-
+    parser.add_argument('-q', '--quick_uninstall', required=False, action='store_true',
+                        help="unistall without waiting the root")
     args = parser.parse_args()
 
     return args
@@ -486,27 +451,38 @@ def parse_args():
 def main():
     # from AVCommon import logger
     # logger.init()
-
-    command_dev = CommandsDevice()
-
     args = parse_args()
+    command_dev = CommandsDevice(args.device)
+
+
     print """ prerequisiti specifici TEST :
                     skype presente
     """
     results = collections.OrderedDict()
 
-    commands_rcs = CommandsRCS(login_id=command_dev.uid, device_id=command_dev.device_id)
+    #commands_rcs = CommandsRCS(login_id=command_dev.uid, device_id=command_dev.device_id)
 
     try:
-        test_device(commands_rcs, command_dev, args, results)
+        if args.number:
+            print "going to execute the test %d" %args.number
+            n = 1
+            while n <= args.number:
+                print "run execution number %d" %n
+                test_device(command_dev, args, results)
+                print str(results)
+                n += 1
+        else:
+            test_device(command_dev, args, results)
+            print str(results)
+
     except Exception, ex:
         print ex
         traceback.print_exc()
         results['exception'] = ex
-
+        print str(results)
     #print results
-    report = report_test_rail(results)
-    report_files(results, report)
+    #report = report_test_rail(results)
+    #report_files(results, report)
 
     print "Fine."
 
