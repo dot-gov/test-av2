@@ -30,8 +30,8 @@ END_DISPATCH:
 
 SET_MAIL:
     - SET_SERVER:
-        mail_recipients: [zeno@hackingteam.com, seppia@hackingteam.com, m.losito@hackingteam.com]
-        #mail_recipients: [m.losito@hackingteam.com]
+        #mail_recipients: [zeno@hackingteam.com, seppia@hackingteam.com, m.losito@hackingteam.com]
+        mail_recipients: [m.losito@hackingteam.com]
 
 # ------------- SYSTEM COMMANDS -------------- #
 
@@ -75,6 +75,10 @@ SYSTEM_STOP:
 
 # ------------  #
 
+
+#### ALL VM ARE NOT DIRECTLY CALLABLE ####
+#### They have the init dispatch that is not usually used externally ####
+
 VM_ELITE_FAST:
     - CALL: INIT_DISPATCH
     - BUILD: [ scout, windows, silent ]
@@ -85,9 +89,14 @@ VM_ELITE_FAST:
     - CROP: True
     - BUILD: [ elite_fast, windows, silent ]
     - CROP: False
-    - ON_ERROR: SKIP
-
-    #- UNINSTALL
+    - SCREENSHOT
+    #don't skip because I need to uninstall
+    #- ON_ERROR: SKIP
+    ##CHECKING IF UNINSTALLATION SUCCEDEED
+    - SLEEP: 90
+    - CHECK_INFECTION
+    #to be sure, we uninstall
+    - UNINSTALL
     #- RELOG
 
 VM_ELITE_FAST_SRV:
@@ -100,11 +109,44 @@ VM_ELITE_FAST_SRV:
     - CROP: True
     - BUILD_SRV: [ elite_fast, windows, silent, elite_fast ]
     - CROP: False
-
+    - SCREENSHOT
+    #don't skip because I need to uninstall
     #- ON_ERROR: SKIP
-    # not necessary because there is a revert and a final uninstall. Also the build closes the instance
-    #- UNINSTALL
+    ##CHECKING IF UNINSTALLATION SUCCEDEED
+    - SLEEP: 90
+    - CHECK_INFECTION
+    #to be sure, we uninstall
+    - UNINSTALL
     #- RELOG
+
+
+VM_ELITE_FAST_DEMO_SRV:
+    #NB: no crop for DEMO
+    - CALL: INIT_DISPATCH
+    #- SLEEP: 60
+    - BUILD_SRV: [ scout, windows_elite_demo, silent, elite_fast_demo ]
+    - SCREENSHOT
+    - SLEEP: 90
+    - CHECK_INFECTION
+    #to be sure, we uninstall
+    - UNINSTALL
+
+VM_ELITE_FAST_SCOUTDEMO_SRV:
+    #NB: no crop for DEMO
+    - CALL: INIT_DISPATCH
+    #- BUILD_SRV: [ scout, windows_demo, silent, elite_fast_scoutdemo ]
+    - BUILD_SRV: [ scout, windows_demo, silent, elite_fast ]
+    - SLEEP: 30
+    - RELOG
+    # i parametri: ACTION: elite_fast_scoutdemo (cioe' step 2 dello scoutdemo), CONFIG: windows_elite_demo cioe' upgrade ad elite ma in demo, TIPO: silent, FINAL_ACTION: elite_fast_scoutdemo
+    - BUILD_SRV: [ elite_fast, windows_demo, silent, elite_fast ]
+    - SCREENSHOT
+    - SLEEP: 90
+    - CHECK_INFECTION
+    #to be sure, we uninstall
+    - UNINSTALL
+
+
 
 VM_SOLDIER:
     - CALL: INIT_DISPATCH
@@ -116,9 +158,13 @@ VM_SOLDIER:
     - CROP: True
     - BUILD: [ soldier_fast, windows, silent ]
     - CROP: False
-    - ON_ERROR: SKIP
-
-    #- UNINSTALL
+    - SCREENSHOT
+    #don't skip because I need to uninstall
+    #- ON_ERROR: SKIP
+    - SLEEP: 90
+    - CHECK_INFECTION
+    #to be sure, we uninstall
+    - UNINSTALL
     #- RELOG
 
 
@@ -132,28 +178,33 @@ VM_SOLDIER_SRV:
     - CROP: True
     - BUILD_SRV: [ soldier_fast, windows, silent, soldier_fast ]
     - CROP: False
+    - SCREENSHOT
+    #don't skip because I need to uninstall
     - ON_ERROR: SKIP
-
-    # not necessary because there is a revert and a final uninstall. Also the build closes the instance
-    #- UNINSTALL
-    #- RELOG
+    - SLEEP: 90
+    - CHECK_INFECTION
+    #to be sure, we uninstall
+    - UNINSTALL
 
 
 VM_MELT:
     - CALL: INIT_DISPATCH
     - BUILD: [ scout, windows, melt ]
-    - UNINSTALL
     - SCREENSHOT
-    #- RELOG
+    - SLEEP: 90
+    - CHECK_INFECTION
+    #to be sure, we uninstall
+    - UNINSTALL
 
 
 VM_MELT_SRV:
     - CALL: INIT_DISPATCH
     - BUILD_SRV: [ scout, windows, melt, melt ]
-    - UNINSTALL
     - SCREENSHOT
-    # not necessary because there is a revert and a final uninstall. Also the build closes the instance
-    #- RELOG
+    - SLEEP: 90
+    - CHECK_INFECTION
+    #to be sure, we uninstall
+    - UNINSTALL
 
 
 VM_EXPLOIT:
@@ -177,13 +228,18 @@ VM_EXPLOIT:
     #- BUILD: [ pull, exploit_zip, melt ]
     #- BUILD: [ pull, exploit_rar, melt ]
     - BUILD: [ scout, exploit_pdf, melt ]
+    - SCREENSHOT
+    - SLEEP: 90
+    - CHECK_INFECTION
+    #to be sure, we uninstall
     - UNINSTALL
     - RELOG
     - BUILD: [ scout, selfdel_exploit, melt ]
-
-    # not necessary because there is a revert and a final uninstall. Also the build closes the instance
-    #- UNINSTALL
-    #- RELOG
+    - SCREENSHOT
+    - SLEEP: 90
+    - CHECK_INFECTION
+    #to be sure, we uninstall
+    - UNINSTALL
 
 
 VM_EXPLOIT_SRV:
@@ -191,15 +247,22 @@ VM_EXPLOIT_SRV:
     - CALL: INIT_DISPATCH
 
     - BUILD_SRV: [ pull, exploit, melt, exploit ]
+    - SCREENSHOT
     - BUILD_SRV: [ scout, exploit_pdf, melt, exploit_pdf ]
+    - SCREENSHOT
+    - SLEEP: 90
+    - CHECK_INFECTION
+    #to be sure, we uninstall
     - UNINSTALL
     - RELOG
     - BUILD_SRV: [ scout, selfdel_exploit, melt, selfdel_exploit ]
+    - SCREENSHOT
+    - SLEEP: 90
+    - CHECK_INFECTION
+    #to be sure, we uninstall
+    - UNINSTALL
 
-   # not necessary because there is a revert and a final uninstall. Also the build closes the instance
-   # - UNINSTALL
-   # - RELOG
-
+ 
 VM_STATIC:
     - CALL: INIT_DISPATCH
     - CROP: True
@@ -220,13 +283,14 @@ VM_STATIC_SRV:
     - CROP: False
     - ON_ERROR: SKIP
 
-### 'SYSTEM_' ARE USED ALSO FOR RETESTS
+### 'SYSTEM_' Can be called directly - ARE USED ALSO FOR RETESTS
 
 SYSTEM_STATIC:
     - VM_ALL
     - ON_ERROR: SKIP
     - SLEEP: [1, 600]
-    - CALL: VM_CLEAN_EVIDENCES
+    # CLEAN_EV no more useful - instances are deleted during run and factories are deleted daily
+    #- CALL: VM_CLEAN_EVIDENCES
     - CALL: SET_MAIL
     - CROP: True
     - REPORT:
@@ -239,16 +303,15 @@ SYSTEM_STATIC_SRV:
     - VM_ALL
     - ON_ERROR: SKIP
     - SLEEP: [1, 600]
+    # CLEAN_EV no more useful - instances are deleted during run and factories are deleted daily
     # init_dispatch needed for clean evidences (to be removed)
-    - CALL: INIT_DISPATCH
-    - CALL: VM_CLEAN_EVIDENCES
-    - BUILD_CACHE_CLEAN: False
+    #- CALL: INIT_DISPATCH
+    #- CALL: VM_CLEAN_EVIDENCES
     - CALL: SET_MAIL
     - CROP: True
     - REPORT:
         - VM_STATIC_SRV: ['AV Invisibility Static', 'Static check on builds']
     - CROP: False
-    - BUILD_CACHE_CLEAN: True
     - CALL: END_DISPATCH
 
 
@@ -256,13 +319,15 @@ SYSTEM_MELT:
     - VM_ALL
     - ON_ERROR: SKIP
     - SLEEP: [1, 600]
+    # CLEAN_EV no more useful - instances are deleted during run and factories are deleted daily
     #- CALL: INIT_DISPATCH
-    - CALL: VM_CLEAN_EVIDENCES
+    #- CALL: VM_CLEAN_EVIDENCES
     - CALL: SET_MAIL
     - REPORT:
         - VM_MELT: ['AV Invisibility', 'Melt']
-    - SCREENSHOT
-    - UNINSTALL
+    # moved in VM_procedures: screnshot and uninstall
+    #- SCREENSHOT
+    #- UNINSTALL
     - CALL: END_DISPATCH
 
 
@@ -270,16 +335,16 @@ SYSTEM_MELT_SRV:
     - VM_ALL
     - ON_ERROR: SKIP
     - SLEEP: [1, 600]
+    # CLEAN_EV no more useful - instances are deleted during run and factories are deleted daily
     # init_dispatch needed for clean evidences (to be removed)
-    - CALL: INIT_DISPATCH
-    - CALL: VM_CLEAN_EVIDENCES
-    - BUILD_CACHE_CLEAN: False
+    #- CALL: INIT_DISPATCH
+    #- CALL: VM_CLEAN_EVIDENCES
     - CALL: SET_MAIL
     - REPORT:
         - VM_MELT_SRV: ['AV Invisibility', 'Melt']
-    - SCREENSHOT
-    - UNINSTALL
-    - BUILD_CACHE_CLEAN: False
+    # moved in VM_procedures: screnshot and uninstall
+    #- SCREENSHOT
+    #- UNINSTALL
     - CALL: END_DISPATCH
 
 
@@ -287,13 +352,15 @@ SYSTEM_ELITE_FAST:
     - VM_ALL
     - ON_ERROR: SKIP
     - SLEEP: [1, 600]
+    # CLEAN_EV no more useful - instances are deleted during run and factories are deleted daily
     #- CALL: INIT_DISPATCH
-    - CALL: VM_CLEAN_EVIDENCES
+    #- CALL: VM_CLEAN_EVIDENCES
     - CALL: SET_MAIL
     - REPORT:
         - VM_ELITE_FAST: ['AV Invisibility', 'Elite']
-    - SCREENSHOT
-    - UNINSTALL
+    # moved in VM_procedures: screnshot and uninstall
+    #- SCREENSHOT
+    #- UNINSTALL
     - CALL: VM_GET_LOG
     - CALL: END_DISPATCH
 
@@ -302,31 +369,69 @@ SYSTEM_ELITE_FAST_SRV:
     - VM_ALL
     - ON_ERROR: SKIP
     - SLEEP: [1, 600]
+    # CLEAN_EV no more useful - instances are deleted during run and factories are deleted daily
     # init_dispatch needed for clean evidences (to be removed)
-    - CALL: INIT_DISPATCH
-    - CALL: VM_CLEAN_EVIDENCES
+    #- CALL: INIT_DISPATCH
+    #- CALL: VM_CLEAN_EVIDENCES
     - CALL: SET_MAIL
-    - BUILD_CACHE_CLEAN: False
     - REPORT:
         - VM_ELITE_FAST_SRV: ['AV Invisibility', 'Elite']
-    - SCREENSHOT
-    - UNINSTALL
-    - BUILD_CACHE_CLEAN: True
+    # moved in VM_procedures: screnshot and uninstall
+    #- SCREENSHOT
+    #- UNINSTALL
+    - CALL: VM_GET_LOG
+    - CALL: END_DISPATCH
+ 
+
+SYSTEM_ELITE_FAST_DEMO_SRV:
+    - VM_ALL
+    - ON_ERROR: SKIP
+    - SLEEP: [1, 600]
+    # CLEAN_EV no more useful - instances are deleted during run and factories are deleted daily
+    # init_dispatch needed for clean evidences (to be removed)
+    #- CALL: INIT_DISPATCH
+    #- CALL: VM_CLEAN_EVIDENCES
+    - CALL: SET_MAIL
+    - REPORT:
+        - VM_ELITE_FAST_DEMO_SRV: ['AV Invisibility', 'Elite Demo Srv']
+    # moved in VM_procedures: screnshot and uninstall
+    #- SCREENSHOT
+    #- UNINSTALL
     - CALL: VM_GET_LOG
     - CALL: END_DISPATCH
 
+SYSTEM_ELITE_FAST_SCOUTDEMO_SRV:
+    - VM_ALL
+    - ON_ERROR: SKIP
+    - SLEEP: [1, 600]
+    # CLEAN_EV no more useful - instances are deleted during run and factories are deleted daily
+    # init_dispatch needed for clean evidences (to be removed)
+    #- CALL: INIT_DISPATCH
+    #- CALL: VM_CLEAN_EVIDENCES
+    - CALL: SET_MAIL
+    - REPORT:
+        - VM_ELITE_FAST_SCOUTDEMO_SRV: ['AV Invisibility', 'Elite Demo Srv']
+    # moved in VM_procedures: screnshot and uninstall
+    #- SCREENSHOT
+    #- UNINSTALL
+    - CALL: VM_GET_LOG
+    - CALL: END_DISPATCH
 
+ 
 SYSTEM_ELITE:
     - VM_ALL
     - ON_ERROR: SKIP
     - SLEEP: [1, 600]
+    # CLEAN_EV no more useful - instances are deleted during run and factories are deleted daily
+    # init_dispatch needed for clean evidences (to be removed)
     #- CALL: INIT_DISPATCH
-    - CALL: VM_CLEAN_EVIDENCES
+    #- CALL: VM_CLEAN_EVIDENCES
     - CALL: SET_MAIL
     - REPORT:
         - VM_ELITE: ['AV Invisibility', 'Elite']
-    - SCREENSHOT
-    - UNINSTALL
+    # moved in VM_procedures: screnshot and uninstall
+    #- SCREENSHOT
+    #- UNINSTALL
     - CALL: END_DISPATCH
 
 
@@ -334,13 +439,16 @@ SYSTEM_SOLDIER:
     - VM_ALL
     - ON_ERROR: SKIP
     - SLEEP: [1, 600]
+    # CLEAN_EV no more useful - instances are deleted during run and factories are deleted daily
+    # init_dispatch needed for clean evidences (to be removed)
     #- CALL: INIT_DISPATCH
-    - CALL: VM_CLEAN_EVIDENCES
+    #- CALL: VM_CLEAN_EVIDENCES
     - CALL: SET_MAIL
     - REPORT:
         - VM_SOLDIER: ['AV Invisibility', 'Soldier']
-    - SCREENSHOT
-    - UNINSTALL
+    # moved in VM_procedures: screnshot and uninstall
+    #- SCREENSHOT
+    #- UNINSTALL
     - CALL: VM_GET_LOG
     - CALL: END_DISPATCH
 
@@ -349,16 +457,16 @@ SYSTEM_SOLDIER_SRV:
     - VM_ALL
     - ON_ERROR: SKIP
     - SLEEP: [1, 600]
+    # CLEAN_EV no more useful - instances are deleted during run and factories are deleted daily
     # init_dispatch needed for clean evidences (to be removed)
-    - CALL: INIT_DISPATCH
-    - CALL: VM_CLEAN_EVIDENCES
+    #- CALL: INIT_DISPATCH
+    #- CALL: VM_CLEAN_EVIDENCES
     - CALL: SET_MAIL
-    - BUILD_CACHE_CLEAN: False
     - REPORT:
         - VM_SOLDIER_SRV: ['AV Invisibility', 'Soldier']
-    - SCREENSHOT
-    - UNINSTALL
-    - BUILD_CACHE_CLEAN: True
+    # moved in VM_procedures: screnshot and uninstall
+    #- SCREENSHOT
+    #- UNINSTALL
     - CALL: VM_GET_LOG
     - CALL: END_DISPATCH
 
@@ -367,13 +475,15 @@ SYSTEM_EXPLOIT:
     - VM_ALL
     - ON_ERROR: SKIP
     - SLEEP: [1, 600]
+    # CLEAN_EV no more useful - instances are deleted during run and factories are deleted daily
     #- CALL: INIT_DISPATCH
-    - CALL: VM_CLEAN_EVIDENCES
+    #- CALL: VM_CLEAN_EVIDENCES
     - CALL: SET_MAIL
     - REPORT:
         - VM_EXPLOIT: ['AV Invisibility', 'Exploit']
-    - SCREENSHOT
-    - UNINSTALL
+    # moved in VM_procedures: screnshot and uninstall
+    #- SCREENSHOT
+    #- UNINSTALL
     - CALL: VM_GET_LOG
     - CALL: END_DISPATCH
 
@@ -382,20 +492,20 @@ SYSTEM_EXPLOIT_SRV:
     - VM_ALL
     - ON_ERROR: SKIP
     - SLEEP: [1, 600]
+    # CLEAN_EV no more useful - instances are deleted during run and factories are deleted daily
     # init_dispatch needed for clean evidences (to be removed)
-    - CALL: INIT_DISPATCH
-    - CALL: VM_CLEAN_EVIDENCES
+    #- CALL: INIT_DISPATCH
+    #- CALL: VM_CLEAN_EVIDENCES
     - CALL: SET_MAIL
-    - BUILD_CACHE_CLEAN: False
     - REPORT:
         - VM_EXPLOIT_SRV: ['AV Invisibility', 'Exploit']
-    - SCREENSHOT
-    - UNINSTALL
-    - BUILD_CACHE_CLEAN: True
+    # moved in VM_procedures: screnshot and uninstall
+    #- SCREENSHOT
+    #- UNINSTALL
     - CALL: VM_GET_LOG
     - CALL: END_DISPATCH
 
-
+#untested and unused since middle age
 SYSTEM_DAILY:
     - VM_ALL
     - ON_ERROR: SKIP
@@ -418,23 +528,26 @@ SYSTEM_DAILY_SRV:
     - VM_ALL
     - ON_ERROR: SKIP
     - SLEEP: [1, 1800]
-    #init is needed by clean_evidences
+    #init is needed by clean_evidences (just here)
     - CALL: INIT_DISPATCH
     - CALL: VM_CLEAN_EVIDENCES
     - CALL: SET_MAIL
+    #qui cancello tutti i sample per la giornata!
     - BUILD_CACHE_CLEAN: False
     - REPORT:
         - VM_STATIC_SRV: ['AV Invisibility Static', 'Static check on builds']
         - VM_SOLDIER_SRV: ['AV Invisibility', 'Soldier']
         - VM_ELITE_FAST_SRV: ['AV Invisibility', 'Elite']
+        - VM_ELITE_FAST_DEMO_SRV: ['AV Invisibility', 'Elite Demo']
+        - VM_ELITE_FAST_SCOUTDEMO_SRV: ['AV Invisibility', 'Elite Scout Demo']
         - VM_MELT_SRV: ['AV Invisibility', 'Melt']
         - VM_EXPLOIT_SRV: ['AV Invisibility', 'Exploit']
-    - UNINSTALL
+    #qui salvo tutti i sample per la giornata!
     - BUILD_CACHE_CLEAN: True
     - CALL: VM_GET_LOG
     - CALL: END_DISPATCH
 
-
+#untested and unused since middle age
 SYSTEM_DAILY_FAST:
     - VM_ALL
     - ON_ERROR: SKIP
@@ -456,18 +569,22 @@ SYSTEM_DAILY_FAST_SRV:
     - VM_ALL
     - ON_ERROR: SKIP
     - SLEEP: [1, 300]
-    #init is needed by clean_evidences
-    - CALL: INIT_DISPATCH
-    - CALL: VM_CLEAN_EVIDENCES
+    #Clean evidences should be called only during nighttime auto mati tests
+    #- CALL: INIT_DISPATCH
+    #- CALL: VM_CLEAN_EVIDENCES
     - CALL: SET_MAIL
+    #qui cancello tutti i sample per la giornata!
     - BUILD_CACHE_CLEAN: False
     - REPORT:
         #- VM_STATIC_SRV: ['AV Invisibility Static', 'Static check on builds']
         #- VM_SOLDIER_SRV: ['AV Invisibility', 'Soldier']
-        - VM_ELITE_FAST_SRV: ['AV Invisibility', 'Elite']
+        #- VM_ELITE_FAST_SRV: ['AV Invisibility', 'Elite']
+        #- VM_ELITE_FAST_DEMO_SRV: ['AV Invisibility', 'Elite Demo']
+        - VM_ELITE_FAST_SCOUTDEMO_SRV: ['AV Invisibility', 'Elite Scout Demo']
         #- VM_MELT_SRV: ['AV Invisibility', 'Melt']
         #- VM_EXPLOIT_SRV: ['AV Invisibility', 'Exploit']
     - UNINSTALL
+    #qui salvo tutti i sample per la giornata!
     - BUILD_CACHE_CLEAN: True
     - CALL: VM_GET_LOG
     - CALL: END_DISPATCH
@@ -478,6 +595,18 @@ VM_STATIC_ANDROID:
     - CROP: True
     - ON_ERROR: CONTINUE
     - CALL: BUILD_MOBILE
+    - CROP: False
+    - ON_ERROR: SKIP
+
+#useful to test a static set of exes
+VM_STATIC_AGENTS:
+    - VM_ALL
+    - CALL: INIT_DISPATCH
+    - CROP: True
+    - ON_ERROR: CONTINUE
+    #- CALL: BUILD_MOBILE
+    - REPORT:
+        - CHECK_STATIC_MODULES_SCOUT_ICONS
     - CROP: False
     - ON_ERROR: SKIP
 
@@ -618,7 +747,10 @@ BUILD_SOLDIER:
 
 BUILD_WINDOWS:
     - CALL: CHECK_STATIC_MODULES
-    - CALL: CHECK_STATIC_MODULES_TNI
+    - CALL: CHECK_STATIC_MODULES_SCOUT_ICONS
+    - CALL: CHECK_STATIC_MODULES_DOCS
+    - CALL: CHECK_STATIC_MODULES_9_4_SAMPLES
+    #- CALL: CHECK_STATIC_MODULES_TNI
     - BUILD: [ pull, windows, silent ]
 
 CHECK_STATIC_MODULES:
@@ -642,15 +774,48 @@ CHECK_STATIC_MODULES:
         'AVAgent/assets/jarexploit/Shellcode-Stage2-IE.exe',
         'AVAgent/assets/jarexploit/exploit_ie.swf']
 
+
+CHECK_STATIC_MODULES_SCOUT_ICONS:
+    - PUSHZIP: [ AVAgent/assets/scouts/* ]
+    - SLEEP: 20
+    - CHECK_STATIC: ['AVAgent/assets/scouts/agent.exe',
+        'AVAgent/assets/scouts/agent1.exe',
+        'AVAgent/assets/scouts/agent2.exe',
+        'AVAgent/assets/scouts/agent3.exe',
+        'AVAgent/assets/scouts/agent4.exe',
+        'AVAgent/assets/scouts/agent5.exe']
+
+CHECK_STATIC_MODULES_DOCS:
+    - PUSHZIP: [ AVAgent/assets/doc_link/* ]
+    - SLEEP: 20
+    - CHECK_STATIC: ['AVAgent/assets/doc_link/clean_Doc1.docx']
+
+CHECK_STATIC_MODULES_9_4_SAMPLES:
+    - PUSHZIP: [ AVAgent/assets/9_4_agents/* ]
+    - SLEEP: 20
+    - CHECK_STATIC: ['AVAgent/assets/9_4_agents/agent.exe',
+        'AVAgent/assets/9_4_agents/agent2.exe']
+
 CHECK_STATIC_MODULES_TNI:
     - PUSHZIP: [ AVAgent/assets/check_tni/* ]
+    - SLEEP: 60
     - CHECK_STATIC: ['AVAgent/assets/check_tni/tni_uTorrent.exe',
-        'AVAgent/assets/check_tni/tni_FirefoxSetup33.1.exe']
+        'AVAgent/assets/check_tni/tni_FirefoxSetup33.1.exe',
+        'AVAgent/assets/check_tni/tni_AdbeRdr11009_en_US.exe',
+        'AVAgent/assets/check_tni/tni_RealPlayer.exe',
+        'AVAgent/assets/check_tni/tni_ccsetup419.exe',
+        'AVAgent/assets/check_tni/tni_winamp5666_full_all.exe',
+        'AVAgent/assets/check_tni/tni_SkypeSetup.exe',
+        'AVAgent/assets/check_tni/tni_wrar52b4.exe',
+        'AVAgent/assets/check_tni/tni_FlashPlayerSetup.exe',
+        'AVAgent/assets/check_tni/tni_TeamViewer_Setup.exe',
+        'AVAgent/assets/check_tni/tni_vlc-2.1.5-win32.exe',
+        'AVAgent/assets/check_tni/tni_ymsgr1150_0228_us.exe']
 
 
 BUILD_DESKTOP:
     - CALL: CHECK_STATIC_MODULES
-    - CALL: CHECK_STATIC_MODULES_TNI
+    #- CALL: CHECK_STATIC_MODULES_TNI
     - ON_ERROR: CONTINUE
     - BUILD: [ pull, windows, silent ]
     - BUILD: [ pull, osx, silent ]
@@ -659,7 +824,7 @@ BUILD_DESKTOP:
 
 BUILD_DESKTOP_SRV:
     - CALL: CHECK_STATIC_MODULES
-    - CALL: CHECK_STATIC_MODULES_TNI
+    #- CALL: CHECK_STATIC_MODULES_TNI
     - ON_ERROR: CONTINUE
     - BUILD_SRV: [ pull, windows, silent, pull ]
     - BUILD_SRV: [ pull, osx, silent, pull ]
@@ -1054,3 +1219,24 @@ SYSTEM_START:
 UPDATE_RESTART:
     - SLEEP: [1, 30]
     - START_VM
+
+
+# -----------------------------
+#     UTILITY
+# -----------------------------
+
+#this works for "old style" disable_analysis
+DISABLE_ANALYSIS:
+    - VM_ALL
+    - ON_ERROR: SKIP
+    - CALL: INIT_DISPATCH
+    - CALL: VM_CLEAN_EVIDENCES
+
+
+CLEAN_SAMPLES:
+    - VM_ALL
+    - BUILD_CACHE_CLEAN: False
+
+SAVE_SAMPLES:
+    - VM_ALL
+    - BUILD_CACHE_CLEAN: True

