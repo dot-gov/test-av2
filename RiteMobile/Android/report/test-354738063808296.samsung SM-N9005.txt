@@ -1,0 +1,82 @@
+Installation
+	time: 2014-11-27 17:05:46.312252
+	installed: 
+	executed: True
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 
+Device
+	device: samsung SM-N9005
+	id: 354738063808296
+	release: 4.4.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 1
+	format_resist: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: False
+Installation
+	time: 2014-11-27 17:33:25.403892
+	installed: 
+	executed: True
+	instance_name: Mobile (1) samsung SM-N9005
+	info: 
+	uptime_first: up time: 00:27:38, idle time: 00:27:03, sleep time: 00:00:00
+
+	uptime_last: up time: 00:04:54, idle time: 00:05:20, sleep time: 00:00:00
+
+	error: 
+	exception: 
+Device
+	device: samsung SM-N9005
+	id: 354738063808296
+	release: 4.4.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: No
+	root_first: True
+	su: /system/bin/sh: su: not found
+
+	selinux: 1
+	format_resist: No
+Evidences
+	evidences_first: 
+		application: 3
+		call: 0
+		camera: 9
+		chat: 0
+		device: 2
+		position: 2
+
+	evidences_last: 
+		application: 8
+		call: 0
+		camera: 17
+		chat: 0
+		device: 3
+		mic: 1
+		position: 3
+
+Expected
+	call_supported: False
+	expected: ['android.talk']
+Uninstall
+	uninstall: False
+	running: False
+	files_remained: 
+	packages_remained: 

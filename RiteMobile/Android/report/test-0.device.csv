@@ -19,3 +19,7 @@ CommandsDevice instance has no attribute 'get_deviceid'
 CommandsDevice instance has no attribute 'set_time'
 super does not take keyword arguments
 super does not take keyword arguments
+[Errno 2] No such file or directory: 'and.zip'
+test_device() takes exactly 4 arguments (3 given)
+[Errno 2] No such file or directory: 'and.zip'
+[Errno 2] No such file or directory: 'and.zip'
