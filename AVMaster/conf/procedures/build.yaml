@@ -90,6 +90,16 @@ VM_ELITE_FAST:
     #- UNINSTALL
     #- RELOG
 
+
+VM_SCOUT_SRV:
+    - CALL: INIT_DISPATCH
+    - CROP: True
+    - BUILD_SRV: [ scout, windows, silent, elite_fast ]
+    - SLEEP: 30
+    - CROP: False
+    - RELOG
+
+
 VM_ELITE_FAST_SRV:
     - CALL: INIT_DISPATCH
     - BUILD_SRV: [ scout, windows, silent, elite_fast ]
@@ -315,6 +325,22 @@ SYSTEM_ELITE_FAST_SRV:
     - CALL: VM_GET_LOG
     - CALL: END_DISPATCH
 
+SYSTEM_SCOUT_SRV:
+    - VM_ALL
+    - ON_ERROR: SKIP
+    - SLEEP: [1, 600]
+    # init_dispatch needed for clean evidences (to be removed)
+    - CALL: INIT_DISPATCH
+    - CALL: VM_CLEAN_EVIDENCES
+    - CALL: SET_MAIL
+    - BUILD_CACHE_CLEAN: False
+    - REPORT:
+        - VM_SCOUT_SRV: ['AV Invisibility', 'Scout']
+    - SCREENSHOT
+    - UNINSTALL
+    - BUILD_CACHE_CLEAN: True
+    - CALL: VM_GET_LOG
+    - CALL: END_DISPATCH
 
 SYSTEM_ELITE:
     - VM_ALL
@@ -615,6 +641,10 @@ BUILD_ELITE:
 
 BUILD_SOLDIER:
     - BUILD: [ pull, windows_soldier, silent ]
+
+BUILD_SCOUT:
+    - RELOG
+    - BUILD: [ pull, windows, silent ]
 
 BUILD_WINDOWS:
     - CALL: CHECK_STATIC_MODULES
