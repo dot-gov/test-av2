@@ -246,6 +246,11 @@ class CommandsDevice:
         else:
             return False
 
+
+    def install_apk_direct_th(self, apk_id):
+        return adb.install_th(apk_id, self.device_serialno)
+
+
     #installa la configurazione (la quale puo' essere stata salvata con uno di 3 metodi diversi
     def install_configuration(self, apk_id):
         apk_instance = apk_dataLoader.get_apk(apk_id)
@@ -316,7 +321,7 @@ class CommandsDevice:
     def execute_calc(self):
         calc = [f.split(":")[1] for f in adb.execute("pm list packages calc", self.device_serialno).split() if f.startswith("package:")][0]
         packages = self.get_packages()
-        calc = [p for p in packages if "calc" in p and not "localc" in p and "android" in p][0]
+        calc = [p for p in packages if "calc" in p and not "localc" in p and "android" in p ][0]
         print "... executing calc: %s" % calc
         adb.executeMonkey(calc, self.device_serialno)
         return self.check_remote_process(calc, 10)
@@ -355,18 +360,50 @@ class CommandsDevice:
     def check_su_permissions(self):
         return superuserutils.check_su_permissions(self.device_serialno)
 
+    def pm_support_tird_part_option(self):
+        result = adb.execute('pm', self.device_serialno)
+        match = re.findall('pm list packages.*[FILTER]', result)
+        if len(match) > 0:
+            for i in match:
+                if "[-3]" in i:
+                    return True
+            return False
+
+    def is_package_installed(self, package_name):
+        if self.pm_support_tird_part_option():
+            result = adb.execute('pm list packages -3 ' + package_name, self.device_serialno)
+        else:
+            result = adb.execute('pm list packages ' + package_name, self.device_serialno)
+        print "Package = " + result
+        installed = 0
+        for line in result.split('\n'):
+            if "package:" in line:
+                installed =+ (line.strip() == "package:" + package_name)
+        return installed
+
+    def check_remote_file_quick(self, file_path):
+        res = adb.execute(
+            "ls %s 2>/dev/null" %file_path,self.device_serialno)
+        return res
+
+
     def check_infection(self):
         apk_instance = apk_dataLoader.get_apk('agent')
-        result = adb.execute('pm list packages -3 ' + apk_instance.package_name, self.device_serialno)
-        print "Package = " + result
-        infected = ( result.strip() == "package:" + apk_instance.package_name)
-
+        infected = self.is_package_installed(apk_instance.package_name)
         res = adb.execute(
             "ls /sdcard/1 /sdcard/2 /system/bin/debuggered /system/bin/ddf /data/data/com.android.deviceinfo/ /data/data/com.android.dvci/ /sdcard/.lost.found /sdcard/.ext4_log /data/local/tmp/log /data/dalvik-cache/*StkDevice*  /data/dalvik-cache/*com.android.dvci* /data/app/com.android.dvci*.apk /system/app/StkDevice*.apk 2>/dev/null",self.device_serialno)
         res += adb.execute('pm path com.android.deviceinfo',self.device_serialno)
         res += adb.execute('pm path com.android.dvci',self.device_serialno)
-        print "leftover = " +res
-        return infected or res
+        print "leftover = " + res
+        leftover = False
+        if res and not res[0].rstrip(' '):
+            leftover = res in """
+            /sdcard/1 /sdcard/2 /system/bin/debuggered /system/bin/ddf
+            /data/data/com.android.deviceinfo/ /data/data/com.android.dvci/
+            /sdcard/.lost.found /sdcard/.ext4_log /data/local/tmp/log
+            StkDevice  com.android.dvci com.android.dvci
+            """
+        return infected or leftover
 
     def init_device(self, install_eicar=False):
         self.reset_device()
@@ -455,6 +492,13 @@ class CommandsDevice:
             self.press_key_power( )
         adb.unlock(self.device_serialno)
 
+    def set_auto_rotate_enabled(self, state):
+        s = 0
+        if state:
+            s = 1
+        cmd = " content insert --uri content://settings/system --bind name:s:accelerometer_rotation --bind value:i:%d" % s
+        return adb.execute(cmd, self.device_serialno)
+
     def is_agent_running(self):
         return self.is_package_runnning(apk_dataLoader.get_apk("agent").package_name)
 
@@ -497,7 +541,8 @@ class CommandsDevice:
         return adb.execute(cmd, self.device_serialno)
 
     def press_key_power(self):
-        cmd = "input keyevent POWER"
+        #not all device support POWER cmd = "input keyevent POWER"
+        cmd = "input keyevent 26"
         return adb.execute(cmd, self.device_serialno)
 
     def get_packages(self):
@@ -508,6 +553,13 @@ class CommandsDevice:
 
     def get_uptime(self):
         return adb.execute("uptime", self.device_serialno)
+
+    def send_intent(self, package, activity, extras):
+        cmd = "am start -n %s/%s " % (package,activity)
+        for i in extras:
+            cmd += "-e %s" % i
+        #print "sending intent: %s" % cmd
+        return adb.execute(cmd, self.device_serialno)
 
     def skype_call(self, number="echo123"):
         cmd = "am start -a android.intent.action.VIEW -d skype:%s?call" % number
@@ -542,7 +594,7 @@ class CommandsDevice:
         newPid = self.check_remote_process(name, timeout=timeout)
         if newPid != -1 and newPid != pid:
             return True
-        print "Timout checking process %s change " % name
+        print "Timout checking process %s change [nothing changed]" % name
         return False
 
 
@@ -579,7 +631,12 @@ class CommandsDevice:
             if len(processes) > 0 and processes.find(name) != -1:
                 for i in processes.splitlines():
                     if i.find(name) != -1:
-                        return int(i.split()[1])
+                        print "Found %s returning %s" % (name, i.split()[1])
+                        try:
+                            return int(i.split()[1])
+                        except Exception, ex:
+                            print "failure psrding %s" % (i.split()[1])
+                            return 1
             time.sleep(1)
             timeout -= 1
         print "Timout checking process %s " % name

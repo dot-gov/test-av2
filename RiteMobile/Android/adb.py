@@ -10,8 +10,10 @@ import os
 from time import sleep
 import zipfile
 import time
+import ntpath
 import datetime
 
+from RiteMobile.Android.utils import myprocess
 from multiprocessing import Process
 
 # useful adb command which can be implemented
@@ -110,14 +112,16 @@ def open_url(url, device=None):
 def is_screen_off(device=None):
     cmd = "dumpsys power "
     cmd = execute(cmd, device)
+    if "SCREEN_ON_BIT" in cmd.upper():
+        return False
     match = re.findall('mScreenOn+=\S+', cmd)
     if len(match) > 0:
         return match[0].lower().find("false") != -1
-    return False
+    return True
 
 
 def get_screen_res(device=None):
-    cmd = "dumpsys window policy "
+    cmd = "dumpsys window "
     cmd = execute(cmd, device)
     x = y = 0
     match = re.findall('.*Screen.*', cmd)
@@ -133,6 +137,21 @@ def get_screen_res(device=None):
     return x, y
 
 
+def get_android_release(device=None):
+    release_v = get_prop("ro.build.version.release", device)
+    numbering = release_v.split(".")
+    if len(numbering) < 3:
+        return -1, -1, -1
+    return numbering[0], numbering[1], numbering[2]
+
+
+def get_android_device_model(device=None):
+    return get_prop("ro.product.model", device)
+
+
+def get_android_device_manufacturer(device=None):
+    return get_prop("ro.product.manufacturer", device)
+
 def wait_and_click(x=750, y=130):
     # (x, y, w, h) = dev_target.getRestrictedScreen()
     # width = int(w)
@@ -144,23 +163,85 @@ def wait_and_click(x=750, y=130):
     time.sleep(6)
 
 
+def isVersion(AvMaj, AvMin, AvPatch, device=None):
+    """ Returns if the passed device has a version that is equal,
+    over or above the one requested.
+    @AvMaj it the major number required
+    @AvMin it the minor number required, -1 in case of don't care
+    @AvPatch it the patch number required -1 in case of don't care
+    @return respectively 0,1,-1 or -2 in case of error
+    """
+    (AvM, Avm, Avp) = get_android_release(device)
+    if AvM < 0 or AvMaj < 1:
+        return -2
+    try:
+        AvMaj = int(AvMaj)
+        AvMin = int(AvMin)
+        AvPatch = int(AvPatch)
+        AvM = int(AvMaj)
+        Avm = int(Avm)
+        Avp = int(Avp)
+    except Exception, ex:
+        return -2
+    if AvMaj == AvM and (AvMin == -1 or AvMin == Avm) and (AvPatch == -1 or AvPatch == Avp):
+        return 0
+    if AvMaj <= AvM:
+        if AvMin == -1 and AvMaj < AvM:
+            return 1
+        if AvMin < Avm:
+            return 1
+        if AvPatch == -1 and AvMin <= Avm:
+            return 0
+        if AvPatch < Avp and AvMin == Avm:
+            return 1
+    if AvMaj >= AvM:
+        if AvMin == -1 and AvMaj > AvM:
+            return -1
+        if AvMin > Avm:
+            return -1
+        if AvPatch == -1 and AvMin >= Avm:
+            return 0
+        if AvPatch > Avp and AvMin == Avm:
+            return -1
+
+
+
 def unlock(device=None):
     cmd = "input keyevent 82"
     execute(cmd, device)
     x = y = 0
     (x, y) = get_screen_res(device)
-    if x > 0 and y > 0:
-        #horizontal
-        cmd = "input swipe %d %d %d %d \n" % (int(x)/10, int(y)/2, int(x)-int(x)/10, int(y)/2)
+    versionres = isVersion(4,0,-1,device)
+    model = get_android_device_model(device).lower()
+    manufacturer = get_android_device_manufacturer(device).lower()
+    if versionres == 0 and x > 0 and y > 0 and "nexus" in model:
+        #try horizontal Xcenter Y1/5 to rightX Y1/5
+        cmd = "input swipe %d %d %d %d \n" % (int(x)/2, int(y)/(5.0), int(x)-int(x)/10, int(y)/(5.0))
         execute(cmd, device)
-        # vertical
-        cmd = "input swipe %d %d %d %d \n" % (int(x)/2, int(y)-int(y)/8, int(x)/2, int(y)-int(y)/3)
+    elif "one touch 4030" in model and x > 0 and y > 0:
+        #try vertical Xcenter Y1/2 to down Xcenter Y1/9
+        cmd = "input swipe %d %d %d %d \n" % (int(x)/2, int(y)-int(y)/(2.0), int(x)/2, int(y)-int(y)/(9.0))
+        execute(cmd, device)
+    elif "xiaomi" in manufacturer and x > 0 and y > 0:
+        #try vertical Xcenter Y1/5 to down Xcenter Y1/9
+        cmd = "input swipe %d %d %d %d \n" % (int(x)/2, int(y)-int(y)/(5.0), int(x)/2, int(y)-int(y)/(9.0))
         execute(cmd, device)
     else:
-        cmd = "input swipe 30 900 900 900"
-        execute(cmd, device)
-        cmd = "input swipe 500 800 500 500"
-        execute(cmd, device)
+        if x > 0 and y > 0:
+            #horizontal
+            cmd = "input swipe %d %d %d %d \n" % (int(x)/10, int(y)/2, int(x)-int(x)/10, int(y)/2)
+            execute(cmd, device)
+            # vertical up
+            cmd = "input swipe %d %d %d %d \n" % (int(x)/2, int(y)-int(y)/8, int(x)/2, int(y)-int(y)/3)
+            execute(cmd, device)
+            # vertical down
+            cmd = "input swipe %d %d %d %d \n" % (int(x)/2, int(y)-int(y)/3, int(x)/2, int(y)-int(y)/8)
+            execute(cmd, device)
+        else:
+            cmd = "input swipe 30 900 900 900"
+            execute(cmd, device)
+            cmd = "input swipe 500 800 500 500"
+            execute(cmd, device)
 
     sleep(1)
 
@@ -209,6 +290,28 @@ def get_packages(device=None):
 def get_prop(property, device):
     cmd = "getprop %s" % property
     return execute(cmd, device).strip()
+
+
+def install_th(apk, device=None):
+    """ Install melted application on phone
+    @param package full path
+    @return True/False
+    """
+    #if os.path.exists(apk) == False:
+    #	return False
+
+    if device:
+        subprocess.call([adb_path,
+                                "-s", device,
+                                "push", apk, "/data/local/tmp/"])
+        proc = myprocess.GenericThread(adb_path + " -s " + device + " shell \"pm install -r " + "/data/local/tmp/"+ntpath.basename(apk)+ "\"")
+        #,
+        #stdout=subprocess.PIPE)
+    else:
+        subprocess.call([adb_path,
+                                "push", apk, "/data/local/tmp/"])
+        proc = myprocess.GenericThread(adb_path + " shell \"pm install -r " + "/data/local/tmp/"+ntpath.basename(apk) + "\"")
+    return proc
 
 
 def install(apk, device=None):
@@ -360,14 +463,6 @@ def executeSU(cmd, root=False, device=None):
 
 def kill_app(app, device=None):
     cmd = "am force-stop %s" % app
-    return execute(cmd, device)
-
-
-def set_auto_rotate_enabled(state, device=None):
-    s = 0
-    if state:
-        s = 1
-    cmd = " content insert --uri content://settings/system --bind name:s:accelerometer_rotation --bind value:i:%d" % s
     return execute(cmd, device)
 
 
