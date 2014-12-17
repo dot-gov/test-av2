@@ -1,6 +1,6 @@
 
 soldierlist: [adaware,iobit32,bitdef,bitdef15,comodo,fsecure,gdata,drweb,360cn5,kis32,avg,avg32,norman,avira,avira15]
-blacklist: [emsisoft,sophos,kis32]
+blacklist: [emsisoft,sophos,kis32,cmcav]
 
 crop_whitelist: [kis,kis32]
 
