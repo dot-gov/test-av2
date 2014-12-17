@@ -122,7 +122,7 @@
                     "wifi": true,
                     "mindelay": 0,
                     "bandwidth": 500000,
-                    "host": "192.168.100.198",
+                    "host": "$(HOSTNAME)",
                     "stop": false,
                     "maxdelay": 0,
                     "cell": false
