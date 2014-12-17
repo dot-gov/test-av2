@@ -561,3 +561,7 @@ TEST_INSTALL_AG:
     - CALL: VM_CLEAN_EVIDENCES
     - BUILD_SRV: [ scout, windows, silent, scout ]
     - UNINSTALL
+
+
+TEST_CHECK_INFECTION:
+    - CHECK_INFECTION
