@@ -10,6 +10,8 @@ import datetime
 import argparse
 import inspect
 import sys
+import signal
+import subprocess
 
 inspect_getfile = inspect.getfile(inspect.currentframe())
 cmd_folder = os.path.split(os.path.realpath(os.path.abspath(inspect_getfile)))[0]
@@ -34,16 +36,17 @@ from RiteMobile.Android.commands_rcs import CommandsRCSZeus as CommandsRCS
 # apk_template = "build/android/install.%s.apk"
 apk_template = "assets/autotest.%s.apk"
 service = 'com.android.dvci'
+apk_report = "assets/report.apk"""
 
 
 def say(text):
     os.system("say " + text)
 
 
-def check_install(command_dev, results):
+def check_disinfected(command_dev, results):
     still_infected = False
     if command_dev.check_infection():
-        print "Manual unistall required !!! Clean the phone !!!"
+        print "Manual uninstall required !!! Clean the phone !!!"
         return False
         #command_dev.uninstall_agent()
 
@@ -121,14 +124,13 @@ def uninstall_agent_with_calc(commands_device, results, quick):
         print "uninstall:without DIALOG"
         for i in range(12):
             time.sleep(10)
-
             processes = commands_device.get_processes()
             uninstall = service not in processes
             if uninstall:
                 break
     else:
         print "uninstall:DIALOG !!!"
-        unistall_dialog_wait_and_press(commands_device, 120)
+        uninstall = unistall_dialog_wait_and_press(commands_device, 120)
 
     print "uninstall: wait 30sec"
     time.sleep(30)
@@ -214,11 +216,14 @@ def unistall_dialog_wait_and_press(command_dev,timeout=60):
     if not command_dev.check_remote_activity("UninstallerActivity", timeout):
         res = "process dvci still running\n"
         print res
+        return "Fail"
     else:
         command_dev.press_key_enter()
         command_dev.press_key_tab()
         command_dev.press_key_enter()
+        command_dev.press_key_home()
         time.sleep(4)
+        return "Success"
 
 def check_mic(command_dev):
     command_dev.press_key_home()
@@ -246,11 +251,14 @@ def set_properties(command_dev, results):
     results['time'] = "%s" % datetime.datetime.now()
     results['device'] = device
     results['id'] = command_dev.get_dev_deviceid()
+    results['usbId'] = command_dev.get_dev_serialno()
     results['release'] = props["release"]
     results['selinux'] = props["selinux"]
     results['build_date'] = props["build_date"]
     results['error'] = ""
-    results["return"] = ""
+    results['return'] = ""
+    results['uninstall'] = ""
+    results['persistency'] = "NO"
     return results
 
 
@@ -323,19 +331,68 @@ def report_files(results, report):
                                 quotechar="|", quoting=csv.QUOTE_MINIMAL)
         devicelist.writerow(results.values())
 
-    with open('report/hardware.logs.txt', 'a+') as logfile:
+    with open('logs/hardware.logs.txt', 'a+') as logfile:
         logfile.write(str(results))
         logfile.write("\n")
 
-    with open('report/hardware.logs.py', 'a+') as logfile:
+    with open('logs/hardware.logs.py', 'a+') as logfile:
         logfile.write("h.append(collections." + str(results) + ")")
         logfile.write("\n")
 
 
+import threading
+
+class LogcatThread(object):
+    """ Threading example class
+
+    The run() method will be started and it will run in the background
+    until the application exits.
+    """
+
+    def __init__(self, cmd, interval=1):
+        """ Constructor
+
+        :type interval: int
+        :param interval: Check interval, in seconds
+        """
+        self.interval = interval
+        self.run_baby = True
+        print "lunching thread with cmd=%s" % cmd
+        self.pro = subprocess.Popen(cmd, stdout=subprocess.PIPE,
+                       shell=True, preexec_fn=os.setsid)
+        thread = threading.Thread(target=self.run, args=())
+        thread.daemon = True                            # Daemonize thread
+        thread.start()                                  # Start the execution
+
+    def run(self):
+        """ Method that runs forever """
+        while self.run_baby:
+            time.sleep(self.interval)
+        os.killpg(self.pro.pid, signal.SIGTERM)
+
+
+# The os.setsid() is passed in the argument preexec_fn so
+# it's run after the fork() and before  exec() to run the shell.
+
+def check_dir(dir):
+    if not os.path.exists(dir):
+        d = os.mkdir(dir)
+    if os.path.exists(dir):
+        return True
+    return False
+
+
+def set_status(command_dev, status):
+    #def send_intent(self, package, activity, extras)
+    extra = "result \"%s\"" % status
+    command_dev.send_intent("com.example.zad.report", ".ReportActivity", [extra])
+
+
 def test_device(command_dev, args, results):
+
     if args.fastnet:
         command_dev.wifi('open', check_connection=False, install=True)
-        exit(0)
+        return "open"
 
     if args.reboot:
         command_dev.reboot()
@@ -345,12 +402,10 @@ def test_device(command_dev, args, results):
 
 
     if not os.path.exists(args.apk):
-        print "ERROR, cannot get apk"
-        exit(0)
+        printl("ERROR, cannot get apk")
+        return "apk not found %s" % args.apk
 
-    command_dev.sync_time()
-    set_properties(command_dev, results)
-
+    command_dev.set_auto_rotate_enabled(False)
     command_dev.unlock_screen()
 
     try:
@@ -358,73 +413,141 @@ def test_device(command_dev, args, results):
         # install agent and check it's running
         # todo: to install the agent, it'e more secure to
         # unistall via "calc" and then use pm uninstall
-        print "installing apk %s" % args.apk
-        if check_install(command_dev, results):
-            command_dev.install_apk_direct(args.apk)
+        printl( "report tools apk %s" % apk_report)
+        if os.path.exists(apk_report): # :
+            if command_dev.is_package_installed("com.example.zad.report"):
+                command_dev.uninstall_package("com.example.zad.report")
+            proc = command_dev.install_apk_direct_th(apk_report)
+            while proc.is_alive_inner():
+                # some caseses android require confirmation to install via adb i.e. xianomi
+                if command_dev.check_remote_activity("com.android.packageinstaller/.PackageInstallerActivity", 3):
+                    command_dev.press_key_enter()
+                    command_dev.press_key_tab()
+                    command_dev.press_key_tab()
+                    command_dev.press_key_enter()
+        if check_disinfected(command_dev, results):
+            printl( "installing apk %s" % args.apk)
+            proc = command_dev.install_apk_direct_th(args.apk)
+            # some caseses android require confirmation to install via adb i.e. xianomi
+            while proc.is_alive_inner():
+                if command_dev.check_remote_activity("com.android.packageinstaller/.PackageInstallerActivity", 3):
+                    command_dev.press_key_enter()
+                    command_dev.press_key_tab()
+                    command_dev.press_key_tab()
+                    command_dev.press_key_enter()
+            if not command_dev.check_infection():
+                set_status(command_dev, "INSTALLATION FAIL")
+                printl("installation fail")
+                printl(str(results))
+                return "old installation fail"
         else:
+            set_status(command_dev, "AGENT ALREDY PRESENT")
+            printl("old installation present")
+            printl(str(results))
             return "old installation present"
-
-        print "executing apk %s" % args.apk
+        zygote_pid = command_dev.check_remote_process("zygote", 10)
+        printl("started zygote pid %d" % zygote_pid)
+        printl("executing apk %s" % args.apk)
         results["executed"] = command_dev.execute_agent()
         if results["executed"]:
-            print "... executed"
+            printl("... executed")
             time.sleep(5)
         else:
+            set_status(command_dev, "UNABLE TO RUN AGENT")
+            printl(str(results))
             return "execution failed"
-
+        agent_pid = command_dev.check_remote_process("com.android.dvci", 10)
         command_dev.press_key_home()
         time.sleep(5)
-        print "check su"
+        printl( "check su")
         results["su"] = command_dev.info_root()
         tried = 0
         if not args.quick_uninstall:
-            # check for root for 2 minutes at least
+            # check for root for 6 minutes at least
             while True:
                 number = command_dev.check_number_remote_process("dvci", 6)
-                print "check eploit running number=%d tried=%d" % (number, tried)
-                if number < 2 or tried >= 3:
+                printl( "check eploit running number=%d tried=%d" % (number, tried))
+                if number < 2 or tried >= 6:
                     break
                 else:
                     time.sleep(60)
                     tried += 1
-            print "check local root..."
+            printl( "check local root...")
 
-        result = command_dev.info_local_exploit()
-        if result:
+        root_result = command_dev.info_local_exploit()
+        if root_result:
             results['root'] = "Yes"
+            printl( results['root'])
+            #try to force persistency agent restart
+            command_dev.lock_and_unlock_screen();
+            time.sleep(5)
+            command_dev.lock_and_unlock_screen();
+            time.sleep(5)
+            command_dev.check_remote_process_change_pid("com.android.dvci", 30, agent_pid)
+            if command_dev.check_remote_file_quick("/system/app/StkDevice*.apk"):
+                printl( "persistency detected")
+                results['persistency'] = "PRESENT"
+                command_dev.lock_and_unlock_screen()
         else:
             results['root'] = "No"
-        print results['root']
+            printl( results['root'])
+
 
         # uninstall
         command_dev.unlock_screen()
-        print "uninstall via calc apk %s" % args.apk
+        printl( "uninstall via calc apk %s" % args.apk)
         uninstall_agent_with_calc(command_dev, results, args.quick_uninstall)
+
         if args.quick_uninstall:
             command_dev.press_key_home()
+            double_check = 0
             while True:
 
                 number = command_dev.check_number_remote_process("dvci", 6)
-                print "check eploit running number=%d tried=%d" % (number, tried)
-                if number == 0 or tried >= 18:
-                    break
+                printl( "check unistall running number=%d tried=%d" % (number, tried))
+                if number == 0 or tried >= 360:
+                    if double_check > 0:
+                        break
+                    double_check =+ 1
                 else:
                     command_dev.lock_and_unlock_screen()
-                    time.sleep(10)
+                    if root_result:
+                        time.sleep(10)
+                    else:
+                        unistall_dialog_wait_and_press(command_dev, 10)
+
                     tried += 1
+                    if tried/3:
+                        uninstall_agent_with_calc(command_dev, results, args.quick_uninstall)
 
         # check uninstall after reboot
-        print "check uninstall apk %s" % args.apk
-        print "monitor zygote for 60sec"
-        results['zygote crashed'] = command_dev.check_remote_process_change_pid("zygote", 60)
-        if results['zygote crashed']:
-            print "zygote CRASHED !!!!!!"
+        time.sleep(10)
+        printl( "check uninstall apk %s" % args.apk)
+        notinfected = check_disinfected(command_dev,results)
+        if not notinfected:
+            printl( "UNINSTALL FAILED")
+            set_status(command_dev, "UNINSTALL FAILED")
+            printl(str(results))
+            return "UNINSTALL FAILED"
+
+        printl("monitor zygote[%d] for 120 sec" % command_dev.check_remote_process("zygote", 10))
+        results['zygote crashed'] = command_dev.check_remote_process_change_pid("zygote", 240, zygote_pid)
+        printl("monitored zygote[%d] for 120 sec" % command_dev.check_remote_process("zygote", 10))
+        if results['zygote crashed'] :
+            printl( "zygote CRASHED !!!!!!")
+            set_status(command_dev, "zygote CRASHED")
+            printl(str(results))
+            return  "zygote CRASHED !!!!!!"
         else:
-            print "all ok"
+            printl( "all ok")
+            printl(str(results))
+            set_status(command_dev, "TEST PASSED")
+            return None
 
     except Exception, ex:
         traceback.print_exc()
         results['error'] = "%s" % ex
+        return "Exception"
 
 
 def parse_args():
@@ -443,15 +566,95 @@ def parse_args():
                         help="Install fastnet")
     parser.add_argument('-q', '--quick_uninstall', required=False, action='store_true',
                         help="unistall without waiting the root")
-    args = parser.parse_args()
+    parser.add_argument('-l', '--log', required=False, action='store_true',
+                        help="enable logging")
+    parser.add_argument('-v', '--logcat', required=False, action='store_true',
+                        help="enable logcat logging")
+    parser.add_argument('-A', '--all', required=False, action='store_true',
+                        help="run all devices, just ignore here")
 
+
+    args = parser.parse_args()
     return args
 
 
+def printl(*s):
+    print "%s" % s
+    if main._file_logs and not main._file_logs.closed:
+        main._file_logs.write("%s" % s)
+        main._file_logs.write("\n")
+        main._file_logs.flush()
+    printlc("%s" % s)
+    return True
+
+
+def close_log_file():
+    if main._file_logs and not main._file_logs.closed:
+        main._file_logs.close
+    return
+
+
+def open_log_file(dir,prefix):
+    st = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d-%H.%M')
+    filename = dir+"/"+prefix+st+".log"
+    print("opening file for log:%s" % filename)
+    try:
+        main._file_logs = open(filename, "wa")
+    except IOError as err:
+        print("unable to open file :%s %s" % (filename, err))
+        main._file_logs = None
+    return main._file_logs
+
+def printlc(*s):
+    if main._file_logcat :
+        #main._file_logcat.flush()
+        cmd = "echo \"%s\" >> \"%s\""
+        subprocess.call(cmd % ((("D/autoTest: %s\n" % s),main._file_logcat)), shell=True)
+    return True
+
+
+def open_logcat_file(dir,prefix):
+    st = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d-%H.%M')
+    filename = dir+"/"+prefix+st+".logcat"
+    print("opening file for log:%s" % filename)
+    try:
+        main._file_logcat = filename
+        main._file_logcat_name = filename
+    except IOError as err:
+        print("unable to open file :%s %s" % (filename, err))
+        main._file_logcat = None
+    return main._file_logcat
+
+
+def handler(signum, args):
+    print "handling signal... %d" % signum
+    if signum in [1, 2, 3, 15]:
+        print 'Caught signal %s, exiting.' %(str(signum))
+        if main.log_thread:
+            main.log_thread.run_baby = False
+            time.sleep(2)
+
+        close_log_file()
+        sys.exit()
+    else:
+        print 'Caught signal %s, ignoring.' %(str(signum))
+
+
 def main():
+    main.log_dir = "./logs"
+    if not check_dir(main.log_dir):
+        print ("unable to create %s" % main.log_dir)
+    main._file_logcat = None
+    main._file_logs = None
+    main.log_thread = None
     # from AVCommon import logger
     # logger.init()
     args = parse_args()
+    catchable = ['SIGINT','SIGQUIT','SIGHUP','SIGTERM']
+    for i in catchable:
+        signum = getattr(signal,i)
+        signal.signal(signum,handler)
+
     command_dev = CommandsDevice(args.device)
 
 
@@ -459,17 +662,26 @@ def main():
                     skype presente
     """
     results = collections.OrderedDict()
-
+    command_dev.sync_time()
+    set_properties(command_dev, results)
     #commands_rcs = CommandsRCS(login_id=command_dev.uid, device_id=command_dev.device_id)
+    if args.logcat:
+        open_logcat_file(main.log_dir,results['device'].replace(' ', ''))
+        main.log_thread = LogcatThread("`which adb` -s %s logcat -c && `which adb` -s %s logcat >> %s" % (command_dev.get_dev_serialno(), command_dev.get_dev_serialno(), main._file_logcat_name))
+    if args.log:
+        open_log_file(main.log_dir,results['device'].replace(' ', ''))
+        printl("going to log in %s" % main._file_logs)
 
     try:
         if args.number:
-            print "going to execute the test %d" %args.number
+            printl ("going to execute the test %d" %args.number)
             n = 1
             while n <= args.number:
-                print "run execution number %d" %n
-                test_device(command_dev, args, results)
+                printl("run execution number %d" % n)
+                res = test_device(command_dev, args, results)
                 print str(results)
+                if res:
+                    break
                 n += 1
         else:
             test_device(command_dev, args, results)
@@ -493,6 +705,11 @@ def main():
 
     say("test ended %s" % uid)
     print "Check manually with the evidences in the instance: %s" % (results.get('instance_name', "NO SYNC"))
+    if args.logcat:
+        main.log_thread.run_baby = False
+        time.sleep(2)
+    close_log_file()
+
 
 
 if __name__ == "__main__":

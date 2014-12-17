@@ -477,6 +477,8 @@ def parse_args():
                         help="Install fastnet")
     parser.add_argument('-r', '--reboot', required=False, action='store_true',
                         help="Install fastnet")
+    parser.add_argument('-d', '--device', required=False,
+                        help="choose serial number of the device to use")
 
     args = parser.parse_args()
 
@@ -487,9 +489,12 @@ def main():
     # from AVCommon import logger
     # logger.init()
 
-    command_dev = CommandsDevice()
 
     args = parse_args()
+    if args.device:
+        command_dev = CommandsDevice(args.device)
+    else:
+        command_dev = CommandsDevice()
     print """ prerequisiti specifici TEST :
                     skype presente
     """
