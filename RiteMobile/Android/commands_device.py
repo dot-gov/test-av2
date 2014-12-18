@@ -492,6 +492,13 @@ class CommandsDevice:
             self.press_key_power( )
         adb.unlock(self.device_serialno)
 
+    def unlock(self):
+        adb.unlock(self.device_serialno)
+
+
+    def isVersion(self,M,m,p):
+        adb.isVersion(M, m, p, self.device_serialno)
+
     def set_auto_rotate_enabled(self, state):
         s = 0
         if state:
