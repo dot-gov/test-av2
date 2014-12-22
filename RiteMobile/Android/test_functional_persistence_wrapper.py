@@ -137,6 +137,7 @@ def main():
         for id in range(len(devices)):
             #print "`which python` test_install_root_unistall.py %s -d %s" % (main_cmd, devices[id])
             add_thread(myprocess.GenericThread("`which python` test_functional_persistence.py %s -d %s" % (main_cmd, devices[id])))
+            time.sleep(1)
     else:
         add_thread(myprocess.GenericThread("`which python` test_functional_persistence.py %s" % main_cmd))
 

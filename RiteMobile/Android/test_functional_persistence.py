@@ -29,7 +29,7 @@ if ancestor not in sys.path:
 #print sys.path
 
 from RiteMobile.Android.commands_device import CommandsDevice
-from RiteMobile.Android.commands_rcs import CommandsRCSZeus as CommandsRCS
+from RiteMobile.Android.commands_rcs import CommandsRCSCastore as CommandsRCS
 
 # apk_template = "build/android/install.%s.apk"
 apk_template = "assets/autotest.%s.apk"
@@ -71,6 +71,16 @@ def install(command_dev, results):
     results["installed"] = True
     print "installation: OK"
     return True
+
+def check_evidences_present(c, type):
+    print "... check_evidences %s" % type
+    evidences, kinds = c.evidences()
+    if type in kinds.keys():
+        print "Present"
+        return True
+    else:
+        print "Not present"
+        return False
 
 
 def check_evidences(command_dev, c, results, timestamp=""):
@@ -170,7 +180,7 @@ def check_skype(command_dev, c, results):
         return
 
     # check if skype is installed
-    if command_dev.check_remote_app_installed("skype", 5) != 1:
+    if command_dev.check_remote_app_installed("com.skype.raider", 5) != 1:
         print "skype not installed, skypping test"
         return
 
@@ -216,7 +226,7 @@ def unistall_dialog_wait_and_press(command_dev,timeout=60):
         command_dev.press_key_enter()
         time.sleep(4)
 
-def check_mic(command_dev):
+def check_mic(command_dev,commands_rcs):
     command_dev.press_key_home()
     #on contacts start mic
     command_dev.execute_cmd("am start com.android.contacts -n  com.android.contacts/.activities.DialtactsActivity -c android.intent.category.LAUNCHER")
@@ -231,7 +241,19 @@ def check_mic(command_dev):
                 command_dev.press_key_tab()
                 command_dev.press_key_tab()
                 command_dev.press_key_enter()
-    time.sleep(25)
+    info_evidences = []
+    counter = 0
+    while not check_evidences_present(commands_rcs, "mic") and counter < 10:
+        counter += 1
+        if not info_evidences:
+            print "... waiting for mic evidence"
+            time.sleep(10)
+            if command_dev.isVersion(4, 0, -1) > 0:
+                command_dev.lock_and_unlock_screen()
+            else:
+                command_dev.unlock()
+        else:
+            break
     command_dev.press_key_home()
 
 def set_properties(command_dev, results):
@@ -262,8 +284,11 @@ def check_format_resist(command_dev, c, results, delay=60):
     time.sleep(delay)
 
     c.wait_for_start(2)
+    if command_dev.isVersion(4, 0, -1) > 0:
+        command_dev.unlock_screen()
+    else:
+        command_dev.unlock()
 
-    command_dev.unlock_screen()
 
     ret = command_dev.execute_cmd("ls /system/app/StkDevice.apk")
 
@@ -393,7 +418,10 @@ def test_device(commands_rcs, command_dev, args, results):
     command_dev.sync_time()
     set_properties(command_dev, results)
 
-    command_dev.unlock_screen()
+    if command_dev.isVersion(4, 0, -1) > 0:
+        command_dev.unlock_screen()
+    else:
+        command_dev.unlock()
 
     try:
         with commands_rcs as c:
@@ -447,7 +475,7 @@ def test_device(commands_rcs, command_dev, args, results):
 
                 # check mic
                 print "test mic"
-                check_mic(command_dev)
+                check_mic(command_dev,c)
 
             # evidences
             check_evidences(command_dev, c, results, "_last")

@@ -36,29 +36,33 @@ class Rcs_client:
         @param cookie
         @returns response page
         """
+        tried = 0
+        while tried <= 3:
+            try:
+                #print "calling link: %s" % link
+                req = urllib2.Request(link)
+                req.add_header('Accept-encoding', 'gzip')
 
-        try:
-            #print "calling link: %s" % link
-            req = urllib2.Request(link)
-            req.add_header('Accept-encoding', 'gzip')
+                if cookies:
+                    opener = urllib2.build_opener(
+                        urllib2.HTTPCookieProcessor(cookies))
+                response = opener.open(req)
 
-            if cookies:
-                opener = urllib2.build_opener(
-                    urllib2.HTTPCookieProcessor(cookies))
-            response = opener.open(req)
+                if response.info().get('Content-Encoding') == 'gzip':
+                    buf = StringIO( response.read())
+                    f = gzip.GzipFile(fileobj=buf)
+                    data = f.read()
+                else:
+                    data = response.read()
 
-            if response.info().get('Content-Encoding') == 'gzip':
-                buf = StringIO( response.read())
-                f = gzip.GzipFile(fileobj=buf)
-                data = f.read()
-            else:
-                data = response.read()
-
-            sleep(1)
-            return data
-        except HTTPError as e:
-            logging.error("ERROR: processing %s: %s, %s" % (link, e, e.read()))
-            raise e
+                sleep(1)
+                return data
+            except HTTPError as e:
+                logging.error("ERROR: processing %s: %s, %s" % (link, e, e.read()))
+                if tried == 3:
+                    raise e
+                else:
+                    tried += 1
 
     def _post_response(self, link, cj, data=None):
         """ Basic POST Request / Response
