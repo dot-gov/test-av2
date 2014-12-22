@@ -73,7 +73,22 @@ SYSTEM_STOP:
     - VM_ALL
     - STOP_VM: 60
 
-# ------------  #
+
+#######################################################################
+#######################################################################
+#######################################################################
+#            _______
+#  |\     /|(       )
+#  | )   ( || () () |
+#  | |   | || || || |
+#  ( (   ) )| |(_)| |
+#   \ \_/ / | |   | |
+#    \   /  | )   ( |
+#     \_/   |/     \|
+#
+#######################################################################
+#######################################################################
+#######################################################################
 
 
 #### ALL VM ARE NOT DIRECTLY CALLABLE ####
@@ -93,7 +108,9 @@ VM_ELITE_FAST:
     #don't skip because I need to uninstall
     #- ON_ERROR: SKIP
     ##CHECKING IF UNINSTALLATION SUCCEDEED
-    - SLEEP: 90
+    #- RELOG
+    #- SLEEP: 300
+    #- EXECUTE_VM: [ /avtest/avagent/assets/keyinject.exe, [], 40, True, True ]
     - CHECK_INFECTION
     #to be sure, we uninstall
     - UNINSTALL
@@ -113,7 +130,9 @@ VM_ELITE_FAST_SRV:
     #don't skip because I need to uninstall
     #- ON_ERROR: SKIP
     ##CHECKING IF UNINSTALLATION SUCCEDEED
-    - SLEEP: 90
+    #- RELOG
+    #- SLEEP: 300
+    #- EXECUTE_VM: [ /avtest/avagent/assets/keyinject.exe, [], 40, True, True ]
     - CHECK_INFECTION
     #to be sure, we uninstall
     - UNINSTALL
@@ -126,7 +145,9 @@ VM_ELITE_FAST_DEMO_SRV:
     #- SLEEP: 60
     - BUILD_SRV: [ scout, windows_elite_demo, silent, elite_fast_demo ]
     - SCREENSHOT
+    #this is always an elite and so it should sync in a minute
     - SLEEP: 90
+    - EXECUTE_VM: [ /avtest/avagent/assets/keyinject.exe, [], 40, True, True ]
     - CHECK_INFECTION
     #to be sure, we uninstall
     - UNINSTALL
@@ -141,7 +162,9 @@ VM_ELITE_FAST_SCOUTDEMO_SRV:
     # i parametri: ACTION: elite_fast_scoutdemo (cioe' step 2 dello scoutdemo), CONFIG: windows_elite_demo cioe' upgrade ad elite ma in demo, TIPO: silent, FINAL_ACTION: elite_fast_scoutdemo
     - BUILD_SRV: [ elite_fast, windows_demo, silent, elite_fast ]
     - SCREENSHOT
-    - SLEEP: 90
+    #- RELOG
+    #- SLEEP: 300
+    #- EXECUTE_VM: [ /avtest/avagent/assets/keyinject.exe, [], 40, True, True ]
     - CHECK_INFECTION
     #to be sure, we uninstall
     - UNINSTALL
@@ -161,7 +184,9 @@ VM_SOLDIER:
     - SCREENSHOT
     #don't skip because I need to uninstall
     #- ON_ERROR: SKIP
-    - SLEEP: 90
+    #- RELOG
+    #- SLEEP: 300
+    #- EXECUTE_VM: [ /avtest/avagent/assets/keyinject.exe, [], 40, True, True ]
     - CHECK_INFECTION
     #to be sure, we uninstall
     - UNINSTALL
@@ -181,7 +206,9 @@ VM_SOLDIER_SRV:
     - SCREENSHOT
     #don't skip because I need to uninstall
     - ON_ERROR: SKIP
-    - SLEEP: 90
+    #- RELOG
+    #- SLEEP: 300
+    #- EXECUTE_VM: [ /avtest/avagent/assets/keyinject.exe, [], 40, True, True ]
     - CHECK_INFECTION
     #to be sure, we uninstall
     - UNINSTALL
@@ -191,7 +218,9 @@ VM_MELT:
     - CALL: INIT_DISPATCH
     - BUILD: [ scout, windows, melt ]
     - SCREENSHOT
-    - SLEEP: 90
+    #- RELOG
+    #- SLEEP: 300
+    #- EXECUTE_VM: [ /avtest/avagent/assets/keyinject.exe, [], 40, True, True ]
     - CHECK_INFECTION
     #to be sure, we uninstall
     - UNINSTALL
@@ -201,7 +230,10 @@ VM_MELT_SRV:
     - CALL: INIT_DISPATCH
     - BUILD_SRV: [ scout, windows, melt, melt ]
     - SCREENSHOT
-    - SLEEP: 90
+    #before check infection, I need a sync (relog + 5 min wait)
+    #- RELOG
+    #- SLEEP: 300
+    #- EXECUTE_VM: [ /avtest/avagent/assets/keyinject.exe, [], 40, True, True ]
     - CHECK_INFECTION
     #to be sure, we uninstall
     - UNINSTALL
@@ -229,14 +261,20 @@ VM_EXPLOIT:
     #- BUILD: [ pull, exploit_rar, melt ]
     - BUILD: [ scout, exploit_pdf, melt ]
     - SCREENSHOT
-    - SLEEP: 90
+    #before check infection, I need a sync (relog + 5 min wait)
+    #- RELOG
+    #- SLEEP: 300
+    #- EXECUTE_VM: [ /avtest/avagent/assets/keyinject.exe, [], 40, True, True ]
     - CHECK_INFECTION
     #to be sure, we uninstall
     - UNINSTALL
     - RELOG
     - BUILD: [ scout, selfdel_exploit, melt ]
     - SCREENSHOT
-    - SLEEP: 90
+    #before check infection, I need a sync (relog + 5 min wait)
+    #- RELOG
+    #- SLEEP: 300
+    #- EXECUTE_VM: [ /avtest/avagent/assets/keyinject.exe, [], 40, True, True ]
     - CHECK_INFECTION
     #to be sure, we uninstall
     - UNINSTALL
@@ -250,14 +288,18 @@ VM_EXPLOIT_SRV:
     - SCREENSHOT
     - BUILD_SRV: [ scout, exploit_pdf, melt, exploit_pdf ]
     - SCREENSHOT
-    - SLEEP: 90
+    #- RELOG
+    #- SLEEP: 300
+    #- EXECUTE_VM: [ /avtest/avagent/assets/keyinject.exe, [], 40, True, True ]
     - CHECK_INFECTION
     #to be sure, we uninstall
     - UNINSTALL
     - RELOG
     - BUILD_SRV: [ scout, selfdel_exploit, melt, selfdel_exploit ]
     - SCREENSHOT
-    - SLEEP: 90
+    #- RELOG
+    #- SLEEP: 300
+    #- EXECUTE_VM: [ /avtest/avagent/assets/keyinject.exe, [], 40, True, True ]
     - CHECK_INFECTION
     #to be sure, we uninstall
     - UNINSTALL
@@ -282,6 +324,22 @@ VM_STATIC_SRV:
     - CALL: BUILD_EXPLOIT_SRV
     - CROP: False
     - ON_ERROR: SKIP
+
+#######################################################################
+#######################################################################
+#######################################################################
+#   _______   _______ _____ ________  ___
+#  /  ___\ \ / /  ___|_   _|  ___|  \/  |
+#  \ `--. \ V /\ `--.  | | | |__ | .  . |
+#   `--. \ \ /  `--. \ | | |  __|| |\/| |
+#  /\__/ / | | /\__/ / | | | |___| |  | |
+#  \____/  \_/ \____/  \_/ \____/\_|  |_/
+#
+#
+#######################################################################
+#######################################################################
+#######################################################################
+
 
 ### 'SYSTEM_' Can be called directly - ARE USED ALSO FOR RETESTS
 
@@ -505,6 +563,26 @@ SYSTEM_EXPLOIT_SRV:
     - CALL: VM_GET_LOG
     - CALL: END_DISPATCH
 
+##########################################################################################
+##########################################################################################
+##########################################################################################
+##########################################################################################
+####
+####                         ______   _______ _________ _
+####                        (  __  \ (  ___  )\__   __/( \   |\     /|
+####                        | (  \  )| (   ) |   ) (   | (   ( \   / )
+####                        | |   ) || (___) |   | |   | |    \ (_) /
+####                        | |   | ||  ___  |   | |   | |     \   /
+####                        | |   ) || (   ) |   | |   | |      ) (
+####                        | (__/  )| )   ( |___) (___| (____/\| |
+####                        (______/ |/     \|\_______/(_______/\_/
+####
+##########################################################################################
+##########################################################################################
+##########################################################################################
+##########################################################################################
+
+
 #untested and unused since middle age
 SYSTEM_DAILY:
     - VM_ALL
@@ -569,7 +647,7 @@ SYSTEM_DAILY_FAST_SRV:
     - VM_ALL
     - ON_ERROR: SKIP
     - SLEEP: [1, 300]
-    #Clean evidences should be called only during nighttime auto mati tests
+    #Clean evidences should be called only during nighttime automatic tests (next 2 commands have to be commented)
     #- CALL: INIT_DISPATCH
     #- CALL: VM_CLEAN_EVIDENCES
     - CALL: SET_MAIL
@@ -577,17 +655,30 @@ SYSTEM_DAILY_FAST_SRV:
     - BUILD_CACHE_CLEAN: False
     - REPORT:
         #- VM_STATIC_SRV: ['AV Invisibility Static', 'Static check on builds']
-        #- VM_SOLDIER_SRV: ['AV Invisibility', 'Soldier']
-        #- VM_ELITE_FAST_SRV: ['AV Invisibility', 'Elite']
+        - VM_SOLDIER_SRV: ['AV Invisibility', 'Soldier']
+        - VM_ELITE_FAST_SRV: ['AV Invisibility', 'Elite']
         #- VM_ELITE_FAST_DEMO_SRV: ['AV Invisibility', 'Elite Demo']
-        - VM_ELITE_FAST_SCOUTDEMO_SRV: ['AV Invisibility', 'Elite Scout Demo']
+        #- VM_ELITE_FAST_SCOUTDEMO_SRV: ['AV Invisibility', 'Elite Scout Demo']
         #- VM_MELT_SRV: ['AV Invisibility', 'Melt']
-        #- VM_EXPLOIT_SRV: ['AV Invisibility', 'Exploit']
+        - VM_EXPLOIT_SRV: ['AV Invisibility', 'Exploit']
     - UNINSTALL
     #qui salvo tutti i sample per la giornata!
     - BUILD_CACHE_CLEAN: True
     - CALL: VM_GET_LOG
     - CALL: END_DISPATCH
+
+########################################################################
+########################################################################
+########################################################################
+#    ____ _____  _  _____ ___ ____
+#   / ___|_   _|/ \|_   _|_ _/ ___|
+#   \___ \ | | / _ \ | |  | | |
+#    ___) || |/ ___ \| |  | | |___
+#   |____/ |_/_/   \_\_| |___\____|   (PARZIALE)
+#
+########################################################################
+########################################################################
+########################################################################
 
 
 VM_STATIC_ANDROID:
@@ -659,8 +750,6 @@ SYSTEM_CHECK_150_EXES:
         ]
 
 
-# ---------------- #
-
 VM_PUSH_T_EXE:
     - PUSH: [ assets/agent_themida.exe ]
     - CROP: True
@@ -686,7 +775,19 @@ SYSTEM_PUSH_EXE:
     - CALL: VM_GET_LOG
     - CALL: END_DISPATCH
 
-# ---------------- #
+########################################################################
+########################################################################
+########################################################################
+#    _____ _   _ _   _  ____ _____ ___ ___  _   _    _    _
+#   |  ___| | | | \ | |/ ___|_   _|_ _/ _ \| \ | |  / \  | |
+#   | |_  | | | |  \| | |     | |  | | | | |  \| | / _ \ | |
+#   |  _| | |_| | |\  | |___  | |  | | |_| | |\  |/ ___ \| |___
+#   |_|    \___/|_| \_|\____| |_| |___\___/|_| \_/_/   \_\_____|
+#
+########################################################################
+########################################################################
+########################################################################
+
 
 VM_FUNCTIONAL_EV:
     - SLEEP: 60
@@ -935,6 +1036,21 @@ VM_PACKER_MELT:
 
     - CROP: False
 
+
+########################################################################
+########################################################################
+########################################################################
+#   _____  _____  _______  ______        _     _________  ________
+#  |_   _||_   _||_   __ \|_   _ `.     / \   |  _   _  ||_   __  |
+#    | |    | |    | |__) | | | `. \   / _ \  |_/ | | \_|  | |_ \_|
+#    | '    ' |    |  ___/  | |  | |  / ___ \     | |      |  _| _
+#     \ \__/ /    _| |_    _| |_.' /_/ /   \ \_  _| |_    _| |__/ |
+#      `.__.'    |_____|  |______.'|____| |____||_____|  |________|
+#
+########################################################################
+########################################################################
+########################################################################
+
 # -------------- UPDATE -------------- #
 # COMPLETE COMMANDS
 
@@ -1147,6 +1263,17 @@ UPDATE_FAST:
         - UPD_REFRESH
     - CALL: END_DISPATCH
 
+
+#######################################################################################################################################
+#   _____  _____  _______  ______        _     _________  ________    __                                              __   __
+#  |_   _||_   _||_   __ \|_   _ `.     / \   |  _   _  ||_   __  | .' _|                                            [  | |_ `.
+#    | |    | |    | |__) | | | `. \   / _ \  |_/ | | \_|  | |_ \_| | |   _ .--..--.   ,--.   _ .--.  __   _   ,--.   | |   | |
+#    | '    ' |    |  ___/  | |  | |  / ___ \     | |      |  _| _  | |  [ `.-. .-. | `'_\ : [ `.-. |[  | | | `'_\ :  | |   | |
+#     \ \__/ /    _| |_    _| |_.' /_/ /   \ \_  _| |_    _| |__/ | | |_  | | | | | | // | |, | | | | | \_/ |,// | |, | |  _| |
+#      `.__.'    |_____|  |______.'|____| |____||_____|  |________| `.__|[___||__||__]\'-;__/[___||__]'.__.'_/\'-;__/[___]|__,'
+#
+#######################################################################################################################################
+
 # ---------------------------
 #    Manual UPDATE
 # ---------------------------
@@ -1225,7 +1352,11 @@ UPDATE_RESTART:
 
 
 # -----------------------------
-#     UTILITY
+#    _   _ _____ ___ _    ___ _______   __
+#   | | | |_   _|_ _| |  |_ _|_   _\ \ / /
+#   | |_| | | |  | || |__ | |  | |  \ V /
+#    \___/  |_| |___|____|___| |_|   |_|
+#
 # -----------------------------
 
 #this works for "old style" disable_analysis
