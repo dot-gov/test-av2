@@ -134,6 +134,23 @@ def get_screen_res(device=None):
                 y = res.group(2)
                 if x > 0 and y > 0:
                     break;
+    #try with  DisplayWidth=480 DisplayHeight=800
+    if x == 0 and y == 0:
+        match = re.findall('.*Display.*', cmd)
+        if len(match) > 0:
+            for m in match:
+                if "DisplayWidth" in m:
+                    p = re.compile(ur'DisplayWidth=(\d+)')
+                    res = re.search(p, m)
+                    if res and res.lastindex >=1:
+                        x = res.group(1)
+                if "DisplayHeight" in m:
+                    p = re.compile(ur'DisplayHeight=(\d+)')
+                    res = re.search(p, m)
+                    if res and res.lastindex >=1:
+                        y = res.group(1)
+                if x > 0 and y > 0:
+                    break;
     return x, y
 
 
@@ -205,7 +222,8 @@ def isVersion(AvMaj, AvMin, AvPatch, device=None):
             return -1
 
 
-
+# todo: per device unlock!! better to classifiy device in order to
+# avoid spurious touch
 def unlock(device=None):
     cmd = "input keyevent 82"
     execute(cmd, device)

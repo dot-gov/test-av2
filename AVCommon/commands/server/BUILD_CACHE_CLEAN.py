@@ -33,7 +33,7 @@ def execute(vm, protocol, keep_samples):
 
             logging.debug("Moving %s to %s" % (os.path.join(src, f), dst_full_file_name))
         #    shutil.move(os.path.join(src, f), dst_full_file_name)
-            if os.path.exists(dst_full_file_name):
+            if not os.path.exists(dst_full_file_name):
                 shutil.copy(os.path.join(src, f), dst_full_file_name)
     #if not keep_samples
     else:
