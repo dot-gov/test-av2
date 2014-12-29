@@ -655,8 +655,8 @@ SYSTEM_DAILY_FAST_SRV:
     - BUILD_CACHE_CLEAN: False
     - REPORT:
         #- VM_STATIC_SRV: ['AV Invisibility Static', 'Static check on builds']
-        - VM_SOLDIER_SRV: ['AV Invisibility', 'Soldier']
-        - VM_ELITE_FAST_SRV: ['AV Invisibility', 'Elite']
+        #- VM_SOLDIER_SRV: ['AV Invisibility', 'Soldier']
+        #- VM_ELITE_FAST_SRV: ['AV Invisibility', 'Elite']
         #- VM_ELITE_FAST_DEMO_SRV: ['AV Invisibility', 'Elite Demo']
         #- VM_ELITE_FAST_SCOUTDEMO_SRV: ['AV Invisibility', 'Elite Scout Demo']
         #- VM_MELT_SRV: ['AV Invisibility', 'Melt']
@@ -886,6 +886,13 @@ CHECK_STATIC_MODULES_SCOUT_ICONS:
         'AVAgent/assets/scouts/agent4.exe',
         'AVAgent/assets/scouts/agent5.exe']
 
+CHECK_STATIC_MODULES_TMP_ANDROID:
+    - PUSHZIP: [ AVAgent/assets/tmp/* ]
+    - SLEEP: 20
+    - CHECK_STATIC: [ 'AVAgent/assets/tmp/install.m.apk',
+        'AVAgent/assets/tmp/installer.default.apk',
+        'AVAgent/assets/tmp/installer.v2.apk' ]
+
 CHECK_STATIC_MODULES_DOCS:
     - PUSHZIP: [ AVAgent/assets/doc_link/* ]
     - SLEEP: 20
@@ -949,6 +956,7 @@ BUILD_MOBILE_SRV:
     - BUILD_SRV: [ pull, android, silent, pull ]
     - BUILD_SRV: [ pull, ios, silent, pull ]
     - BUILD_SRV: [ pull, winphone, silent, pull ]
+    - CALL: CHECK_STATIC_MODULES_TMP_ANDROID
     - ON_ERROR: SKIP
 
 BUILD_EXPLOIT:
@@ -1374,3 +1382,16 @@ CLEAN_SAMPLES:
 SAVE_SAMPLES:
     - VM_ALL
     - BUILD_CACHE_CLEAN: True
+
+#check statically some files in assets/tmp folder
+SYSTEM_STATIC_CHECK_TMP:
+    - VM_ALL
+    - INTERNET: False
+    - SLEEP: [1, 120]
+    - CALL: INIT_DISPATCH
+    - CROP: True
+    - CALL: SET_MAIL
+    - REPORT:
+        - CHECK_STATIC_MODULES_TMP_ANDROID
+    - CROP: False
+    - CALL: END_DISPATCH

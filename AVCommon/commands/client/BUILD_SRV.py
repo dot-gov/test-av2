@@ -36,6 +36,8 @@ def on_init(protocol, args):
     hostname = helper.get_hostname()
     ftype = 'desktop'
 
+    ftype = command.context["build_parameters"][platform]['platform_type']
+
     factory_name = '%s_%s_%s_%s_%s' % (hostname, ftype, platform, kind, final_action)
 
     # elite_fast and soldier_fast assumes that you already have a scout in execution.
