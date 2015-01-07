@@ -41,8 +41,6 @@ class CommandsDevice:
 
         print "serialno: %s deviceid: %s" % (dev_serialno, device_id)
 
-
-
         self.device_id = device_id
         self.uid = uid
 
@@ -88,8 +86,8 @@ class CommandsDevice:
                 dev = devices[0][0]
             return id, dev
 
-    def get_adb_client(self):
-        return self.device_object
+    # def get_adb_client(self):
+    #     return self.device_id
 
     def get_dev_serialno(self):
         return self.device_serialno
