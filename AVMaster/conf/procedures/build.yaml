@@ -140,6 +140,8 @@ VM_ELITE_FAST_SRV:
 
 
 VM_ELITE_FAST_DEMO_SRV:
+    #andrebbe eseguito solo una volta a settimana
+    - ENABLE: [ sunday ]
     #NB: no crop for DEMO
     - CALL: INIT_DISPATCH
     #- SLEEP: 60
@@ -451,7 +453,7 @@ SYSTEM_ELITE_FAST_DEMO_SRV:
     #- CALL: VM_CLEAN_EVIDENCES
     - CALL: SET_MAIL
     - REPORT:
-        - VM_ELITE_FAST_DEMO_SRV: ['AV Invisibility', 'Elite Demo Srv']
+        - VM_ELITE_FAST_DEMO_SRV: ['AV Invisibility', 'Elite_Demo']
     # moved in VM_procedures: screnshot and uninstall
     #- SCREENSHOT
     #- UNINSTALL
@@ -468,7 +470,7 @@ SYSTEM_ELITE_FAST_SCOUTDEMO_SRV:
     #- CALL: VM_CLEAN_EVIDENCES
     - CALL: SET_MAIL
     - REPORT:
-        - VM_ELITE_FAST_SCOUTDEMO_SRV: ['AV Invisibility', 'Elite Demo Srv']
+        - VM_ELITE_FAST_SCOUTDEMO_SRV: ['AV Invisibility', 'Elite_Scout_Demo']
     # moved in VM_procedures: screnshot and uninstall
     #- SCREENSHOT
     #- UNINSTALL
