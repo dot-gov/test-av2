@@ -352,10 +352,8 @@ SYSTEM_STATIC:
     # CLEAN_EV no more useful - instances are deleted during run and factories are deleted daily
     #- CALL: VM_CLEAN_EVIDENCES
     - CALL: SET_MAIL
-    - CROP: True
     - REPORT:
         - VM_STATIC: ['AV Invisibility Static', 'Static check on builds']
-    - CROP: False
     - CALL: END_DISPATCH
 
 
@@ -368,10 +366,8 @@ SYSTEM_STATIC_SRV:
     #- CALL: INIT_DISPATCH
     #- CALL: VM_CLEAN_EVIDENCES
     - CALL: SET_MAIL
-    - CROP: True
     - REPORT:
         - VM_STATIC_SRV: ['AV Invisibility Static', 'Static check on builds']
-    - CROP: False
     - CALL: END_DISPATCH
 
 
