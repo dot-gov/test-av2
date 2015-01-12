@@ -10,6 +10,8 @@ import time
 import random
 import uuid
 import ast
+import shutil
+from AVCommon import package
 from AVCommon import config
 from AVCommon import command
 from collections import OrderedDict
@@ -235,16 +237,57 @@ def dump_yaml():
     f.write(yaml.dump(report, default_flow_style=False, indent=4))
     f.close()
 
+
 # genera un report.log e un summary log
+def create_report_for_analyzer(report):
+
+    report_for_analyzer_name = "%s/report_for_analyzer.%s.%s.yaml" % (logger.logdir, report.timestamp, report.name)
+    # also create a last run log file in /home/avmonitor/last_log/
+    lastlog_dir = os.path.join(package.basedir, "lastlog")
+    # if not os.path.exists(lastlog_dir):
+    #     os.mkdir(lastlog_dir)
+    # lastlog_name = "%s/report_for_analyzer.%s.yaml" % (lastlog_dir, report.name)
+    # previous_lastlog_name = "%s/report_for_analyzer.%s-LAST.yaml" % (lastlog_dir, report.name)
+    # #se c'e un file precedente, allora lo setto come file precedente (eventualmente socrascrivendo) e
+    # #salvo l'attuale come precedente
+    # if os.path.exists(lastlog_name):
+    #     if os.path.exists(previous_lastlog_name):
+    #         os.unlink(previous_lastlog_name)
+    #     os.rename(lastlog_name, previous_lastlog_name)
+
+    report_for_analyzer_file = open(report_for_analyzer_name, "w+")
+    to_serialize = {}
+    for k, v in report.c_received.items():
+        vm = []
+        test_name = None
+        for comm in v:
+            #prendo solo la parte di REPORT, quindi aspetto la REPORT_KIND_INIT, recupero il test,
+            # e processo i dati fino all'REPORT_KIND_END. poi ignoro il resto fino al REPORT_KIND_INIT
+            if comm.name == "REPORT_KIND_INIT":
+                test_name = comm.args
+            if comm.name == "REPORT_KIND_END":
+                #report_kind_end and report_kind_init are included
+                vm.append(command_to_array(comm, test_name))
+                test_name = None
+            if not test_name:
+                continue
+            vm.append(command_to_array(comm, test_name))
+
+        to_serialize[k] = vm
+    yaml.dump(to_serialize, report_for_analyzer_file)
+
+    #no more needed
+    #shutil.copyfile(report_for_analyzer_name, lastlog_name)
+
+
+
 def dump():
     report = Report()
 
-    #f=open("%s/report.%s.%s.yaml" % (logger.logdir, report.timestamp, report.name), "w+")
-    #f.write(yaml.dump(report, default_flow_style=False, indent=4))
-    #f.close()
-
+    create_report_for_analyzer(report)
+    #old
+    #sym_rep_name = "%s/last.report.%s.log" % (logger.logdir, report.name)
     report_name = "%s/report.%s.%s.log" % (logger.logdir, report.timestamp, report.name)
-    sym_rep_name = "%s/last.report.%s.log" % (logger.logdir, report.name)
 
     f = open(report_name, "w+")
     for vm in report.c_received.keys():
@@ -271,17 +314,18 @@ def dump():
     f.close()
 
     return
-    if os.path.exists(sym_rep_name):
-        logging.debug("removing: %s" % sym_rep_name)
-        os.remove(sym_rep_name)
-    logging.debug("ln -s %s %s" % (report_name, sym_rep_name))
-    os.symlink(report_name, sym_rep_name)
-
-    if os.path.exists(sym_sum_name):
-        logging.debug("removing: %s" % sym_sum_name)
-        os.remove(sym_sum_name)
-    logging.debug("ln -s %s %s" % (summary_name, sym_sum_name))
-    os.symlink(summary_name, sym_sum_name)
+    #i think this is old (and unreachable)
+    # if os.path.exists(sym_rep_name):
+    #     logging.debug("removing: %s" % sym_rep_name)
+    #     os.remove(sym_rep_name)
+    # logging.debug("ln -s %s %s" % (report_name, sym_rep_name))
+    # os.symlink(report_name, sym_rep_name)
+    #
+    # if os.path.exists(sym_sum_name):
+    #     logging.debug("removing: %s" % sym_sum_name)
+    #     os.remove(sym_sum_name)
+    # logging.debug("ln -s %s %s" % (summary_name, sym_sum_name))
+    # os.symlink(summary_name, sym_sum_name)
 
 def restore(file_name):
     #report = Report()
@@ -304,3 +348,13 @@ def restore(file_name):
     r = yaml.load(y)
     Report().init(r)
     return r
+
+
+def command_to_array(comm, test_name):
+    #as now, logs are not integrated
+    if type(comm.args) is tuple:
+        argslist = list(comm.args)
+    else:
+        argslist = comm.args
+    mylist = [comm.timestamp, test_name, comm.vm, comm.name, argslist, comm.success, comm.result, "", "", comm.side]
+    return mylist
