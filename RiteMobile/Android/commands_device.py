@@ -564,8 +564,8 @@ class CommandsDevice:
     def send_intent(self, package, activity, extras):
         cmd = "am start -n %s/%s " % (package,activity)
         for i in extras:
-            cmd += "-e %s" % i
-        #print "sending intent: %s" % cmd
+            cmd += "-e %s " % i
+        print "sending intent: %s" % cmd
         return adb.execute(cmd, self.device_serialno)
 
     def skype_call(self, number="echo123"):

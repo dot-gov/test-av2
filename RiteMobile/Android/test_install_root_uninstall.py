@@ -384,7 +384,8 @@ def check_dir(dir):
 
 def set_status(command_dev, status):
     #def send_intent(self, package, activity, extras)
-    extra = "result \"%s\"" % status
+
+    extra = "result %s" % status.replace(" ","_")
     command_dev.send_intent("com.example.zad.report", ".ReportActivity", [extra])
 
 
@@ -657,7 +658,9 @@ def main():
 
     command_dev = CommandsDevice(args.device)
 
+    set_status(command_dev, "Test Start")
 
+    exit(0)
     print """ prerequisiti specifici TEST :
                     skype presente
     """
