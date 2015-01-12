@@ -20,7 +20,7 @@ def main(args):
         print "Init!"
         commands_dev.init_device()
 
-    retrive_app_list(commands_dev,"/home/zad/list_links.txt","/Volumes/SHARE/QA/SVILUPPO/PlayStoreApps/", args.line)
+    retrive_app_list(commands_dev,"/home/zad/work/devel/test-rite/list_links.txt","/Volumes/SHARE/QA/SVILUPPO/PlayStoreApps/", args.line)
   #  print "Test Execution success:%s" % test_local_install(device, res, wait_root=False)
   #  print "Test Execution success:%s" % test_local_install(device, res, persistent=False)
   #  print "Test Execution success:%s" % test_local_install(device, res)

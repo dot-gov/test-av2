@@ -10,7 +10,8 @@ def execute(vm, protocol, keep_samples):
     dst = 'logs/samples_%s/' % str(date.today())
 
     """ server side """
-    #default: does not saves samples
+    #default: CLEAN samples
+    #default: if True, then save samples without deleting them!!!
     if not isinstance(keep_samples, bool):
         keep_samples = False
 
@@ -23,14 +24,24 @@ def execute(vm, protocol, keep_samples):
             os.makedirs(dst)
         files = os.listdir(src)
         for f in files:
-            logging.debug("Moving %s" % os.path.join(src, f))
-            shutil.move(os.path.join(src, f), os.path.join(dst, f))
-    #I delete anyway the dir
-    try:
-        if os.path.exists(src):
-            shutil.rmtree(src)
-    except:
-        return False, "Error cleaning cache!"
+        # TEMPORANEAMENTE DISABILITATA COPIA MULTIPLA (che non funziona perche' avviene per ogni VM)
+        #    i = 0
+            dst_full_file_name = os.path.join(dst, f)
+        #    while os.path.exists(dst_full_file_name):
+        #        i += 1
+        #        dst_full_file_name = "%s_new_%s.zip" % (os.path.join(dst, f), i)
+
+            logging.debug("Moving %s to %s" % (os.path.join(src, f), dst_full_file_name))
+        #    shutil.move(os.path.join(src, f), dst_full_file_name)
+            if not os.path.exists(dst_full_file_name):
+                shutil.copy(os.path.join(src, f), dst_full_file_name)
+    #if not keep_samples
+    else:
+        try:
+            if os.path.exists(src):
+                shutil.rmtree(src)
+        except:
+            return False, "Error cleaning cache!"
 
     return True, "Cache cleaned"
 

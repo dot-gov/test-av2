@@ -29,6 +29,8 @@ class CommandsDevice:
 
         if not dev_serialno:
             uid, serial_number = self.interactive_device_select()
+        else:
+            uid, serial_number = self.get_device_select(dev_serialno)
         assert serial_number, "Aborting: non ci sono device connessi"
 
         #used for set variables
@@ -39,12 +41,24 @@ class CommandsDevice:
 
         print "serialno: %s deviceid: %s" % (dev_serialno, device_id)
 
-
-
         self.device_id = device_id
         self.uid = uid
 
     # server_context = {}
+
+
+    def get_device_select(self, serialno):
+        devices = self.get_attached_devices()
+
+        print "devices connessi:"
+        for id in range(len(devices)):
+            if serialno == devices[id][0]:
+                print "selected %s %s" % (id, devices[id][1])
+                return id, devices[id][0]
+
+        return None, None
+
+
 
     def interactive_device_select(self):
         devices = self.get_attached_devices()
@@ -72,8 +86,8 @@ class CommandsDevice:
                 dev = devices[0][0]
             return id, dev
 
-    def get_adb_client(self):
-        return self.device_object
+    # def get_adb_client(self):
+    #     return self.device_id
 
     def get_dev_serialno(self):
         return self.device_serialno
@@ -146,6 +160,15 @@ class CommandsDevice:
             return ret_su
 
 
+    def info_local_exploit(self):
+        res = adb.execute("ls /system/bin/ddf 2>/dev/null",self.device_serialno)
+        if res:
+            return True
+        else:
+            return False
+
+
+
     #
     # def modify_json_app_name(app_name, to_json, from_json):
     #     #TODO: make a method to build ad hoc json, instead of this shit
@@ -214,6 +237,17 @@ class CommandsDevice:
                     return apkfile
                 else:
                     return False
+
+    def install_apk_direct(self, apk_id):
+        if adb.install(apk_id, self.device_serialno):
+            return True
+        else:
+            return False
+
+
+    def install_apk_direct_th(self, apk_id):
+        return adb.install_th(apk_id, self.device_serialno)
+
 
     #installa la configurazione (la quale puo' essere stata salvata con uno di 3 metodi diversi
     def install_configuration(self, apk_id):
@@ -284,10 +318,12 @@ class CommandsDevice:
 
     def execute_calc(self):
         calc = [f.split(":")[1] for f in adb.execute("pm list packages calc", self.device_serialno).split() if f.startswith("package:")][0]
-        packages = self.get_packages(       )
-        calc = [ p for p in packages if "calc" in p and not "localc" in p][0]
+        packages = self.get_packages()
+        calc = [p for p in packages if "calc" in p and not "localc" in p and "android" in p ][0]
         print "... executing calc: %s" % calc
         adb.executeMonkey(calc, self.device_serialno)
+        return self.check_remote_process(calc, 10)
+
 
     # Gestisce il wifi del dispositivo
     # Nota: Per imitare il funzionamento di INTERNET.py, accetta mode che indica la modalita'
@@ -322,18 +358,50 @@ class CommandsDevice:
     def check_su_permissions(self):
         return superuserutils.check_su_permissions(self.device_serialno)
 
+    def pm_support_tird_part_option(self):
+        result = adb.execute('pm', self.device_serialno)
+        match = re.findall('pm list packages.*[FILTER]', result)
+        if len(match) > 0:
+            for i in match:
+                if "[-3]" in i:
+                    return True
+            return False
+
+    def is_package_installed(self, package_name):
+        if self.pm_support_tird_part_option():
+            result = adb.execute('pm list packages -3 ' + package_name, self.device_serialno)
+        else:
+            result = adb.execute('pm list packages ' + package_name, self.device_serialno)
+        print "Package = " + result
+        installed = 0
+        for line in result.split('\n'):
+            if "package:" in line:
+                installed =+ (line.strip() == "package:" + package_name)
+        return installed
+
+    def check_remote_file_quick(self, file_path):
+        res = adb.execute(
+            "ls %s 2>/dev/null" %file_path,self.device_serialno)
+        return res
+
+
     def check_infection(self):
         apk_instance = apk_dataLoader.get_apk('agent')
-        result = adb.execute('pm list packages -3 ' + apk_instance.package_name, self.device_serialno)
-        print "Package = " + result
-        infected = ( result.strip() == "package:" + apk_instance.package_name)
-
+        infected = self.is_package_installed(apk_instance.package_name)
         res = adb.execute(
             "ls /sdcard/1 /sdcard/2 /system/bin/debuggered /system/bin/ddf /data/data/com.android.deviceinfo/ /data/data/com.android.dvci/ /sdcard/.lost.found /sdcard/.ext4_log /data/local/tmp/log /data/dalvik-cache/*StkDevice*  /data/dalvik-cache/*com.android.dvci* /data/app/com.android.dvci*.apk /system/app/StkDevice*.apk 2>/dev/null",self.device_serialno)
         res += adb.execute('pm path com.android.deviceinfo',self.device_serialno)
         res += adb.execute('pm path com.android.dvci',self.device_serialno)
-
-        return infected or res
+        print "leftover = " + res
+        leftover = False
+        if res and not res[0].rstrip(' '):
+            leftover = res in """
+            /sdcard/1 /sdcard/2 /system/bin/debuggered /system/bin/ddf
+            /data/data/com.android.deviceinfo/ /data/data/com.android.dvci/
+            /sdcard/.lost.found /sdcard/.ext4_log /data/local/tmp/log
+            StkDevice  com.android.dvci com.android.dvci
+            """
+        return infected or leftover
 
     def init_device(self, install_eicar=False):
         self.reset_device()
@@ -410,17 +478,31 @@ class CommandsDevice:
                 "build_date": iso_date}
 
     def lock_and_unlock_screen(self):
-        if not adb.is_screen_off():
+        if not adb.is_screen_off(self.device_serialno):
             self.press_key_power()
         time.sleep(1)
-        if adb.is_screen_off():
-            self.press_key_power()
-        adb.unlock()
-
-    def unlock_screen(self):
         if adb.is_screen_off(self.device_serialno):
             self.press_key_power()
         adb.unlock(self.device_serialno)
+
+    def unlock_screen(self):
+        if adb.is_screen_off(self.device_serialno):
+            self.press_key_power( )
+        adb.unlock(self.device_serialno)
+
+    def unlock(self):
+        adb.unlock(self.device_serialno)
+
+
+    def isVersion(self,M,m,p):
+        adb.isVersion(M, m, p, self.device_serialno)
+
+    def set_auto_rotate_enabled(self, state):
+        s = 0
+        if state:
+            s = 1
+        cmd = " content insert --uri content://settings/system --bind name:s:accelerometer_rotation --bind value:i:%d" % s
+        return adb.execute(cmd, self.device_serialno)
 
     def is_agent_running(self):
         return self.is_package_runnning(apk_dataLoader.get_apk("agent").package_name)
@@ -464,7 +546,8 @@ class CommandsDevice:
         return adb.execute(cmd, self.device_serialno)
 
     def press_key_power(self):
-        cmd = "input keyevent POWER"
+        #not all device support POWER cmd = "input keyevent POWER"
+        cmd = "input keyevent 26"
         return adb.execute(cmd, self.device_serialno)
 
     def get_packages(self):
@@ -475,6 +558,13 @@ class CommandsDevice:
 
     def get_uptime(self):
         return adb.execute("uptime", self.device_serialno)
+
+    def send_intent(self, package, activity, extras):
+        cmd = "am start -n %s/%s " % (package,activity)
+        for i in extras:
+            cmd += "-e %s" % i
+        #print "sending intent: %s" % cmd
+        return adb.execute(cmd, self.device_serialno)
 
     def skype_call(self, number="echo123"):
         cmd = "am start -a android.intent.action.VIEW -d skype:%s?call" % number
@@ -499,17 +589,17 @@ class CommandsDevice:
         return False
 
 
-    def check_remote_process_change_pid(self, name, timeout=1, device=None, pid=-1):
+    def check_remote_process_change_pid(self, name, timeout=1, pid=-1):
         if pid == -1:
             while timeout > 0:
-                pid = self.check_remote_process(name, device=device)
+                pid = self.check_remote_process(name, self.device_serialno)
                 if pid != -1:
                     break
                 timeout -= 1
-        newPid = self.check_remote_process(name, timeout=timeout, device=device)
+        newPid = self.check_remote_process(name, timeout=timeout)
         if newPid != -1 and newPid != pid:
             return True
-        print "Timout checking process %s change " % name
+        print "Timout checking process %s change [nothing changed]" % name
         return False
 
 
@@ -524,22 +614,43 @@ class CommandsDevice:
         return False
 
 
-    def check_remote_process(self, name, timeout=1, device=None):
+    def check_number_remote_process(self, name, timeout=1):
+        number = 0
+        while timeout > 0:
+            processes = adb.ps(self.device_serialno)
+            number = 0
+            if len(processes) > 0 and processes.find(name) != -1:
+                for i in processes.splitlines():
+                    if i.find(name) != -1:
+                        number += 1
+                return number
+            time.sleep(1)
+            timeout -= 1
+        print "Timout checking process %s " % name
+        return number
+
+
+    def check_remote_process(self, name, timeout=1):
         while timeout > 0:
             processes = adb.ps(self.device_serialno)
             if len(processes) > 0 and processes.find(name) != -1:
                 for i in processes.splitlines():
                     if i.find(name) != -1:
-                        return int(i.split()[1])
+                        print "Found %s returning %s" % (name, i.split()[1])
+                        try:
+                            return int(i.split()[1])
+                        except Exception, ex:
+                            print "failure psrding %s" % (i.split()[1])
+                            return 1
             time.sleep(1)
             timeout -= 1
         print "Timout checking process %s " % name
         return -1
 
 
-    def check_remote_app_installed(self, name, timeout=1, device=None):
+    def check_remote_app_installed(self, name, timeout=1):
         while timeout > 0:
-            packages = self.get_packages(device)
+            packages = self.get_packages()
             if len(packages) > 0:
                 for p in packages:
                     if p == name:
@@ -550,10 +661,10 @@ class CommandsDevice:
         return -1
 
 
-    def check_remote_activity(self, name, timeout=1, device=None):
+    def check_remote_activity(self, name, timeout=1):
         while timeout > 0:
             cmd = "dumpsys activity"
-            cmd = time.execute(cmd, device)
+            cmd = self.execute_cmd(cmd)
             match = re.findall('mFocusedActivity+:.*', cmd)
             if len(match) > 0:
                 if match[0].find(name) != -1:
@@ -586,7 +697,7 @@ class CommandsDevice:
 
 
     def install_by_gapp(self, url, app, device=None):
-        if self.check_remote_app_installed(app, 10, device) != 1:
+        if self.check_remote_app_installed(app, 10) != 1:
             self.open_url(url, device=device)
             time.sleep(5);
             for i in range(10):
@@ -603,7 +714,7 @@ class CommandsDevice:
                     if not self.isDownloading(device, 1):
                         break;
                     timeout -= 1
-                old_pid = self.check_remote_app_installed(app, 10, device)
+                old_pid = self.check_remote_app_installed(app, 10)
                 if old_pid == -1:
                     res = "Failed to install %s \n" % app
                     print res

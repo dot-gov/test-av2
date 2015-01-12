@@ -1556,3 +1556,591 @@ Uninstall
 	running: 
 	files_remained: 
 	packages_remained: 
+Installation
+	time: 2014-11-12 17:05:02.963669
+	installed: 
+	executed: None
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 
+Device
+	device: samsung GT-N7100
+	id: 354666054979513
+	release: 4.4.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 1
+	persistence: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: False
+Installation
+	time: 2014-11-12 17:10:12.516676
+	installed: 
+	executed: None
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 
+Device
+	device: samsung GT-N7100
+	id: 354666054979513
+	release: 4.4.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 1
+	persistence: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: False
+Installation
+	time: 2014-11-12 17:21:34.534964
+	installed: 
+	executed: None
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 
+Device
+	device: samsung GT-N7100
+	id: 354666054979513
+	release: 4.4.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 1
+	persistence: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 2014-11-14 11:43:31.404148
+	installed: 
+	executed: True
+	instance_name: Android (256) samsung GT-N7100
+	info: 
+	uptime_first: up time: 20:32:11, idle time: 15:08:06, sleep time: 16:00:23
+
+	uptime_last: up time: 00:03:16, idle time: 00:09:34, sleep time: 00:00:00
+
+	error: HTTP Error 403: Forbidden
+	exception: 
+Device
+	device: samsung GT-N7100
+	id: 354666054979513
+	release: 4.4.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: /system/bin/sh: su: not found
+
+	selinux: 1
+	persistence: No
+Evidences
+	evidences_first: 
+		addressbook: 3
+			phone
+			gmail
+		application: 1
+		call: 0
+		camera: 6
+		chat: 5
+			gmail
+		device: 2
+		message: 34
+		position: 4
+		screenshot: 1
+
+	evidences_last: 
+		addressbook: 3
+			phone
+			gmail
+		application: 4
+		call: 0
+		camera: 22
+		chat: 5
+			gmail
+		device: 4
+		message: 34
+		position: 8
+		screenshot: 5
+
+Expected
+	call_supported: False
+	expected: ['android.talk']
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: False
+Installation
+	time: 2014-11-14 12:09:26.672725
+	installed: 
+	executed: True
+	instance_name: Android (257) samsung GT-N7100
+	info: 
+	uptime_first: up time: 00:24:19, idle time: 01:13:24, sleep time: 00:00:00
+
+	uptime_last: up time: 00:02:56, idle time: 00:08:07, sleep time: 00:00:00
+
+	error: HTTP Error 403: Forbidden
+	exception: 
+Device
+	device: samsung GT-N7100
+	id: 354666054979513
+	release: 4.4.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: /system/bin/sh: su: not found
+
+	selinux: 1
+	format_reisist: No
+Evidences
+	evidences_first: 
+		addressbook: 3
+			phone
+			gmail
+		application: 1
+		call: 0
+		camera: 10
+		chat: 1
+			gmail
+		device: 3
+		message: 34
+		position: 6
+		screenshot: 2
+
+	evidences_last: 
+		addressbook: 3
+			phone
+			gmail
+		application: 8
+		call: 0
+		camera: 20
+		chat: 5
+			gmail
+		device: 4
+		message: 34
+		position: 8
+		screenshot: 5
+
+Expected
+	call_supported: False
+	expected: ['android.talk']
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: False
+Installation
+	time: 2014-11-14 13:58:57.951779
+	installed: 
+	executed: False
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 
+Device
+	device: samsung GT-N7100
+	id: 354666054979513
+	release: 4.4.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 1
+	format_resist: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: False
+Installation
+	time: 2014-11-14 14:04:31.357627
+	installed: 
+	executed: True
+	instance_name: Android (260) samsung GT-N7100
+	info: 
+	uptime_first: up time: 00:09:13, idle time: 00:25:35, sleep time: 00:00:00
+
+	uptime_last: up time: 00:02:56, idle time: 00:08:37, sleep time: 00:00:00
+
+	error: HTTP Error 403: Forbidden
+	exception: 
+Device
+	device: samsung GT-N7100
+	id: 354666054979513
+	release: 4.4.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: /system/bin/sh: su: not found
+
+	selinux: 1
+	format_resist: No
+Evidences
+	evidences_first: 
+		addressbook: 2
+			phone
+		application: 1
+		call: 0
+		camera: 2
+		chat: 0
+		device: 2
+		position: 4
+		screenshot: 1
+
+	evidences_last: 
+		addressbook: 2
+			phone
+		application: 1
+		call: 0
+		camera: 4
+		chat: 0
+		device: 2
+		message: 27
+		position: 4
+		screenshot: 1
+
+Expected
+	call_supported: False
+	expected: ['android.talk']
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: False
+Installation
+	time: 2014-11-14 14:37:18.989686
+	installed: 
+	executed: True
+	instance_name: Android (262) samsung GT-N7100
+	info: 
+	uptime_first: up time: 00:11:00, idle time: 00:32:42, sleep time: 00:00:00
+
+	uptime_last: up time: 00:04:15, idle time: 00:13:24, sleep time: 00:00:00
+
+	error: semaphore or lock released too many times
+	exception: 
+Device
+	device: samsung GT-N7100
+	id: 354666054979513
+	release: 4.4.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: No
+	root_first: True
+	su: /system/bin/sh: su: not found
+
+	selinux: 1
+	format_resist: No
+Evidences
+	evidences_first: 
+		addressbook: 2
+			phone
+		application: 1
+		call: 0
+		camera: 1
+		chat: 0
+		device: 1
+		position: 1
+
+	evidences_last: 
+		addressbook: 3
+			phone
+			gmail
+		application: 1
+		call: 0
+		camera: 4
+		chat: 0
+		device: 2
+		position: 4
+		screenshot: 1
+
+Expected
+	call_supported: False
+	expected: ['android.talk']
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 2014-11-14 15:23:48.882638
+	installed: 
+	executed: True
+	instance_name: Android (264) samsung GT-N7100
+	info: 
+	uptime_first: up time: 00:24:23, idle time: 01:14:57, sleep time: 00:00:00
+
+	uptime_last: up time: 00:04:42, idle time: 00:15:12, sleep time: 00:00:00
+
+	error: 
+	exception: 
+Device
+	device: samsung GT-N7100
+	id: 354666054979513
+	release: 4.4.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: /system/bin/sh: su: not found
+
+	selinux: 1
+	format_resist: No
+Evidences
+	evidences_first: 
+		addressbook: 3
+			phone
+			gmail
+		application: 1
+		call: 0
+		camera: 3
+		chat: 0
+		device: 2
+		message: 34
+		position: 4
+		screenshot: 1
+
+	evidences_last: 
+		addressbook: 3
+			phone
+			gmail
+		application: 4
+		call: 0
+		camera: 26
+		chat: 5
+			gmail
+		device: 4
+		message: 34
+		position: 8
+		screenshot: 6
+
+Expected
+	call_supported: False
+	expected: ['android.talk']
+Uninstall
+	uninstall: True
+	running: False
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 2014-11-20 16:56:45.161138
+	installed: 
+	executed: True
+	instance_name: Android (265) samsung GT-N7100
+	info: 
+	uptime_first: up time: 6 days, 00:13:54, idle time: 1 days, 19:57:45, sleep time: 5 days, 12:28:33
+
+	uptime_last: up time: 00:04:36, idle time: 00:14:44, sleep time: 00:00:00
+
+	error: 
+	exception: 
+Device
+	device: samsung GT-N7100
+	id: 354666054979513
+	release: 4.4.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: No
+	root_first: True
+	su: /system/bin/sh: su: not found
+
+	selinux: 1
+	format_resist: Yes
+Evidences
+	evidences_first: 
+		addressbook: 20
+			phone
+			gmail
+			skype
+		application: 2
+		calendar: 1
+		call: 0
+		camera: 15
+		chat: 11
+			skype
+			gmail
+		device: 3
+		message: 29
+		position: 6
+		screenshot: 3
+
+	evidences_last: 
+		addressbook: 20
+			phone
+			gmail
+			skype
+		application: 5
+		calendar: 1
+		call: 0
+		camera: 32
+		chat: 11
+			skype
+			gmail
+		device: 4
+		message: 29
+		position: 8
+		screenshot: 8
+
+Expected
+	call_supported: False
+	expected: ['android.talk', 'skype']
+Uninstall
+	uninstall: True
+	running: False
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 2014-11-21 13:35:57.147351
+	installed: 
+	executed: True
+	instance_name: Android (270) samsung GT-N7100
+	info: 
+	uptime_first: up time: 01:54:45, idle time: 00:21:42, sleep time: 01:48:04
+
+	uptime_last: up time: 00:02:45, idle time: 00:07:12, sleep time: 00:00:00
+
+	error: 
+	exception: 
+Device
+	device: samsung GT-N7100
+	id: 354666054979513
+	release: 4.4.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: /system/bin/sh: su: not found
+
+	selinux: 1
+	format_resist: Yes
+Evidences
+	evidences_first: 
+		addressbook: 20
+			phone
+			gmail
+			skype
+		application: 2
+		calendar: 1
+		call: 0
+		camera: 12
+		chat: 11
+			skype
+			gmail
+		device: 4
+		message: 30
+		position: 8
+		screenshot: 2
+
+	evidences_last: 
+		addressbook: 20
+			phone
+			gmail
+			skype
+		application: 7
+		calendar: 1
+		call: 0
+		camera: 23
+		chat: 11
+			skype
+			gmail
+		device: 6
+		message: 30
+		mic: 1
+		position: 12
+		screenshot: 6
+
+Expected
+	call_supported: False
+	expected: ['android.talk', 'skype']
+Uninstall
+	uninstall: True
+	running: False
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 2014-11-27 16:53:40.210430
+	installed: 
+	executed: False
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 
+Device
+	device: samsung GT-N7100
+	id: 354666054979513
+	release: 4.4.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 1
+	format_resist: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: False

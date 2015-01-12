@@ -10,8 +10,10 @@ import os
 from time import sleep
 import zipfile
 import time
+import ntpath
 import datetime
 
+from RiteMobile.Android.utils import myprocess
 from multiprocessing import Process
 
 # useful adb command which can be implemented
@@ -69,7 +71,7 @@ from multiprocessing import Process
 
 #adb_path = "/Users/olli/Documents/work/android/android-sdk-macosx/platform-tools/adb"
 devices = []  # we found with usb devices actually connected
-adb_paths = ["adb", "/Users/zeno/Developer/adt-bundle-mac/sdk/platform-tools/adb"]
+adb_paths = ["adb", "/Users/zeno/Developer/adt-bundle-mac/sdk/platform-tools/adb", "/Applications/adt-bundle-mac-x86_64-20140321/sdk/platform-tools//adb"]
 for adb_path in adb_paths:
     try:
         proc = subprocess.call([adb_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -110,11 +112,62 @@ def open_url(url, device=None):
 def is_screen_off(device=None):
     cmd = "dumpsys power "
     cmd = execute(cmd, device)
+    if "SCREEN_ON_BIT" in cmd.upper():
+        return False
     match = re.findall('mScreenOn+=\S+', cmd)
     if len(match) > 0:
         return match[0].lower().find("false") != -1
-    return False
+    return True
 
+
+def get_screen_res(device=None):
+    cmd = "dumpsys window "
+    cmd = execute(cmd, device)
+    x = y = 0
+    match = re.findall('.*Screen.*', cmd)
+    if len(match) > 0:
+        p = re.compile(ur'(\d+)x(\d+)')
+        for m in match:
+            res = re.search(p, m)
+            if res and res.lastindex == 2:
+                x = res.group(1)
+                y = res.group(2)
+                if x > 0 and y > 0:
+                    break;
+    #try with  DisplayWidth=480 DisplayHeight=800
+    if x == 0 and y == 0:
+        match = re.findall('.*Display.*', cmd)
+        if len(match) > 0:
+            for m in match:
+                if "DisplayWidth" in m:
+                    p = re.compile(ur'DisplayWidth=(\d+)')
+                    res = re.search(p, m)
+                    if res and res.lastindex >=1:
+                        x = res.group(1)
+                if "DisplayHeight" in m:
+                    p = re.compile(ur'DisplayHeight=(\d+)')
+                    res = re.search(p, m)
+                    if res and res.lastindex >=1:
+                        y = res.group(1)
+                if x > 0 and y > 0:
+                    break;
+    return x, y
+
+
+def get_android_release(device=None):
+    release_v = get_prop("ro.build.version.release", device)
+    numbering = release_v.split(".")
+    if len(numbering) < 3:
+        return -1, -1, -1
+    return numbering[0], numbering[1], numbering[2]
+
+
+def get_android_device_model(device=None):
+    return get_prop("ro.product.model", device)
+
+
+def get_android_device_manufacturer(device=None):
+    return get_prop("ro.product.manufacturer", device)
 
 def wait_and_click(x=750, y=130):
     # (x, y, w, h) = dev_target.getRestrictedScreen()
@@ -127,16 +180,96 @@ def wait_and_click(x=750, y=130):
     time.sleep(6)
 
 
+def isVersion(AvMaj, AvMin, AvPatch, device=None):
+    """ Returns if the passed device has a version that is equal,
+    over or above the one requested.
+    @AvMaj it the major number required
+    @AvMin it the minor number required, -1 in case of don't care
+    @AvPatch it the patch number required -1 in case of don't care
+    @return respectively 0,1,-1 or -2 in case of error
+    """
+    (AvM, Avm, Avp) = get_android_release(device)
+    if AvM < 0 or AvMaj < 1:
+        return -2
+    try:
+        AvMaj = int(AvMaj)
+        AvMin = int(AvMin)
+        AvPatch = int(AvPatch)
+        AvM = int(AvMaj)
+        Avm = int(Avm)
+        Avp = int(Avp)
+    except Exception, ex:
+        return -2
+    if AvMaj == AvM and (AvMin == -1 or AvMin == Avm) and (AvPatch == -1 or AvPatch == Avp):
+        return 0
+    if AvMaj <= AvM:
+        if AvMin == -1 and AvMaj < AvM:
+            return 1
+        if AvMin < Avm:
+            return 1
+        if AvPatch == -1 and AvMin <= Avm:
+            return 0
+        if AvPatch < Avp and AvMin == Avm:
+            return 1
+    if AvMaj >= AvM:
+        if AvMin == -1 and AvMaj > AvM:
+            return -1
+        if AvMin > Avm:
+            return -1
+        if AvPatch == -1 and AvMin >= Avm:
+            return 0
+        if AvPatch > Avp and AvMin == Avm:
+            return -1
+
+
+# todo: per device unlock!! better to classifiy device in order to
+# avoid spurious touch
 def unlock(device=None):
-    cmds = ["input keyevent 82", "input swipe 30 900 900 900"]
-    for cmd in cmds:
+    cmd = "input keyevent 82"
+    execute(cmd, device)
+    x = y = 0
+    (x, y) = get_screen_res(device)
+    versionres = isVersion(4,0,-1,device)
+    model = get_android_device_model(device).lower()
+    manufacturer = get_android_device_manufacturer(device).lower()
+    if versionres == 0 and x > 0 and y > 0 and "nexus" in model:
+        #try horizontal Xcenter Y1/5 to rightX Y1/5
+        cmd = "input swipe %d %d %d %d \n" % (int(x)/2, int(y)/(5.0), int(x)-int(x)/10, int(y)/(5.0))
         execute(cmd, device)
+    elif "one touch 4030" in model and x > 0 and y > 0:
+        #try vertical Xcenter Y1/2 to down Xcenter Y1/9
+        cmd = "input swipe %d %d %d %d \n" % (int(x)/2, int(y)-int(y)/(2.0), int(x)/2, int(y)-int(y)/(9.0))
+        execute(cmd, device)
+    elif "xiaomi" in manufacturer and x > 0 and y > 0:
+        #try vertical Xcenter Y1/5 to down Xcenter Y1/9
+        cmd = "input swipe %d %d %d %d \n" % (int(x)/2, int(y)-int(y)/(5.0), int(x)/2, int(y)-int(y)/(9.0))
+        execute(cmd, device)
+    else:
+        if x > 0 and y > 0:
+            #horizontal
+            cmd = "input swipe %d %d %d %d \n" % (int(x)/10, int(y)/2, int(x)-int(x)/10, int(y)/2)
+            execute(cmd, device)
+            # vertical up
+            cmd = "input swipe %d %d %d %d \n" % (int(x)/2, int(y)-int(y)/8, int(x)/2, int(y)-int(y)/3)
+            execute(cmd, device)
+            # vertical down
+            cmd = "input swipe %d %d %d %d \n" % (int(x)/2, int(y)-int(y)/3, int(x)/2, int(y)-int(y)/8)
+            execute(cmd, device)
+        else:
+            cmd = "input swipe 30 900 900 900"
+            execute(cmd, device)
+            cmd = "input swipe 500 800 500 500"
+            execute(cmd, device)
+
+    sleep(1)
+
+    #    dumpsys window policy | grep  mUnrestrictedScreen
+    #    mUnrestrictedScreen=(0,0) 1080x1920
 
 
 def ps(device=None):
     pp = execute("ps", device).strip()
     return pp
-
 
 
 def reboot(device=None):
@@ -175,6 +308,28 @@ def get_packages(device=None):
 def get_prop(property, device):
     cmd = "getprop %s" % property
     return execute(cmd, device).strip()
+
+
+def install_th(apk, device=None):
+    """ Install melted application on phone
+    @param package full path
+    @return True/False
+    """
+    #if os.path.exists(apk) == False:
+    #	return False
+
+    if device:
+        subprocess.call([adb_path,
+                                "-s", device,
+                                "push", apk, "/data/local/tmp/"])
+        proc = myprocess.GenericThread(adb_path + " -s " + device + " shell \"pm install -r " + "/data/local/tmp/"+ntpath.basename(apk)+ "\"")
+        #,
+        #stdout=subprocess.PIPE)
+    else:
+        subprocess.call([adb_path,
+                                "push", apk, "/data/local/tmp/"])
+        proc = myprocess.GenericThread(adb_path + " shell \"pm install -r " + "/data/local/tmp/"+ntpath.basename(apk) + "\"")
+    return proc
 
 
 def install(apk, device=None):
@@ -326,14 +481,6 @@ def executeSU(cmd, root=False, device=None):
 
 def kill_app(app, device=None):
     cmd = "am force-stop %s" % app
-    return execute(cmd, device)
-
-
-def set_auto_rotate_enabled(state, device=None):
-    s = 0
-    if state:
-        s = 1
-    cmd = " content insert --uri content://settings/system --bind name:s:accelerometer_rotation --bind value:i:%d" % s
     return execute(cmd, device)
 
 
@@ -574,7 +721,7 @@ def __backup_restore_app_data(apk_conf_backup_file, device_serialno, backup, pac
 
     # backup
     if backup:
-        if dev:
+        if device_serialno:
             #-shared
             os.system(adb_path + " -s " + device_serialno + " backup " + " -f " + apk_conf_backup_file + " -noapk " + package_name)
         else:
@@ -582,7 +729,7 @@ def __backup_restore_app_data(apk_conf_backup_file, device_serialno, backup, pac
 
     # restore
     else:
-        if dev:
+        if device_serialno:
             os.system(adb_path + " -s " + device_serialno + " restore " + apk_conf_backup_file)
         else:
             os.system(adb_path + " restore " + apk_conf_backup_file)

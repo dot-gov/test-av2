@@ -45,3 +45,97 @@ Expected
 Uninstall
 	uninstall: True
 	running: False
+Installation
+	time: 2014-11-21 11:10:01.027570
+	installed: 
+	executed: False
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 
+Device
+	device: LGE LG-D802
+	id: 357246053205041
+	release: 4.2.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	format_resist: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: False
+Installation
+	time: 2014-11-21 11:14:10.695341
+	installed: 
+	executed: True
+	instance_name: Android (267) LGE LG-D802
+	info: 
+	uptime_first: up time: 00:03:25, idle time: 00:03:17, sleep time: 00:00:00
+
+	uptime_last: up time: 00:06:15, idle time: 00:06:10, sleep time: 00:00:00
+
+	error: 
+	exception: 
+Device
+	device: LGE LG-D802
+	id: 357246053205041
+	release: 4.2.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: 1.99:SUPERSU
+
+	selinux: 
+	format_resist: Yes
+Evidences
+	evidences_first: 
+		addressbook: 5
+			phone
+			gmail
+		application: 1
+		call: 0
+		camera: 0
+		chat: 1
+			gmail
+		device: 3
+		message: 36
+		position: 3
+		screenshot: 4
+
+	evidences_last: 
+		addressbook: 5
+			phone
+			gmail
+		application: 16
+		call: 0
+		camera: 0
+		chat: 1
+			gmail
+		device: 5
+		message: 36
+		mic: 3
+		position: 5
+		screenshot: 10
+
+Expected
+	call_supported: True
+	expected: ['android.talk']
+Uninstall
+	uninstall: True
+	running: False
+	files_remained: 
+	packages_remained: 

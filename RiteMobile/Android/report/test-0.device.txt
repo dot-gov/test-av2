@@ -648,3 +648,131 @@ Uninstall
 	running: 
 	files_remained: 
 	packages_remained: 
+Installation
+	time: 
+	installed: 
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: [Errno 2] No such file or directory: 'and.zip'
+Device
+	device: 
+	id: 
+	release: 
+	build_date: 
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	persistence: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 
+	installed: 
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: test_device() takes exactly 4 arguments (3 given)
+Device
+	device: 
+	id: 
+	release: 
+	build_date: 
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	format_resist: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 
+	installed: 
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: [Errno 2] No such file or directory: 'and.zip'
+Device
+	device: 
+	id: 
+	release: 
+	build_date: 
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	format_resist: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 
+	installed: 
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: [Errno 2] No such file or directory: 'and.zip'
+Device
+	device: 
+	id: 
+	release: 
+	build_date: 
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	format_resist: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 

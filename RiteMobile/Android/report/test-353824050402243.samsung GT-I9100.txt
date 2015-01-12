@@ -221,3 +221,114 @@ Expected
 Uninstall
 	uninstall: True
 	running: False
+Installation
+	time: 2014-11-21 11:59:00.869550
+	installed: 
+	executed: True
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 
+Device
+	device: samsung GT-I9100
+	id: 353824050402243
+	release: 4.0.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	format_resist: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: False
+Installation
+	time: 2014-11-21 12:12:06.201701
+	installed: 
+	executed: True
+	instance_name: Android (269) samsung GT-I9100
+	info: 
+	uptime_first:  12:21:28 up 9 min,  load average: 0.12, 0.58, 0.49
+
+	uptime_last:  12:27:46 up 5 min,  load average: 0.42, 1.25, 0.71
+
+	error: 
+	exception: 
+Device
+	device: samsung GT-I9100
+	id: 353824050402243
+	release: 4.0.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: No
+	root_first: True
+	su: 1.93:SUPERSU
+
+	selinux: 
+	format_resist: Yes
+Evidences
+	evidences_first: 
+		application: 0
+		call: 0
+		camera: 0
+		chat: 0
+
+	evidences_last: 
+		addressbook: 67
+			bbm
+			telegram
+			phone
+			viber
+			facebook
+			skype
+			whatsapp
+			gmail
+		application: 8
+		calendar: 12
+		call: 0
+		camera: 3
+		chat: 326
+			bbm
+			telegram
+			viber
+			facebook
+			skype
+			line
+			whatsapp
+			gmail
+		device: 5
+		message: 12
+		position: 8
+		screenshot: 4
+
+Expected
+	call_supported: True
+	expected: ['telegram', 'android.talk', 'viber', 'facebook', 'line.android', 'skype', 'whatsapp', 'tencent.mm']
+Uninstall
+	uninstall: False
+	running: False
+	files_remained: /data/app/com.android.dvci-2.apk
+/data/dalvik-cache/data@app@com.android.dvci-2.apk@classes.dex
+/data/dalvik-cache/system@app@StkDevice.apk@classes.dex
+/system/app/StkDevice.apk
+/system/bin/ddf
+
+/data/data/com.android.dvci/:
+app_qza  cache    files    lib
+
+/sdcard/.ext4_log:
+l1  l2  l3
+
+	packages_remained: package:/system/app/StkDevice.apk
+

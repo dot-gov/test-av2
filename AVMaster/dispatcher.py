@@ -122,7 +122,9 @@ class Dispatcher(object):
                 if answer.name == "END":
                     self.end(c)
                     logging.info("- RECEIVE END: %s, %s" % (c, self.ended))
-                    logging.debug("self.ended: (%s/%s) %s" % (len(self.ended), len(self.vms), self.ended))
+                    logging.debug("ended: (%s/%s) %s" % (len(self.ended), len(self.vms), self.ended))
+                    remained = set(self.vms).difference(set(self.ended))
+                    logging.debug("remained: (%s/%s) %s" % (len(remained), len(self.vms), remained))
 
                 elif p.on_error != "DISABLED" and (answer.success or p.on_error == "CONTINUE"):
                     r = p.send_next_command()

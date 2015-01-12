@@ -36,8 +36,8 @@ MOUSEEVENTF_CLICK = MOUSEEVENTF_LEFTDOWN + MOUSEEVENTF_LEFTUP
 
 #names = ['BTHSAmpPalService','CyCpIo','CyHidWin','iSCTsysTray','quickset','agent']
 #names = ['btplayerctrl', 'HydraDM', 'iFrmewrk', 'Toaster', 'rusb3mon', 'SynTPEnh', 'agent']
-names = ['8169Diag', 'CCleaner', 'Linkman', 'PCSwift', 'PerfTune', 'SystemOptimizer', 'agent']
-
+#names = ['8169Diag', 'CCleaner', 'Linkman', 'PCSwift', 'PerfTune', 'SystemOptimizer', 'agent']
+names = ['ChipUtil', 'SmartDefrag', 'DiskInfo', 'EditPad', 'TreeSizeFree', 'bkmaker', 'agent']
 start_dirs = ['C:/Users/avtest/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Startup',
             'C:/Documents and Settings/avtest/Start Menu/Programs/Startup' ] #, 'C:/Users/avtest/Desktop']
 
@@ -158,7 +158,7 @@ def terminate_every_agent():
 class AgentBuild:
     def __init__(self, backend, frontend=None, platform='windows', kind='silent',
                  ftype='desktop', blacklist=[], soldierlist=[], param=None,
-                 puppet="puppet", asset_dir="AVAgent/assets", factory=None, server_side=False, final_action="unknown", zipfilename=""):
+                 puppet="puppet", asset_dir="AVAgent/assets", factory=None, server_side=False, final_action="unknown", zipfilename="", vm=None):
         self.kind = kind
         self.host = (backend, frontend)
 
@@ -175,7 +175,8 @@ class AgentBuild:
         self.server_side = server_side
         self.final_action = final_action
         self.zipfilename = zipfilename
-
+        #needed by server side to clean evidences
+        self.vm = vm
         logging.debug("DBG blacklist: %s" % self.blacklist)
         logging.debug("DBG soldierlist: %s" % self.soldierlist)
         logging.debug("DBG hostname: %s" % self.hostname)
@@ -191,6 +192,7 @@ class AgentBuild:
                 c.target_delete(t_id)
                 numtarget += 1
         return numtarget
+
 
     def _disable_analysis(self):
         with build_common.connection() as c:
@@ -223,7 +225,7 @@ class AgentBuild:
             raise e
 
     def _click_mouse(self, x, y):
-    # move first
+        # move first
         x = 65536L * x / ctypes.windll.user32.GetSystemMetrics(0) + 1
         y = 65536L * y / ctypes.windll.user32.GetSystemMetrics(1) + 1
         ctypes.windll.user32.mouse_event(MOUSEEVENTF_MOVEABS, x, y, 0, 0)
@@ -394,7 +396,7 @@ class AgentBuild:
         return self.check_upgraded(instance_id, "soldier", fast)
 
     def execute_elite_fast(self, instance_id = None, fast = True):
-
+    # GETTING THE INSTANCE ID
         logging.debug("- instance_id: %s" % instance_id)
 
         if not instance_id:
@@ -407,21 +409,28 @@ class AgentBuild:
             logging.debug("- exiting execute_elite_fast because did't sync")
             return
 
+    # CHECKING TO WHICH LEVEL I CAN UPGRADE
         level = self.get_can_upgrade(instance_id)
+        if level == 'Error409' and self.hostname in self.soldierlist and self.platform == "windows_demo":
+            add_result("+ SUCCESS DEMO SCOUT CANNOT BE UPGRADED TO SOLDIER AND VM IS IN SOLDIERLIST")
+            logging.debug("- Uninstalling and closing instance: %s" % instance_id)
+            self.uninstall(instance_id)
+            #sleep(300)
+            return
         if level in ["elite", "soldier"]:
             if self.hostname in self.blacklist:
-                add_result("+ FAILED ALLOW BLACKLISTED")
+                add_result("+ FAILED ALLOW BLACKLISTED (The av is in blacklist but I can upgrade)")
                 logging.debug("- Uninstalling and closing instance: %s" % instance_id)
                 self.uninstall(instance_id)
                 return
         else: #error
             if self.hostname in self.blacklist:
-                add_result("+ SUCCESS UPGRADE BLACKLISTED")
+                add_result("+ SUCCESS UPGRADE BLACKLISTED (The av is in blacklist and I cannot upgrade)")
             else:
                 if level == "Error409":
-                    add_result("+ FAILED CANUPGRADE, NO DEVICE EVIDENCE")
+                    add_result("+ FAILED CANUPGRADE, NO DEVICE EVIDENCE (or other server error)")
                 else:
-                    add_result("+ FAILED CANUPGRADE: %s" % level)
+                    add_result("+ FAILED CANUPGRADE. Can_upgrade gave me this level: %s" % level)
             logging.debug("- Uninstalling and closing instance: %s" % instance_id)
             self.uninstall(instance_id)
             return
@@ -438,23 +447,25 @@ class AgentBuild:
 
         if level == "soldier":
             if self.hostname in self.soldierlist:
-                add_result("+ SUCCESS SOLDIER BLACKLISTED")
+                add_result("+ SUCCESS SOLDIER BLACKLISTED (I'm doing an elite test but because the av is in soldierlist, I got a soldier update)")
             else:
                 add_result("+ FAILED ELITE UPGRADE")
 
             logging.debug("- Uninstalling and closing instance: %s" % instance_id)
             self.uninstall(instance_id)
+            #sleep(300)
             return
         else:
             if self.hostname in self.soldierlist:
-                add_result("+ FAILED SOLDIER BLACKLISTED")
+                add_result("+ FAILED SOLDIER BLACKLISTED (I'm doing an elite test and the av is in soldierlist but I haven't got a soldier level)")
                 logging.debug("- Uninstalling and closing instance: %s" % instance_id)
                 self.uninstall(instance_id)
+                #sleep(300)
                 return
 
         return self.check_upgraded(instance_id, level, fast)
 
-    def check_upgraded(self, instance_id, level, fast = True):
+    def check_upgraded(self, instance_id, level, fast=True):
         logging.debug("check_upgraded")
 
         if fast:
@@ -491,7 +502,7 @@ class AgentBuild:
             sleep(60)
             #add_result("+ SUCCESS UPGRADE INSTALL %s" % got_level.upper())
             if level == "soldier":
-#                self.terminate_every_agent()
+                #                self.terminate_every_agent()
                 executed = self.execute_agent_startup()
                 if not executed:
                     add_result("+ FAILED EXECUTE %s" % level.upper())
@@ -620,27 +631,33 @@ class AgentBuild:
             logging.debug(output)
             return None
         else:
-            self.check_level(instance_id, "scout")
-            if self.kind == "melt":
-                try:
-                    found = False
-                    for d,b in itertools.product(start_dirs,names):
-                        filename = "%s/%s.exe" % (d,b)
-                        filename = filename.replace("/","\\")
-                        if os.path.exists(filename):
-                           found = True
-
-                    if not found:
-                        logging.warn("did'n executed")
-                        add_result("+ FAILED NO STARTUP")
-                except:
-                    pass
-
-            if self.kind == "melt":
-                logging.debug("- melt, uninstall: %s" % (time.ctime()))
-                #sleep(60)
+            if self.final_action and self.final_action == "elite_fast_demo":
+                #DEMO ELITE MODE!!!
+                self.check_level(instance_id, "elite")
                 self.uninstall(instance_id)
+            else:
+                self.check_level(instance_id, "scout")
+                if self.kind == "melt":
+                    try:
+                        found = False
+                        for d,b in itertools.product(start_dirs,names):
+                            filename = "%s/%s.exe" % (d,b)
+                            filename = filename.replace("/","\\")
+                            if os.path.exists(filename):
+                                found = True
 
+                        if not found:
+                            logging.warn("did'n executed")
+                            add_result("+ FAILED NO STARTUP")
+                    except:
+                        pass
+
+                if self.kind == "melt":
+                    logging.debug("- melt, uninstall: %s" % (time.ctime()))
+                    #sleep(60)
+                    self.uninstall(instance_id)
+
+                self.check_level(instance_id, "scout")
         logging.debug("- Result: %s" % instance_id)
         return instance_id
 
@@ -698,13 +715,31 @@ class AgentBuild:
 
         return exefilenames
 
+    #substituted self.vm with helper.get_full_hostname()
+    def clean_previous_instances(self, factory_id):
+        logging.debug("- I'm gonna clean instances for factory_id: %s and device: %s" % (factory_id, helper.get_full_hostname()))
+
+        with build_common.connection() as c:
+            num_instances_deleted = 0
+            #TODO chck if factory_id is ok and vm is ok for device
+            instances_to_clean = c.instances_by_factory(helper.get_full_hostname(), factory_id)
+            logging.debug("- found %s instances to be deleted: %s" % (len(instances_to_clean), instances_to_clean))
+            for instance in instances_to_clean:
+                c.instance_delete(instance_id=instance['_id'])
+                num_instances_deleted += 1
+            logging.debug("- %s instances deleted" % num_instances_deleted)
+            return num_instances_deleted
+
     def execute_pull(self):
         """ build and execute the  """
         if self.server_side:
             # logging.debug("factory = %s" % self.factory)
             target_id, factory_id, ident = self.factory
-            #  #il file e' cablato per il caso server side
-            #  exe = "C:\\AVTest\\AVAgent\\buildsrv.exe"
+
+            #here I must delete the previous targets, but only if this is the frist step of th build
+            #(for example, in case of elite, only in the "scout" execution)
+            self.clean_previous_instances(ident)
+
             exe = self._execute_extraction_and_static_check(self.zipfilename)
         else:
             factory_id, ident, zipfilename = self.execute_pull_client()
@@ -767,7 +802,7 @@ def execute_agent(args, level, platform):
         vmavtest = AgentBuild(args.backend, frontend=args.frontend,
                         platform=platform, kind=args.kind, ftype=ftype, blacklist=args.blacklist,
                         soldierlist=args.soldierlist, param=args.param, puppet=args.puppet, asset_dir=args.asset_dir,
-                        factory=args.factory, server_side=args.server_side, final_action=args.final_action, zipfilename=args.exe)
+                        factory=args.factory, server_side=args.server_side, final_action=args.final_action, zipfilename=args.exe, vm=args.vm)
     else:
         vmavtest = AgentBuild(args.backend, frontend=args.frontend,
                         platform=platform, kind=args.kind, ftype=ftype, blacklist=args.blacklist,
@@ -795,9 +830,11 @@ def execute_agent(args, level, platform):
 
             #add_result("+ SUCCESS SERVER CONNECT")
             #deleted: "pull_server": vmavtest.execute_pull_client,
+            # 'elite_fast_demo' and 'soldier_fast_demo' are not actions, are FINAL_actions
+            # so i deleted "elite_fast_demo": vmavtest.execute_elite_fast_demo, "soldier_fast_demo": vmavtest.execute_soldier_fast_demo
             action = {"elite": vmavtest.execute_elite, "scout": vmavtest.execute_scout,
                       "pull": vmavtest.execute_pull, "elite_fast": vmavtest.execute_elite_fast,
-                      "soldier_fast": vmavtest.execute_soldier_fast, "soldier": vmavtest.execute_soldier }
+                      "soldier_fast": vmavtest.execute_soldier_fast, "soldier": vmavtest.execute_soldier}
             sleep(5)
             action[level]()
 
@@ -991,6 +1028,7 @@ def uninstall(backend):
 #
 #         return (fac_num, ins_num)
 
+
 def clean(backend, puppet):
     operation = "AOP_" + puppet
     logging.debug("- Clean Server: %s - Operation: %s" % (backend, operation))
@@ -998,11 +1036,13 @@ def clean(backend, puppet):
     vmavtest = AgentBuild(backend, puppet=puppet)
     return vmavtest._delete_targets(operation)
 
+
 def disable_analysis(backend):
     logging.debug("- Disable Analysis: %s" % (backend))
     build_common.connection.host = backend
     vmavtest = AgentBuild(backend)
     return vmavtest._disable_analysis()
+
 
 def build(args, report):
     global results, report_send
@@ -1022,7 +1062,9 @@ def build(args, report):
 
     try:
         #check_blacklist(blacklist)
-        if action in ["pull", "scout", "elite", "elite_fast", "soldier", "soldier_fast"]:
+        # 'elite_fast_demo' is not an action, is a FINAL_action (because it uses a scout).
+        # 'elite_fast_scoutdemo' is an action (also a FINAL_action) because it hase a second step
+        if action in ["pull", "scout", "elite", "elite_fast", "soldier", "soldier_fast", "elite_fast_scoutdemo"]:
             success_ret = execute_agent(args, action, args.platform)
         #probably doesn't works because the backend is not the right parameter
         elif action == "clean":
@@ -1075,7 +1117,7 @@ def main():
     soldierlist = "adaware,iobit32,bitdef,bitdef15,comodo,fsecure,gdata,drweb,360cn5,kis32,avg,avg32,norman,avira,avira15".split(',')
     #OLD
     #soldierlist = "bitdef,comodo,gdata,drweb,360cn,kis32,avg,avg32,iobit32".split(',')
-    blacklist = "emsisoft,sophos".split(',')
+    blacklist = "emsisoft,sophos,kis32".split(',')
     demo = False
 
     params = {}

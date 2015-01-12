@@ -1925,3 +1925,142 @@ Uninstall
 	running: 
 	files_remained: 
 	packages_remained: False
+Installation
+	time: 2014-10-27 16:09:28.346816
+	installed: 
+	executed: True
+	instance_name: Mobile (4) samsung GT-I8190
+	info: 
+	uptime_first: up time: 00:24:22, idle time: 00:39:45, sleep time: 00:00:00
+
+	uptime_last: 
+	error: 'ls /system/app/StkDevice.apk'
+	exception: 
+Device
+	device: samsung GT-I8190
+	id: 354784051181692
+	release: 4.1.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: 2.00:SUPERSU
+
+	selinux: 
+	persistence: 
+Evidences
+	evidences_first: 
+		addressbook: 46
+			phone
+			facebook
+			skype
+		application: 1
+		calendar: 6
+		call: 0
+		camera: 10
+		chat: 18
+			facebook
+		device: 3
+		message: 40
+		position: 3
+		screenshot: 2
+
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: ['telegram', 'android.talk', 'viber', 'facebook', 'line.android', 'skype', 'whatsapp', 'tencent.mm']
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: False
+Installation
+	time: 2014-11-21 16:05:59.061370
+	installed: 
+	executed: True
+	instance_name: Android (271) samsung GT-I8190
+	info: 
+	uptime_first: up time: 02:00:04, idle time: 03:41:30, sleep time: 00:00:00
+
+	uptime_last: up time: 00:04:28, idle time: 00:02:45, sleep time: 00:00:00
+
+	error: 
+	exception: 
+Device
+	device: samsung GT-I8190
+	id: 354784051181692
+	release: 4.1.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: No
+	root_first: True
+	su: 2.00:SUPERSU
+
+	selinux: 
+	format_resist: Yes
+Evidences
+	evidences_first: 
+		addressbook: 162
+			bbm
+			telegram
+			phone
+			viber
+			facebook
+			skype
+			wechat
+			gmail
+		application: 2
+		calendar: 6
+		call: 0
+		camera: 15
+		chat: 101
+			bbm
+			telegram
+			viber
+			facebook
+			skype
+			wechat
+			line
+			gmail
+		device: 4
+		message: 33
+		position: 4
+		screenshot: 2
+
+	evidences_last: 
+		addressbook: 162
+			bbm
+			telegram
+			phone
+			viber
+			facebook
+			skype
+			wechat
+			gmail
+		application: 13
+		calendar: 6
+		call: 1
+			skype
+		camera: 29
+		chat: 102
+			bbm
+			telegram
+			viber
+			facebook
+			skype
+			wechat
+			line
+			gmail
+		device: 6
+		message: 33
+		position: 6
+		screenshot: 7
+
+Expected
+	call_supported: True
+	expected: ['telegram', 'android.talk', 'viber', 'facebook', 'line.android', 'skype', 'whatsapp', 'tencent.mm']
+Uninstall
+	uninstall: True
+	running: False
+	files_remained: 
+	packages_remained: 

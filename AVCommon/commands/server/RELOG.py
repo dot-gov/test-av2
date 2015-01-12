@@ -22,7 +22,7 @@ def execute(vm, protocol, args):
     mq.reset_connection(vm)
 
     cmd = "/Windows/System32/logoff.exe"
-    ret = vm_manager.execute(vm, "executeCmd", cmd, [] , 10, True, True)
+    ret = vm_manager.execute(vm, "executeCmd", cmd, [], 10, True, True)
     logging.debug("logoff ret: %s" % ret)
 
     started = False
@@ -30,7 +30,7 @@ def execute(vm, protocol, args):
         for i in range(6):
             if vm_manager.execute(vm, "is_powered_on"):
                 logging.debug("%s: powered on" % vm)
-                for i in range(timeout):
+                for j in range(timeout):
                     if mq.check_connection(vm):
                         logging.debug("got connection from %s" % vm)
                         return True, "Login VM"
