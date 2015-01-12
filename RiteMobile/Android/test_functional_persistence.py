@@ -83,6 +83,18 @@ def check_evidences_present(c, type):
         return False
 
 
+def get_chat_packages(command_dev):
+    chat = set()
+    packs = []
+    packages = command_dev.get_packages()
+    for i in ['skype', 'facebook', 'wechat', 'telegram', 'hangout', 'android.talk', 'line.android', 'viber',
+              'tencent.mm', 'whatsapp']:
+        for p in packages:
+            if i in p:
+                chat.add(i)
+                packs.append(p)
+    return chat, packs
+
 def check_evidences(command_dev, c, results, timestamp=""):
     print "... check_evidences"
     time.sleep(60)
@@ -108,14 +120,7 @@ def check_evidences(command_dev, c, results, timestamp=""):
 
     results['uptime' + timestamp] = command_dev.get_uptime()
 
-    expected = set()
-    packages = command_dev.get_packages()
-    for i in ['skype', 'facebook', 'wechat', 'telegram', 'hangout', 'android.talk', 'line.android', 'viber',
-              'tencent.mm', 'whatsapp']:
-        for p in packages:
-            if i in p:
-                expected.add(i)
-
+    expected, packs = get_chat_packages(command_dev)
     results['expected'] = list(expected)
 
 
@@ -225,6 +230,22 @@ def unistall_dialog_wait_and_press(command_dev,timeout=60):
         command_dev.press_key_tab()
         command_dev.press_key_enter()
         time.sleep(4)
+
+def check_chat(command_dev):
+    command_dev.press_key_home()
+    expected, chats = get_chat_packages(command_dev)
+    for c in chats:
+        print "Running chat: %s " % c
+
+        command_dev.launch_default_activity_monkey(c)
+        time.sleep(10)
+
+        for i in range(10):
+            print "wait..."
+            time.sleep(5)
+            if not command_dev.check_remote_activity(c, 1):
+                break
+
 
 def check_mic(command_dev,commands_rcs):
     command_dev.press_key_home()
@@ -457,16 +478,18 @@ def test_device(commands_rcs, command_dev, args, results):
             results['root_first'] = result
             check_evidences(command_dev, c, results, "_first")
 
-            print "sleeping 20 seconds"
-            time.sleep(20)
-            check_format_resist(command_dev, c, results)
+            if args.persistence:
+                print "sleeping 20 seconds"
+                time.sleep(20)
+                check_format_resist(command_dev, c, results)
 
-            result, root, info = c.check_root(2)
-            print "sleeping 30 seconds"
-            time.sleep(30)
+                result, root, info = c.check_root(2)
+                print "sleeping 30 seconds"
+                time.sleep(30)
 
             if result:
                 # skype call
+                print "test skype"
                 check_skype(command_dev, c, results)
 
                 # check camera
@@ -476,6 +499,10 @@ def test_device(commands_rcs, command_dev, args, results):
                 # check mic
                 print "test mic"
                 check_mic(command_dev,c)
+
+                # check mic
+                print "test chat"
+                check_chat(command_dev)
 
             # evidences
             check_evidences(command_dev, c, results, "_last")
@@ -507,6 +534,8 @@ def parse_args():
                         help="Install fastnet")
     parser.add_argument('-d', '--device', required=False,
                         help="choose serial number of the device to use")
+    parser.add_argument('-p', '--persistence', required=False, action='store_true',
+                        help="test persistence")
 
     args = parser.parse_args()
 
@@ -523,6 +552,7 @@ def main():
         command_dev = CommandsDevice(args.device)
     else:
         command_dev = CommandsDevice()
+
     print """ prerequisiti specifici TEST :
                     skype presente
     """

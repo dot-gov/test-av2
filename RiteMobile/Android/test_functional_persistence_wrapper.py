@@ -13,13 +13,14 @@ import sys
 import signal
 import subprocess
 import threading
+
 inspect_getfile = inspect.getfile(inspect.currentframe())
 cmd_folder = os.path.split(os.path.realpath(os.path.abspath(inspect_getfile)))[0]
 os.chdir(cmd_folder)
 
 
 
-#print cmd_folder
+# print cmd_folder
 
 if cmd_folder not in sys.path:
     sys.path.insert(0, cmd_folder)
@@ -32,11 +33,12 @@ if ancestor not in sys.path:
 from RiteMobile.Android.commands_device import CommandsDevice
 from RiteMobile.Android import adb
 from RiteMobile.Android.utils import myprocess
+
 inspect_getfile = inspect.getfile(inspect.currentframe())
 cmd_folder = os.path.split(os.path.realpath(os.path.abspath(inspect_getfile)))[0]
 os.chdir(cmd_folder)
 
-#print cmd_folder
+# print cmd_folder
 
 if cmd_folder not in sys.path:
     sys.path.insert(0, cmd_folder)
@@ -49,13 +51,6 @@ if ancestor not in sys.path:
 
 #print sys.path
 
-
-
-
-
-
-
-
 def parse_args():
     parser = argparse.ArgumentParser(description='run install and uninstall.')
     parser.add_argument('-d', '--device', required=False,
@@ -66,17 +61,15 @@ def parse_args():
     return args
 
 
-
-
 def handler(signum, args):
     print "handling signal... %d" % signum
     if signum in [1, 2, 3, 15]:
-        print 'Caught signal %s, exiting.' %(str(signum))
+        print 'Caught signal %s, exiting.' % (str(signum))
         if not main.tr_dequeue:
             kill_all()
         sys.exit()
     else:
-        print 'Caught signal %s, ignoring.' %(str(signum))
+        print 'Caught signal %s, ignoring.' % (str(signum))
 
 
 def add_thread(tr):
@@ -87,7 +80,7 @@ def add_thread(tr):
 
 def kill_all():
     if main.tr_dequeue:
-        for elem in main.tr_dequeue:                   # iterate over the deque's elements
+        for elem in main.tr_dequeue:  # iterate over the deque's elements
             if type(elem) is myprocess.GenericThread:
                 while elem.is_alive_inner():
                     elem.runBaby = False
@@ -97,11 +90,12 @@ def kill_all():
 def something_running():
     if not main.tr_dequeue:
         return False
-    for elem in main.tr_dequeue:                   # iterate over the deque's elements
+    for elem in main.tr_dequeue:  # iterate over the deque's elements
         if type(elem) is myprocess.GenericThread:
             if elem.is_alive_inner():
                 return True
     return False
+
 
 def get_devices_list():
     devices = []
@@ -119,10 +113,10 @@ def get_devices_list():
 def main():
     main.tr_dequeue = None
     args = parse_args()
-    catchable = ['SIGINT','SIGQUIT','SIGHUP','SIGTERM']
+    catchable = ['SIGINT', 'SIGQUIT', 'SIGHUP', 'SIGTERM']
     for i in catchable:
-        signum = getattr(signal,i)
-        signal.signal(signum,handler)
+        signum = getattr(signal, i)
+        signal.signal(signum, handler)
     main_cmd = ""
     for i in sys.argv[1:]:
         main_cmd += i + " "
@@ -136,7 +130,8 @@ def main():
 
         for id in range(len(devices)):
             #print "`which python` test_install_root_unistall.py %s -d %s" % (main_cmd, devices[id])
-            add_thread(myprocess.GenericThread("`which python` test_functional_persistence.py %s -d %s" % (main_cmd, devices[id])))
+            add_thread(myprocess.GenericThread(
+                "`which python` test_functional_persistence.py %s -d %s" % (main_cmd, devices[id])))
             time.sleep(1)
     else:
         add_thread(myprocess.GenericThread("`which python` test_functional_persistence.py %s" % main_cmd))
