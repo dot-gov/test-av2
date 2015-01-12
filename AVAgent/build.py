@@ -396,7 +396,7 @@ class AgentBuild:
         return self.check_upgraded(instance_id, "soldier", fast)
 
     def execute_elite_fast(self, instance_id = None, fast = True):
-
+    # GETTING THE INSTANCE ID
         logging.debug("- instance_id: %s" % instance_id)
 
         if not instance_id:
@@ -409,21 +409,28 @@ class AgentBuild:
             logging.debug("- exiting execute_elite_fast because did't sync")
             return
 
+    # CHECKING TO WHICH LEVEL I CAN UPGRADE
         level = self.get_can_upgrade(instance_id)
+        if level == 'Error409' and self.hostname in self.soldierlist and self.platform == "windows_demo":
+            add_result("+ SUCCESS DEMO SCOUT CANNOT BE UPGRADED TO SOLDIER AND VM IS IN SOLDIERLIST")
+            logging.debug("- Uninstalling and closing instance: %s" % instance_id)
+            self.uninstall(instance_id)
+            #sleep(300)
+            return
         if level in ["elite", "soldier"]:
             if self.hostname in self.blacklist:
-                add_result("+ FAILED ALLOW BLACKLISTED")
+                add_result("+ FAILED ALLOW BLACKLISTED (The av is in blacklist but I can upgrade)")
                 logging.debug("- Uninstalling and closing instance: %s" % instance_id)
                 self.uninstall(instance_id)
                 return
         else: #error
             if self.hostname in self.blacklist:
-                add_result("+ SUCCESS UPGRADE BLACKLISTED")
+                add_result("+ SUCCESS UPGRADE BLACKLISTED (The av is in blacklist and I cannot upgrade)")
             else:
                 if level == "Error409":
-                    add_result("+ FAILED CANUPGRADE, NO DEVICE EVIDENCE")
+                    add_result("+ FAILED CANUPGRADE, NO DEVICE EVIDENCE (or other server error)")
                 else:
-                    add_result("+ FAILED CANUPGRADE: %s" % level)
+                    add_result("+ FAILED CANUPGRADE. Can_upgrade gave me this level: %s" % level)
             logging.debug("- Uninstalling and closing instance: %s" % instance_id)
             self.uninstall(instance_id)
             return
@@ -440,18 +447,20 @@ class AgentBuild:
 
         if level == "soldier":
             if self.hostname in self.soldierlist:
-                add_result("+ SUCCESS SOLDIER BLACKLISTED")
+                add_result("+ SUCCESS SOLDIER BLACKLISTED (I'm doing an elite test but because the av is in soldierlist, I got a soldier update)")
             else:
                 add_result("+ FAILED ELITE UPGRADE")
 
             logging.debug("- Uninstalling and closing instance: %s" % instance_id)
             self.uninstall(instance_id)
+            #sleep(300)
             return
         else:
             if self.hostname in self.soldierlist:
-                add_result("+ FAILED SOLDIER BLACKLISTED")
+                add_result("+ FAILED SOLDIER BLACKLISTED (I'm doing an elite test and the av is in soldierlist but I haven't got a soldier level)")
                 logging.debug("- Uninstalling and closing instance: %s" % instance_id)
                 self.uninstall(instance_id)
+                #sleep(300)
                 return
 
         return self.check_upgraded(instance_id, level, fast)

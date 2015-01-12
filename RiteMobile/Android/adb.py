@@ -71,7 +71,7 @@ from multiprocessing import Process
 
 #adb_path = "/Users/olli/Documents/work/android/android-sdk-macosx/platform-tools/adb"
 devices = []  # we found with usb devices actually connected
-adb_paths = ["adb", "/Users/zeno/Developer/adt-bundle-mac/sdk/platform-tools/adb"]
+adb_paths = ["adb", "/Users/zeno/Developer/adt-bundle-mac/sdk/platform-tools/adb", "/Applications/adt-bundle-mac-x86_64-20140321/sdk/platform-tools//adb"]
 for adb_path in adb_paths:
     try:
         proc = subprocess.call([adb_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -721,7 +721,7 @@ def __backup_restore_app_data(apk_conf_backup_file, device_serialno, backup, pac
 
     # backup
     if backup:
-        if dev:
+        if device_serialno:
             #-shared
             os.system(adb_path + " -s " + device_serialno + " backup " + " -f " + apk_conf_backup_file + " -noapk " + package_name)
         else:
@@ -729,7 +729,7 @@ def __backup_restore_app_data(apk_conf_backup_file, device_serialno, backup, pac
 
     # restore
     else:
-        if dev:
+        if device_serialno:
             os.system(adb_path + " -s " + device_serialno + " restore " + apk_conf_backup_file)
         else:
             os.system(adb_path + " restore " + apk_conf_backup_file)

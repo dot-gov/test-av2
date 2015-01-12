@@ -195,6 +195,16 @@ apksConf['fsecure'] = {'type':  'av',
                                 'package_name': 'com.fsecure.ms.dc',
                                 'start_scan_activity': ''}
 
+
+apksConf['eset'] = {'type':  'av',
+                                'apk_path': 'avassets/eset/com.eset.ems2.gp-1.apk',
+                                'conf_file': '',
+                                'conf_gzip': '',
+                                'launch_activity': '',
+                                'apk_conf_backup_file': 'avassets/eset/eset_backup.ab',
+                                'package_name': 'package:com.eset.ems2.gp',
+                                'start_scan_activity': ''}
+
 #template
 #simple apksConf['agent'] = {'type': '', 'apk_path': '', 'conf_file': '', 'launch_activity': '', 'package_name': '',...}
 # complex

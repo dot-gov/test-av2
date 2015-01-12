@@ -24,11 +24,11 @@ SYSTEM_FUNCTIONAL_RITE:
 
     - START_VM
     - CALL: VM_PUSH_AGENT
-    - START_AGENT: 172.20.20.122
+    - START_AGENT: 172.20.20.192
     - SET:
         backend: 192.168.100.201
         frontend: 192.168.100.204
-    - CALL: VM_CLEAN_EVIDENCES
+    #- CALL: VM_CLEAN_EVIDENCES
     - UNINSTALL
     - PUSH: [ AVAgent/assets/facebook.bat ]
     - BUILD: [ pull, windows_elite, silent ]
@@ -56,7 +56,7 @@ SYSTEM_FUNCTIONAL_MANUAL:
 
     - START_VM
     - CALL: VM_PUSH_AGENT
-    - START_AGENT: 172.20.20.122
+    - START_AGENT: 172.20.20.192
     - SET:
         backend: 192.168.100.201
         frontend: 192.168.100.204
@@ -73,11 +73,11 @@ SYSTEM_FUNCTIONAL_SOLDIER_RITE:
 
     - START_VM
     - CALL: VM_PUSH_AGENT
-    - START_AGENT: 172.20.20.122
+    - START_AGENT: 172.20.20.192
     - SET:
         backend: 192.168.100.201
         frontend: 192.168.100.204
-    - CALL: VM_CLEAN_EVIDENCES
+    #- CALL: VM_CLEAN_EVIDENCES
     - UNINSTALL
     - PUSH: [ AVAgent/assets/facebook.bat ]
     - BUILD: [ pull, windows_soldier, silent ]
@@ -105,13 +105,13 @@ SYSTEM_FUNCTIONAL_SKYPE_RITE:
 
     - START_VM
     - CALL: VM_PUSH_AGENT
-    - START_AGENT: 172.20.20.122
+    - START_AGENT: 172.20.20.192
     - SET:
         backend: 192.168.100.201
         frontend: 192.168.100.204
 
     - UNINSTALL
-    - CALL: VM_CLEAN_EVIDENCES
+    #- CALL: VM_CLEAN_EVIDENCES
 
     - PUSH: [ AVAgent/assets/skype.bat ]
     - BUILD: [ pull, windows_elite, silent ]
@@ -250,3 +250,23 @@ SYSTEM_SOLDIER_CASTORE:
 
     - CALL: VM_GET_LOG
     - CALL: END_DISPATCH
+
+
+UPD_AGENT_AND_SNAP_RITE:
+    - INTERNET: True
+    - SLEEP: [10, 60]
+    - REVERT
+    - START_VM
+    - CHECK_INFECTION # questo non e' necessario, ma e' meglio assicurarsene
+    - CALL: VM_PUSH_AGENT
+    - INSTALL_AGENT
+    - SLEEP: 60
+    - STOP_VM: 300
+    - WAIT_SHUTDOWN
+    - START_VM: AV_AGENT
+    - UNINSTALL
+    - SLEEP: 60
+    - STOP_VM: 300
+    - WAIT_SHUTDOWN
+    - CALL: UPD_REFRESH
+    #- CLEAN_EVIDENCES: [ Ok ]

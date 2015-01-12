@@ -24,14 +24,17 @@ def execute(vm, protocol, keep_samples):
             os.makedirs(dst)
         files = os.listdir(src)
         for f in files:
-            i = 0
+        # TEMPORANEAMENTE DISABILITATA COPIA MULTIPLA (che non funziona perche' avviene per ogni VM)
+        #    i = 0
             dst_full_file_name = os.path.join(dst, f)
-            while os.path.exists(dst_full_file_name):
-                i += 1
-                dst_full_file_name = "%s_new_%s.zip" % (os.path.join(dst, f), i)
+        #    while os.path.exists(dst_full_file_name):
+        #        i += 1
+        #        dst_full_file_name = "%s_new_%s.zip" % (os.path.join(dst, f), i)
 
             logging.debug("Moving %s to %s" % (os.path.join(src, f), dst_full_file_name))
-            shutil.move(os.path.join(src, f), dst_full_file_name)
+        #    shutil.move(os.path.join(src, f), dst_full_file_name)
+            if not os.path.exists(dst_full_file_name):
+                shutil.copy(os.path.join(src, f), dst_full_file_name)
     #if not keep_samples
     else:
         try:
