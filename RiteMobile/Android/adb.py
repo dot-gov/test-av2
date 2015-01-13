@@ -225,8 +225,8 @@ def isVersion(AvMaj, AvMin, AvPatch, device=None):
 # todo: per device unlock!! better to classifiy device in order to
 # avoid spurious touch
 def unlock(device=None):
-    cmd = "input keyevent 82"
-    execute(cmd, device)
+    #cmd = "input keyevent 82"
+    #execute(cmd, device)
     x = y = 0
     (x, y) = get_screen_res(device)
     versionres = isVersion(4,0,-1,device)
@@ -244,6 +244,21 @@ def unlock(device=None):
         #try vertical Xcenter Y1/5 to down Xcenter Y1/9
         cmd = "input swipe %d %d %d %d \n" % (int(x)/2, int(y)-int(y)/(5.0), int(x)/2, int(y)-int(y)/(9.0))
         execute(cmd, device)
+    elif "lg-d405" in model:
+        if x > 0 and y > 0:
+            #try horizontal Xcenter Y1/5 to rightX Y1/5
+            cmd = "input swipe %d %d %d %d \n" % (int(x)/6, int(y)-int(y)/(3.0), int(x)-int(x)/6, int(y)-int(y)/(3.0))
+        else:
+            cmd = "input swipe 90 640 450 640 \n"
+        execute(cmd, device)
+    elif 'huawei y530' in model:
+        if x > 0 and y > 0:
+            #try horizontal Xcenter Y1/5 to rightX Y1/5
+            cmd = "input swipe %d %d %d %d \n" % (int(x)/2, int(y)-int(y)/(4.0), int(x)-int(x)/6, int(y)-int(y)/(4.0))
+        else:
+            cmd = "input swipe 90 640 450 640 \n"
+        execute(cmd, device)
+
     else:
         if x > 0 and y > 0:
             #horizontal

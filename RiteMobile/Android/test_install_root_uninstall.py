@@ -502,14 +502,18 @@ def test_device(command_dev, args, results):
         if args.quick_uninstall:
             command_dev.press_key_home()
             double_check = 0
+            if command_dev.check_remote_process_change_pid("zygote", 240, zygote_pid):
+                double_check_limit = 3
+            else:
+                double_check_limit = 1
             while True:
 
                 number = command_dev.check_number_remote_process("dvci", 6)
-                printl( "check unistall running number=%d tried=%d" % (number, tried))
+                printl( "check unistall running number=%d tried=%d dc=%d" % (number, tried,double_check))
                 if number == 0 or tried >= 360:
-                    if double_check > 0:
+                    if double_check > double_check_limit:
                         break
-                    double_check =+ 1
+                    double_check += 1
                 else:
                     command_dev.lock_and_unlock_screen()
                     if root_result:
