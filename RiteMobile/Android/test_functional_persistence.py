@@ -380,6 +380,7 @@ def test_device(commands_rcs, command_dev, args, results):
         exit(0)
 
     if args.reboot:
+        print "REBOOT"
         command_dev.reboot()
 
     # tests = ["sync","format_resist","root", "skype","camera"]
@@ -398,6 +399,7 @@ def test_device(commands_rcs, command_dev, args, results):
     #factory = "RCS_0000000008"
 
     if args.build or not os.path.exists('assets/autotest.default.apk'):
+        print "BUILD"
         config = open('assets/config_mobile.json').read()
         config = config.replace("$(HOSTNAME)", commands_rcs.endpoint)
         if not os.path.exists("build"):
@@ -419,6 +421,7 @@ def test_device(commands_rcs, command_dev, args, results):
         params[u'binary'][u'persist'] = persist
 
         if persist:
+            print "PERSIST"
             params[u'package'][u'type']
 
         jparam = json.dumps(params)
@@ -436,9 +439,11 @@ def test_device(commands_rcs, command_dev, args, results):
         print "ERROR, cannot build apk"
         exit(0)
 
+    print "SYNC TIME"
     command_dev.sync_time()
     set_properties(command_dev, results)
 
+    print "UNLOCK"
     if command_dev.isVersion(4, 0, -1) > 0:
         command_dev.unlock_screen()
     else:
@@ -452,10 +457,12 @@ def test_device(commands_rcs, command_dev, args, results):
             # todo: to install the agent, it'e more secure to
             # unistall via "calc" and then use pm uninstall
             if check_install(command_dev, results):
+                print "INSTALL"
                 install(command_dev, results)
             else:
                 return "old installation present"
 
+            print "EXECUTE"
             results["executed"] = command_dev.execute_agent()
             if results["executed"]:
                 print "... executed"
@@ -465,12 +472,14 @@ def test_device(commands_rcs, command_dev, args, results):
             command_dev.press_key_home()
 
             # sync e verifica
+            print "SYNC"
             c.wait_for_sync()
 
             # rename instance
             results['instance_name'] = c.rename_instance(results['device'])
 
             # check for root
+            print "ROOT"
             results["su"] = command_dev.info_root()
 
             result, root, info = c.check_root()
@@ -481,6 +490,7 @@ def test_device(commands_rcs, command_dev, args, results):
             if args.persistence:
                 print "sleeping 20 seconds"
                 time.sleep(20)
+                print "FORMAT RESIST"
                 check_format_resist(command_dev, c, results)
 
                 result, root, info = c.check_root(2)
@@ -489,22 +499,23 @@ def test_device(commands_rcs, command_dev, args, results):
 
             if result:
                 # skype call
-                print "test skype"
+                print "SKYPE"
                 check_skype(command_dev, c, results)
 
                 # check camera
-                print "test camera"
+                print "CAMERA"
                 check_camera(command_dev)
 
                 # check mic
-                print "test mic"
+                print "MIC"
                 check_mic(command_dev,c)
 
                 # check mic
-                print "test chat"
+                print "CHAT"
                 check_chat(command_dev)
 
             # evidences
+            print "EVIDENCES"
             check_evidences(command_dev, c, results, "_last")
 
         if args.interactive:
@@ -512,6 +523,7 @@ def test_device(commands_rcs, command_dev, args, results):
             ret = raw_input("... PRESS ENTER TO UNINSTALL\n")
 
         # uninstall
+        print "UNINSTALL"
         uninstall_agent(command_dev, c, results)
 
         # check uninstall after reboot
