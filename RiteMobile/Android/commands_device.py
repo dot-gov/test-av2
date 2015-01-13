@@ -299,15 +299,16 @@ class CommandsDevice:
     #     apk_instance.start_default_activity(self.device_serialno)
 
     def execute_agent(self):
-        if not self.is_agent_running():
+        tried = 0
+        while not self.is_agent_running() and tried < 3:
             package = apk_dataLoader.get_apk("agent").package_name
             adb.executeMonkey(package, self.device_serialno)
-            time.sleep(3)
-
+            time.sleep(1)
             if not self.is_agent_running():
                 adb.executeService(package, self.device_serialno)
-                time.sleep(3)
-
+                time.sleep(1)
+            tried =+ 1
+            time.sleep(1)
         return self.is_agent_running()
 
     def execute_cmd(self, app):
@@ -317,9 +318,10 @@ class CommandsDevice:
         return adb.executeSU(app, True, self.device_serialno)
 
     def execute_calc(self):
-        calc = [f.split(":")[1] for f in adb.execute("pm list packages calc", self.device_serialno).split() if f.startswith("package:")][0]
+        #list = adb.execute("pm list packages calc", self.device_serialno).split()
+        #calc = [f.split(":")[1] for f in list if f.startswith("package:")][0]
         packages = self.get_packages()
-        calc = [p for p in packages if "calc" in p and not "localc" in p and "android" in p ][0]
+        calc = [p for p in packages if "calc" in p and not "localc" in p and "android" in p][0]
         print "... executing calc: %s" % calc
         adb.executeMonkey(calc, self.device_serialno)
         return self.check_remote_process(calc, 10)
@@ -487,7 +489,7 @@ class CommandsDevice:
 
     def unlock_screen(self):
         if adb.is_screen_off(self.device_serialno):
-            self.press_key_power( )
+            self.press_key_power()
         adb.unlock(self.device_serialno)
 
     def unlock(self):
