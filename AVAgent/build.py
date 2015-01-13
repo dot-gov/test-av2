@@ -58,7 +58,7 @@ def check_static(files, report = None):
     failed = []
     # for retrocompatibility, we add an agent.exe. This is not added to the current list of files
     for src in files:
-        if os.path.exists(src) and str(src).endswith(".exe"):
+        if os.path.exists(src) and str(src).endswith(".exe") and "agent.exe" not in files:
             dst = os.path.join(os.path.dirname(src), "agent.exe")
             logging.debug("Copying %s to %s" % (src, dst))
             try:
