@@ -255,26 +255,26 @@ def create_report_for_analyzer(report):
     #         os.unlink(previous_lastlog_name)
     #     os.rename(lastlog_name, previous_lastlog_name)
 
-    report_for_analyzer_file = open(report_for_analyzer_name, "w+")
-    to_serialize = {}
-    for k, v in report.c_received.items():
-        vm = []
-        test_name = None
-        for comm in v:
-            #prendo solo la parte di REPORT, quindi aspetto la REPORT_KIND_INIT, recupero il test,
-            # e processo i dati fino all'REPORT_KIND_END. poi ignoro il resto fino al REPORT_KIND_INIT
-            if comm.name == "REPORT_KIND_INIT":
-                test_name = comm.args
-            if comm.name == "REPORT_KIND_END":
-                #report_kind_end and report_kind_init are included
+    with open(report_for_analyzer_name, "a") as report_for_analyzer_file:
+        to_serialize = {}
+        for k, v in report.c_received.items():
+            vm = []
+            test_name = None
+            for comm in v:
+                #prendo solo la parte di REPORT, quindi aspetto la REPORT_KIND_INIT, recupero il test,
+                # e processo i dati fino all'REPORT_KIND_END. poi ignoro il resto fino al REPORT_KIND_INIT
+                if comm.name == "REPORT_KIND_INIT":
+                    test_name = comm.args
+                if comm.name == "REPORT_KIND_END":
+                    #report_kind_end and report_kind_init are included
+                    vm.append(command_to_array(comm, test_name))
+                    test_name = None
+                if not test_name:
+                    continue
                 vm.append(command_to_array(comm, test_name))
-                test_name = None
-            if not test_name:
-                continue
-            vm.append(command_to_array(comm, test_name))
 
-        to_serialize[k] = vm
-    yaml.dump(to_serialize, report_for_analyzer_file)
+            to_serialize[k] = vm
+        yaml.dump(to_serialize, report_for_analyzer_file)
 
     #no more needed
     #shutil.copyfile(report_for_analyzer_name, lastlog_name)

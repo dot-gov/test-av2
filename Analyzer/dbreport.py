@@ -107,7 +107,8 @@ class DBReport(object):
         testerr = ["['FAILED', 'FAILED']"]
         self.conn.execute("INSERT INTO SUMMARY VALUES (0,'VM_ELITE_FAST_DEMO_SRV','avira',? ,'',1)", testerr)
         self.conn.execute("INSERT INTO SUMMARY VALUES (0,'VM_ELITE_FAST_DEMO_SRV','norton',? ,'',1)", testerr)
-        self.conn.execute("INSERT INTO SUMMARY VALUES (0,'VM_SOLDIER_SRV','norton',? ,'',1)", testerr)
+        self.conn.execute("INSERT INTO SUMMARY VALUES (0,'VM_SOLDIER_SRV','eset',? ,'',1)", testerr)
+        self.conn.execute("INSERT INTO SUMMARY VALUES (0,'VM_SOLDIER_SRV','norton',? ,'',1)", ["['CROP']"])
 
 
 def parse_known_error_row(original_row):

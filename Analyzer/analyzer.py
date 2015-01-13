@@ -1,11 +1,12 @@
 __author__ = 'mlosito'
 import os
+import glob
 import time
 import yaml
 import sys
 import copy
-
-from operator import methodcaller
+import socket
+import mailsender
 
 from dbreport import DBReport
 from resultdata import ResultData
@@ -15,33 +16,54 @@ from resultstates import ResultStates
 def main():
 
     #f = open('/home/avmonitor/logs/150108/report_for_analyzer.150108-103448.SYSTEM_ELITE_FAST_DEMO_SRV.yaml', 'r')
-
-    yaml_dir = os.path.join('/home/avmonitor/logs/', time.strftime("%y%m%d", time.localtime(time.time())))
+    #yaml_dir = os.path.join('/home/avmonitor/logs/', time.strftime("%y%m%d", time.localtime(time.time())))
     #print yaml_dir
+    # #gets all files and get the latest report_for_analyzer
+    # filelist = []
+    # for dirname, dirnames, filenames in os.walk(yaml_dir):
+    #     # print path to all filenames.
+    #     for filename in filenames:
+    #         #print filename
+    #         if filename.endswith(".yaml") and filename.startswith("report_for_analyzer"):
+    #             filelist.append(filename)
 
-    #gets all files and get the latest report_for_analyzer
-    filelist = []
-    for dirname, dirnames, filenames in os.walk(yaml_dir):
-        # print path to all filenames.
-        for filename in filenames:
-            #print filename
-            if filename.endswith(".yaml") and filename.startswith("report_for_analyzer"):
-                filelist.append(filename)
+    #finds report for analyzer files
+    prefix = '/home/avmonitor/logs/'
+    hostname = socket.gethostname()
+    if hostname == 'rite':
+        prefix = '/home/avmonitor/Rite/logs/'
+
+    filelist = glob.glob(prefix + "*/report_for_analyzer.*.yaml")
 
     if not len(filelist):
-        print "No yaml report files found in dir:" + yaml_dir
+        print "No yaml report files found in logs dirs:"
         sys.exit()
 
     filelist.sort(reverse=True)
 
-    process_yaml(os.path.join(yaml_dir, filelist[0]))
+    # debug
+    #print filelist
+
+    print "I'll process: %s" % filelist[0]
+
+    process_yaml(os.path.join(prefix, filelist[0]))
 
 
 def process_yaml(filename):
     f = open(filename)
     commands_results = yaml.load(f)
 
+    #global test name splitted from filename (for the report)
+    testname = filename.split(".")[-2]
+
     print "Number of VM to analyze: ", len(commands_results)
+
+    vms = commands_results.keys()
+
+    mail_message_errors = "###################  UNKNOWN ERRORS   ###################\n"
+    mail_message_ok = "###################     OK     ###################\n"
+    mail_message_error_details = "################### ERROR DETAILS ###################\n"
+    mail_message_known_errors_summary = "################### KNOWN ERRORS ###################\n"
 
     # this splits the dictionary into the different VMS
     for k, v in commands_results.items():
@@ -62,15 +84,37 @@ def process_yaml(filename):
                     templist.append(i)
             splitted_list.append(templist)
         # print "splitt", splitted_list
+
         for listz in splitted_list:
-            ok, message, saved_error, errors_list = analyze(k, listz)
-            print "------------------------------------------------------------------"
-            print "Analyzed VM: %s" % k
-            print "VM passed test?: %s" % ok
-            print "Analyzer Message: %s" % message
-            print "Known Error: %s" % saved_error
-            print "Errorlist: %s " % errors_list
-            print "------------------------------------------------------------------"
+            test_name = listz[0].test_name
+            ok, message, saved_error, errors_list, error_log = analyze(k, listz)
+            partial_mail_message = "Analyzed VM: %s - Test: %s\n" % (k, test_name)
+            #partial_mail_message += "VM passed test?: %s\n" % ok
+            partial_mail_message += "Analyzer Message: %s" % message
+            #partial_mail_message += "Known Error: %s\n" % saved_error
+            partial_mail_message += "(Errorlist: %s)\n" % errors_list
+            partial_mail_message += "------------------------------------------------------------------\n"
+
+            if not ok:
+                mail_message_errors += partial_mail_message
+            elif not saved_error:
+                mail_message_ok += partial_mail_message
+            else:
+                mail_message_known_errors_summary += partial_mail_message
+
+            print partial_mail_message
+
+            if not ok:
+                mail_message_error_details += partial_mail_message
+                #mail_message_error_details += "------------------------------------------------------------------\n"
+                mail_message_error_details += "-------------------       ERROR LOG          ---------------------\n"
+                mail_message_error_details += "------------------------------------------------------------------\n"
+                for i in error_log:
+                    mail_message_error_details += i.get_cause() + "\n"
+                mail_message_error_details += "------------------------------------------------------------------\n"
+
+    mail_message = mail_message_errors + "\n\n" + mail_message_known_errors_summary + "\n\n" + mail_message_ok + "\n\n" + mail_message_error_details
+    mailsender.analyzer_mail(testname, vms, mail_message)
 
 
 def analyze(vm, comms):
@@ -96,7 +140,7 @@ def analyze(vm, comms):
         saved_error = None
 
         # #for testing only
-        # db.annichilate_table()
+        db.annichilate_table()
 
         errors_list = []
 
@@ -190,14 +234,17 @@ def analyze(vm, comms):
         #     # stato precedente = all'attuale, e uguale anche allo stato salvato
         #     # quindi non devo fare nulla, Messaggio = Tutto ok
 
-    return ok, message, saved_error, errors_list
+    return ok, message, saved_error, errors_list, comms
 
 
 def preparse_command_list(comms):
     parsed = []
     for i in comms:
         #comm.timestamp, comm.test_name, comm.vm, comm.name, comm.args, comm.success, comm.result, "", "", comm.side
-        parsed.append(ResultData(i[0], i[1], i[2], i[3], i[4], i[5], i[6], ResultStates.NONE, "", "", i[9]))
+        #timestamp,         test_name,      vm,      command,               args=None,     rite_result=None, rite_result_log=None,  parsed_result=ResultStates.NONE, rite_failed=False, rite_fail_log=None, side=None):
+        #1421098490.708954, 'VM_STATIC_SRV', 'avg15', 'REPORT_KIND_INIT', 'VM_STATIC_SRV', True,             'avg15| VM_STATIC_SRV',     '',   '', 'meta']
+        print i
+        parsed.append(ResultData(i[0], i[1], i[2], i[3], i[4], i[5], i[6], ResultStates.NONE, False, "", i[9]))
     return parsed
 
 
