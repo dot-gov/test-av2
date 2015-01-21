@@ -241,7 +241,7 @@ VM_MELT_SRV:
     - UNINSTALL
 
 VM_MELT_SRV_FIF:
-    #- ENABLE: [ monday, thursday ]
+    - ENABLE: [ monday, thursday ]
     - CALL: INIT_DISPATCH
     - BUILD_SRV: [ scout, windows_melt_fif, melt, melt ]
     - SCREENSHOT
@@ -250,7 +250,7 @@ VM_MELT_SRV_FIF:
     - UNINSTALL
 
 VM_MELT_SRV_UTO:
-    #- ENABLE: [ tuesday, friday, sunday ]
+    - ENABLE: [ tuesday, friday, sunday ]
     - CALL: INIT_DISPATCH
     - BUILD_SRV: [ scout, windows_melt_uto, melt, melt ]
     - SCREENSHOT
@@ -259,7 +259,7 @@ VM_MELT_SRV_UTO:
     - UNINSTALL
 
 VM_MELT_SRV_SKY:
-    #- ENABLE: [ wednesday, saturday ]
+    - ENABLE: [ wednesday, saturday ]
     - CALL: INIT_DISPATCH
     - BUILD_SRV: [ scout, windows_melt_sky, melt, melt ]
     - SCREENSHOT
