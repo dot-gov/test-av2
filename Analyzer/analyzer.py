@@ -14,7 +14,7 @@ from resultstates import ResultStates
 from summarydata import SummaryData
 
 debug = True
-send_mail = False
+send_mail = True
 
 def main():
 
@@ -76,6 +76,8 @@ def process_yaml(filename):
     mail_message_error_details = "################### ERROR DETAILS ###################\n"
     mail_message_known_errors_summary = "################### KNOWN ERRORS ###################\n"
 
+    retests = {}
+
     # this splits the dictionary into the different VMS
     for k, v in commands_results.items():
         comm2 = preparse_command_list(v)
@@ -103,21 +105,31 @@ def process_yaml(filename):
             ################### HERE I CALL THE ANALZER #################
             #############################################################
             ok, message, saved_error, errors_list, error_log = analyze(k, listz)
+
+            #CREATING EMAIL AND PRINTING RESULTS
             partial_mail_message = "Analyzed VM: %s - Test: %s\n" % (k, test_name)
             #partial_mail_message += "VM passed test?: %s\n" % ok
-            partial_mail_message += "Analyzer Message: %s" % message
+            partial_mail_message += "Analyzer Message: %s\n" % message
             #partial_mail_message += "Known Error: %s\n" % saved_error
             partial_mail_message += "(Errorlist: %s)\n" % errors_list
+
+            print "####################     RESULTS     #####################"
+            print partial_mail_message
+            print "####################   RESULTS END   #####################"
+
             partial_mail_message += "------------------------------------------------------------------\n"
 
             if not ok:
                 mail_message_errors += partial_mail_message
+                #adds retest
+                if test_name not in retests:
+                    retests[test_name] = set()
+                retests[test_name].add(k)
+
             elif not saved_error:
                 mail_message_ok += partial_mail_message
             else:
                 mail_message_known_errors_summary += partial_mail_message
-
-            print partial_mail_message
 
             if not ok:
                 mail_message_error_details += partial_mail_message
@@ -128,72 +140,98 @@ def process_yaml(filename):
                     mail_message_error_details += i.get_cause(False) + "\n"
                 mail_message_error_details += "------------------------------------------------------------------\n"
 
-    mail_message = mail_message_errors + "\n\n" + mail_message_known_errors_summary + "\n\n" + mail_message_ok + "\n\n" + mail_message_error_details
+    #print retests
+    retestlist = "################### Retests to be run ###################\n"
+    for testname, machines in retests.items():
+        retest = "./run.sh %s -m " % testname
+        for vm in machines:
+            retest += "%s," % vm
+        retestlist += "%s -c -p 40\n" % retest[0:-1]
+
+    print retestlist
+
+    mail_message = mail_message_errors + "\n\n" + mail_message_known_errors_summary + "\n\n" + mail_message_ok + "\n\n" + retestlist + "\n\n" +mail_message_error_details
     if send_mail:
         mailsender.analyzer_mail(testname, vms, mail_message)
 
 
-def compare_three_states(current_state_rows, current_state_rows_full, manual_state_rows, message, previous_state_rows, saved_error):
+
+
+    #new errors and anomalies (manual state different from current state), and other problems are considered NOT OK
+    #saved state = current state is considered "SAVED STATE=True".
+    # Other cases are NOT OK
+def compare_three_states_results(current_state_rows, current_state_rows_full, manual_state_rows, manual_state_rows_full, message, previous_state_rows,
+                                 saved_error):
     #first of all, I check for failure. If there is a failure I don't check results
     ok = True
-    #if current run failed
-    if rite_failed(current_state_rows):
-        if rite_failed(manual_state_rows):
-            message = "All OK! Actual state is: RITE_FAILED, known state is: RITE_FAILED (previous_state was: %s)" % rite_failed(previous_state_rows)
-            saved_error = True
-        else:
-            message = "New RITE Failure! Actual state is: RITE_FAILED, known state is: RITE_NOT_FAILED (previous_state was: %s)" % rite_failed(previous_state_rows)
-            ok = False
-    #in case saved state is failed and current is not
-    elif rite_failed(manual_state_rows):
-        message = "Anomaly! Actual state is RITE NOT FAILED, but known state is RITE_FAIlED (previous_state was: %s)" % rite_failed(previous_state_rows)
-        saved_error = True
+    # #if current run failed
+    # if rite_failed(current_state_rows):
+    #     if rite_failed(manual_state_rows):
+    #         message = "All OK! Actual state is: RITE_FAILED, known state is: RITE_FAILED (previous_state was: %s)" % rite_failed(previous_state_rows)
+    #         saved_error = True
+    #     else:
+    #         message = "New RITE Failure! Actual state is: RITE_FAILED, known state is: RITE_NOT_FAILED (previous_state was: %s)" % rite_failed(previous_state_rows)
+    #         ok = False
+    # #in case saved state is failed and current is not
+    # elif rite_failed(manual_state_rows):
+    #     message = "Anomaly! Actual state is RITE NOT FAILED, but known state is RITE_FAIlED (previous_state was: %s)" % rite_failed(previous_state_rows)
+    #     saved_error = True
     #Now I check the results
     if len(current_state_rows) == 0 and len(previous_state_rows) == 0 and len(manual_state_rows) == 0:
         message = "All OK! Actual state is: PASSED, previous state was: PASSED, (known state is: PASSED)"
-        if debug:
-            print message
+
     elif len(current_state_rows) == 0 and len(previous_state_rows) > 0 and len(manual_state_rows) == 0:
         message = "All Ok! Actual state is PASSED, we recovered from previous errorlist: %s" % state_rows_to_string_short(previous_state_rows)
-        if debug:
-            print message
+
     elif len(current_state_rows) > 0 and len(previous_state_rows) == 0 and len(manual_state_rows) == 0:
         message = "New error! Actual errorlist is: %s, previous state was: PASSED, (known state is: PASSED)" % state_rows_to_string_short(
             current_state_rows_full)
-        if debug:
-            print message
         ok = False
     elif len(current_state_rows) > 0 and len(previous_state_rows) > 0 and len(manual_state_rows) == 0:
         message = "New recurrent error! Actual errorlist is: %s, previous errorlist is: %s:, (known state is: PASSED)" % (
-        state_rows_to_string_short(current_state_rows_full), state_rows_to_string_short(previous_state_rows))
-        if debug:
-            print message
+            state_rows_to_string_short(current_state_rows_full), state_rows_to_string_short(previous_state_rows))
         ok = False
     elif len(current_state_rows) == 0 and len(manual_state_rows) > 0:
-        message = "Anomaly! Actual state is PASSED, known errorlist is: %s" % state_rows_to_string_short(manual_state_rows)
-        if debug:
-            print message
+        message = "Anomaly! Actual state is PASSED, known errorlist is: %s" % state_rows_to_string_short(manual_state_rows_full)
         ok = False
-    elif len(current_state_rows) > 0 and compare_current_to_manual(current_state_rows, manual_state_rows) == 0:
-        message = "OK, but known errors occurred. Actual errorlist and known errorlist are %s (previous errorlist is: %s)" % (
-        state_rows_to_string_short(current_state_rows_full), state_rows_to_string_short(previous_state_rows))
-        if debug:
-            print message
+    elif len(current_state_rows) > 0 and compare_current_to_manual(current_state_rows, manual_state_rows):
+        message = "OK, but known errors occurred (known error comment is: %s). Actual errorlist and known errorlist are %s" \
+                  "(previous errorlist is: %s)" % (manual_state_rows_full[0].manual_comment, state_rows_to_string_short(current_state_rows_full),
+                                                   state_rows_to_string_short(previous_state_rows))
         saved_error = True
-    elif len(current_state_rows) > 0 and compare_current_to_manual(current_state_rows, manual_state_rows) != 0:
-        message = "Anomaly! Actual errors differs from saved errors. Actual errorlist is: %s, known errorlist is: %s (previous errorlist is: %s)" % (
-        state_rows_to_string_short(current_state_rows_full), state_rows_to_string_short(manual_state_rows),
-        state_rows_to_string_short(previous_state_rows))
-        if debug:
-            print message
+    elif len(current_state_rows) > 0 and compare_current_to_manual(current_state_rows, manual_state_rows):
+        x, differ_reason = compare_current_to_manual(current_state_rows, manual_state_rows)
+        message = "Anomaly! Actual errors differs from saved errors (reason: %s). Actual errorlist is: %s, known errorlist is: %s" \
+                  "(previous errorlist is: %s)" % (differ_reason, state_rows_to_string_short(current_state_rows_full),
+                                                   state_rows_to_string_short(manual_state_rows_full), state_rows_to_string_short(previous_state_rows))
         ok = False
     else:
-        message = "Sorry, the analyzer does not know this kind of error :,-( Actual errorlist is: %s, known errorlist is: %s (previous errorlist is: %s)" % (
-        state_rows_to_string_short(current_state_rows_full), state_rows_to_string_short(manual_state_rows),
-        state_rows_to_string_short(previous_state_rows))
-        if debug:
-            print message
+        message = "Sorry, the analyzer does not know this kind of error :,-( Actual errorlist is: %s," \
+                  "known errorlist is: %s (previous errorlist is: %s)" % (state_rows_to_string_short(current_state_rows_full),
+                                                                          state_rows_to_string_short(manual_state_rows_full),
+                                                                          state_rows_to_string_short(previous_state_rows))
         ok = False
+    return message, ok, saved_error
+
+
+def compare_three_states_failure(current_state_rows, manual_state_rows, message, previous_state_rows, saved_error):
+    #first of all, I check for failure. If there is a failure I don't check results
+    ok = True
+    saved_error = False
+    #if current run failed
+    if rite_failed(current_state_rows):
+        if rite_failed(manual_state_rows):
+            message = "All OK! Actual state is: RITE_FAILED, known state is: RITE_FAILED (known fail comment is: %s) (previous_state was failed: %s)" % (manual_state_rows[0].manual_comment, rite_failed(previous_state_rows))
+            saved_error = True
+        else:
+            message = "New RITE Failure! Actual state is: RITE_FAILED, known state is: RITE_NOT_FAILED (previous_state was failed: %s)" % rite_failed(previous_state_rows)
+            ok = False
+    #in case saved state is failed and current is not
+    elif rite_failed(manual_state_rows):
+        message = "Anomaly! Actual state is RITE NOT FAILED, but known state is RITE_FAILED (known fail comment is: %s) (previous_state was failed: %s)" % (manual_state_rows[0].manual_comment, rite_failed(previous_state_rows))
+        ok = False
+
+    print "Fail analysis:", message
     return message, ok, saved_error
 
 
@@ -209,11 +247,10 @@ def analyze(vm, comms):
     test_name = comms[0].test_name
     test_approximate_start_time = comms[0].timestamp
 
-    print "#########################################"
-    print "# Analyzing %s commands for VM: %s #" % (len(comms), vm)
-    print "# Test: %s #" % test_name
-    print "############  RESULTS  ##################"
-    print "#########################################"
+    print " ################### STARTING TEST ######################"
+    print " # Analyzing %s commands for VM: %s #" % (len(comms), vm)
+    print " # Test: %s #" % test_name
+    print " ################### STARTING TEST ######################"
     with DBReport() as db:
         #eventual error message
         message = None
@@ -222,11 +259,12 @@ def analyze(vm, comms):
 
         #loads previous and manual states
         if debug:
-            print ">>>>>>>>>>>>>>>>>>>>>>>>>>> PREVIOUS <<<<<<<<<<<<<<<<<<<<<<<<<<<<"
+            print "\n>>>>>>>>>>>>>>>>>>>>>>>>>>> PREVIOUS <<<<<<<<<<<<<<<<<<<<<<<<<<<<"
         previous_state_rows = db.get_latest_summary_rows(vm, test_name, debug, True)
         if debug:
-            print ">>>>>>>>>>>>>>>>>>>>>>>>>>> MANUAL <<<<<<<<<<<<<<<<<<<<<<<<<<<<"
-        manual_state_rows = db.get_known_summary_rows(vm, test_name, debug, False)
+            print "\n>>>>>>>>>>>>>>>>>>>>>>>>>>> MANUAL <<<<<<<<<<<<<<<<<<<<<<<<<<<<"
+        manual_state_rows = db.get_known_summary_rows(vm, test_name, debug, True)
+        manual_state_rows_full = db.get_known_summary_rows(vm, test_name, False, False)
 
         prg = 0
         #inserts the parsed line into the db for reference
@@ -246,17 +284,23 @@ def analyze(vm, comms):
 
         #loads current states (the rows were added little before)
         if debug:
-            print ">>>>>>>>>>>>>>>>>>>>>>>>>>> CURRENT <<<<<<<<<<<<<<<<<<<<<<<<<<<<"
+            print "\n>>>>>>>>>>>>>>>>>>>>>>>>>>> CURRENT <<<<<<<<<<<<<<<<<<<<<<<<<<<<"
         current_state_rows = db.get_latest_summary_rows(vm, test_name, debug, True)
         current_state_rows_full = db.get_latest_summary_rows(vm, test_name, False, False)
         if debug:
             print "manual rows", len(manual_state_rows)
-            print "rows", len(current_state_rows)
-            print "rows_full", len(current_state_rows_full)
+            print "manual rows full", len(manual_state_rows_full)
+            print "current rows", len(current_state_rows)
+            print "current rows full", len(current_state_rows_full)
 
-        message, ok, saved_error = compare_three_states(current_state_rows, current_state_rows_full, manual_state_rows, message, previous_state_rows,
-                                                        saved_error)
-
+        #checks for Rite Failure or other anomalies in failure states
+        message, ok, saved_error = compare_three_states_failure(current_state_rows, manual_state_rows, message, previous_state_rows, saved_error)
+        #if there are anomalies, then it IGNORES the states ad returns
+        #else if the failure state is ok, it compares the results
+        #but if is OK but have saved_error, then the fail was saved and so I should not check the results
+        if ok and not saved_error:
+            message, ok, saved_error = compare_three_states_results(current_state_rows, current_state_rows_full, manual_state_rows, manual_state_rows_full,
+                                                                    message, previous_state_rows, saved_error)
 
     return ok, message, saved_error, state_rows_to_string_short(current_state_rows_full), comms
 
@@ -284,7 +328,6 @@ def rite_failed(state_rows):
             if i.rite_failed:
                 failed = True
         return failed
-
 
 
 def compare_current_to_manual(current_state_rows, manual_state_rows):
@@ -317,7 +360,7 @@ def compare_current_to_manual(current_state_rows, manual_state_rows):
 
 
 def state_rows_to_string_short(state_rows):
-    state_rows_to_string_full(state_rows, full=False)
+    return state_rows_to_string_full(state_rows, full=False)
 
 
 def state_rows_to_string_full(state_rows, full=True):
@@ -330,7 +373,7 @@ def state_rows_to_string_full(state_rows, full=True):
         if row.rite_failed:
             output += "["+row.command+"=RITE FAILED!("+row.rite_fail_log+")]"
         # test failed
-        elif row.parsed_result[0] not in ['PASSED', 'NONE'] or full:
+        elif row.parsed_result[0].strip() not in ['PASSED', 'NONE'] or full:
             output += "["+row.command+"="+row.parsed_result[0]+"("+row.rite_result_log+")]"
     output += "}"
     return output
