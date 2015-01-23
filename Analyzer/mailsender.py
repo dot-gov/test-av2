@@ -15,7 +15,7 @@ def analyzer_mail(test_name, vms, message, mail_recipients=["m.losito@hackingtea
         msg['From'] = "avtest@hackingteam.com"
         msg['To'] = recipient
 
-        print "Msg to: %s to be sent" % msg['To']
+        print "Mail enabled. Msg to: %s to be sent" % msg['To']
         # Send the message via our own SMTP server, but don't include the
         # envelope header.
         s = smtplib.SMTP(mail_server)

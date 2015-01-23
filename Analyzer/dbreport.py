@@ -14,10 +14,10 @@ class DBReport(object):
         #timestamp is integer
 
         self.conn.execute('''CREATE TABLE IF NOT EXISTS RESULTS( timestamp integer, start_timestamp integer, test_name text, vm text, command text, args text,
-                        rite_result text, parsed_result text, rite_failed text, rite_fail_log text, side text )''')
+                        rite_result text, parsed_result text, rite_failed integer, rite_fail_log text, side text )''')
 
         self.conn.execute('''CREATE TABLE IF NOT EXISTS SUMMARY( start_timestamp integer, test_name text, vm text, prg integer, command text,
-                        parsed_result text, log text, rite_failed text, rite_fail_log text, manual text, manual_comment text,
+                        parsed_result text, log text, rite_failed integer, rite_fail_log text, manual integer, manual_comment text,
                         PRIMARY KEY (start_timestamp, test_name, vm, prg, manual) )''')
 
         #since sometime I make table modifications I prefer to recreate the views
@@ -84,9 +84,9 @@ class DBReport(object):
         rows = cursor.fetchall()
 
         if print_data:
-            print " ============================================================ "
+            print "................................................................. "
             print "Dumping RESULT Table! (vm = %s , test_name = %s )" % (vm, test_name)
-            print " ============================================================ "
+            print "................................................................. "
 
             for i in rows:
                 print i
@@ -116,7 +116,7 @@ class DBReport(object):
         try:
             self.conn.execute('INSERT INTO SUMMARY VALUES (?,?,?,?,?,?,?,?,?,?,?)', (summary.start_timestamp, summary.test_name, summary.vm, summary.prg,
                                                                                  summary.command, summary.parsed_result[0], str(summary.rite_result_log),
-                                                                                 str(summary.rite_failed), summary.rite_fail_log,
+                                                                                 summary.rite_failed, summary.rite_fail_log,
                                                                                  summary.manual, summary.manual_comment))
             #print "inserted 1 row"
         except sqlite3.IntegrityError:
@@ -141,14 +141,14 @@ class DBReport(object):
         rows = cursor.fetchall()
 
         if print_data:
-            print " =================================================================================================== "
+            print "................................................................. "
             print "Dumping SUMMARY Table! (vm = %s , test_name = %s )" % (vm, test_name)
-            print " =================================================================================================== "
+            print "................................................................. "
             if len(rows) == 0:
                 print "<0 Rows!>"
             for i in rows:
                 print i
-            print " =================================================================================================== "
+            print "................................................................. "
 
         summarys = []
         # from # start_timestamp integer 0 , test_name text 1, vm text 2, prg integer 3, command text 4, parsed_result text 5, log text 6,
@@ -186,19 +186,19 @@ class DBReport(object):
         #riattivare
         #self.insert_summary(SummaryData(0, 'VM_ELITE_FAST_DEMO_SRV', 'avira', 'BUILD_SRV', 0, '1', "Test avira falloso comment", "Failed log result", ResultStates.FAILED, False, ""))
 
-        self.insert_summary(SummaryData(0, u'VM_MELT_SRV_UTO', u'trendm', u'REPORT_KIND_INIT', 0, '1', "TestTrendm",     u'VM_MELT_SRV_UTO', ResultStates.PASSED, False, u''))
-        self.insert_summary(SummaryData(0, u'VM_MELT_SRV_UTO', u'trendm', u'CALL', 1, '1', "TestTrendm",                 u'VM_MELT_SRV_UTO', ResultStates.PASSED, False, u''))
-        self.insert_summary(SummaryData(0, u'VM_MELT_SRV_UTO', u'trendm', u'ENABLE', 2, '1', "TestTrendm",               u"['tuesday', 'friday', 'sunday']", ResultStates.PASSED, False, u''))
-        self.insert_summary(SummaryData(0, u'VM_MELT_SRV_UTO', u'trendm', u'CALL', 3, '1', "TestTrendm",                 u'INIT_DISPATCH', ResultStates.PASSED, False, u''))
-        self.insert_summary(SummaryData(0, 'VM_MELT_SRV_UTO', 'trendm', 'BUILD', 4, '1', "TestTrendm",             'False', ResultStates.FAILED, False, ''))
-        self.insert_summary(SummaryData(0, u'VM_MELT_SRV_UTO', u'trendm', u'REVERT', 5, '1', "TestTrendm",               u'[]', ResultStates.PASSED, False, u'' ))
-        self.insert_summary(SummaryData(0, u'VM_MELT_SRV_UTO', u'trendm', u'START_VM', 6, '1', "TestTrendm",             u'AV_AGENT', ResultStates.PASSED, False, u'' ))
-        self.insert_summary(SummaryData(0, u'VM_MELT_SRV_UTO', u'trendm', u'SLEEP', 7, '1', "TestTrendm",                u'60', ResultStates.PASSED, False, u'' ))
-        self.insert_summary(SummaryData(0, u'VM_MELT_SRV_UTO', u'trendm', u'END_CALL', 8, '1', "TestTrendm",             u'INIT_DISPATCH', ResultStates.PASSED, False, u''))
-        self.insert_summary(SummaryData(0, u'VM_MELT_SRV_UTO', u'trendm', u'BUILD_SRV', 9, '1', "TestTrendm",            u"['scout', 'windows_melt_uto', 'melt', 'melt', 'avmaster', (u'54982ebb7263731198b4f102', u'54b8cf1972637306707b7500', u'RCS_0000222569'), 'C:\\\\AVTest\\\\AVAgent\\\\build_windows_melt_uto_scout_melt_melt.zip']", ResultStates.FAILED, False, u''))
-        self.insert_summary(SummaryData(0, u'VM_MELT_SRV_UTO', u'trendm', u'REPORT_KIND_END', 10, '1', "TestTrendm",      u"['VM_MELT_SRV_UTO', []]", ResultStates.PASSED, False, u''))
+        self.insert_summary(SummaryData(0, u'VM_MELT_SRV_UTO', u'trendm', u'REPORT_KIND_INIT', 0, True, "TestTrendm",     u'VM_MELT_SRV_UTO', ResultStates.PASSED, False, u''))
+        self.insert_summary(SummaryData(0, u'VM_MELT_SRV_UTO', u'trendm', u'CALL', 1, True, "TestTrendm",                 u'VM_MELT_SRV_UTO', ResultStates.PASSED, False, u''))
+        self.insert_summary(SummaryData(0, u'VM_MELT_SRV_UTO', u'trendm', u'ENABLE', 2, True, "TestTrendm",               u"['tuesday', 'friday', 'sunday']", ResultStates.PASSED, False, u''))
+        self.insert_summary(SummaryData(0, u'VM_MELT_SRV_UTO', u'trendm', u'CALL', 3, True, "TestTrendm",                 u'INIT_DISPATCH', ResultStates.PASSED, False, u''))
+        self.insert_summary(SummaryData(0, 'VM_MELT_SRV_UTO', 'trendm', 'BUILD_SRV', 4, True, "TestTrendm",                   'windows_melt_uto', ResultStates.FAILED, False, ''))
+        self.insert_summary(SummaryData(0, u'VM_MELT_SRV_UTO', u'trendm', u'REVERT', 5, True, "TestTrendm",               u'[]', ResultStates.PASSED, False, u'' ))
+        self.insert_summary(SummaryData(0, u'VM_MELT_SRV_UTO', u'trendm', u'START_VM', 6, True, "TestTrendm",             u'AV_AGENT', ResultStates.PASSED, False, u'' ))
+        self.insert_summary(SummaryData(0, u'VM_MELT_SRV_UTO', u'trendm', u'SLEEP', 7, True, "TestTrendm",                u'60', ResultStates.PASSED, False, u'' ))
+        self.insert_summary(SummaryData(0, u'VM_MELT_SRV_UTO', u'trendm', u'END_CALL', 8, True, "TestTrendm",             u'INIT_DISPATCH', ResultStates.PASSED, False, u''))
+        self.insert_summary(SummaryData(0, u'VM_MELT_SRV_UTO', u'trendm', u'BUILD_SRV', 9, True, "TestTrendm",            u"['scout', 'windows_melt_uto', 'melt', 'melt', 'avmaster', (u'54982ebb7263731198b4f102', u'54b8cf1972637306707b7500', u'RCS_0000222569'), 'C:\\\\AVTest\\\\AVAgent\\\\build_windows_melt_uto_scout_melt_melt.zip']", ResultStates.PASSED, False, u''))
+        self.insert_summary(SummaryData(0, u'VM_MELT_SRV_UTO', u'trendm', u'REPORT_KIND_END', 10, True, "TestTrendm",      u"['VM_MELT_SRV_UTO', []]", ResultStates.PASSED, False, u''))
         #this to test failing of VM
-        self.insert_summary(SummaryData(0, u'VM_MELT_SRV_UTO', u'avira', u'REPORT_KIND_INIT', 0, '1', "No report Test Manual avira",      u"['VM_MELT_SRV_UTO', []]", ResultStates.PASSED, True, "Failed because fail fail fail"))
+        self.insert_summary(SummaryData(0, u'VM_MELT_SRV_UTO', u'avira', u'REPORT_KIND_INIT', 0, True, "No report FAIL MAnual Test avira",      u"['VM_MELT_SRV_UTO', []]", ResultStates.PASSED, True, "Failed because fail fail fail"))
 
         # self.insert_summary(0, 'VM_ELITE_FAST_DEMO_SRV', 'avira', '0', 'BUILD_SRV', 'FAILED', 'logblabla', False, 1)
         # self.insert_summary(0, 'VM_ELITE_FAST_DEMO_SRV', 'avira', '1', 'BUILD_SRV', 'FAILED', 'logblabla', False, 1)

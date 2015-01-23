@@ -289,7 +289,7 @@ def create_report_for_analyzer(report):
 
             to_serialize[k] = vm
 
-        yaml.dump(to_serialize, report_for_analyzer_file)
+        yaml.safe_dump(to_serialize, report_for_analyzer_file)
 
     #no more needed
     #shutil.copyfile(report_for_analyzer_name, lastlog_name)
