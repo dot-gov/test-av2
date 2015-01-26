@@ -570,8 +570,9 @@ class CommandsDevice:
         cmd = "am start -a android.intent.action.VIEW -d skype:%s?call" % number
         return adb.execute(cmd, self.device_serialno)
 
-    def viber_call(self):
-        cmd = "am start -a android.intent.action.VIEW -d viber:"
+    #number is associated to a SIM card in the Samsung S (2015/01/12)
+    def viber_call(self, number="00393349115140"):
+        cmd = "am start -a android.intent.action.VIEW -d tel:%s -n com.viber.voip/com.viber.voip.WelcomeActivity"
         return adb.execute(cmd, self.device_serialno)
 
     def check_remote_file(self, remote_source_filename, remote_source_path, timeout=1):
