@@ -96,3 +96,99 @@ Expected
 Uninstall
 	uninstall: False
 	running: False
+Installation
+	time: 2015-01-12 09:41:15.005502
+	installed: 
+	executed: True
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 
+Device
+	device: samsung GT-I9300
+	id: 351869050528887
+	release: 4.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	format_resist: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: False
+Installation
+	time: 2015-01-12 10:38:51.643762
+	installed: 
+	executed: True
+	instance_name: Android (316) samsung GT-I9300
+	info: 
+	uptime_first: up time: 2 days, 23:33:13, idle time: 11 days, 19:40:31, sleep time: 00:00:-1
+
+	uptime_last: up time: 2 days, 23:40:49, idle time: 11 days, 20:05:00, sleep time: 00:00:00
+
+	error: 
+	exception: 
+Device
+	device: samsung GT-I9300
+	id: 351869050528887
+	release: 4.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: /system/bin/sh: su: not found
+
+	selinux: 
+	format_resist: 
+Evidences
+	evidences_first: 
+		addressbook: 6
+			phone
+			skype
+			gmail
+		application: 1
+		call: 0
+		camera: 8
+		chat: 0
+		device: 3
+		message: 32
+		mic: 0
+		password: 1
+		screenshot: 2
+
+	evidences_last: 
+		addressbook: 6
+			phone
+			skype
+			gmail
+		application: 18
+		call: 1
+			skype
+		camera: 22
+		chat: 0
+		device: 5
+		message: 32
+		mic: 0
+		password: 1
+		screenshot: 4
+
+Expected
+	call_supported: True
+	expected: ['android.talk', 'skype']
+Uninstall
+	uninstall: True
+	running: False
+	files_remained: 
+	packages_remained: 

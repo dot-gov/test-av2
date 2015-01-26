@@ -30,8 +30,8 @@ END_DISPATCH:
 
 SET_MAIL:
     - SET_SERVER:
-        #mail_recipients: [zeno@hackingteam.com, seppia@hackingteam.com, m.losito@hackingteam.com]
-        mail_recipients: [m.losito@hackingteam.com]
+        mail_recipients: [zeno@hackingteam.com, seppia@hackingteam.com, m.losito@hackingteam.com]
+        #mail_recipients: [m.losito@hackingteam.com]
 
 # ------------- SYSTEM COMMANDS -------------- #
 
@@ -240,6 +240,33 @@ VM_MELT_SRV:
     #to be sure, we uninstall
     - UNINSTALL
 
+VM_MELT_SRV_FIF:
+    - ENABLE: [ monday, thursday ]
+    - CALL: INIT_DISPATCH
+    - BUILD_SRV: [ scout, windows_melt_fif, melt, melt ]
+    - SCREENSHOT
+    - CHECK_INFECTION
+    #to be sure, we uninstall
+    - UNINSTALL
+
+VM_MELT_SRV_UTO:
+    - ENABLE: [ tuesday, friday, sunday ]
+    - CALL: INIT_DISPATCH
+    - BUILD_SRV: [ scout, windows_melt_uto, melt, melt ]
+    - SCREENSHOT
+    - CHECK_INFECTION
+    #to be sure, we uninstall
+    - UNINSTALL
+
+VM_MELT_SRV_SKY:
+    - ENABLE: [ wednesday, saturday ]
+    - CALL: INIT_DISPATCH
+    - BUILD_SRV: [ scout, windows_melt_sky, melt, melt ]
+    - SCREENSHOT
+    - CHECK_INFECTION
+    #to be sure, we uninstall
+    - UNINSTALL
+
 
 VM_EXPLOIT:
     - ON_ERROR: CONTINUE
@@ -403,6 +430,33 @@ SYSTEM_MELT_SRV:
     #- UNINSTALL
     - CALL: END_DISPATCH
 
+
+SYSTEM_MELT_SRV_FIF:
+    - VM_ALL
+    - ON_ERROR: SKIP
+    - SLEEP: [1, 600]
+    - CALL: SET_MAIL
+    - REPORT:
+        - VM_MELT_SRV_FIF: ['AV Invisibility', 'Melt']
+    - CALL: END_DISPATCH
+
+SYSTEM_MELT_SRV_UTO:
+    - VM_ALL
+    - ON_ERROR: SKIP
+    - SLEEP: [1, 600]
+    - CALL: SET_MAIL
+    - REPORT:
+        - VM_MELT_SRV_UTO: ['AV Invisibility', 'Melt']
+    - CALL: END_DISPATCH
+
+SYSTEM_MELT_SRV_SKY:
+    - VM_ALL
+    - ON_ERROR: SKIP
+    - SLEEP: [1, 600]
+    - CALL: SET_MAIL
+    - REPORT:
+        - VM_MELT_SRV_SKY: ['AV Invisibility', 'Melt']
+    - CALL: END_DISPATCH
 
 SYSTEM_ELITE_FAST:
     - VM_ALL
@@ -616,7 +670,10 @@ SYSTEM_DAILY_SRV:
         - VM_ELITE_FAST_SRV: ['AV Invisibility', 'Elite']
         - VM_ELITE_FAST_DEMO_SRV: ['AV Invisibility', 'Elite Demo']
         - VM_ELITE_FAST_SCOUTDEMO_SRV: ['AV Invisibility', 'Elite Scout Demo']
-        - VM_MELT_SRV: ['AV Invisibility', 'Melt']
+        #- VM_MELT_SRV: ['AV Invisibility', 'Melt']
+        - VM_MELT_SRV_SKY: ['AV Invisibility', 'Melt']
+        - VM_MELT_SRV_FIF: ['AV Invisibility', 'Melt']
+        - VM_MELT_SRV_UTO: ['AV Invisibility', 'Melt']
         - VM_EXPLOIT_SRV: ['AV Invisibility', 'Exploit']
     #qui salvo tutti i sample per la giornata!
     - BUILD_CACHE_CLEAN: True
@@ -657,8 +714,11 @@ SYSTEM_DAILY_FAST_SRV:
         #- VM_ELITE_FAST_SRV: ['AV Invisibility', 'Elite']
         #- VM_ELITE_FAST_DEMO_SRV: ['AV Invisibility', 'Elite Demo']
         #- VM_ELITE_FAST_SCOUTDEMO_SRV: ['AV Invisibility', 'Elite Scout Demo']
-        #- VM_MELT_SRV: ['AV Invisibility', 'Melt']
-        - VM_EXPLOIT_SRV: ['AV Invisibility', 'Exploit']
+        # permanently removed - VM_MELT_SRV: ['AV Invisibility', 'Melt']
+        - VM_MELT_SRV_SKY: ['AV Invisibility', 'Melt']
+        - VM_MELT_SRV_FIF: ['AV Invisibility', 'Melt']
+        - VM_MELT_SRV_UTO: ['AV Invisibility', 'Melt']
+        #- VM_EXPLOIT_SRV: ['AV Invisibility', 'Exploit']
     - UNINSTALL
     #qui salvo tutti i sample per la giornata!
     - BUILD_CACHE_CLEAN: True
@@ -850,6 +910,7 @@ BUILD_WINDOWS:
     - CALL: CHECK_STATIC_MODULES_DOCS
     - CALL: CHECK_STATIC_MODULES_9_4_SAMPLES
     #- CALL: CHECK_STATIC_MODULES_TNI
+    - CALL: CHECK_STATIC_MODULES_MELT
     - BUILD: [ pull, windows, silent ]
 
 CHECK_STATIC_MODULES:
@@ -883,6 +944,19 @@ CHECK_STATIC_MODULES_SCOUT_ICONS:
         'AVAgent/assets/scouts/agent3.exe',
         'AVAgent/assets/scouts/agent4.exe',
         'AVAgent/assets/scouts/agent5.exe']
+
+
+CHECK_STATIC_MODULES_MELT:
+    - PUSHZIP: [ AVAgent/assets/melt/* ]
+    - SLEEP: 20
+    - CHECK_STATIC: ['AVAgent/assets/melt/agent_adobe_reader.exe',
+        'AVAgent/assets/melt/agent_dropbox.exe',
+        'AVAgent/assets/melt/agent_firefox.exe',
+        'AVAgent/assets/melt/agent_flash_player.exe',
+        'AVAgent/assets/melt/agent_skype.exe',
+        'AVAgent/assets/melt/agent_utorrent.exe',
+        'AVAgent/assets/melt/agent_vlc.exe',
+        'AVAgent/assets/melt/agent_yahoo.exe']
 
 CHECK_STATIC_MODULES_TMP_ANDROID:
     - PUSHZIP: [ AVAgent/assets/tmp/* ]
@@ -1391,5 +1465,17 @@ SYSTEM_STATIC_CHECK_TMP:
     - CALL: SET_MAIL
     - REPORT:
         - CHECK_STATIC_MODULES_TMP_ANDROID
+    - CROP: False
+    - CALL: END_DISPATCH
+
+SYSTEM_STATIC_CHECK_MELT:
+    - VM_ALL
+    - INTERNET: False
+    - SLEEP: [1, 300]
+    - CALL: INIT_DISPATCH
+    - CROP: True
+    - CALL: SET_MAIL
+    - REPORT:
+        - CHECK_STATIC_MODULES_MELT
     - CROP: False
     - CALL: END_DISPATCH

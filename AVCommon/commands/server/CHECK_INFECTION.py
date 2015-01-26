@@ -1,5 +1,7 @@
 import os
 import sys
+import re
+
 from AVCommon.logger import logging
 from time import sleep
 from operator import xor
@@ -8,6 +10,11 @@ from AVCommon import logger
 from AVCommon import process
 from AVMaster import vm_manager
 import subprocess
+
+
+#pattern of some files left behind by win api
+copy_pattern = 'BIT.*\.tmp'
+
 
 def execute(vm, protocol, args):
     """ server side """
@@ -135,6 +142,10 @@ def check_scout_soldier(vm):
                 logging.info("%s, found %s in %s" % (vm, b, d))
                 clean = False
                 break
+        for o in out:
+            if re.match(copy_pattern, o.strip()):
+                logging.info("%s, found %s in %s" % (vm, o, d))
+                clean = False
 
     return clean
 
