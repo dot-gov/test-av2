@@ -11,7 +11,7 @@ def analyzer_mail(test_name, vms, message, mail_recipients=["m.losito@hackingtea
         msg = MIMEText(message)
         hostname = socket.gethostname()
 
-        msg['Subject'] = '%s@%s - %s' % (test_name, hostname, vms)
+        msg['Subject'] = 'ANALYZER_REPORT@%s - %s' % (hostname, vms)
         msg['From'] = "avtest@hackingteam.com"
         msg['To'] = recipient
 
