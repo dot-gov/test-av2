@@ -215,7 +215,6 @@ class AgentBuild:
             timestr2 = time.strftime("%y%m%d-%H%M%S", time.localtime(time.time()))
             logging.debug("### Completed launching %s with Popen - time: %s" % (exefile, timestr2))
 
-
             if not silent:
                 add_result("+ SUCCESS SCOUT EXECUTE")
 
@@ -450,7 +449,7 @@ class AgentBuild:
             if self.hostname in self.soldierlist:
                 add_result("+ SUCCESS SOLDIER BLACKLISTED (I'm doing an elite test but because the av is in soldierlist, I got a soldier update)")
             else:
-                add_result("+ FAILED ELITE UPGRADE")
+                add_result("+ FAILED ELITE UPGRADE (maybe server says this vm is soldier, but rite thinks it's elite)")
 
             logging.debug("- Uninstalling and closing instance: %s" % instance_id)
             self.uninstall(instance_id)
