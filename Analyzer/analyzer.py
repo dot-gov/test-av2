@@ -5,12 +5,12 @@ import yaml
 import sys
 import copy
 import socket
-import mailsender
 
 from dbreport import DBReport
 from resultdata import ResultData
 from resultstates import ResultStates
 from summarydata import SummaryData
+from mailsender import MailSender
 
 debug = False
 send_mail = True
@@ -53,7 +53,6 @@ def main():
 
     filelist.sort(reverse=True)
 
-    # debug
     #print filelist
     print ""
     print "I'll process: %s" % filelist[0]
@@ -76,28 +75,14 @@ def process_yaml(filename):
     print ""
     vms = commands_results.keys()
 
-    mail_message_rite_fails = ">#####################  RITE FAILS   #####################\n"
-    mail_message_rite_known_fails = ">##################  RITE KNOWN FAILS   ##################\n"
-    mail_message_errors = ">###################  UNKNOWN ERRORS   ###################\n"
-    mail_message_known_errors_summary = ">################### KNOWN ERRORS ###################\n"
-    mail_message_ok = ">###################     OK     ###################\n"
-    mail_message_error_details = ">################### ERROR DETAILS ###################\n"
-
-    mail_message_rite_fails_num = 0
-    mail_message_rite_known_fails_num = 0
-    mail_message_errors_num = 0
-    mail_message_known_errors_summary_num = 0
-    mail_message_ok_num = 0
-    total_tests_num = 0
-
-
     retests = {}
 
     # this splits the dictionary into the different VMS
-
     vm_count = 1
 
-    for k, v in commands_results.items():
+    mailsender = MailSender()
+
+    for vm, v in commands_results.items():
         comm2 = preparse_command_list(v)
         #this splits various test for a single av
         splitted_list = []
@@ -107,14 +92,12 @@ def process_yaml(filename):
             for i in comm2:
                 if i.test_name == current_test:
                     templist.append(i)
-                    # print templist
                 else:
                     current_test = i.test_name
                     splitted_list.append(copy.copy(templist))
                     templist = []
                     templist.append(i)
             splitted_list.append(templist)
-        # print "splitt", splitted_list
 
         for listz in splitted_list:
             test_name = listz[0].test_name
@@ -122,72 +105,54 @@ def process_yaml(filename):
             #############################################################
             ################### HERE I CALL THE ANALZER #################
             #############################################################
-            rite_ok, ok, message, saved_error, errors_list, error_log, current_state_rows = analyze(k, listz)
+            rite_ok, ok, message, saved_error, errors_list, error_log, current_state_rows = analyze(vm, listz)
 
             #CREATING EMAIL AND PRINTING RESULTS
-            partial_mail_message = "* Analyzed VM: %s (%s of %s) - Test: %s\n" % (k, vm_count, total_vms, test_name)
-            #partial_mail_message += "VM passed test?: %s\n" % ok
-            partial_mail_message += "* Analyzer Message: %s\n" % message
-            #partial_mail_message += "Known Error: %s\n" % saved_error
-            #partial_mail_message += "* Errorlist: %s\n" % errors_list
+            text = "* Analyzed VM: %s (%s of %s) - Test: %s\n" % (vm, vm_count, total_vms, test_name)
+            #text += "VM passed test?: %s\n" % ok
+            text += "* Analyzer Message: %s" % message
+            #text += "Known Error: %s\n" % saved_error
+            #text += "* Errorlist: %s\n" % errors_list
 
             print "####################     RESULTS     ####################"
-            print partial_mail_message
+            print text
             print "####################   RESULTS END   ####################"
 
-            partial_mail_message += "------------------------------------------------------------------\n"
-
             if not rite_ok and not saved_error:
-                mail_message_rite_fails += partial_mail_message
+                mailsender.rite_fails_add(vm, test_name, message)
             elif not rite_ok and saved_error:
-                mail_message_rite_known_fails += partial_mail_message
+                mailsender.rite_known_fails_add(vm, test_name, message)
             elif not ok and not saved_error:
-                mail_message_errors += partial_mail_message
+                mailsender.errors_add(vm, test_name, message, current_state_rows.get_causes(), current_state_rows.get_manual_save_string())
                 #adds retest
                 if test_name not in retests:
                     retests[test_name] = set()
-                retests[test_name].add(k)
+                retests[test_name].add(vm)
 
             elif not ok and saved_error:
-                mail_message_known_errors_summary += partial_mail_message
+                mailsender.known_errors_add(vm, test_name, message)
             # ok
             else:
-                mail_message_ok += partial_mail_message
+                mailsender.ok_add(vm, test_name, message)
 
-            if not ok and not saved_error:
-                mail_message_error_details += partial_mail_message
-                #mail_message_error_details += "------------------------------------------------------------------\n"
-                mail_message_error_details += "-------------------       ERROR LOG          ---------------------\n"
-                mail_message_error_details += "------------------------------------------------------------------\n"
-                for i in error_log:
-                    mail_message_error_details += i.get_cause(False) + "\n"
-                mail_message_error_details += "------------------------------------------------------------------\n"
-                mail_message_error_details += "-------------------   HELPER FOR MANUAL      ---------------------\n"
-                mail_message_error_details += current_state_rows.get_manual_save_string()
-                mail_message_error_details += "------------------------------------------------------------------\n"
         #count processed vms
         vm_count += 1
 
     #print retests
-    retestlist = ">################### Retests to be run ###################\n"
+    retestlist = ""
     for testname, machines in retests.items():
         testname_system = testname.replace("VM", "SYSTEM")
         retest = "./run.sh %s -m " % testname_system
         for vm in machines:
             retest += "%s," % vm
-        retestlist += "%s -c -p 40\n" % retest[0:-1]
+        retestlist += "%s -c -p 40<br>" % retest[0:-1]
+
+    mailsender.retestlist = retestlist
 
     print retestlist
 
-    mail_message = mail_message_rite_fails + "\n\n" +\
-                    mail_message_rite_known_fails + "\n\n" +\
-                    mail_message_errors + "\n\n" +\
-                    mail_message_known_errors_summary + "\n\n" +\
-                    mail_message_ok + "\n\n" +\
-                    retestlist + "\n\n" +\
-                    mail_message_error_details
     if send_mail:
-        mailsender.analyzer_mail(testname, vms, mail_message)
+        mailsender.send_mail()
 
     print "End. Exiting."
 

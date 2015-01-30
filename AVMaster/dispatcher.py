@@ -18,7 +18,8 @@ class Dispatcher(object):
 
     vms = []
 
-    def __init__(self, mq, vms, timeout=4000):
+    #4000
+    def __init__(self, mq, vms, timeout=310):
         self.vms = vms
         self.mq = mq
         self.timeout = timeout
@@ -176,6 +177,8 @@ class Dispatcher(object):
         report.finish()
 
         logging.debug("answered: %s, ended: %s, num_commands: %s" % ( answered, len(self.ended), self.num_commands))
-        assert len(self.ended) == len(self.vms), "answered: %s, ended: %s, num_commands: %s" % ( answered, len(self.ended), len(self.vms))
+        #assert len(self.ended) == len(self.vms), "answered: %s, ended: %s, num_commands: %s" % ( answered, len(self.ended), len(self.vms))
+        if len(self.ended) != len(self.vms):
+            logging.error("ended: %s, num_vms: %s. Probably some timeout occurred" % (len(self.ended), len(self.vms)))
         #assert answered >= (len(self.vms) * (self.num_commands)), "answered: %s, len(vms): %s, num_commands: %s" % (answered , len(self.vms), self.num_commands)
         return answered

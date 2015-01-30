@@ -188,3 +188,8 @@ class SummaryDataColl(object):
 
         return string_out
 
+    def get_causes(self):
+        text = ""
+        for i in self.rows:
+                    text += i.get_cause(False) + "<br>"
+        return text

@@ -655,10 +655,10 @@ SYSTEM_EXPLOIT_SRV:
 #untested and unused since middle age
 SYSTEM_DAILY:
     - VM_ALL
+    - CALL: SET_MAIL
     - ON_ERROR: SKIP
     - SLEEP: [1, 1800]
     - CALL: VM_CLEAN_EVIDENCES
-    - CALL: SET_MAIL
     - REPORT:
         - VM_STATIC: ['AV Invisibility Static', 'Static check on builds']
         - VM_SOLDIER: ['AV Invisibility', 'Soldier']
@@ -673,12 +673,12 @@ SYSTEM_DAILY:
 SYSTEM_DAILY_SRV:
 
     - VM_ALL
+    - CALL: SET_MAIL
     - ON_ERROR: SKIP
     - SLEEP: [1, 1800]
     #init is needed by clean_evidences (just here)
     - CALL: INIT_DISPATCH
     - CALL: VM_CLEAN_EVIDENCES
-    - CALL: SET_MAIL
     #qui cancello tutti i sample per la giornata!
     - BUILD_CACHE_CLEAN: False
     - REPORT:
@@ -701,10 +701,10 @@ SYSTEM_DAILY_SRV:
 #untested and unused since middle age
 SYSTEM_DAILY_FAST:
     - VM_ALL
+    - CALL: SET_MAIL
     - ON_ERROR: SKIP
     - SLEEP: [1, 300]
     - CALL: VM_CLEAN_EVIDENCES
-    - CALL: SET_MAIL
     - REPORT:
         - VM_STATIC: ['AV Invisibility Static', 'Static check on builds']
         - VM_SOLDIER: ['AV Invisibility', 'Soldier']
@@ -718,12 +718,12 @@ SYSTEM_DAILY_FAST:
 
 SYSTEM_DAILY_FAST_SRV:
     - VM_ALL
+    - CALL: SET_MAIL
     - ON_ERROR: SKIP
     - SLEEP: [1, 300]
     #Clean evidences should be called only during nighttime automatic tests (next 2 commands have to be commented)
     #- CALL: INIT_DISPATCH
     #- CALL: VM_CLEAN_EVIDENCES
-    - CALL: SET_MAIL
     #qui cancello tutti i sample per la giornata!
     - BUILD_CACHE_CLEAN: False
     - REPORT:
