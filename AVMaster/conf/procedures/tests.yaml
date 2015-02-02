@@ -565,3 +565,9 @@ TEST_INSTALL_AG:
 
 TEST_CHECK_INFECTION:
     - CHECK_INFECTION
+
+TEST_PUSHZIP_NORETRY:
+    - PUSHZIP: [ AVAgent/assets/config* ]
+
+TEST_PUSHZIP_RETRY:
+    - PUSHZIP: [ 3, AVAgent/assets/config*, AVAgent/assets/keyinject.exe, AVAgent/assets/windows/* ]

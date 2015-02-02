@@ -5,12 +5,13 @@ import yaml
 import sys
 import copy
 import socket
-import mailsender
 
 from dbreport import DBReport
 from resultdata import ResultData
 from resultstates import ResultStates
 from summarydata import SummaryData
+from mailsender import MailSender
+import sys
 
 debug = False
 send_mail = True
@@ -32,42 +33,52 @@ def main():
     #         if filename.endswith(".yaml") and filename.startswith("report_for_analyzer"):
     #             filelist.append(filename)
 
-    #finds report for analyzer files
-    prefix = '/home/avmonitor/logs/'
-    hostname = socket.gethostname()
-    if hostname == 'rite':
-        prefix = '/home/avmonitor/Rite/logs/'
-
-    filelist = glob.glob(prefix + "*/report_for_analyzer.*.yaml")
-
     print "       ___      .__   __.      ___       __      ____    ____  ________   _______ .______"
     print "      /   \     |  \ |  |     /   \     |  |     \   \  /   / |       /  |   ____||   _  \\"
     print "     /  ^  \    |   \|  |    /  ^  \    |  |      \   \/   /  `---/  /   |  |__   |  |_)  |"
     print "    /  /_\  \   |  . `  |   /  /_\  \   |  |       \_    _/      /  /    |   __|  |      /"
     print "   /  _____  \  |  |\   |  /  _____  \  |  `----.    |  |       /  /----.|  |____ |  |\  \----."
     print "  /__/     \__\ |__| \__| /__/     \__\ |_______|    |__|      /________||_______|| _| `._____|"
-
-    if not len(filelist):
-        print "No yaml report files found in logs dirs:"
-        sys.exit()
-
-    filelist.sort(reverse=True)
-
-    # debug
-    #print filelist
     print ""
-    print "I'll process: %s" % filelist[0]
 
-    process_yaml(os.path.join(prefix, filelist[0]))
+    filename = ""
+
+    #first argument is the script
+    if len(sys.argv) == 2:
+        filename = sys.argv[1]
+    else:
+        print "No filename provided in command line, I'll use the latest (using file modification date) SYSTEM_DAILY_*SRV from the logs dirs."
+        #finds report for analyzer files
+        prefix = '/home/avmonitor/logs/'
+        hostname = socket.gethostname()
+        if hostname == 'rite':
+            prefix = '/home/avmonitor/Rite/logs/'
+
+        filelist = sorted(glob.glob(prefix + "*/report_for_analyzer.*.SYSTEM_DAILY_*SRV.yaml"), key=os.path.getmtime, reverse=True)
+
+        if not len(filelist):
+            print "No yaml report files found in logs dirs:"
+            sys.exit()
+
+        filename = os.path.join(prefix, filelist[0])
+        #print filelist
+
+    print "I'll process: %s" % filename
+
+    process_yaml(filename)
 
 
 def process_yaml(filename):
     f = open(filename)
     commands_results = yaml.load(f)
+    if not commands_results:
+        print "No results in yaml file."
+        #TODO qui bisognerebbe mandare un'email di avviso (volendo con yaml allegato)
+        return
 
     print "Recreating database..."
     with DBReport() as db:
-        db.recreate_database(True)
+        db.recreate_database(debug)
 
     #global test name splitted from filename (for the report)
     testname = filename.split(".")[-2]
@@ -76,28 +87,16 @@ def process_yaml(filename):
     print ""
     vms = commands_results.keys()
 
-    mail_message_rite_fails = ">#####################  RITE FAILS   #####################\n"
-    mail_message_rite_known_fails = ">##################  RITE KNOWN FAILS   ##################\n"
-    mail_message_errors = ">###################  UNKNOWN ERRORS   ###################\n"
-    mail_message_known_errors_summary = ">################### KNOWN ERRORS ###################\n"
-    mail_message_ok = ">###################     OK     ###################\n"
-    mail_message_error_details = ">################### ERROR DETAILS ###################\n"
-
-    mail_message_rite_fails_num = 0
-    mail_message_rite_known_fails_num = 0
-    mail_message_errors_num = 0
-    mail_message_known_errors_summary_num = 0
-    mail_message_ok_num = 0
-    total_tests_num = 0
-
-
     retests = {}
 
     # this splits the dictionary into the different VMS
-
     vm_count = 1
 
-    for k, v in commands_results.items():
+    mailsender = MailSender()
+
+    mailsender.yaml_analyzed = filename
+
+    for vm, v in commands_results.items():
         comm2 = preparse_command_list(v)
         #this splits various test for a single av
         splitted_list = []
@@ -107,14 +106,12 @@ def process_yaml(filename):
             for i in comm2:
                 if i.test_name == current_test:
                     templist.append(i)
-                    # print templist
                 else:
                     current_test = i.test_name
                     splitted_list.append(copy.copy(templist))
                     templist = []
                     templist.append(i)
             splitted_list.append(templist)
-        # print "splitt", splitted_list
 
         for listz in splitted_list:
             test_name = listz[0].test_name
@@ -122,72 +119,60 @@ def process_yaml(filename):
             #############################################################
             ################### HERE I CALL THE ANALZER #################
             #############################################################
-            rite_ok, ok, message, saved_error, errors_list, error_log, current_state_rows = analyze(k, listz)
+
+            comparison_result = analyze(vm, listz)
+            #OLD rite_ok, ok, message, saved_error, errors_list, error_log, current_state_rows
+
+            message = comparison_result['message']
 
             #CREATING EMAIL AND PRINTING RESULTS
-            partial_mail_message = "* Analyzed VM: %s (%s of %s) - Test: %s\n" % (k, vm_count, total_vms, test_name)
-            #partial_mail_message += "VM passed test?: %s\n" % ok
-            partial_mail_message += "* Analyzer Message: %s\n" % message
-            #partial_mail_message += "Known Error: %s\n" % saved_error
-            #partial_mail_message += "* Errorlist: %s\n" % errors_list
+            text = "* Analyzed VM: %s (%s of %s) - Test: %s\n" % (vm, vm_count, total_vms, test_name)
+            #text += "VM passed test?: %s\n" % ok
+            text += "* Analyzer Message: %s" % message
+            #text += "Known Error: %s\n" % saved_error
+            #text += "* Errorlist: %s\n" % errors_list
 
             print "####################     RESULTS     ####################"
-            print partial_mail_message
+            print text
             print "####################   RESULTS END   ####################"
 
-            partial_mail_message += "------------------------------------------------------------------\n"
-
-            if not rite_ok and not saved_error:
-                mail_message_rite_fails += partial_mail_message
-            elif not rite_ok and saved_error:
-                mail_message_rite_known_fails += partial_mail_message
-            elif not ok and not saved_error:
-                mail_message_errors += partial_mail_message
+            if comparison_result['not_enabled']:
+                mailsender.rite_not_enabled_add(vm, test_name, message)
+            elif not comparison_result['rite_ok'] and not comparison_result['saved_error']:
+                mailsender.rite_fails_add(vm, test_name, message)
+            elif not comparison_result['rite_ok'] and comparison_result['saved_error']:
+                mailsender.rite_known_fails_add(vm, test_name, message)
+            elif not comparison_result['success'] and not comparison_result['saved_error']:
+                mailsender.errors_add(vm, test_name, message, comparison_result['rows_obj'].get_causes(), comparison_result['rows_obj'].get_manual_save_string())
                 #adds retest
                 if test_name not in retests:
                     retests[test_name] = set()
-                retests[test_name].add(k)
+                retests[test_name].add(vm)
 
-            elif not ok and saved_error:
-                mail_message_known_errors_summary += partial_mail_message
+            elif not comparison_result['success'] and comparison_result['saved_error']:
+                mailsender.known_errors_add(vm, test_name, message)
             # ok
             else:
-                mail_message_ok += partial_mail_message
+                mailsender.ok_add(vm, test_name, message)
 
-            if not ok and not saved_error:
-                mail_message_error_details += partial_mail_message
-                #mail_message_error_details += "------------------------------------------------------------------\n"
-                mail_message_error_details += "-------------------       ERROR LOG          ---------------------\n"
-                mail_message_error_details += "------------------------------------------------------------------\n"
-                for i in error_log:
-                    mail_message_error_details += i.get_cause(False) + "\n"
-                mail_message_error_details += "------------------------------------------------------------------\n"
-                mail_message_error_details += "-------------------   HELPER FOR MANUAL      ---------------------\n"
-                mail_message_error_details += current_state_rows.get_manual_save_string()
-                mail_message_error_details += "------------------------------------------------------------------\n"
         #count processed vms
         vm_count += 1
 
     #print retests
-    retestlist = ">################### Retests to be run ###################\n"
+    retestlist = ""
     for testname, machines in retests.items():
         testname_system = testname.replace("VM", "SYSTEM")
         retest = "./run.sh %s -m " % testname_system
         for vm in machines:
             retest += "%s," % vm
-        retestlist += "%s -c -p 40\n" % retest[0:-1]
+        retestlist += "%s -c -p 40<br>" % retest[0:-1]
+
+    mailsender.retestlist = retestlist
 
     print retestlist
 
-    mail_message = mail_message_rite_fails + "\n\n" +\
-                    mail_message_rite_known_fails + "\n\n" +\
-                    mail_message_errors + "\n\n" +\
-                    mail_message_known_errors_summary + "\n\n" +\
-                    mail_message_ok + "\n\n" +\
-                    retestlist + "\n\n" +\
-                    mail_message_error_details
     if send_mail:
-        mailsender.analyzer_mail(testname, vms, mail_message)
+        mailsender.send_mail()
 
     print "End. Exiting."
 
@@ -235,7 +220,7 @@ def analyze(vm, comms):
             prg += 1
 
         #debug, prints results
-        # db.get_results_rows(vm, test_name, True)
+        #db.get_results_rows(vm, test_name, True)
         #debug, prints summary
         #db.get_latest_summary_rows(vm, test_name, True)
 
@@ -249,16 +234,35 @@ def analyze(vm, comms):
             print "current rows", current_state_rows.get_rows_count()
             print "current Error rows", current_state_rows.get_error_rows_count()
 
-        #checks for Rite Failure or other anomalies in failure states
-        message, rite_ok, saved_error = current_state_rows.compare_three_states_failure(manual_state_rows, message, previous_state_rows)
-        #if there are anomalies, then it IGNORES the states ad returns
-        #else if the failure state is ok, it compares the results
-        if rite_ok:
-            message, ok, saved_error = current_state_rows.compare_three_states_results(manual_state_rows, previous_state_rows)
-            return True, ok, message, saved_error, current_state_rows.state_rows_to_string_short(), comms, current_state_rows
-        else:
-            #rite failed. Also the rite_fail can have a saved error or not. "ok" is False because the test didn't complete
-            return False, False, message, saved_error, current_state_rows.state_rows_to_string_short(), comms, current_state_rows
+        test_comparison_result = dict()
+
+        test_comparison_result['not_enabled'] = current_state_rows.get_not_to_test()[0]
+        test_comparison_result['message'] = current_state_rows.get_not_to_test()[1]
+        # test_comparison_result['rows_string_short'] = current_state_rows.state_rows_to_string_short()
+        # test_comparison_result['commands'] = comms
+        test_comparison_result['rows_obj'] = current_state_rows
+
+        if not current_state_rows.get_not_to_test()[0]:
+            #checks for Rite Failure or other anomalies in failure states
+            message, rite_ok, saved_error = current_state_rows.compare_three_states_failure(manual_state_rows, message, previous_state_rows)
+            test_comparison_result['rite_ok'] = rite_ok
+            test_comparison_result['success'] = False
+            test_comparison_result['message'] = message
+            test_comparison_result['saved_error'] = saved_error
+            #if there are anomalies, then it IGNORES the states ad returns
+            #else if the failure state is ok, it compares the results
+            if rite_ok:
+                message, ok, saved_error = current_state_rows.compare_three_states_results(manual_state_rows, previous_state_rows)
+                test_comparison_result['success'] = ok
+                test_comparison_result['message'] = message
+                test_comparison_result['saved_error'] = saved_error
+
+        #     return True, ok, message, saved_error, current_state_rows.state_rows_to_string_short(), comms, current_state_rows
+        # else:
+        #     #rite failed. Also the rite_fail can have a saved error or not. "ok" is False because the test didn't complete
+        #     return False, False, message, saved_error, current_state_rows.state_rows_to_string_short(), comms, current_state_rows
+
+        return test_comparison_result
 
 
 def preparse_command_list(comms):

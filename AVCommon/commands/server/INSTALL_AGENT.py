@@ -17,7 +17,7 @@ def execute(vm, protocol, inst_args):
     from AVMaster import vm_manager
 
     """ client side, returns (bool,*) """
-    logging.debug("    INSTALL_AGENT" )
+    logging.debug("    INSTALL_AGENT")
     mq = protocol.mq
 
     assert vm, "null vm"
@@ -34,7 +34,7 @@ def execute(vm, protocol, inst_args):
           "cd C:\\AVTest\\AVAgent\r\n" \
           "c:\\python27\\python.exe"
     arg = ["C:\\AVTest\\AVAgent\\av_agent.py", "-m", vm, "-s", mq.session, "-d", redis]
-    start_bat = "%s %s\r\n" %( cmd, " ".join(arg) )
+    start_bat = "%s %s\r\n" % (cmd, " ".join(arg))
 
     agent_bat = "start /min C:\\AVTest\\AVAgent\\start.bat ^& exit\r\n"
 
@@ -55,7 +55,7 @@ def execute(vm, protocol, inst_args):
         startup_dir = startup_dir_7
 
     remote_name = "%s/av_agent.bat" % startup_dir
-    remote_name = remote_name.replace("/","\\")
+    remote_name = remote_name.replace("/", "\\")
 
     for i in range(1, 3):
         logging.debug("I'll copy %s (try %s of 3)" % (filename, i))
@@ -71,6 +71,8 @@ def execute(vm, protocol, inst_args):
 
     if failed:
         logging.debug("Cannot copy %s: ERROR!" % filename)
+
+    time.sleep(15)
 
     os.remove(filename)
 
@@ -96,6 +98,8 @@ def execute(vm, protocol, inst_args):
             failed = False
             break
 
+    time.sleep(15)
+
     if failed:
         logging.debug("Cannot copy %s: ERROR!" % filename)
 
@@ -116,7 +120,7 @@ def execute(vm, protocol, inst_args):
         logging.debug("Cannot delete %s" % dirname)
 
     if failed:
-        return False, "Cant Copy %s on VM" % filename
+        return False, "Cant Install Agent on VM"
 
     else:
-        return True, "File copied"
+        return True, "Agent installed on VM"

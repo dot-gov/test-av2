@@ -1,19 +1,19 @@
 import os
+import ntpath
 import sys
 import glob
 import zipfile
 import tempfile
 import shutil
-
+from time import sleep
 from AVCommon.logger import logging
 from AVCommon import config
-from AVCommon import package
+from AVAgent import build
 
 report_level = 2
 
-import time
-
 #config.verbose = True
+
 
 def execute(vm, protocol, args):
     """ server side """
@@ -23,7 +23,14 @@ def execute(vm, protocol, args):
     assert vm, "null self.vm"
     assert isinstance(args, list)
 
-    if  isinstance(args[0], basestring):
+    retry = 1  # (tries one time)
+
+    #if first argument is the number of retries, then I use all the remaining elements as filenames and continue
+    if isinstance(args[0], int):
+        retry = args[0] + 1  # (tries n+ 1 time)
+        args = args[1:]
+
+    if isinstance(args[0], basestring):
         src_files, src_dir, dst_dir = args, config.basedir_server, config.basedir_av
     else:
         raise RuntimeError("wrong arguments")
@@ -59,13 +66,14 @@ def execute(vm, protocol, args):
     zf = zipfile.ZipFile(zfname, mode='w')
     pwd = config.basedir_server
 
-    """ then upload parsed files """
+    #adding files to zip!
     logging.debug("All files to copy are:\n%s" % src_files)
+
     if not all_src:
         return False, "Empty file list"
 
     for src_file in all_src:
-        #print("3_processa file")
+        #print("3_process a file")
         src = os.path.join(src_dir, src_file)
 
         #logging.debug("Check if exists file %s" % src)
@@ -80,29 +88,90 @@ def execute(vm, protocol, args):
     zf.close()
     #zip file is ready
 
-    vm_manager.execute(vm, "mkdirInGuest", ntdir(dst_dir))
+    #just to be sure we wait the zipfile creation
+    for ret in range(0, 10):
+        if os.path.exists(zfname):
+            break
+        sleep(6)
 
-    # copy unzip (it should be already in AVAgent/assets...)
-    unzipexe = "assets/unzip.exe"
-    dst = ntdir(os.path.join(dst_dir, "unzip.exe"))
+    #tries n times to upload and extract all files, with increasing delays
+    for tr in range(0, retry):
+        logging.debug("tries n times to upload and extract all files, with increasing delays, try %s of %s" % (tr + 1, retry))
 
-    logging.debug("Copy unzip: %s -> %s" % (unzipexe, dst) )
-    vm_manager.execute(vm, "copyFileToGuest", unzipexe, dst)
+        vm_manager.execute(vm, "mkdirInGuest", ntdir(dst_dir))
+        sleep(tr)
+        # copy unzip (it should be already in AVAgent/assets...)
+        unzipexe = "assets/unzip.exe"
+        dst = ntdir(os.path.join(dst_dir, "unzip.exe"))
 
-    tmpzip = "tmp.zip"
-    dst = ntdir(os.path.join(dst_dir, tmpzip))
-    logging.debug("Copy zip: %s -> %s" % (zfname, dst) )
-    vm_manager.execute(vm, "copyFileToGuest", zfname, dst)
+        logging.debug("Copy unzip: %s -> %s" % (unzipexe, dst))
+        vm_manager.execute(vm, "copyFileToGuest", unzipexe, dst)
+        sleep(2 * tr)
 
-    logging.debug("Executing unzip on %s" % dst)
-    unzipargs = ("/AVTest/unzip.exe", ["-o", "-d", "c:\\avtest", dst], 40, True, True)
-    ret = vm_manager.execute(vm, "executeCmd", *unzipargs )
-    logging.debug("ret: %s" % ret)
+        tmpzip = "tmp.zip"
+        dst = ntdir(os.path.join(dst_dir, tmpzip))
+        logging.debug("Copy zip: %s -> %s" % (zfname, dst))
+        vm_manager.execute(vm, "copyFileToGuest", zfname, dst)
+        sleep(2 * tr)
 
-    time.sleep(5)
+        logging.debug("Executing unzip on %s" % dst)
+        unzipargs = ("/AVTest/unzip.exe", ["-o", "-d", "c:\\avtest", dst], 40, True, True)
+        ret = vm_manager.execute(vm, "executeCmd", *unzipargs)
+        logging.debug("ret: %s" % ret)
+        #sleep(3 * tr)
+        sleep(5 * tr)
+
+        #if there are retries I check the existance of files and if are all present, I terminate the iteration
+        if retry > 1:
+            logging.debug("Checking if the files were been copyed and extracted correctly. Files: %s", all_src)
+            failed = False
+            dirs = get_all_dirs(all_src)
+            found_files = list_all_files_in_dirs(vm, vm_manager, dirs)
+            to_check_files = get_remote_filenames(all_src)
+            for file_to_check in to_check_files:
+                if file_to_check not in found_files:
+                    failed = True
+            if not failed:
+                return True, "Files copied on VM"
+        tr += 1
 
     logging.debug("Removing zip: %s" % d)
     shutil.rmtree(d)
 
-    return True, "Files copied on VM"
+    if retry > 1:
+        #if I'm here and retries were executed, then I have an error
+        return False, "Impossible to copy all files on VM"
+    else:
+        #if no retries, we always
+        return True, "Tried one file copy (no check) on VM"
 
+
+def get_remote_filenames(all_src):
+    remote_files = []
+    for file_to_convert in all_src:
+        remote_file = config.basedir_av + "\\" + file_to_convert
+        remote_files.append(remote_file.replace("/", "\\"))
+    return remote_files
+
+
+def get_all_dirs(all_src):
+    all_dir = set()
+    for file_to_check in all_src:
+        dir_to_check = ntpath.dirname(file_to_check.replace("/", "\\"))  # rimuovi tutto quello che c'e' dopo l'ultima /
+        dir_remota = config.basedir_av + "\\" + dir_to_check
+        all_dir.add(dir_remota.replace("/", "\\"))
+    return all_dir
+
+
+def list_all_files_in_dirs(vm, vm_manager, dirs):
+    files = []
+    logging.debug(dirs)
+    for d in dirs:
+        #list_directory
+        #string_out = vm_manager.execute(vm, "list_directory", d+"\\")
+        string_out = vm_manager.execute(vm, "listDirectoryInGuest", d)
+        logging.debug("Dir: %s -> %s" % (d, string_out))
+        for filename in string_out.split("\n")[1:-1]:
+            files.append(d + "\\" + filename)
+    logging.debug("All files listed: %s" % files)
+    return files

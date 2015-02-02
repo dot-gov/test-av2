@@ -5,6 +5,7 @@ class ResultStates(object):
     FAILED = ["FAILED", 100]
     NO_SYNC = ["NO_SYNC", 70]
     CROP = ["CROP", 50]
+    NOT_TO_TEST = ["NOT_TO_TEST", 2]
     NOT_APPLICABLE = ["NOT_APPLICABLE", 1]
     PASSED = ["PASSED", 0]
     NONE = ["NONE", None]
@@ -16,6 +17,8 @@ class ResultStates(object):
             return self.NO_SYNC
         if content in self.CROP:
             return self.CROP
+        if content in self.NOT_TO_TEST:
+            return self.NOT_TO_TEST
         if content in self.NOT_APPLICABLE:
             return self.NOT_APPLICABLE
         if content in self.PASSED:

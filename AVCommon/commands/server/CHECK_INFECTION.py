@@ -104,7 +104,7 @@ def check_elite(vm):
         logging.debug("PULL: %s -> %s" % (src, dst_file))
         vm_manager.execute(vm, "copyFileFromGuest", src, dst_file)
 
-        sleep(5)
+        sleep(10)
 
         with open(dst_file, "r") as f:
             reg_allfile = f.read().decode("utf-16le")
