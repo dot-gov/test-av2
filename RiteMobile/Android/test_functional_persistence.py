@@ -37,8 +37,6 @@ class TestSpecific(functional_common.Check):
             results["format_resist"] = "Error";
 
     def test_device(self, args, command_dev, c, results):
-
-
         print "sleeping 20 seconds"
         time.sleep(20)
         print "FORMAT RESIST"

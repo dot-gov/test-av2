@@ -192,3 +192,67 @@ Uninstall
 	running: False
 	files_remained: 
 	packages_remained: 
+Installation
+	time: 2015-01-13 14:31:53.049756
+	installed: 
+	executed: True
+	instance_name: Android (318) samsung GT-I9300
+	info: 
+	uptime_first: up time: 1 days, 03:43:37, idle time: 02:29:08, sleep time: 1 days, 03:03:18
+
+	uptime_last: up time: 1 days, 03:50:16, idle time: 02:51:19, sleep time: 1 days, 03:03:18
+
+	error: 
+	exception: 
+Device
+	device: samsung GT-I9300
+	id: 351869050528887
+	release: 4.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: /system/bin/sh: su: not found
+
+	selinux: 
+	format_resist: 
+Evidences
+	evidences_first: 
+		addressbook: 6
+			phone
+			skype
+			gmail
+		application: 1
+		call: 0
+		camera: 8
+		chat: 0
+		device: 3
+		message: 31
+		mic: 0
+		password: 1
+		screenshot: 2
+
+	evidences_last: 
+		addressbook: 6
+			phone
+			skype
+			gmail
+		application: 30
+		call: 1
+			skype
+		camera: 20
+		chat: 0
+		device: 5
+		message: 31
+		mic: 0
+		password: 1
+		screenshot: 4
+
+Expected
+	call_supported: True
+	expected: ['android.talk', 'skype']
+Uninstall
+	uninstall: True
+	running: False
+	files_remained: 
+	packages_remained: 

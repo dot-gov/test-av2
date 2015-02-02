@@ -326,6 +326,9 @@ class CommandsDevice:
         adb.executeMonkey(calc, self.device_serialno)
         return self.check_remote_process(calc, 10)
 
+    def execute_camera(self):
+        self.execute_cmd("am start -a android.media.action.IMAGE_CAPTURE")
+
 
     # Gestisce il wifi del dispositivo
     # Nota: Per imitare il funzionamento di INTERNET.py, accetta mode che indica la modalita'

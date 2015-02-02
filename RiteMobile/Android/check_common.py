@@ -78,9 +78,15 @@ class Check:
         time.sleep(60)
         evidences, kinds = c.evidences()
 
-        for k in ["call", "chat", "camera", "application", "mic"]:
-            if k not in kinds.keys():
-                kinds[k] = []
+        print evidences
+
+        # [ e['type'] for e in ev ]
+        # ev[0].keys()
+        #   [u'note', u'blo', u'rel', u'aid', u'data', u'dr', u'_id', u'type', u'da']
+
+        #for k in ["call", "chat", "camera", "application", "mic"]:
+        #    if k not in kinds.keys():
+        #        kinds[k] = []
 
         ev = "\n"
         ok = kinds.keys()
@@ -93,7 +99,10 @@ class Check:
                 for c in chat:
                     ev += "\t\t\t%s\n" % (c)
 
+        counter = collections.Counter([ e['type'] for e in evidences ])
         results['evidences' + timestamp] = ev
+        results['evidences_details' + timestamp] = evidences
+        results['evidences_counter' + timestamp] = counter
         results['evidence_types' + timestamp] = kinds.keys()
 
         results['uptime' + timestamp] = command_dev.get_uptime()

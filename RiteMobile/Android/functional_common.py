@@ -132,8 +132,8 @@ def report_build(results):
     report += report_if_exists(results, ["call_supported", "expected"])
     report += "Uninstall\n"
     report += report_if_exists(results, ["uninstall", "running", "files_remained", "packages_remained"])
-    report += "Asserts\n"
-    report += report_if_exists(results, ["asserts"])
+    report += "Result\n"
+    report += report_if_exists(results, ["result"])
     #print report
     return report
 
@@ -324,7 +324,12 @@ def test_functional_common(test_specific, CommandsRCS):
     report_files(results, report)
 
     print report
-    print "Fine."
+    print "Check manually with the evidences in the instance: %s" % (results.get('instance_name', "NO SYNC"))
+
+    if results["result"]:
+        print "\n\nPASSED\n"
+    else:
+        print "\n\nNOT PASSED\n"
 
     try:
         uid = command_dev.uid
@@ -332,7 +337,5 @@ def test_functional_common(test_specific, CommandsRCS):
         uid = 0
 
     say("test ended %s" % uid)
-    print "Check manually with the evidences in the instance: %s" % (results.get('instance_name', "NO SYNC"))
-
     return results
 

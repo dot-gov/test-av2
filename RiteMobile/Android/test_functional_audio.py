@@ -79,7 +79,7 @@ class TestSpecific(functional_common.Check):
 
     def check_camera(self, command_dev):
         command_dev.press_key_home()
-        command_dev.execute_cmd("am start -a android.media.action.IMAGE_CAPTURE")
+        command_dev.execute_camera()
         time.sleep(5)
         command_dev.press_key_home()
 
