@@ -11,6 +11,7 @@ from resultdata import ResultData
 from resultstates import ResultStates
 from summarydata import SummaryData
 from mailsender import MailSender
+import sys
 
 debug = False
 send_mail = True
@@ -32,41 +33,52 @@ def main():
     #         if filename.endswith(".yaml") and filename.startswith("report_for_analyzer"):
     #             filelist.append(filename)
 
-    #finds report for analyzer files
-    prefix = '/home/avmonitor/logs/'
-    hostname = socket.gethostname()
-    if hostname == 'rite':
-        prefix = '/home/avmonitor/Rite/logs/'
-
-    filelist = glob.glob(prefix + "*/report_for_analyzer.*.yaml")
-
     print "       ___      .__   __.      ___       __      ____    ____  ________   _______ .______"
     print "      /   \     |  \ |  |     /   \     |  |     \   \  /   / |       /  |   ____||   _  \\"
     print "     /  ^  \    |   \|  |    /  ^  \    |  |      \   \/   /  `---/  /   |  |__   |  |_)  |"
     print "    /  /_\  \   |  . `  |   /  /_\  \   |  |       \_    _/      /  /    |   __|  |      /"
     print "   /  _____  \  |  |\   |  /  _____  \  |  `----.    |  |       /  /----.|  |____ |  |\  \----."
     print "  /__/     \__\ |__| \__| /__/     \__\ |_______|    |__|      /________||_______|| _| `._____|"
-
-    if not len(filelist):
-        print "No yaml report files found in logs dirs:"
-        sys.exit()
-
-    filelist.sort(reverse=True)
-
-    #print filelist
     print ""
-    print "I'll process: %s" % filelist[0]
 
-    process_yaml(os.path.join(prefix, filelist[0]))
+    filename = ""
+
+    #first argument is the script
+    if len(sys.argv) == 2:
+        filename = sys.argv[1]
+    else:
+        print "No filename provided in command line, I'll use the latest (using file modification date) SYSTEM_DAILY_*SRV from the logs dirs."
+        #finds report for analyzer files
+        prefix = '/home/avmonitor/logs/'
+        hostname = socket.gethostname()
+        if hostname == 'rite':
+            prefix = '/home/avmonitor/Rite/logs/'
+
+        filelist = sorted(glob.glob(prefix + "*/report_for_analyzer.*.SYSTEM_DAILY_*SRV.yaml"), key=os.path.getmtime, reverse=True)
+
+        if not len(filelist):
+            print "No yaml report files found in logs dirs:"
+            sys.exit()
+
+        filename = os.path.join(prefix, filelist[0])
+        #print filelist
+
+    print "I'll process: %s" % filename
+
+    process_yaml(filename)
 
 
 def process_yaml(filename):
     f = open(filename)
     commands_results = yaml.load(f)
+    if not commands_results:
+        print "No results in yaml file."
+        #TODO qui bisognerebbe mandare un'email di avviso (volendo con yaml allegato)
+        return
 
     print "Recreating database..."
     with DBReport() as db:
-        db.recreate_database(True)
+        db.recreate_database(debug)
 
     #global test name splitted from filename (for the report)
     testname = filename.split(".")[-2]
@@ -81,6 +93,8 @@ def process_yaml(filename):
     vm_count = 1
 
     mailsender = MailSender()
+
+    mailsender.yaml_analyzed = filename
 
     for vm, v in commands_results.items():
         comm2 = preparse_command_list(v)
@@ -105,7 +119,11 @@ def process_yaml(filename):
             #############################################################
             ################### HERE I CALL THE ANALZER #################
             #############################################################
-            rite_ok, ok, message, saved_error, errors_list, error_log, current_state_rows = analyze(vm, listz)
+
+            comparison_result = analyze(vm, listz)
+            #OLD rite_ok, ok, message, saved_error, errors_list, error_log, current_state_rows
+
+            message = comparison_result['message']
 
             #CREATING EMAIL AND PRINTING RESULTS
             text = "* Analyzed VM: %s (%s of %s) - Test: %s\n" % (vm, vm_count, total_vms, test_name)
@@ -118,18 +136,20 @@ def process_yaml(filename):
             print text
             print "####################   RESULTS END   ####################"
 
-            if not rite_ok and not saved_error:
+            if comparison_result['not_enabled']:
+                mailsender.rite_not_enabled_add(vm, test_name, message)
+            elif not comparison_result['rite_ok'] and not comparison_result['saved_error']:
                 mailsender.rite_fails_add(vm, test_name, message)
-            elif not rite_ok and saved_error:
+            elif not comparison_result['rite_ok'] and comparison_result['saved_error']:
                 mailsender.rite_known_fails_add(vm, test_name, message)
-            elif not ok and not saved_error:
-                mailsender.errors_add(vm, test_name, message, current_state_rows.get_causes(), current_state_rows.get_manual_save_string())
+            elif not comparison_result['success'] and not comparison_result['saved_error']:
+                mailsender.errors_add(vm, test_name, message, comparison_result['rows_obj'].get_causes(), comparison_result['rows_obj'].get_manual_save_string())
                 #adds retest
                 if test_name not in retests:
                     retests[test_name] = set()
                 retests[test_name].add(vm)
 
-            elif not ok and saved_error:
+            elif not comparison_result['success'] and comparison_result['saved_error']:
                 mailsender.known_errors_add(vm, test_name, message)
             # ok
             else:
@@ -200,7 +220,7 @@ def analyze(vm, comms):
             prg += 1
 
         #debug, prints results
-        # db.get_results_rows(vm, test_name, True)
+        #db.get_results_rows(vm, test_name, True)
         #debug, prints summary
         #db.get_latest_summary_rows(vm, test_name, True)
 
@@ -214,16 +234,35 @@ def analyze(vm, comms):
             print "current rows", current_state_rows.get_rows_count()
             print "current Error rows", current_state_rows.get_error_rows_count()
 
-        #checks for Rite Failure or other anomalies in failure states
-        message, rite_ok, saved_error = current_state_rows.compare_three_states_failure(manual_state_rows, message, previous_state_rows)
-        #if there are anomalies, then it IGNORES the states ad returns
-        #else if the failure state is ok, it compares the results
-        if rite_ok:
-            message, ok, saved_error = current_state_rows.compare_three_states_results(manual_state_rows, previous_state_rows)
-            return True, ok, message, saved_error, current_state_rows.state_rows_to_string_short(), comms, current_state_rows
-        else:
-            #rite failed. Also the rite_fail can have a saved error or not. "ok" is False because the test didn't complete
-            return False, False, message, saved_error, current_state_rows.state_rows_to_string_short(), comms, current_state_rows
+        test_comparison_result = dict()
+
+        test_comparison_result['not_enabled'] = current_state_rows.get_not_to_test()[0]
+        test_comparison_result['message'] = current_state_rows.get_not_to_test()[1]
+        # test_comparison_result['rows_string_short'] = current_state_rows.state_rows_to_string_short()
+        # test_comparison_result['commands'] = comms
+        test_comparison_result['rows_obj'] = current_state_rows
+
+        if not current_state_rows.get_not_to_test()[0]:
+            #checks for Rite Failure or other anomalies in failure states
+            message, rite_ok, saved_error = current_state_rows.compare_three_states_failure(manual_state_rows, message, previous_state_rows)
+            test_comparison_result['rite_ok'] = rite_ok
+            test_comparison_result['success'] = False
+            test_comparison_result['message'] = message
+            test_comparison_result['saved_error'] = saved_error
+            #if there are anomalies, then it IGNORES the states ad returns
+            #else if the failure state is ok, it compares the results
+            if rite_ok:
+                message, ok, saved_error = current_state_rows.compare_three_states_results(manual_state_rows, previous_state_rows)
+                test_comparison_result['success'] = ok
+                test_comparison_result['message'] = message
+                test_comparison_result['saved_error'] = saved_error
+
+        #     return True, ok, message, saved_error, current_state_rows.state_rows_to_string_short(), comms, current_state_rows
+        # else:
+        #     #rite failed. Also the rite_fail can have a saved error or not. "ok" is False because the test didn't complete
+        #     return False, False, message, saved_error, current_state_rows.state_rows_to_string_short(), comms, current_state_rows
+
+        return test_comparison_result
 
 
 def preparse_command_list(comms):

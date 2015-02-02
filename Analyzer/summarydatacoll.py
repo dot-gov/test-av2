@@ -32,6 +32,12 @@ class SummaryDataColl(object):
                 error_num += 1
         return error_num
 
+    def get_not_to_test(self):
+        for i in self.rows:
+            if i.parsed_result[0] in ['NOT_TO_TEST']:
+                return True, i.rite_result_log
+        return False, "Have to be tested"
+
     def is_rite_failed(self):
         if len(self.rows) == 0:
             return False

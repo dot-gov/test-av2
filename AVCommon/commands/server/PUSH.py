@@ -1,9 +1,8 @@
 import os
-import sys
+from time import sleep
 import glob
 from AVCommon.logger import logging
 from AVCommon import config
-from AVCommon import package
 
 report_level = 2
 
@@ -98,7 +97,7 @@ def execute(vm, protocol, args):
 
         logging.debug("%s copy %s -> %s" % (vm, src, dst))
         r = vm_manager.execute(vm, "copyFileToGuest", src, dst)
-
+        sleep(10)
         if r > 0:
             return False, "Cant Copy %s on VM" % src_file
 

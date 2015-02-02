@@ -18,8 +18,7 @@ class Dispatcher(object):
 
     vms = []
 
-    #4000
-    def __init__(self, mq, vms, timeout=310):
+    def __init__(self, mq, vms, timeout=4000):
         self.vms = vms
         self.mq = mq
         self.timeout = timeout
@@ -87,6 +86,9 @@ class Dispatcher(object):
 
         self.ended = set()
         answered = 0
+        #timed out vms
+        no_answer = 0
+
         while not exit and len(self.ended) < len(self.vms):
             rec = self.mq.receive_server(blocking=True, timeout=self.timeout)
             if rec is not None:
@@ -172,13 +174,14 @@ class Dispatcher(object):
 
             else:
                 logging.info("- SERVER RECEIVED empty")
+                no_answer += 1
                 exit = True
 
         report.finish()
 
-        logging.debug("answered: %s, ended: %s, num_commands: %s" % ( answered, len(self.ended), self.num_commands))
+        logging.debug("answered: %s, ended: %s, num_commands: %s, not_answered: %s" % (answered, len(self.ended), self.num_commands, no_answer))
         #assert len(self.ended) == len(self.vms), "answered: %s, ended: %s, num_commands: %s" % ( answered, len(self.ended), len(self.vms))
         if len(self.ended) != len(self.vms):
-            logging.error("ended: %s, num_vms: %s. Probably some timeout occurred" % (len(self.ended), len(self.vms)))
+            logging.error("ended: %s, num_vms: %s, not_answered: %s. Probably some timeout occurred" % (len(self.ended), len(self.vms), no_answer))
         #assert answered >= (len(self.vms) * (self.num_commands)), "answered: %s, len(vms): %s, num_commands: %s" % (answered , len(self.vms), self.num_commands)
         return answered
