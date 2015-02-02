@@ -1381,7 +1381,7 @@ INIT_UPDATE_MANUAL:
     - VM_ALL
     - INTERNET: True
     - REVERT
-    #- SLEEP: [1, 600]
+    - SLEEP: [1, 600]
     - START_VM
     - DELETE_DIR: c:\\AVTest\\logs\\
     - CALL: VM_PUSH_AGENT

