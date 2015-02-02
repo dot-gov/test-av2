@@ -165,9 +165,12 @@ def get_all_dirs(all_src):
 
 def list_all_files_in_dirs(vm, vm_manager, dirs):
     files = []
+    logging.debug(dirs)
     for d in dirs:
+        #list_directory
+        #string_out = vm_manager.execute(vm, "list_directory", d+"\\")
         string_out = vm_manager.execute(vm, "listDirectoryInGuest", d)
-        #logging.debug("Dir: %s -> %s" % (d, string_out))
+        logging.debug("Dir: %s -> %s" % (d, string_out))
         for filename in string_out.split("\n")[1:-1]:
             files.append(d + "\\" + filename)
     logging.debug("All files listed: %s" % files)

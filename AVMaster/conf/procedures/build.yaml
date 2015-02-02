@@ -966,7 +966,7 @@ CHECK_STATIC_MODULES_SCOUT_ICONS:
 
 
 CHECK_STATIC_MODULES_MELT:
-    - PUSHZIP: [ AVAgent/assets/melt/* ]
+    - PUSHZIP: [ 5, AVAgent/assets/melt/* ]
     - SLEEP: 20
     - CHECK_STATIC: ['AVAgent/assets/melt/agent_adobe_reader.exe',
         'AVAgent/assets/melt/agent_dropbox.exe',
@@ -1154,7 +1154,7 @@ VM_PACKER_MELT:
 # COMPLETE COMMANDS
 
 UPDATE_DISABLE_UPD:
-    - PUSH: [assets/elevate.exe, assets/disable_autoupd.bat, assets/update_system.bat]
+    - PUSH: [ assets/elevate.exe, assets/disable_autoupd.bat, assets/update_system.bat]
     #- EXECUTE_VM: /AVTest/assets/disable_autoupd.bat
     - EXECUTE_VM: /AVTest/assets/update_system.bat
 
