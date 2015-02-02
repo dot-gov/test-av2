@@ -1,5 +1,5 @@
 
-soldierlist: [adaware,iobit32,bitdef,bitdef15,comodo,fsecure,gdata,drweb,360cn5,kis32,avg,avg32,norman,avira,avira15]
+soldierlist: [adaware,iobit32,bitdef,bitdef15,comodo,fsecure,gdata,drweb,360cn5,avg,avg15,avg32,norman,avira,avira15,panda,panda15]
 blacklist: [emsisoft,sophos,kis32,cmcav]
 
 crop_whitelist: [kis,kis32]
@@ -29,6 +29,38 @@ build_parameters:
           melt: {admin: false, bit64: true, codec: true, scout: true}
           platform: windows
           meltfile: AVAgent/assets/windows/meltapp.exe
+          sign: {}
+          package: {}
+        windows_melt_fif:
+          platform_type: desktop
+          binary: {admin: false, demo: false}
+          melt: {admin: false, bit64: true, codec: true, scout: true}
+          platform: windows
+          meltfile: AVAgent/assets/windows/meltapp_fif.exe
+          sign: {}
+          package: {}
+        windows_melt_uto:
+          platform_type: desktop
+          binary: {admin: false, demo: false}
+          melt: {admin: false, bit64: true, codec: true, scout: true}
+          platform: windows
+          meltfile: AVAgent/assets/windows/meltapp_uto.exe
+          sign: {}
+          package: {}
+        windows_melt_air:
+          platform_type: desktop
+          binary: {admin: false, demo: false}
+          melt: {admin: false, bit64: true, codec: true, scout: true}
+          platform: windows
+          meltfile: AVAgent/assets/windows/meltapp_air.exe
+          sign: {}
+          package: {}
+        windows_melt_vuz:
+          platform_type: desktop
+          binary: {admin: false, demo: false}
+          melt: {admin: false, bit64: true, codec: true, scout: true}
+          platform: windows
+          meltfile: AVAgent/assets/windows/meltapp_vuz.exe
           sign: {}
           package: {}
         windows_demo:

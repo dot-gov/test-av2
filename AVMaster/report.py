@@ -107,6 +107,9 @@ def finish():
     logging.debug("report finish")
     #dump_yaml()
 
+    report = Report()
+    create_report_for_analyzer(report)
+
     logging.debug("context: %s" % command.context)
     mail_recipients = command.context.get("mail_recipients", [])
     if mail_recipients:
@@ -255,38 +258,46 @@ def create_report_for_analyzer(report):
     #         os.unlink(previous_lastlog_name)
     #     os.rename(lastlog_name, previous_lastlog_name)
 
-    report_for_analyzer_file = open(report_for_analyzer_name, "w+")
-    to_serialize = {}
-    for k, v in report.c_received.items():
-        vm = []
-        test_name = None
-        for comm in v:
-            #prendo solo la parte di REPORT, quindi aspetto la REPORT_KIND_INIT, recupero il test,
-            # e processo i dati fino all'REPORT_KIND_END. poi ignoro il resto fino al REPORT_KIND_INIT
-            if comm.name == "REPORT_KIND_INIT":
-                test_name = comm.args
-            if comm.name == "REPORT_KIND_END":
-                #report_kind_end and report_kind_init are included
-                vm.append(command_to_array(comm, test_name))
-                test_name = None
-            if not test_name:
-                continue
-            vm.append(command_to_array(comm, test_name))
+    with open(report_for_analyzer_name, "a") as report_for_analyzer_file:
+        to_serialize = {}
+        # qui ho il report con tutte le vm. Prendo una vm alla volta
+        for k, v in report.c_received.items():
+            vm = []
+            test_name = None
+            # failed_vm = False
+            # prendoi singoli comandi della vm corrente
+            for comm in v:
+                #prendo solo la parte di REPORT, quindi aspetto la REPORT_KIND_INIT, recupero il test,
+                # e processo i dati fino all'REPORT_KIND_END. poi ignoro il resto fino al REPORT_KIND_INIT
+                if comm.name == "REPORT_KIND_INIT":
+                    # se qui ho un test name, allora ho gia' fatto un init di cui non c'e' mai stato il
+                    # if test_name:
+                    #     failed_vm = True
+                    if len(vm) > 0:
+                        if vm[-1][3] != "REPORT_KIND_END":
+                            mark_as_failed(vm, vm[-1][1], "No Report")
 
-        to_serialize[k] = vm
-    yaml.dump(to_serialize, report_for_analyzer_file)
+                    test_name = comm.args
+                if comm.name == "REPORT_KIND_END":
+                    #report_kind_end and report_kind_init are included
+                    vm.append(command_to_array(comm, test_name))
+                    test_name = None
+                if not test_name:
+                    #if not in a report_kind range, then does not save the command
+                    continue
+                vm.append(command_to_array(comm, test_name))
+
+            to_serialize[k] = vm
+
+        yaml.safe_dump(to_serialize, report_for_analyzer_file)
 
     #no more needed
     #shutil.copyfile(report_for_analyzer_name, lastlog_name)
 
 
-
 def dump():
     report = Report()
 
-    create_report_for_analyzer(report)
-    #old
-    #sym_rep_name = "%s/last.report.%s.log" % (logger.logdir, report.name)
     report_name = "%s/report.%s.%s.log" % (logger.logdir, report.timestamp, report.name)
 
     f = open(report_name, "w+")
@@ -297,7 +308,7 @@ def dump():
             mark = "  "
             if cmd.name == "REPORT_KIND_END":
                 indent = ""
-            if cmd.success == False:
+            if not cmd.success:
                 mark = "- "
             f.write("%s    %s%s\n" % (indent, mark, red(str(cmd))))
             if cmd.name == "REPORT_KIND_INIT":
@@ -356,5 +367,14 @@ def command_to_array(comm, test_name):
         argslist = list(comm.args)
     else:
         argslist = comm.args
-    mylist = [comm.timestamp, test_name, comm.vm, comm.name, argslist, comm.success, comm.result, "", "", comm.side]
+        #IMPORTANT!
+        #Here rite_failed and rite_failed_log are False and "" because they are set later!
+    mylist = [comm.timestamp, test_name, comm.vm, comm.name, argslist, comm.success, comm.result, False, "", comm.side]
     return mylist
+
+
+def mark_as_failed(vm, test_name, reason):
+    for v in vm:
+        if v[1] == test_name:
+            v[7] = True
+            v[8] = reason

