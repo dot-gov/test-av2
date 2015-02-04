@@ -56,9 +56,9 @@ def install(command_dev, results):
 
 def uninstall_agent(commands_device, c, results):
     c.uninstall()
-
+    uninstall = False
     say("agent uninstall, verify request")
-    if 'No' != results.get('root','No'):
+    if results['have_root']:
         print "uninstall:without DIALOG"
         for i in range(12):
             time.sleep(10)

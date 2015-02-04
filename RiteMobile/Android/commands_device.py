@@ -742,4 +742,3 @@ class CommandsDevice:
 
     def save_logcat(self, dest_path_and_file):
         adb.save_logcat(self, dest_path_and_file)
-
