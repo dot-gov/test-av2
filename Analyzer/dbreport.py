@@ -41,7 +41,7 @@ class DBReport(object):
                                 FROM SUMMARY S
                                 WHERE MANUAL <> 1 AND
                                        START_TIMESTAMP = (
-                                                       SELECT MIN(START_TIMESTAMP)
+                                                       SELECT MAX(START_TIMESTAMP)
                                                          FROM SUMMARY X
                                                         WHERE S.VM = X.VM AND
                                                               S.TEST_NAME = X.TEST_NAME AND
@@ -54,7 +54,7 @@ class DBReport(object):
                                   FROM SUMMARY S
                                  WHERE MANUAL = 1 AND
                                        START_TIMESTAMP = (
-                                                       SELECT MIN(START_TIMESTAMP)
+                                                       SELECT MAX(START_TIMESTAMP)
                                                          FROM SUMMARY X
                                                         WHERE S.VM = X.VM AND
                                                               S.TEST_NAME = X.TEST_NAME AND
@@ -202,6 +202,9 @@ class DBReport(object):
             #Exploit
         self.insert_summary_manual_error((u'VM_EXPLOIT_SRV', u'kis14', u'CHECK_INFECTION', 26, u'VM\\ is\\ INFECTED', 'FAILED', 0, u''), "KIS 14 EXPLOIT")
 
+        #eset soldier (is elite)
+        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'eset', u'BUILD_SRV', 12, u"\\[\\'\\+\\ FAILED\\ SCOUT\\ BUILD\\.\\ CANNOT\\ FIND\\ ZIP\\ FILE\\ C\\:\\\\\\\\AVTest\\\\\\\\AVAgent\\\\\\\\build\\_windows\\_scout\\_silent\\_soldier\\_fast\\.zip\\ TO\\ UNZIP\\ IT\\'\\,\\ \\'\\+\\ ERROR\\:\\ No\\ file\\ to\\ unzip\\'\\]", 'FAILED', 0, u''), "ESET Soldier (is an elite)")
+
         #eset7 soldier
         self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'eset7', u'BUILD_SRV', 25, u"\\[\\'\\+\\ SUCCESS\\ UPGRADED\\ SYNC\\'\\,\\ \\'\\+\\ ERROR\\:\\ \\[Error\\ 193\\]\\ \\%1\\ is\\ not\\ a\\ valid\\ Win32\\ application\\'\\]", 'FAILED', 0, u''), "ESET 7 Soldier (is an elite)")
         self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'eset7', u'CROP', 26, u'\\[163\\,\\ 167\\,\\ 168\\]', 'CROP', 0, u''), "ESET 7 Soldier (is an elite)")
@@ -215,6 +218,13 @@ class DBReport(object):
 
         #bitdef exploit
         self.insert_summary_manual_error((u'VM_EXPLOIT_SRV', u'bitdef', u'BUILD_SRV', 31, u'\\[\\"\\+\\ SUCCESS\\ CHECK\\_STATIC\\:\\ \\[\\\'build\\/exploit\\_pdf\\\\\\\\\\\\\\\\example\\.exe\\\'\\]\\"\\,\\ \\\'\\+\\ SUCCESS\\ SCOUT\\ BUILD\\ \\(no\\ signature\\ detection\\)\\\'\\,\\ \\\'\\+\\ SUCCESS\\ SCOUT\\ EXECUTE\\\'\\,\\ \\\'\\+\\ WARN\\ did\\ not\\ drop\\ startup\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ FAILED\\ SCOUT\\ SYNC\\\'\\]', 'FAILED', 0, u''), "BITDEF EXPLOIT")
+
+        #bitdef
+        # NB THIS MANUAL ERROR USES THE REGEXP (SO ANY IMAGE ID IN CROP WILL MATCH)
+             # soldier CROP
+        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'bitdef15', u'CROP', 28, u'\\[.*\\]', 'CROP', 0, u''), "BITDEFENDER produces a FP crop with Elite and Soldier. From time to time is better to check manually known crops.")
+             # elite CROP
+        self.insert_summary_manual_error((u'VM_ELITE_FAST_SRV', u'bitdef15', u'CROP', 25, u'\\[.*\\]', 'CROP', 0, u''), "BITDEFENDER produces a FP crop with Elite and Soldier. From time to time is better to check manually known crops.")
 
         #gdata exploit
         self.insert_summary_manual_error((u'VM_EXPLOIT_SRV', u'gdata', u'BUILD_SRV', 31, u'\\[\\"\\+\\ SUCCESS\\ CHECK\\_STATIC\\:\\ \\[\\\'build\\/exploit\\_pdf\\\\\\\\\\\\\\\\example\\.exe\\\'\\]\\"\\,\\ \\\'\\+\\ SUCCESS\\ SCOUT\\ BUILD\\ \\(no\\ signature\\ detection\\)\\\'\\,\\ \\\'\\+\\ SUCCESS\\ SCOUT\\ EXECUTE\\\'\\,\\ \\\'\\+\\ WARN\\ did\\ not\\ drop\\ startup\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ FAILED\\ SCOUT\\ SYNC\\\'\\]', 'FAILED', 0, u''), "GDATA EXPLOIT")

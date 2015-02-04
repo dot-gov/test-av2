@@ -64,6 +64,15 @@ apksConf['avast'] = {'type': 'av',
                      'package_name': 'com.avast.android.mobilesecurity',
                      'start_scan_activity': ''}
 
+apksConf['ahnlab'] = {'type': 'av',
+                     'apk_path': 'REMEMBER TO ADD ME!!! SITE: http://jp.ahnlab.com/site/download/free/freeTrial.do',
+                     'conf_file': [['']],
+                     'conf_gzip': '',
+                     'launch_activity': '',
+                     'apk_conf_backup_file': '',
+                     'package_name': '',
+                     'start_scan_activity': ''}
+
 apksConf['360security'] = {'type': 'av',
                            'apk_path': 'avassets/360security/com.qihoo.security-1.apk',
                            'conf_file': [

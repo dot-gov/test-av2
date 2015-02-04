@@ -24,6 +24,7 @@ def execute(vm, protocol, inst_args):
     assert command.context is not None
 
     failed = False
+    reason = ""
 
     if inst_args:
         redis = inst_args
@@ -62,11 +63,13 @@ def execute(vm, protocol, inst_args):
         assert os.path.exists(filename)
         r = vm_manager.execute(vm, "copyFileToGuest", filename, remote_name)
         if r > 0:
-            time.sleep(5)
+            time.sleep(i * 5)
             failed = True
+            reason = "Can't copy av_agent.bat in Startup"
             logging.debug("Cannot copy %s" % filename)
         else:
             failed = False
+            reason = ""
             break
 
     if failed:
@@ -91,8 +94,9 @@ def execute(vm, protocol, inst_args):
         assert os.path.exists(filename)
         r = vm_manager.execute(vm, "copyFileToGuest", filename, remote_name)
         if r > 0:
-            time.sleep(5)
+            time.sleep(i * 5)
             failed = True
+            reason += "Can't copy start.bat in AVAgent (try %s)" % i
             logging.debug("Cannot copy %s" % filename)
         else:
             failed = False
@@ -110,6 +114,7 @@ def execute(vm, protocol, inst_args):
     r = vm_manager.execute(vm, "deleteDirectoryInGuest", dirname)
     if r > 0:
         failed = True
+        reason += "Cannot delete running file"
         logging.debug("Cannot delete %s" % dirname)
 
     # --------------delete logs-----------------
@@ -117,10 +122,11 @@ def execute(vm, protocol, inst_args):
     r = vm_manager.execute(vm, "deleteDirectoryInGuest", dirname)
     if r > 0:
         failed = True
+        reason += "Can't delete logs"
         logging.debug("Cannot delete %s" % dirname)
 
     if failed:
-        return False, "Cant Install Agent on VM"
+        return False, "Cant Install Agent on VM. Reason = %s" % reason
 
     else:
         return True, "Agent installed on VM"
