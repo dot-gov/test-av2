@@ -656,8 +656,8 @@ class AgentBuild:
                     logging.debug("- melt, uninstall: %s" % (time.ctime()))
                     #sleep(60)
                     self.uninstall(instance_id)
-
-                self.check_level(instance_id, "scout")
+                #already checked!
+                #self.check_level(instance_id, "scout")
         logging.debug("- Result: %s" % instance_id)
         return instance_id
 
