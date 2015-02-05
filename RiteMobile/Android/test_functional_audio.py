@@ -145,16 +145,6 @@ class TestSpecific(functional_common.Check):
 
     def test_device(self, args, command_dev, c, results):
 
-        if args.persistence:
-            print "sleeping 20 seconds"
-            time.sleep(20)
-            print "FORMAT RESIST"
-            self.check_format_resist(command_dev, c, results)
-
-            result, root, info = c.check_root(2)
-            print "sleeping 30 seconds"
-            time.sleep(30)
-
         if results['have_root']:
             # skype call
             print "SKYPE"

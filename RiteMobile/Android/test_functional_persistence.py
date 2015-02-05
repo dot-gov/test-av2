@@ -4,6 +4,8 @@ import time
 
 
 class TestSpecific(functional_common.Check):
+    def get_config(self):
+        return open('assets/config_mobile_persistence.json').read()
 
     def check_format_resist(self, command_dev, c, results, delay=60):
         print "... check format_resist and reboot"
