@@ -4,9 +4,10 @@ __author__ = 'marcol'
 import ctypes
 import subprocess
 
+#from ctypes import Structure, windll, c_uint, sizeof, byref
+
 from AVCommon.logger import logging
 from AVCommon import process
-
 
 MOUSEEVENTF_MOVE = 0x0001  # mouse move
 MOUSEEVENTF_ABSOLUTE = 0x8000  # absolute move
@@ -26,6 +27,9 @@ def on_answer(vm, success, answer):
 
 
 def execute(vm, args):
+
+    logging.debug("Idle time BEFORE trigger: %s", get_idle_duration())
+
     logging.debug("Triggering sync with mouse for 30 seconds")
     timeout = 30
 
@@ -45,4 +49,21 @@ def execute(vm, args):
         # then click
         ctypes.windll.user32.mouse_event(MOUSEEVENTF_CLICK, 0, 0, 0, 0)
 
+    logging.debug("Idle time AFTER trigger: %s", get_idle_duration())
+
     return True, ""
+
+
+class LASTINPUTINFO(ctypes.Structure):
+    _fields_ = [
+        ('cbSize', ctypes.c_uint),
+        ('dwTime', ctypes.c_uint),
+    ]
+
+
+def get_idle_duration():
+    lastInputInfo = LASTINPUTINFO()
+    lastInputInfo.cbSize = ctypes.sizeof(lastInputInfo)
+    ctypes.windll.user32.GetLastInputInfo(ctypes.byref(lastInputInfo))
+    millis = ctypes.windll.kernel32.GetTickCount() - lastInputInfo.dwTime
+    return millis / 1000.0

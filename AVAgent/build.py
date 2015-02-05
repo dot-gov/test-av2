@@ -496,7 +496,7 @@ class AgentBuild:
 
         logging.debug("Upgraded: %s" % upgraded)
         if upgraded:
-
+            logging.debug("The vm upgraded to the desird level, now we check that execution is inibithed.")
             #if got_level != level:
             #    add_result("+ FAILED LEVEL: %s" % level)
             sleep(60)

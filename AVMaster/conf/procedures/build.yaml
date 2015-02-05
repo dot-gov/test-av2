@@ -277,6 +277,7 @@ VM_MELT_SRV_VUZ:
     - UNINSTALL
 
 VM_EXPLOIT:
+    - ENABLE: [ sunday ]
     - ON_ERROR: CONTINUE
     - CALL: INIT_DISPATCH
     - BUILD: [ pull, exploit, melt ]
@@ -318,6 +319,7 @@ VM_EXPLOIT:
 
 
 VM_EXPLOIT_SRV:
+    - ENABLE: [ sunday ]
     - ON_ERROR: CONTINUE
     - CALL: INIT_DISPATCH
 
@@ -1060,7 +1062,9 @@ BUILD_EXPLOIT_SRV:
 
 # -------------- VM COMMANDS -------------- #
 
+#ENCAPSULATED IN INSTALL_AGENT
 VM_PUSH_AGENT:
+    #ENCAPSULATED IN INSTALL_AGENT
     - DELETE_DIR: /AVTest/
     - DELETE_DIR: /Users/avtest/Desktop/AVTest/
     - PUSHZIP: [ AVAgent/*.py, AVAgent/*.yaml, AVCommon/*.py, AVCommon/*.yml, AVCommon/commands/client/*.py, AVCommon/commands/meta/*.py, AVCommon/commands/*.py, AVAgent/assets/config*, AVAgent/assets/keyinject.exe, AVAgent/assets/getusertime.exe, AVAgent/assets/windows/*  ]
@@ -1253,7 +1257,7 @@ UPDATE_AGENT:
     - SLEEP: [10, 60]
     - REVERT
     - START_VM
-
+    #ENCAPSULATED IN INSTALL_AGENT
     - CALL: VM_PUSH_AGENT
     - INSTALL_AGENT
     - START_AGENT

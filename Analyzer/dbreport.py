@@ -237,19 +237,29 @@ class DBReport(object):
         self.insert_summary_manual_error((u'VM_EXPLOIT_SRV', u'risint', u'BUILD_SRV', 21, u'\\[\\"\\+\\ SUCCESS\\ CHECK\\_STATIC\\:\\ \\[\\\'build\\/exploit\\_pdf\\\\\\\\\\\\\\\\example\\.exe\\\'\\]\\"\\,\\ \\\'\\+\\ SUCCESS\\ SCOUT\\ BUILD\\ \\(no\\ signature\\ detection\\)\\\'\\,\\ \\\'\\+\\ SUCCESS\\ SCOUT\\ EXECUTE\\\'\\,\\ \\\'\\+\\ ERROR\\:\\ \\[Error\\ 1\\]\\ Incorrect\\ function\\\'\\]', 'FAILED', 0, u''), "RISING (fails mostly every test)")
 
         #CMCAV
-            #static
+            #static (blacklisted the scout exits) (fails every test)
         self.insert_summary_manual_error((u'VM_STATIC_SRV', u'cmcav', u'BUILD_SRV', 50, u'\\[\\"\\+\\ FAILED\\ CHECK\\_STATIC\\.\\ SIGNATURE\\ DETECTION\\:\\ \\[\\\'build\\/ios\\\\\\\\\\\\\\\\win\\/install\\.exe\\\'\\]\\"\\,\\ \\"\\+\\ FAILED\\ SCOUT\\ BUILD\\.\\ SIGNATURE\\ DETECTION\\:\\ \\[\\\'build\\/ios\\\\\\\\\\\\\\\\win\\/install\\.exe\\\'\\]\\"\\,\\ \\\'\\+\\ ERROR\\:\\ Signature\\ detection\\\'\\]', 'FAILED', 0, u''), "CMCAV STATIC IOS")
         self.insert_summary_manual_error((u'VM_STATIC_SRV', u'cmcav', u'CROP', 71, u'\\[761\\,\\ 766\\]', 'CROP', 0, u''), "CMCAV IOS")
             #elite
         self.insert_summary_manual_error((u'VM_ELITE_FAST_SRV', u'cmcav', u'BUILD_SRV', 13, u'\\[\\"\\+\\ FAILED\\ CHECK\\_STATIC\\.\\ SIGNATURE\\ DETECTION\\:\\ \\[\\\'build\\/windows\\\\\\\\\\\\\\\\agent\\.exe\\\'\\]\\"\\,\\ \\"\\+\\ FAILED\\ SCOUT\\ BUILD\\.\\ SIGNATURE\\ DETECTION\\:\\ \\[\\\'build\\/windows\\\\\\\\\\\\\\\\agent\\.exe\\\'\\]\\"\\,\\ \\\'\\+\\ ERROR\\:\\ Signature\\ detection\\\'\\]', 'FAILED', 0, u''), "CMCAV (blacklisted av)")
-            #MELT AIR
-        self.insert_summary_manual_error((u'VM_MELT_SRV_AIR', u'cmcav', u'CHECK_INFECTION', 19, u'VM\\ is\\ INFECTED', 'FAILED', 0, u''), "CMCAV MELT AIR (blacklisted av)")
+            #MELT
+        self.insert_summary_manual_error((u'VM_MELT_SRV_AIR', u'cmcav', u'CHECK_INFECTION', 19, u'VM\\ is\\ INFECTED', 'FAILED', 0, u''), "CMCAV MELT (blacklisted av, the scout exits)")
+        self.insert_summary_manual_error((u'VM_MELT_SRV_FIF', u'cmcav', u'CHECK_INFECTION', 20, u'VM\\ is\\ INFECTED', 'FAILED', 0, u''), "CMCAV MELT (blacklisted av, the scout exits)")
+        self.insert_summary_manual_error((u'VM_MELT_SRV_FIF', u'cmcav', u'CHECK_INFECTION', 20, u'VM\\ is\\ INFECTED', 'FAILED', 0, u''), "CMCAV MELT (blacklisted av, the scout exits)")
             #exploit
-        self.insert_summary_manual_error((u'VM_EXPLOIT_SRV', u'cmcav', u'CHECK_INFECTION', 25, u'VM\\ is\\ INFECTED', 'FAILED', 0, u''), "CMCAV EXPLOIT(blacklisted av)")
+        self.insert_summary_manual_error((u'VM_EXPLOIT_SRV', u'cmcav', u'CHECK_INFECTION', 25, u'VM\\ is\\ INFECTED', 'FAILED', 0, u''), "CMCAV EXPLOIT (blacklisted av, the scout exits)")
+            #elite scoutdemo
+        self.insert_summary_manual_error((u'VM_ELITE_FAST_SCOUTDEMO_SRV', u'cmcav', u'RELOG', 18, u'Cannot\\ relogin', 'FAILED', 0, u''), "CMCAV Elite ScoutDemo (blacklisted av, the scout exits)")
 
-        #norton
+
+        #norton soldier (is elite)
         self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'norton', u'BUILD_SRV', 26, u"\\[\\'\\+\\ SUCCESS\\ UPGRADED\\ SYNC\\'\\,\\ \\'\\+\\ FAILED\\ UPGRADE\\ SOLDIER\\'\\]", 'FAILED', 0, u''), "NORTON SOLDIER (Norton is Elite)")
         self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'norton', u'CHECK_INFECTION', 30, u'VM\\ is\\ INFECTED', 'FAILED', 0, u''), "NORTON SOLDIER (Norton is Elite)")
+
+        #norton 15 soldier (is elite) NB crop regexp
+        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'norton15', u'BUILD_SRV', 24, u"\\[\\'\\+\\ SUCCESS\\ UPGRADED\\ SYNC\\'\\,\\ \\'\\+\\ FAILED\\ UPGRADE\\ SOLDIER\\'\\]", 'FAILED', 0, u''), "NORTON SOLDIER 15 (Norton is Elite)")
+        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'norton15', u'CROP', 25, u'\\[.*\\]', 'CROP', 0, u''), "NORTON SOLDIER 15 (Norton is Elite)")
+        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'norton15', u'CHECK_INFECTION', 28, u'VM\\ is\\ INFECTED', 'FAILED', 0, u''), "NORTON SOLDIER 15 (Norton is Elite)")
 
         #comodo
             #soldier
@@ -264,10 +274,12 @@ class DBReport(object):
 
         #avast
         self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'avast', u'CHECK_INFECTION', 31, u'VM\\ is\\ INFECTED', 'FAILED', 0, u''), "AVAST SOLDIER FAILES UNINSTALLATION (Avast is Elite)")
-        #clamav
-        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'clamav', u'CHECK_INFECTION', 31, u'VM\\ is\\ INFECTED', 'FAILED', 0, u''), "CLAMAV SOLDIER FAILES UNINSTALLATION (Clamav is Elite)")
 
-        #kis 32 (blacklisted)
+        #clamav (is Elite)
+            #soldier
+        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'cmcav', u'BUILD_SRV', 13, u'\\[\\"\\+\\ FAILED\\ CHECK\\_STATIC\\.\\ SIGNATURE\\ DETECTION\\:\\ \\[\\\'build\\/windows\\\\\\\\\\\\\\\\agent\\.exe\\\'\\]\\"\\,\\ \\"\\+\\ FAILED\\ SCOUT\\ BUILD\\.\\ SIGNATURE\\ DETECTION\\:\\ \\[\\\'build\\/windows\\\\\\\\\\\\\\\\agent\\.exe\\\'\\]\\"\\,\\ \\\'\\+\\ ERROR\\:\\ Signature\\ detection\\\'\\]', 'FAILED', 0, u''), "CLAMAV SOLDIER FAILES UNINSTALLATION (Clamav is Elite)")
+
+        #kis 32 (blacklisted the scout exits)
             # static bb + ios
         self.insert_summary_manual_error((u'VM_STATIC_SRV', u'kis32', u'BUILD_SRV', 37, u'\\[\\"\\+\\ ERROR\\:\\ \\[Errno\\ 13\\]\\ Permission\\ denied\\:\\ \\\'build\\/blackberry\\\\\\\\\\\\\\\\install\\.bat\\\'\\"\\]', 'FAILED', 0, u''), "KIS 32 STATIC BB+IOS")
         self.insert_summary_manual_error((u'VM_STATIC_SRV', u'kis32', u'BUILD_SRV', 46, u'\\[\\"\\+\\ ERROR\\:\\ \\[Errno\\ 13\\]\\ Permission\\ denied\\:\\ \\\'build\\/ios\\\\\\\\\\\\\\\\win\\/install\\.exe\\\'\\"\\]', 'FAILED', 0, u''), "KIS 32 STATIC BB+IOS")
@@ -279,6 +291,8 @@ class DBReport(object):
         self.insert_summary_manual_error((u'VM_ELITE_FAST_SCOUTDEMO_SRV', u'kis32', u'BUILD_SRV', 23, u'\\[\\"\\+\\ SUCCESS\\ CHECK\\_STATIC\\:\\ \\[\\\'build\\/windows\\_demo\\\\\\\\\\\\\\\\agent\\.exe\\\'\\]\\"\\,\\ \\\'\\+\\ SUCCESS\\ SCOUT\\ BUILD\\ \\(no\\ signature\\ detection\\)\\\'\\,\\ \\\'\\+\\ SUCCESS\\ SCOUT\\ EXECUTE\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ FAILED\\ SCOUT\\ SYNC\\\'\\]', 'FAILED', 0, u''), "KIS 32 ELITE DEMO (IS BLACKLISTED)")
             #exploit
         self.insert_summary_manual_error((u'VM_EXPLOIT_SRV', u'kis32', u'BUILD_SRV', 30, u'\\[\\"\\+\\ SUCCESS\\ CHECK\\_STATIC\\:\\ \\[\\\'build\\/exploit\\_pdf\\\\\\\\\\\\\\\\example\\.exe\\\'\\]\\"\\,\\ \\\'\\+\\ SUCCESS\\ SCOUT\\ BUILD\\ \\(no\\ signature\\ detection\\)\\\'\\,\\ \\\'\\+\\ SUCCESS\\ SCOUT\\ EXECUTE\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ FAILED\\ SCOUT\\ SYNC\\\'\\]', 'FAILED', 0, u''), "KIS 32 EXPLOIT (IS BLACKLISTED)")
+            #melt
+        self.insert_summary_manual_error((u'VM_MELT_SRV_FIF', u'kis32', u'BUILD_SRV', 24, u'\\[\\"\\+\\ SUCCESS\\ CHECK\\_STATIC\\:\\ \\[\\\'build\\/windows\\_melt\\_fif\\\\\\\\\\\\\\\\exp\\_rite\\.exe\\\'\\]\\"\\,\\ \\\'\\+\\ SUCCESS\\ SCOUT\\ BUILD\\ \\(no\\ signature\\ detection\\)\\\'\\,\\ \\\'\\+\\ SUCCESS\\ SCOUT\\ EXECUTE\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ FAILED\\ SCOUT\\ SYNC\\\'\\]', 'FAILED', 0, u''), "KIS 32 MELT (IS BLACKLISTED)")
 
         #syscare failes due to mouse emulation
             #soldier
