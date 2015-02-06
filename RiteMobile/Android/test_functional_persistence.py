@@ -386,7 +386,7 @@ def test_device(commands_rcs, command_dev, args, results):
     # tests = ["sync","format_resist","root", "skype","camera"]
     # tests = ["format_resist"]
 
-    demo = True
+    demo = False
     persist = True
     #device_id = command_dev.get_dev_deviceid()
 
