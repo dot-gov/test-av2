@@ -332,3 +332,90 @@ l1  l2  l3
 
 	packages_remained: package:/system/app/StkDevice.apk
 
+Installation
+	time: 2015-01-27 10:03:56.733715
+	installed: 
+	executed: True
+	instance_name: Android (326) samsung GT-I9100
+	info: 
+	uptime_first:  10:09:15 up 18 min,  load average: 0.72, 0.70, 0.60
+
+	uptime_last:  10:19:39 up 28 min,  load average: 0.41, 0.72, 0.66
+
+	error: 
+	exception: 
+Device
+	device: samsung GT-I9100
+	id: 353824050402243
+	release: 4.0.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: 1.93:SUPERSU
+
+	selinux: 
+	format_resist: 
+Evidences
+	evidences_first: 
+		addressbook: 73
+			bbm
+			telegram
+			phone
+			facebook
+			skype
+			whatsapp
+			gmail
+		application: 5
+		calendar: 12
+		call: 0
+		camera: 1
+		chat: 317
+			bbm
+			facebook
+			skype
+			line
+			whatsapp
+			gmail
+		device: 2
+		message: 1
+		mic: 0
+		password: 3
+		screenshot: 1
+
+	evidences_last: 
+		addressbook: 75
+			bbm
+			telegram
+			phone
+			facebook
+			skype
+			whatsapp
+			gmail
+		application: 51
+		calendar: 12
+		call: 1
+			skype
+		camera: 14
+		chat: 329
+			bbm
+			viber
+			facebook
+			skype
+			line
+			whatsapp
+			gmail
+		device: 3
+		message: 1
+		mic: 0
+		password: 3
+		screenshot: 3
+
+Expected
+	call_supported: True
+	expected: ['telegram', 'android.talk', 'viber', 'facebook', 'line.android', 'skype', 'whatsapp', 'tencent.mm']
+Uninstall
+	uninstall: True
+	running: False
+	files_remained: 
+	packages_remained: 

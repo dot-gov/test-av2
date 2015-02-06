@@ -215,7 +215,6 @@ class AgentBuild:
             timestr2 = time.strftime("%y%m%d-%H%M%S", time.localtime(time.time()))
             logging.debug("### Completed launching %s with Popen - time: %s" % (exefile, timestr2))
 
-
             if not silent:
                 add_result("+ SUCCESS SCOUT EXECUTE")
 
@@ -450,7 +449,7 @@ class AgentBuild:
             if self.hostname in self.soldierlist:
                 add_result("+ SUCCESS SOLDIER BLACKLISTED (I'm doing an elite test but because the av is in soldierlist, I got a soldier update)")
             else:
-                add_result("+ FAILED ELITE UPGRADE")
+                add_result("+ FAILED ELITE UPGRADE (maybe server says this vm is soldier, but rite thinks it's elite)")
 
             logging.debug("- Uninstalling and closing instance: %s" % instance_id)
             self.uninstall(instance_id)
@@ -497,7 +496,7 @@ class AgentBuild:
 
         logging.debug("Upgraded: %s" % upgraded)
         if upgraded:
-
+            logging.debug("The vm upgraded to the desird level, now we check that execution is inibithed.")
             #if got_level != level:
             #    add_result("+ FAILED LEVEL: %s" % level)
             sleep(60)
@@ -657,8 +656,8 @@ class AgentBuild:
                     logging.debug("- melt, uninstall: %s" % (time.ctime()))
                     #sleep(60)
                     self.uninstall(instance_id)
-
-                self.check_level(instance_id, "scout")
+                #already checked!
+                #self.check_level(instance_id, "scout")
         logging.debug("- Result: %s" % instance_id)
         return instance_id
 

@@ -108,12 +108,17 @@ def finish():
     #dump_yaml()
 
     report = Report()
-    create_report_for_analyzer(report)
 
     logging.debug("context: %s" % command.context)
     mail_recipients = command.context.get("mail_recipients", [])
     if mail_recipients:
         mail_summary(mail_recipients)
+    else:
+        logging.debug("No mail summary sent (no recipients in context, or no SET_MAIL executed)")
+    try:
+        create_report_for_analyzer(report)
+    except Exception as e:
+        logging.error("Could not generate report for analyzer. Exception %s, %s" % (e.__doc__, e.message))
 
 def set_procedure(vm, proc_name):
     report = Report()
@@ -259,10 +264,10 @@ def create_report_for_analyzer(report):
     #     os.rename(lastlog_name, previous_lastlog_name)
 
     with open(report_for_analyzer_name, "a") as report_for_analyzer_file:
-        to_serialize = {}
-        # qui ho il report con tutte le vm. Prendo una vm alla volta
+        to_yaml_dump_vms_dict = {}
+        # qui ho il report con tutte le vm. Prendo una vm (k) alla volta
         for k, v in report.c_received.items():
-            vm = []
+            comm_list_for_this_vm = []
             test_name = None
             # failed_vm = False
             # prendoi singoli comandi della vm corrente
@@ -273,23 +278,26 @@ def create_report_for_analyzer(report):
                     # se qui ho un test name, allora ho gia' fatto un init di cui non c'e' mai stato il
                     # if test_name:
                     #     failed_vm = True
-                    if len(vm) > 0:
-                        if vm[-1][3] != "REPORT_KIND_END":
-                            mark_as_failed(vm, vm[-1][1], "No Report")
+                    if len(comm_list_for_this_vm) > 0:
+                        if comm_list_for_this_vm[-1][3] != "REPORT_KIND_END":
+                            mark_as_failed(comm_list_for_this_vm, comm_list_for_this_vm[-1][1], "No Report")
 
                     test_name = comm.args
                 if comm.name == "REPORT_KIND_END":
                     #report_kind_end and report_kind_init are included
-                    vm.append(command_to_array(comm, test_name))
+                    comm_list_for_this_vm.append(command_to_array(comm, test_name))
                     test_name = None
                 if not test_name:
                     #if not in a report_kind range, then does not save the command
                     continue
-                vm.append(command_to_array(comm, test_name))
+                comm_list_for_this_vm.append(command_to_array(comm, test_name))
 
-            to_serialize[k] = vm
+            to_yaml_dump_vms_dict[k] = comm_list_for_this_vm
 
-        yaml.safe_dump(to_serialize, report_for_analyzer_file)
+        try:
+            yaml.safe_dump(to_yaml_dump_vms_dict, report_for_analyzer_file)
+        except:
+            logging.error("Cannot dump yaml for analyzer. Dumping data to console:\n %s" % str(to_yaml_dump_vms_dict))
 
     #no more needed
     #shutil.copyfile(report_for_analyzer_name, lastlog_name)
