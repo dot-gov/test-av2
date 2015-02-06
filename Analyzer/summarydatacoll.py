@@ -104,7 +104,9 @@ class SummaryDataColl(object):
             ok = False
         elif cur_err == 0 and man_err > 0:
             message = "Anomaly! Actual state is PASSED, known errorlist is: %s" % manual_state_rows.state_rows_to_string_short()
-            ok = False
+            ok = True
+            saved_error = True
+            saved_error_comment = manual_state_rows.get_manual_comment()
         #compare_current_to_manual is true if commands are equal
         elif cur_err > 0 and self.compare_current_to_manual(manual_state_rows):
             message = "OK, but known errors occurred (known error comment is: %s). Actual errorlist and known errorlist are %s " \

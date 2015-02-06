@@ -108,9 +108,6 @@ VM_ELITE_FAST:
     #don't skip because I need to uninstall
     #- ON_ERROR: SKIP
     ##CHECKING IF UNINSTALLATION SUCCEDEED
-    #- RELOG
-    #- SLEEP: 300
-    #- EXECUTE_VM: [ /avtest/avagent/assets/keyinject.exe, [], 40, True, True ]
     - CHECK_INFECTION
     #to be sure, we uninstall
     - UNINSTALL
@@ -127,12 +124,7 @@ VM_ELITE_FAST_SRV:
     - BUILD_SRV: [ elite_fast, windows, silent, elite_fast ]
     - CROP: False
     - SCREENSHOT
-    #don't skip because I need to uninstall
-    #- ON_ERROR: SKIP
-    ##CHECKING IF UNINSTALLATION SUCCEDEED
-    #- RELOG
-    #- SLEEP: 300
-    #- EXECUTE_VM: [ /avtest/avagent/assets/keyinject.exe, [], 40, True, True ]
+    #CHECKING IF UNINSTALLATION SUCCEDEED
     - CHECK_INFECTION
     #to be sure, we uninstall
     - UNINSTALL
@@ -164,9 +156,6 @@ VM_ELITE_FAST_SCOUTDEMO_SRV:
     # i parametri: ACTION: elite_fast_scoutdemo (cioe' step 2 dello scoutdemo), CONFIG: windows_elite_demo cioe' upgrade ad elite ma in demo, TIPO: silent, FINAL_ACTION: elite_fast_scoutdemo
     - BUILD_SRV: [ elite_fast, windows_demo, silent, elite_fast ]
     - SCREENSHOT
-    #- RELOG
-    #- SLEEP: 300
-    #- EXECUTE_VM: [ /avtest/avagent/assets/keyinject.exe, [], 40, True, True ]
     - CHECK_INFECTION
     #to be sure, we uninstall
     - UNINSTALL
@@ -184,11 +173,6 @@ VM_SOLDIER:
     - BUILD: [ soldier_fast, windows, silent ]
     - CROP: False
     - SCREENSHOT
-    #don't skip because I need to uninstall
-    #- ON_ERROR: SKIP
-    #- RELOG
-    #- SLEEP: 300
-    #- EXECUTE_VM: [ /avtest/avagent/assets/keyinject.exe, [], 40, True, True ]
     - CHECK_INFECTION
     #to be sure, we uninstall
     - UNINSTALL
@@ -208,9 +192,6 @@ VM_SOLDIER_SRV:
     - SCREENSHOT
     #don't skip because I need to uninstall
     - ON_ERROR: SKIP
-    #- RELOG
-    #- SLEEP: 300
-    #- EXECUTE_VM: [ /avtest/avagent/assets/keyinject.exe, [], 40, True, True ]
     - CHECK_INFECTION
     #to be sure, we uninstall
     - UNINSTALL
@@ -220,9 +201,6 @@ VM_MELT:
     - CALL: INIT_DISPATCH
     - BUILD: [ scout, windows, melt ]
     - SCREENSHOT
-    #- RELOG
-    #- SLEEP: 300
-    #- EXECUTE_VM: [ /avtest/avagent/assets/keyinject.exe, [], 40, True, True ]
     - CHECK_INFECTION
     #to be sure, we uninstall
     - UNINSTALL
@@ -232,10 +210,6 @@ VM_MELT_SRV:
     - CALL: INIT_DISPATCH
     - BUILD_SRV: [ scout, windows, melt, melt ]
     - SCREENSHOT
-    #before check infection, I need a sync (relog + 5 min wait)
-    #- RELOG
-    #- SLEEP: 300
-    #- EXECUTE_VM: [ /avtest/avagent/assets/keyinject.exe, [], 40, True, True ]
     - CHECK_INFECTION
     #to be sure, we uninstall
     - UNINSTALL
@@ -278,7 +252,7 @@ VM_MELT_SRV_VUZ:
 
 VM_EXPLOIT:
     - ENABLE: [ sunday ]
-    - ON_ERROR: CONTINUE
+    - ON_ERROR: CONTINU
     - CALL: INIT_DISPATCH
     - BUILD: [ pull, exploit, melt ]
     #- BUILD: [ pull, exploit_avi, melt ]
@@ -299,20 +273,12 @@ VM_EXPLOIT:
     #- BUILD: [ pull, exploit_rar, melt ]
     - BUILD: [ scout, exploit_pdf, melt ]
     - SCREENSHOT
-    #before check infection, I need a sync (relog + 5 min wait)
-    #- RELOG
-    #- SLEEP: 300
-    #- EXECUTE_VM: [ /avtest/avagent/assets/keyinject.exe, [], 40, True, True ]
     - CHECK_INFECTION
     #to be sure, we uninstall
     - UNINSTALL
     - RELOG
     - BUILD: [ scout, selfdel_exploit, melt ]
     - SCREENSHOT
-    #before check infection, I need a sync (relog + 5 min wait)
-    #- RELOG
-    #- SLEEP: 300
-    #- EXECUTE_VM: [ /avtest/avagent/assets/keyinject.exe, [], 40, True, True ]
     - CHECK_INFECTION
     #to be sure, we uninstall
     - UNINSTALL
@@ -327,18 +293,12 @@ VM_EXPLOIT_SRV:
     - SCREENSHOT
     - BUILD_SRV: [ scout, exploit_pdf, melt, exploit_pdf ]
     - SCREENSHOT
-    #- RELOG
-    #- SLEEP: 300
-    #- EXECUTE_VM: [ /avtest/avagent/assets/keyinject.exe, [], 40, True, True ]
     - CHECK_INFECTION
     #to be sure, we uninstall
     - UNINSTALL
     - RELOG
     - BUILD_SRV: [ scout, selfdel_exploit, melt, selfdel_exploit ]
     - SCREENSHOT
-    #- RELOG
-    #- SLEEP: 300
-    #- EXECUTE_VM: [ /avtest/avagent/assets/keyinject.exe, [], 40, True, True ]
     - CHECK_INFECTION
     #to be sure, we uninstall
     - UNINSTALL
@@ -1067,7 +1027,7 @@ VM_PUSH_AGENT:
     #ENCAPSULATED IN INSTALL_AGENT
     - DELETE_DIR: /AVTest/
     - DELETE_DIR: /Users/avtest/Desktop/AVTest/
-    - PUSHZIP: [ AVAgent/*.py, AVAgent/*.yaml, AVCommon/*.py, AVCommon/*.yml, AVCommon/commands/client/*.py, AVCommon/commands/meta/*.py, AVCommon/commands/*.py, AVAgent/assets/config*, AVAgent/assets/keyinject.exe, AVAgent/assets/getusertime.exe, AVAgent/assets/windows/*  ]
+    - PUSHZIP: [ AVAgent/*.py, AVAgent/*.yaml, AVCommon/*.py, AVCommon/*.yml, AVCommon/commands/client/*.py, AVCommon/commands/meta/*.py, AVCommon/commands/*.py, AVAgent/assets/config*, AVAgent/assets/keyinject.exe, AVAgent/assets/exec_zip.exe, AVAgent/assets/getusertime.exe, AVAgent/assets/windows/*  ]
 
 VM_UPLOAD_SKYPE:
     - PUSH:
@@ -1155,18 +1115,7 @@ VM_PACKER_MELT:
 ########################################################################
 
 # -------------- UPDATE -------------- #
-# COMPLETE COMMANDS
-
-UPDATE_DISABLE_UPD:
-    - PUSH: [ assets/elevate.exe, assets/disable_autoupd.bat, assets/update_system.bat]
-    #- EXECUTE_VM: /AVTest/assets/disable_autoupd.bat
-    - EXECUTE_VM: /AVTest/assets/update_system.bat
-
-UPDATE_SNAPSHOT:
-    - VM_ALL: IMPORTANT
-    - ON_ERROR: STOP
-    - INTERNET: False
-    - REFRESH_SNAPSHOT
+# COMMANDS TO FINALIZE FIRST INSTALLATION
 
 UPDATE_ALL_7:
     - ON_ERROR: STOP
@@ -1186,7 +1135,8 @@ UPDATE_ALL_7:
     - DELETE_DIR: assets
  #agent
     - INTERNET: False
-    - CALL: VM_PUSH_AGENT
+    #ENCAPSULATED IN INSTALL_AGENT
+    #- CALL: VM_PUSH_AGENT
     - INSTALL_AGENT
     - RELOG
     - INTERNET: False
@@ -1251,6 +1201,142 @@ UPDATE_REG:
     - REFRESH_SNAPSHOT
 
 
+# ---------------------------
+#avagent updates
+
+
+#called by update.sh
+UPDATE_AV:
+    - VM_ALL
+    - ON_ERROR: STOP
+    - CALL: SET_MAIL
+    - REPORT:
+        - UPD_AV: ['AVM Update', 'Update AV']
+        - UPD_REFRESH
+    - CALL: END_DISPATCH
+
+#indirectly called by update.sh
+UPD_AV:
+    - CALL: UPD_AGENT
+    - SLEEP: 1000
+    - STOP_VM: 300
+    - WAIT_SHUTDOWN
+
+#indirectly called by update.sh
+UPD_AGENT:
+    - INTERNET: True
+    - SLEEP: [10, 60]
+    - REVERT
+    - START_VM
+    - CHECK_INFECTION # questo non e' necessario, ma e' meglio assicurarsene
+    #ENCAPSULATED IN INSTALL_AGENT
+    #- CALL: VM_PUSH_AGENT
+    - INSTALL_AGENT
+    - SLEEP: 60
+    - STOP_VM: 300
+    - WAIT_SHUTDOWN
+    - START_VM: AV_AGENT
+    - UNINSTALL
+    #- CLEAN_EVIDENCES: [ Ok ]
+
+#indirectly called by update.sh
+UPD_REFRESH:
+    - REFRESH_SNAPSHOT
+
+#no more called by update.sh
+UPDATE_FULL:
+    - VM_ALL
+    - ON_ERROR: STOP
+    - CALL: SET_MAIL
+    - REPORT:
+        - UPD_AGENT
+        - UPD_WAIT: ['AVM Update', 'Update AV']
+        - UPD_REFRESH
+    - CALL: END_DISPATCH
+
+#######################################################################################################################################
+#   _____  _____  _______  ______        _     _________  ________    __                                              __   __
+#  |_   _||_   _||_   __ \|_   _ `.     / \   |  _   _  ||_   __  | .' _|                                            [  | |_ `.
+#    | |    | |    | |__) | | | `. \   / _ \  |_/ | | \_|  | |_ \_| | |   _ .--..--.   ,--.   _ .--.  __   _   ,--.   | |   | |
+#    | '    ' |    |  ___/  | |  | |  / ___ \     | |      |  _| _  | |  [ `.-. .-. | `'_\ : [ `.-. |[  | | | `'_\ :  | |   | |
+#     \ \__/ /    _| |_    _| |_.' /_/ /   \ \_  _| |_    _| |__/ | | |_  | | | | | | // | |, | | | | | \_/ |,// | |, | |  _| |
+#      `.__.'    |_____|  |______.'|____| |____||_____|  |________| `.__|[___||__||__]\'-;__/[___||__]'.__.'_/\'-;__/[___]|__,'
+#
+#######################################################################################################################################
+
+# ---------------------------
+#    Manual UPDATE
+# ---------------------------
+
+INIT_UPDATE_MANUAL:
+    - VM_ALL
+    - INTERNET: True
+    - REVERT
+    - SLEEP: [1, 600]
+    - START_VM
+    - DELETE_DIR: c:\\AVTest\\logs\\
+    #ENCAPSULATED IN INSTALL_AGENT
+    #- CALL: VM_PUSH_AGENT
+    - INSTALL_AGENT
+
+FINALIZE_UPDATE_MANUAL:
+    - VM_ALL
+    - INTERNET: False
+    - SLEEP: [10, 60]
+    - REFRESH_SNAPSHOT
+
+UPDATE_INSTALL_MANUAL:
+    - VM_ALL
+    - SLEEP: [1, 600]
+    - START_VM
+    #ENCAPSULATED IN INSTALL_AGENT
+    #- CALL: VM_PUSH_AGENT
+    - INSTALL_AGENT
+    - RELOG
+    - STOP_VM: 300
+    - START_VM: AV_AGENT
+    - STOP_VM: 300
+    - WAIT_SHUTDOWN
+    - REFRESH_SNAPSHOT
+
+UPDATE_MANUAL:
+    - CALL: INIT_UPDATE_MANUAL
+    - CHECK_INFECTION # questo non e' necessario, ma e' meglio assicurarsene
+    #ENCAPSULATED IN INSTALL_AGENT
+    #- CALL: VM_PUSH_AGENT
+    - PUSH: [assets/update_system_manual.bat]
+    - INSTALL_AGENT
+    - EXECUTE_VM: /AVTest/assets/update_system_manual.bat # scarica gli aggiornamenti windows
+
+    - WAIT_SHUTDOWN
+    - START_VM: AV_AGENT
+    - STOP_VM: 300
+    - WAIT_SHUTDOWN
+    - REFRESH_SNAPSHOT
+
+# -----------------------------
+#   Update Management Scripts
+# -----------------------------
+
+SYSTEM_START:
+    - VM_ALL
+    - INTERNET: True
+    - SLEEP: [1, 60]
+    - START_VM
+
+UPDATE_RESTART:
+    - SLEEP: [1, 30]
+    - START_VM
+
+
+
+# ---------------------------
+# SEEMS NOT USEND AND TO DELETE
+
+
+# ---------------------------
+#other functions for manual use
+
 UPDATE_AGENT:
     - ON_ERROR: STOP
     - INTERNET: False
@@ -1258,7 +1344,7 @@ UPDATE_AGENT:
     - REVERT
     - START_VM
     #ENCAPSULATED IN INSTALL_AGENT
-    - CALL: VM_PUSH_AGENT
+    #- CALL: VM_PUSH_AGENT
     - INSTALL_AGENT
     - START_AGENT
     - UNINSTALL
@@ -1269,26 +1355,19 @@ UPDATE_AGENT:
     - REFRESH_SNAPSHOT
 
 UPDATE_AGENT_FAST:
-    - CALL: VM_PUSH_AGENT
+    #ENCAPSULATED IN INSTALL_AGENT
+    #- CALL: VM_PUSH_AGENT
     - INSTALL_AGENT
     - RELOG
 
-# ---------------------------
 
-UPD_AGENT:
-    - INTERNET: True
-    - SLEEP: [10, 60]
-    - REVERT
-    - START_VM
-    - CHECK_INFECTION # questo non e' necessario, ma e' meglio assicurarsene
-    - CALL: VM_PUSH_AGENT
-    - INSTALL_AGENT
-    - SLEEP: 60
-    - STOP_VM: 300
-    - WAIT_SHUTDOWN
-    - START_VM: AV_AGENT
-    - UNINSTALL
-    #- CLEAN_EVIDENCES: [ Ok ]
+UPDATE_SNAPSHOT:
+    - VM_ALL: IMPORTANT
+    - ON_ERROR: STOP
+    - INTERNET: False
+    - REFRESH_SNAPSHOT
+
+
 
 UPD_WAIT:
     - EXECUTE_VM: /AVTest/assets/update_system.bat # scarica gli aggiornamenti windows
@@ -1300,36 +1379,7 @@ UPD_WAIT:
     - STOP_VM: 300
     - WAIT_SHUTDOWN
 
-UPD_AV:
-    - CALL: UPD_AGENT
 
-    - SLEEP: 1000
-    - STOP_VM: 300
-    - WAIT_SHUTDOWN
-
-UPD_REFRESH:
-    - REFRESH_SNAPSHOT
-
-UPDATE_AV:
-    - VM_ALL
-    - ON_ERROR: STOP
-    - CALL: SET_MAIL
-    - REPORT:
-        - UPD_AV: ['AVM Update', 'Update AV']
-        - UPD_REFRESH
-    - CALL: END_DISPATCH
-
-UPDATE_FULL:
-    - VM_ALL
-    - ON_ERROR: STOP
-    - CALL: SET_MAIL
-    - REPORT:
-        - UPD_AGENT
-        - UPD_WAIT: ['AVM Update', 'Update AV']
-        - UPD_REFRESH
-    - CALL: END_DISPATCH
-
-# ---------------------------
 
 UPD_WAIT_FAST:
     - INTERNET: True
@@ -1337,7 +1387,8 @@ UPD_WAIT_FAST:
     - REVERT
     - START_VM
     - CHECK_INFECTION # questo non e' necessario, ma e' meglio assicurarsene
-    - CALL: VM_PUSH_AGENT
+    #ENCAPSULATED IN INSTALL_AGENT
+    #- CALL: VM_PUSH_AGENT
     - PUSH: [assets/update_system.bat, assets/update_theme.bat]
     - EXECUTE_VM: [ /avtest/assets/update_theme.bat, [], 40, True, True ]
     - INSTALL_AGENT
@@ -1366,93 +1417,25 @@ UPDATE_FAST:
         - UPD_REFRESH
     - CALL: END_DISPATCH
 
+#seems very old
+#UPDATE_DISABLE_UPD:
+    #- PUSH: [ assets/elevate.exe, assets/disable_autoupd.bat, assets/update_system.bat]
+    #- EXECUTE_VM: /AVTest/assets/disable_autoupd.bat
+    #- EXECUTE_VM: /AVTest/assets/update_system.bat
 
-#######################################################################################################################################
-#   _____  _____  _______  ______        _     _________  ________    __                                              __   __
-#  |_   _||_   _||_   __ \|_   _ `.     / \   |  _   _  ||_   __  | .' _|                                            [  | |_ `.
-#    | |    | |    | |__) | | | `. \   / _ \  |_/ | | \_|  | |_ \_| | |   _ .--..--.   ,--.   _ .--.  __   _   ,--.   | |   | |
-#    | '    ' |    |  ___/  | |  | |  / ___ \     | |      |  _| _  | |  [ `.-. .-. | `'_\ : [ `.-. |[  | | | `'_\ :  | |   | |
-#     \ \__/ /    _| |_    _| |_.' /_/ /   \ \_  _| |_    _| |__/ | | |_  | | | | | | // | |, | | | | | \_/ |,// | |, | |  _| |
-#      `.__.'    |_____|  |______.'|____| |____||_____|  |________| `.__|[___||__||__]\'-;__/[___||__]'.__.'_/\'-;__/[___]|__,'
-#
-#######################################################################################################################################
-
-# ---------------------------
-#    Manual UPDATE
-# ---------------------------
-
-INIT_UPDATE_MANUAL:
-    - VM_ALL
-    - INTERNET: True
-    - REVERT
-    - SLEEP: [1, 600]
-    - START_VM
-    - DELETE_DIR: c:\\AVTest\\logs\\
-    - CALL: VM_PUSH_AGENT
-    - INSTALL_AGENT
-
-FINALIZE_UPDATE_MANUAL:
-    - VM_ALL
-    - INTERNET: False
-    - SLEEP: [10, 60]
-    - REFRESH_SNAPSHOT
-
-UPDATE_INSTALL_MANUAL:
-    - VM_ALL
-    - SLEEP: [1, 600]
-    - START_VM
-    - CALL: VM_PUSH_AGENT
-    - INSTALL_AGENT
-    - RELOG
-    - STOP_VM: 300
-    - START_VM: AV_AGENT
-    - STOP_VM: 300
-    - WAIT_SHUTDOWN
-    - REFRESH_SNAPSHOT
-
-UPDATE_MANUAL:
-    - CALL: INIT_UPDATE_MANUAL
-    - CHECK_INFECTION # questo non e' necessario, ma e' meglio assicurarsene
-    - CALL: VM_PUSH_AGENT
-    - PUSH: [assets/update_system_manual.bat]
-    - INSTALL_AGENT
-    - EXECUTE_VM: /AVTest/assets/update_system_manual.bat # scarica gli aggiornamenti windows
-
-    - WAIT_SHUTDOWN
-    - START_VM: AV_AGENT
-    - STOP_VM: 300
-    - WAIT_SHUTDOWN
-    - REFRESH_SNAPSHOT
-
-# ---------------------------
-
-UPDATE_DELETE_CACHE:
-    #- VM_ALL
-    - VM: [zenoav, noav]
-    - ON_ERROR: STOP
-    - SLEEP: [0, 10]
-    - REVERT
-    - START_VM
-    - PUSH: [ assets/delete_cache.bat ]
-    - EXECUTE_VM: /AVTest/assets/delete_cache.bat
-    - SLEEP: 30
-    - STOP_VM: 300
-    - REFRESH_SNAPSHOT
-
-# -----------------------------
-#   Update Management Scripts
-# -----------------------------
-
-SYSTEM_START:
-    - VM_ALL
-    - INTERNET: True
-    - SLEEP: [1, 60]
-    - START_VM
-
-UPDATE_RESTART:
-    - SLEEP: [1, 30]
-    - START_VM
-
+#seems very old
+#UPDATE_DELETE_CACHE:
+#    #- VM_ALL
+#    - VM: [zenoav, noav]
+#    - ON_ERROR: STOP
+#    - SLEEP: [0, 10]
+#    - REVERT
+#    - START_VM
+#    - PUSH: [ assets/delete_cache.bat ]
+#    - EXECUTE_VM: /AVTest/assets/delete_cache.bat
+#    - SLEEP: 30
+#    - STOP_VM: 300
+#    - REFRESH_SNAPSHOT
 
 # -----------------------------
 #    _   _ _____ ___ _    ___ _______   __

@@ -15,6 +15,7 @@ class MailSender(object):
     rite_known_fails = {}
     errors = {}
     known_errors = {}
+    known_errors_but_test_passed = {}
     ok = {}
     not_enabled = {}
 
@@ -118,6 +119,17 @@ class MailSender(object):
         self.stats_by_test[test][0] += 1  # adds total
         self.stats_by_test[test][1] += 1  # adds sane
 
+    def known_errors_but_test_passed_add(self, vm, test, message, saved_error_comment):
+        if not vm in self.known_errors_but_test_passed:
+            self.known_errors_but_test_passed[vm] = {}
+        self.known_errors_but_test_passed[vm][test] = message, saved_error_comment
+        self.total_tests_num += 1
+        self.ok_num += 1
+        if not test in self.stats_by_test:
+            self.stats_by_test[test] = [0, 0, 0]
+        self.stats_by_test[test][0] += 1  # adds total
+        self.stats_by_test[test][1] += 1  # adds sane
+
     def ok_add(self, vm, test, message):
         if not vm in self.ok:
             self.ok[vm] = {}
@@ -178,6 +190,14 @@ class MailSender(object):
                 mail_message += '<p class="doubletab" style="color: red;">Comment: %s</p><br>' % cgi.escape(self.known_errors[vm][test][1])
                 mail_message += '<p class="doubletab">%s</p><br>' % cgi.escape(self.known_errors[vm][test][0])
             mail_message += "</p></details><hr>"
+        mail_message += '<br><a id="known_errors"><div class="boldback" style="background-color:green">KNOWN ERRORS BUT PASSED - these are the tests in which the test passed, but we previously aknowledged an error. Some are not enabled tests.</div></a><br>'
+        for vm in sorted(self.known_errors_but_test_passed):
+            mail_message += "<details close><summary>Analyzed VM: %s</summary><p><br>" % vm
+            for test in self.known_errors_but_test_passed[vm]:
+                mail_message += '<p class="tab">Test: %s</p><br>' % test
+                mail_message += '<p class="doubletab" style="color: red;">Comment: %s</p><br>' % cgi.escape(self.known_errors_but_test_passed[vm][test][1])
+                mail_message += '<p class="doubletab">%s</p><br>' % cgi.escape(self.known_errors_but_test_passed[vm][test][0])
+            mail_message += "</p></details><hr>"
         mail_message += '<br><a id="ok"><div class="boldback" style="background-color:green">OK - Passed tests</div></a><br>'
         for vm in sorted(self.ok):
             mail_message += "<details close><summary>Analyzed VM: %s</summary><p><br>" % vm
@@ -186,14 +206,15 @@ class MailSender(object):
                 mail_message += '<p class="tab">Test: %s</p><br>' % test
                 mail_message += '<p class="doubletab">%s</p><br>' % cgi.escape(self.ok[vm][test])
             mail_message += "</p></details><hr>"
-        mail_message += '<br><a id="not_enabled"><div class="boldback" style="background-color:gray">Not Enabled - Tests which are not enabled in this run</div></a><br>'
-        for vm in sorted(self.not_enabled):
-            mail_message += "<details close><summary>Analyzed VM: %s</summary><p><br>" % vm
-            tmp = ""
-            for test in self.not_enabled[vm]:
-                mail_message += '<p class="tab">Test: %s</p><br>' % test
-                mail_message += '<p class="doubletab">%s</p><br>' % cgi.escape(self.not_enabled[vm][test])
-            mail_message += "</p></details><hr>"
+        #not implemented
+        # mail_message += '<br><a id="not_enabled"><div class="boldback" style="background-color:gray">Not Enabled - Tests which are not enabled in this run</div></a><br>'
+        # for vm in sorted(self.not_enabled):
+        #     mail_message += "<details close><summary>Analyzed VM: %s</summary><p><br>" % vm
+        #     tmp = ""
+        #     for test in self.not_enabled[vm]:
+        #         mail_message += '<p class="tab">Test: %s</p><br>' % test
+        #         mail_message += '<p class="doubletab">%s</p><br>' % cgi.escape(self.not_enabled[vm][test])
+        #     mail_message += "</p></details><hr>"
         mail_message += '<br><a id="errorsdetails"><div class="boldback" style="background-color:red">ERROR DETAILS - log of every operation and python code to acknowledge the error</div></a><br>'
         for vm in sorted(self.errors):
             mail_message += "<details close><summary>Analyzed VM: %s</summary><p><br>" % vm
@@ -286,7 +307,8 @@ class MailSender(object):
         stat_text += '<a href="#errorsdetails">Error details link</a><br>'
         stat_text += '<a href="#known_errors">Known Errors: %s<br></a>' % self.known_errors_num
         stat_text += '<a href="#ok">OK: %s<br></a>' % self.ok_num
-        stat_text += '<a href="#not_enabled">Not Enabled: %s<br></a>' % self.not_enabled_num
+        #not implemented
+        #stat_text += '<a href="#not_enabled">Not Enabled: %s<br></a>' % self.not_enabled_num
         stat_text += "TOTAL: %s<br>" % self.total_tests_num
         stat_text += '<p style="font-weight: normal;">Always remember that th "Known Errors" are very very important because they are the problems we known we have. Every known error have a comment.</p><br>'
         stat_text += '<br><a id="retests"><div class="boldback" style="color: black; font-size: 125%;">Stats by test</div></a><br>'

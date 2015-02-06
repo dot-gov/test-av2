@@ -640,9 +640,9 @@ class AgentBuild:
                 if self.kind == "melt":
                     try:
                         found = False
-                        for d,b in itertools.product(start_dirs,names):
-                            filename = "%s/%s.exe" % (d,b)
-                            filename = filename.replace("/","\\")
+                        for d, b in itertools.product(start_dirs, names):
+                            filename = "%s/%s.exe" % (d, b)
+                            filename = filename.replace("/", "\\")
                             if os.path.exists(filename):
                                 found = True
 
