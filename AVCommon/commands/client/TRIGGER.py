@@ -28,6 +28,8 @@ def on_answer(vm, success, answer):
 
 def execute(vm, args):
 
+    trigger_failed = False
+
     logging.debug("Idle time BEFORE trigger: %s", get_idle_duration())
 
     logging.debug("Triggering sync with mouse for 30 seconds")
@@ -49,8 +51,12 @@ def execute(vm, args):
         # then click
         ctypes.windll.user32.mouse_event(MOUSEEVENTF_CLICK, 0, 0, 0, 0)
 
-    logging.debug("Idle time AFTER trigger: %s", get_idle_duration())
-
+    idle_time_after_trigger = get_idle_duration()
+    logging.debug("Idle time AFTER trigger: %s", idle_time_after_trigger)
+    if idle_time_after_trigger > 20.0:
+        trigger_failed = True
+        logging.debug("TRIGGER FAILED!!!", idle_time_after_trigger)
+        return True, "TRIGGER FAILED!!! Idle time after trigger: %s" % idle_time_after_trigger
     return True, ""
 
 

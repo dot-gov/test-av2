@@ -82,7 +82,7 @@ def execute(vm, protocol, args):
         else:
             pass
 
-        logging.debug("%s adding %s -> %s" % (vm, src_file, src))
+        logging.debug("%s adding %s -> %s" % (vm, src, src_file))
         zf.write(src_file)
 
     zf.close()

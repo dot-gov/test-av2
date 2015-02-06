@@ -151,6 +151,9 @@ def process_yaml(filename):
 
             elif not comparison_result['success'] and comparison_result['saved_error']:
                 mailsender.known_errors_add(vm, test_name, message, comparison_result['saved_error_comment'])
+            #case in wich ew saved an error but the test passed
+            elif comparison_result['success'] and comparison_result['saved_error']:
+                mailsender.known_errors_but_test_passed_add(vm, test_name, message, comparison_result['saved_error_comment'])
             # ok
             else:
                 mailsender.ok_add(vm, test_name, message)
