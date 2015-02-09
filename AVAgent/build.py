@@ -483,6 +483,7 @@ class AgentBuild:
                 if upgraded:
                     break
                 else:
+                    # This for me is error...string.upper() will never equal a lowercase string
                     if got_level.upper() == "soldier":
                         self.terminate_every_agent()
                         executed = self.execute_agent_startup()
@@ -496,7 +497,7 @@ class AgentBuild:
 
         logging.debug("Upgraded: %s" % upgraded)
         if upgraded:
-            logging.debug("The vm upgraded to the desird level, now we check that execution is inibithed.")
+            logging.debug("The vm upgraded to the desired level, now we check that execution is inibithed.")
             #if got_level != level:
             #    add_result("+ FAILED LEVEL: %s" % level)
             sleep(60)
