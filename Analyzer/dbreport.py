@@ -192,7 +192,7 @@ class DBReport(object):
 
         #eset7 soldier
         self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'eset7', u'BUILD_SRV', 25, u"\\[\\'\\+\\ SUCCESS\\ UPGRADED\\ SYNC\\'\\,\\ \\'\\+\\ ERROR\\:\\ \\[Error\\ 193\\]\\ \\%1\\ is\\ not\\ a\\ valid\\ Win32\\ application\\'\\]", 'FAILED', 0, u''), "ESET 7 Soldier (is an elite)")
-        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'eset7', u'CROP', 26, u'\\[163\\,\\ 167\\,\\ 168\\]', 'CROP', 0, u''), "ESET 7 Soldier (is an elite)")
+        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'eset7', u'CROP', 26, u'\\[.*\\]', 'CROP', 0, u''), "ESET 7 Soldier (is an elite)")
         self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'eset7', u'CHECK_INFECTION', 29, u'VM\\ is\\ INFECTED', 'FAILED', 0, u''), "ESET 7 Soldier (is an elite)")
 
         #fsecure exploit
@@ -252,7 +252,7 @@ class DBReport(object):
         self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'comodo', u'CROP', 34, u'\\[173\\,\\ 174\\]', 'CROP', 0, u''), "COMODO (fails mostly every test due to sandbox and firewall)")
         self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'comodo', u'CHECK_INFECTION', 37, u'VM\\ is\\ INFECTED', 'FAILED', 0, u''), "COMODO (fails mostly every test due to sandbox and firewall)")
             #elite
-        self.insert_summary_manual_error((u'VM_ELITE_FAST_SRV', u'comodo', u'CROP', 26, u'\\[4\\,\\ 7\\]', 'CROP', 0, u''), "COMODO (fails mostly every test due to sandbox and firewall)")
+        self.insert_summary_manual_error((u'VM_ELITE_FAST_SRV', u'comodo', u'CROP', 26, u'\\[.*\\]', 'CROP', 0, u''), "COMODO (fails mostly every test due to sandbox and firewall)")
         self.insert_summary_manual_error((u'VM_ELITE_FAST_SRV', u'comodo', u'CHECK_INFECTION', 28, u'VM\\ is\\ INFECTED', 'FAILED', 0, u''), "COMODO (fails mostly every test due to sandbox and firewall)")
             #elite demo
         self.insert_summary_manual_error((u'VM_ELITE_FAST_SCOUTDEMO_SRV', u'comodo', u'CHECK_INFECTION', 24, u'VM\\ is\\ INFECTED', 'FAILED', 0, u''), "COMODO (fails mostly every test due to sandbox and firewall)")
@@ -296,7 +296,7 @@ class DBReport(object):
             # soldier uninstall
         self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'avast32', u'CHECK_INFECTION', 31, u'VM\\ is\\ INFECTED', 'FAILED', 0, u''), "AVAST32 FAILS SOLDIER UNINSTALLATION, BUT IS ELITE ")
             #elite fp crop
-        self.insert_summary_manual_error((u'VM_ELITE_FAST_SRV', u'avast32', u'CROP', 27, u'\\[152\\,\\ 154\\]', 'CROP', 0, u''), "AVAST32 SAVES A CROP IN ELITE, DUE TO A rundll32 ERROR (probably caused by avast)")
+        self.insert_summary_manual_error((u'VM_ELITE_FAST_SRV', u'avast32', u'CROP', 27, u'\\[.*\\]', 'CROP', 0, u''), "AVAST32 SAVES A CROP IN ELITE, DUE TO A rundll32 ERROR (probably caused by avast)")
 
     def insert_summary_manual_error(self, txt_tuple, manual_comment):
         test, vm, command, prg, log, result_state, rite_failed, rite_fail_log = txt_tuple
