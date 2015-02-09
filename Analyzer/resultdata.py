@@ -2,9 +2,8 @@ __author__ = 'mlosito'
 
 from resultstates import ResultStates
 
-failing_commands = ["BUILD", "BUILD_SRV", "CHECK_INFECTION", "RELOG"]
+failing_commands = ["BUILD", "BUILD_SRV", "CHECK_INFECTION"]
 cropping_commands = ["CROP"]
-not_to_test_commands = ["ENABLE"]
 always_passed_commands = ["REPORT_KIND_END", "REPORT_KIND_INIT", "ENABLE"]
 
 
@@ -75,10 +74,6 @@ class ResultData(object):
         # some commands never fails (REPORT_KIND_END)
         if self.command in always_passed_commands:
             self.parsed_result = ResultStates.PASSED
-
-        # # some commands says the test is not run (ENABLE when "not allowed")
-        # if self.command in not_to_test_commands and self.rite_result_log in ["Today not allowed"]:
-        #     self.parsed_result = ResultStates.NOT_TO_TEST
 
         #crop case
         if self.command in cropping_commands and self.rite_result is False:

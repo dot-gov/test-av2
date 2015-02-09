@@ -562,6 +562,9 @@ TEST_INSTALL_AG:
     - BUILD_SRV: [ scout, windows, silent, scout ]
     - UNINSTALL
 
+TEST_DISABLE_ANALYSIS:
+    - CALL: INIT_DISPATCH_NOREVERT
+    - CALL: VM_CLEAN_EVIDENCES
 
 TEST_CHECK_INFECTION:
     - CHECK_INFECTION
@@ -588,3 +591,21 @@ TEST_UPDATE_CODE_ML_PUPPET_FORCE:
 TEST_UPDATE_CODE_ML_RITE:
     #- CALL: VM_PUSH_AGENT
     - INSTALL_AGENT
+
+TEST_ZIP:
+   - CALL: VM_CLEAN_EVIDENCES
+   - START_AGENT
+   - SET:
+      backend: 192.168.100.100
+      frontend: 192.168.100.100
+   - BUILD_SRV: [ pull, windows, silent, elite_fast ]
+   - EXECUTE_VM: [ /AVTest/AVagent/assets/exec_zip.exe, [], 40, True, True  ]
+   - TRIGGER
+   - SLEEP: 290
+   - TRIGGER
+   - SLEEP: 60
+   - RELOG
+   - SLEEP: 30
+   - BUILD_SRV: [ elite_fast, windows, silent, elite_fast ]
+   - CHECK_INFECTION
+
