@@ -66,7 +66,7 @@ def install(command_dev, results):
     else:
         agent = "agent"
 
-    print "... installing %s" % agent
+    print "installing %s" % agent
     # install
     if not command_dev.install(agent):
         return False
@@ -77,9 +77,10 @@ def install(command_dev, results):
 
 
 def check_evidences(command_dev, c, results, timestamp=""):
-    print "... check_evidences"
+    print "check_evidences"
     time.sleep(60)
-    evidences, kinds = c.evidences()
+    evidences = c.evidences()
+    kinds = c.kinds()
 
     for k in ["call", "chat", "camera", "application", "mic"]:
         if k not in kinds.keys():
@@ -180,7 +181,7 @@ def check_skype(command_dev, c, results):
         print "skype not installed, skypping test"
         return
 
-    print "... waiting for call inject"
+    print "waiting for call inject"
     info_evidences = []
     counter = 0
     while not info_evidences and counter < 10:
@@ -188,7 +189,7 @@ def check_skype(command_dev, c, results):
 
         counter += 1
         if not info_evidences:
-            print "... waiting for info"
+            print "waiting for info"
             time.sleep(10)
         else:
             break
@@ -263,7 +264,7 @@ def set_properties(command_dev, results):
 
 
 def check_format_resist(command_dev, c, results, delay=60):
-    print "... check format_resist and reboot"
+    print "check format_resist and reboot"
     command_dev.press_key_home()
 
     if not command_dev.execute_cmd("ls /system/app/StkDevice.apk"):
@@ -287,7 +288,7 @@ def check_format_resist(command_dev, c, results, delay=60):
             results["format_resist"] = "Reboot"
     elif "/system/app/" in inst:
         results["format_resist"] = "Yes";
-        print "... got format_resist"
+        print "got format_resist"
     else:
         results["format_resist"] = "Error";
 
@@ -451,7 +452,7 @@ def test_device(command_dev, args, results):
         printl("executing apk %s" % args.apk)
         results["executed"] = command_dev.execute_agent()
         if results["executed"]:
-            printl("... executed")
+            printl("executed")
             time.sleep(5)
         else:
             set_status(command_dev, "UNABLE TO RUN AGENT")

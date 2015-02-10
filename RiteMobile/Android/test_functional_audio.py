@@ -3,39 +3,10 @@ import sys
 import time
 
 
-class TestSpecific(functional_common.Check):
+class AudioTestSpecific(functional_common.Check):
 
-    def get_config(self):
-        return open('assets/config_mobile_chat.json').read()
-
-    def check_evidences(self, command_dev, c, results, timestamp=""):
-        print "... check_evidences"
-        time.sleep(60)
-        evidences, kinds = c.evidences()
-
-        for k in ["call", "chat", "camera", "application", "mic"]:
-            if k not in kinds.keys():
-                kinds[k] = []
-
-        ev = "\n"
-        ok = kinds.keys()
-        ok.sort()
-        for k in ok:
-            ev += "\t\t%s: %s\n" % (k, len(kinds[k]))
-            if k in ["chat", "addressbook", "call"]:
-                program = [e['data']['program'] for e in evidences if e['type'] == k]
-                chat = set(program)
-                for c in chat:
-                    ev += "\t\t\t%s\n" % (c)
-
-        results['evidences' + timestamp] = ev
-        results['evidence_types' + timestamp] = kinds.keys()
-
-        results['uptime' + timestamp] = command_dev.get_uptime()
-
-        expected, packs = self.get_chat_packages(command_dev)
-        results['expected'] = list(expected)
-
+    def get_name(self):
+        return "audio"
 
     def check_skype(self, command_dev, c, results):
         supported = ['4.0', '4.1', '4.2', '4.3']
@@ -51,7 +22,8 @@ class TestSpecific(functional_common.Check):
             print "skype not installed, skypping test"
             return
 
-        print "... waiting for call inject"
+        results['expected'].append('skype')
+        print "waiting for call inject"
         info_evidences = []
         counter = 0
         while not info_evidences and counter < 10:
@@ -59,7 +31,7 @@ class TestSpecific(functional_common.Check):
 
             counter += 1
             if not info_evidences:
-                print "... waiting for info"
+                print "waiting for info"
                 time.sleep(10)
             else:
                 break
@@ -105,7 +77,7 @@ class TestSpecific(functional_common.Check):
         while not self.check_evidences_present(commands_rcs, "mic") and counter < 10:
             counter += 1
             if not info_evidences:
-                print "... waiting for mic evidence"
+                print "waiting for mic evidence"
                 time.sleep(10)
                 if command_dev.isVersion(4, 0, -1) > 0:
                     command_dev.lock_and_unlock_screen()
@@ -116,35 +88,9 @@ class TestSpecific(functional_common.Check):
         command_dev.press_key_home()
 
 
-    def get_chat_packages(self, command_dev):
-        chat = set()
-        packs = []
-        packages = command_dev.get_packages()
-        for i in ['skype', 'facebook', 'wechat', 'telegram', 'hangout', 'android.talk', 'line.android', 'viber',
-                  'tencent.mm', 'whatsapp']:
-            for p in packages:
-                if i in p:
-                    chat.add(i)
-                    packs.append(p)
-        return chat, packs
-
-    def check_chat(self, command_dev):
-        command_dev.press_key_home()
-        expected, chats = self.get_chat_packages(command_dev)
-        for c in chats:
-            print "Running chat: %s " % c
-
-            command_dev.launch_default_activity_monkey(c)
-            time.sleep(10)
-
-            for i in range(10):
-                print "wait..."
-                time.sleep(5)
-                if not command_dev.check_remote_activity(c, 1):
-                    break
-
     def test_device(self, args, command_dev, c, results):
 
+        results['expected'] = []
         if results['have_root']:
             # skype call
             print "SKYPE"
@@ -159,12 +105,33 @@ class TestSpecific(functional_common.Check):
             self.check_mic(command_dev, c)
 
     def final_assertions(self, results):
-        return True
+        programs = results['evidence_programs_last'].get('call',[])
+
+        ret = True
+        # expected: ['telegram', 'android.talk', 'viber', 'facebook', 'line.android', 'skype', 'whatsapp', 'tencent.mm']
+        # Counter({u'whatsapp': 14, u'wechat': 9, u'skype': 7, u'viber': 6, u'telegram': 3, u'line': 3, u'facebook': 1})
+        for e in results['expected']:
+            found = False
+            for p in programs:
+                if p in e:
+                    found = True
+                    break
+            if not found:
+                print "FAILED: " + e
+                ret = False
+
+        for t in ['mic','call','camera']:
+            if t not in results['evidence_types_last']:
+                print "FAILED: " + t
+                ret = False
+
+
+        return ret
 
 
 from RiteMobile.Android.commands_rcs import CommandsRCSCastore as CommandsRCS
 
 
 if __name__ == '__main__':
-    test_photo = TestSpecific()
+    test_photo = AudioTestSpecific()
     results = functional_common.test_functional_common(test_photo, CommandsRCS)

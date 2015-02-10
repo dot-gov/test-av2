@@ -386,6 +386,11 @@ class Rcs_client:
         ret = [op for op in agents if op['_id'] == instance_id]
         return ret[0] if ret else None
 
+    def agent(self, instance_id):
+        agent = self._call_get('agent/%s' % instance_id)
+        # pp.pprint(agents)
+        return agent
+
     def instance_close(self, instance_id):
         params = {'_id': instance_id, 'status': 'closed'}
         self._call_post('agent/update', params)
@@ -520,7 +525,7 @@ class Rcs_client:
 
 if __name__ == "__main__":
 
-    host = "rcs-minotauro"
+    host = "rcs-castore"
     user = "avmonitor"
     passwd = "testriteP123"
     operation = 'AOP_avmaster'
@@ -530,10 +535,26 @@ if __name__ == "__main__":
     conn.login()
 
     try:
-        #instance_id = "52efa51d4e0913760f000138"
-        ret = conn.all_factories()
+
+        agent_id = "54d8df4d7263730854fbcd00"
+        #ret = conn.all_factories()
+        #ret = conn.instance_info("54d8df4d7263730854fbcd00");
+        #print ret
+
+        ret = conn.agent("54d8df4d7263730854fbcd00");
         #print ret.encode('utf-8')
+        #print ret
+
+        target = ret["path"][1]
+        #ret = conn.evidences(target,agent_id)
+
+        ret = conn.evidences(target,agent_id, "type", "photo")
         print ret
+
+
+        #for e in ret:
+        #    print e["type"]
+
         logging.debug("ret: %s" % ret)
     finally:
         conn.logout()

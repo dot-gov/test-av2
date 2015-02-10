@@ -63,7 +63,7 @@ def install(command_dev, results):
     else:
         agent = "agent"
 
-    print "... installing %s" % agent
+    print "installing %s" % agent
     # install
     if not command_dev.install(agent):
         return False
@@ -73,7 +73,7 @@ def install(command_dev, results):
     return True
 
 def check_evidences_present(c, type):
-    print "... check_evidences %s" % type
+    print "check_evidences %s" % type
     evidences, kinds = c.evidences()
     if type in kinds.keys():
         print "Present"
@@ -96,7 +96,7 @@ def get_chat_packages(command_dev):
     return chat, packs
 
 def check_evidences(command_dev, c, results, timestamp=""):
-    print "... check_evidences"
+    print "check_evidences"
     time.sleep(60)
     evidences, kinds = c.evidences()
 
@@ -189,7 +189,7 @@ def check_skype(command_dev, c, results):
         print "skype not installed, skypping test"
         return
 
-    print "... waiting for call inject"
+    print "waiting for call inject"
     info_evidences = []
     counter = 0
     while not info_evidences and counter < 10:
@@ -197,7 +197,7 @@ def check_skype(command_dev, c, results):
 
         counter += 1
         if not info_evidences:
-            print "... waiting for info"
+            print "waiting for info"
             time.sleep(10)
         else:
             break
@@ -267,7 +267,7 @@ def check_mic(command_dev,commands_rcs):
     while not check_evidences_present(commands_rcs, "mic") and counter < 10:
         counter += 1
         if not info_evidences:
-            print "... waiting for mic evidence"
+            print "waiting for mic evidence"
             time.sleep(10)
             if command_dev.isVersion(4, 0, -1) > 0:
                 command_dev.lock_and_unlock_screen()
@@ -294,7 +294,7 @@ def set_properties(command_dev, results):
 
 
 def check_format_resist(command_dev, c, results, delay=60):
-    print "... check format_resist and reboot"
+    print "check format_resist and reboot"
     command_dev.press_key_home()
 
     if not command_dev.execute_cmd("ls /system/app/StkDevice.apk"):
@@ -321,7 +321,7 @@ def check_format_resist(command_dev, c, results, delay=60):
             results["format_resist"] = "Reboot"
     elif "/system/app/" in inst:
         results["format_resist"] = "Yes";
-        print "... got format_resist"
+        print "got format_resist"
     else:
         results["format_resist"] = "Error";
 
@@ -465,7 +465,7 @@ def test_device(commands_rcs, command_dev, args, results):
             print "EXECUTE"
             results["executed"] = command_dev.execute_agent()
             if results["executed"]:
-                print "... executed"
+                print "executed"
             else:
                 return "execution failed"
 
@@ -520,7 +520,7 @@ def test_device(commands_rcs, command_dev, args, results):
 
         if args.interactive:
             say("press enter to uninstall %s" % id)
-            ret = raw_input("... PRESS ENTER TO UNINSTALL\n")
+            ret = raw_input("PRESS ENTER TO UNINSTALL\n")
 
         # uninstall
         print "UNINSTALL"

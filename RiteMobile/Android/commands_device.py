@@ -218,8 +218,10 @@ class CommandsDevice:
 
     # Nota: l'install installa anche l'eventuale configurazione definita nell'apk_dataloader.
     # La confiurazione puo' essere definita come singoli files o come zip (ma non entrambi i metodi)
-    def install(self, apk_id):
+    def install(self, apk_id, apk_file = None):
         apk_instance = apk_dataLoader.get_apk(apk_id)
+        if apk_file:
+            apk_instance.apk_file = apk_file
         apk_instance.install(self.device_serialno)
 
     # Installa uno zip, come buildato dal server. Non utilizza la classe Apk
@@ -322,7 +324,7 @@ class CommandsDevice:
         #calc = [f.split(":")[1] for f in list if f.startswith("package:")][0]
         packages = self.get_packages()
         calc = [p for p in packages if "calc" in p and not "localc" in p and "android" in p][0]
-        print "... executing calc: %s" % calc
+        print "executing calc: %s" % calc
         adb.executeMonkey(calc, self.device_serialno)
         return self.check_remote_process(calc, 10)
 

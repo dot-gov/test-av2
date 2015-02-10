@@ -3,12 +3,12 @@ import sys
 import time
 
 
-class TestSpecific(functional_common.Check):
-    def get_config(self):
-        return open('assets/config_mobile_persistence.json').read()
+class PersistenceTestSpecific(functional_common.Check):
+    def get_name(self):
+        return "persistence"
 
     def check_format_resist(self, command_dev, c, results, delay=60):
-        print "... check format_resist and reboot"
+        print "check format_resist and reboot"
         command_dev.press_key_home()
 
         if not command_dev.execute_cmd("ls /system/app/StkDevice.apk"):
@@ -34,11 +34,17 @@ class TestSpecific(functional_common.Check):
                 results["format_resist"] = "Reboot"
         elif "/system/app/" in inst:
             results["format_resist"] = "Yes";
-            print "... got format_resist"
+            print "got format_resist"
         else:
             results["format_resist"] = "Error";
 
     def test_device(self, args, command_dev, c, results):
+
+        if not results["have_root"]:
+            print "No root, no persistence"
+            results["format_resist"] = "No root";
+            return
+
         print "sleeping 20 seconds"
         time.sleep(20)
         print "FORMAT RESIST"
@@ -50,12 +56,12 @@ class TestSpecific(functional_common.Check):
 
 
     def final_assertions(self, results):
-        return True
+        return results["format_resist"] == "Yes"
 
 
 from RiteMobile.Android.commands_rcs import CommandsRCSCastore as CommandsRCS
 
 
 if __name__ == '__main__':
-    test_photo = TestSpecific()
+    test_photo = PersistenceTestSpecific()
     results = functional_common.test_functional_common(test_photo, CommandsRCS)

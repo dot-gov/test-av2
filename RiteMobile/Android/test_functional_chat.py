@@ -5,14 +5,16 @@ import sys
 import time
 
 
-class TestSpecific(functional_common.Check):
-    def get_config(self):
-        return open('assets/config_mobile_chat.json').read()
+class ChatTestSpecific(functional_common.Check):
+
+    def get_name(self):
+        return "chat"
 
     def get_chat_packages(self, command_dev):
         chat = set()
         packs = []
-
+        addressbook = []
+        addressbooks = ['skype', 'facebook', 'wechat', 'google']
         conversion={
             'tencent.mm':'facebook', 'android.talk':'google', 'line.android':'line'
         }
@@ -21,9 +23,13 @@ class TestSpecific(functional_common.Check):
                   'tencent.mm', 'whatsapp']:
             for p in packages:
                 if i in p:
-                    chat.add( conversion.get(i,i) )
+                    converted =  conversion.get(i,i)
+                    chat.add( converted )
+                    if converted in addressbooks:
+                        addressbook.append(converted)
                     packs.append(p)
-        return chat, packs
+
+        return chat, addressbook, packs
 
     def check_chat(self, command_dev, packs):
         command_dev.press_key_home()
@@ -41,28 +47,24 @@ class TestSpecific(functional_common.Check):
                     break
 
     def test_device(self, args, command_dev, c, results):
-        expected, packs = self.get_chat_packages(command_dev)
-        results['expected'] = expected
+        expected, addressbook, packs = self.get_chat_packages(command_dev)
+        results['expected_chat'] = expected
+        results['expected_addressbook'] = addressbook
 
         if results['have_root']:
             # check chat
             print "CHAT"
             #self.check_chat(command_dev, packs)
 
-    def final_assertions(self, results):
-        evidences = results['evidences_details_last']
-        programset =  Set([e['data']['program'] for e in evidences if e['type'] == "chat"])
-        programs = list(programset)
-
-        counter = Counter(programs)
-        print counter
-
+    def check_ev_program(self, prog, expected):
+        programs = results['evidence_programs_last'].get(prog, [])
+        print "programs %s: " % prog, programs
         ret = True
         # expected: ['telegram', 'android.talk', 'viber', 'facebook', 'line.android', 'skype', 'whatsapp', 'tencent.mm']
         # Counter({u'whatsapp': 14, u'wechat': 9, u'skype': 7, u'viber': 6, u'telegram': 3, u'line': 3, u'facebook': 1})
-        for e in results['expected']:
+        for e in expected:
             found = False
-            for p in counter.keys():
+            for p in programs:
                 if p in e:
                     found = True
                     break
@@ -71,10 +73,17 @@ class TestSpecific(functional_common.Check):
                 ret = False
         return ret
 
+    def final_assertions(self, results):
+
+        ret = self.check_ev_program('chat', results.get('expected_chat',[]))
+        ret &= self.check_ev_program('addressbook', results.get('expected_addressbook',[]))
+
+        return ret
+
 
 from RiteMobile.Android.commands_rcs import CommandsRCSCastore as CommandsRCS
 
 
 if __name__ == '__main__':
-    test_photo = TestSpecific()
+    test_photo = ChatTestSpecific()
     results = functional_common.test_functional_common(test_photo, CommandsRCS)

@@ -90,7 +90,7 @@ class CommandsRCS:
             print "no previous instances"
         assert len(instances) <= 1, "too many instances: %s" % instances ;
         for i in instances:
-            print "... deleted old instance"
+            print "deleted old instance"
             self.conn.instance_delete(i["_id"])
         time.sleep(5)
         self.instances = self.conn.instances_by_factory(self.device_id, self.factory)
@@ -127,18 +127,18 @@ class CommandsRCS:
         return zipfilenamebackend
 
     def wait_for_sync(self, trigger_function=None):
-        print "... sleeping for sync"
+        print "sleeping for sync"
         time.sleep(60)
         for i in range(10):
             print "getting instances"
             instances = self.conn.instances_by_factory(self.device_id, self.factory)
             if not instances:
-                print "... waiting for sync (now i trigger)"
+                #print "waiting for sync (now i trigger)"
                 if trigger_function:
                     trigger_function()
-                print "... waiting for sync (triggered, now i sleep)"
+                #print "waiting for sync (triggered, now i sleep)"
                 time.sleep(10)
-                print "... waiting for sync (waited)"
+                #print "waiting for sync (waited)"
             else:
                 break
         assert len(instances) == 1
@@ -152,7 +152,7 @@ class CommandsRCS:
         return self.instance_id
 
     def wait_for_next_sync(self, last_sync = 0):
-        print "... wait for next sync"
+        print "wait for next sync"
         if not last_sync:
             last_sync = self.last_sync
 
@@ -160,24 +160,24 @@ class CommandsRCS:
             # print "operation: %s, %s" % (operation_id, group_id)
             instances = self.conn.instances_by_factory(self.device_id, self.factory)
             if not instances:
-                print "... waiting for sync"
+                print "waiting for sync"
                 time.sleep(10)
             else:
                 self.stat = instances[0]['stat']
                 sync = instances[0]['stat']['last_sync']
                 if sync > last_sync:
-                    print "... new sync: %s" % sync
+                    print "new sync: %s" % sync
                     self.last_sync = sync
                     return True
 
-        print "... no new sync"
+        print "no new sync"
         return False
 
 
     def rename_instance(self, device_info):
-        info = self.conn.instance_info(self.instance_id)
+        info = self.conn.agent(self.instance_id)
         self.conn.instance_rename(self.instance_id, info['name'] + " " + device_info)
-        info = self.conn.instance_info(self.instance_id)
+        info = self.conn.agent(self.instance_id)
         print "instance name: %s" % info['name']
         return info['name']
 
@@ -190,10 +190,10 @@ class CommandsRCS:
             info_evidences = [ (e['data']['content'],e['da']) for e in infos if 'Started' in e['data']['content']]
             counter += 1
             if len(info_evidences) < starts:
-                print "... waiting for info Started: %s/%s" % (len(info_evidences), starts)
+                print "waiting for info Started: %s/%s" % (len(info_evidences), starts)
                 time.sleep(10)
             else:
-                print "... got Started: %s/%s" % (len(info_evidences), starts)
+                print "got Started: %s/%s" % (len(info_evidences), starts)
                 self.last_start = info_evidences[-1][1]
 
     def check_root(self, starts = 1):
@@ -211,7 +211,7 @@ class CommandsRCS:
             info_evidences = [e['data']['content'] for e in infos if 'Root' in e['data']['content'] and e['da'] >= self.last_start]
             counter += 1
             if not info_evidences or not 'Root' in info_evidences[-1]:
-                print "... waiting for info Root: %s, last start: %s " % (info_evidences, self.last_start)
+                print "waiting for info Root: %s, last start: %s " % (info_evidences, self.last_start)
                 time.sleep(10)
 
         # print "info_evidences: %s: " % info_evidences
@@ -220,26 +220,28 @@ class CommandsRCS:
             print "No Root"
         else:
             print "root: OK"
-
+            result = True
             info = len(info_evidences) > 0
             root_method = info_evidences[0]
             root = root_method
             roots = [r for r in info_evidences if 'previous' not in r]
             # print "roots: %s " % roots
             assert len(roots) >= 1
-        return True, root, info
+        return result, root, info
 
 
-    def evidences(self):
-        evidences = self.conn.evidences(self.target_id, self.instance_id)
-        kinds = {}
-        for e in evidences:
-            t = e['type']
-            if not t in kinds.keys():
-                kinds[t] = []
-            kinds[t].append(e)
+    def evidences(self, type = None):
+        evidences = self.conn.evidences(self.target_id, self.instance_id, "type", type)
+        return evidences
 
-        return evidences, kinds
+    def kinds(self):
+        agent = self.conn.agent(self.instance_id)
+        return agent["stat"]["evidence"]
+
+
+    def agent_stat(self):
+        agent = self.conn.agent(self.instance_id)
+        return agent["stat"]
 
     def infos(self, keyword = ''):
         infos = self.conn.infos(self.target_id, self.instance_id)

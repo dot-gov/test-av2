@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
+import shutil
 
 import time
 import csv
@@ -34,20 +35,26 @@ from RiteMobile.Android.commands_device import CommandsDevice
 
 
 # apk_template = "build/android/install.%s.apk"
-apk_template = "assets/autotest.%s.apk"
+#apk_template = "assets/autotest.%s.apk"
 
 def say(text):
     os.system("say " + text)
 
-def install(command_dev, results):
+def install(command_dev, results, apk_names = None):
     if results['release'].startswith("2"):
         agent = "agent_v2"
     else:
         agent = "agent"
 
-    print "... installing %s" % agent
+    if apk_names:
+        apk_file = apk_names[agent]
+    else:
+        apk_file = None
+
+    print "installing %s" % agent
     # install
-    if not command_dev.install(agent):
+    if not command_dev.install(agent, apk_file):
+        results["installed"] = False
         return False
 
     results["installed"] = True
@@ -57,22 +64,24 @@ def install(command_dev, results):
 def uninstall_agent(commands_device, c, results):
     c.uninstall()
     uninstall = False
-    say("agent uninstall, verify request")
+
     if results['have_root']:
-        print "uninstall:without DIALOG"
+        print "uninstall: without DIALOG"
         for i in range(12):
             time.sleep(10)
 
             processes = commands_device.get_processes()
             uninstall = Check.service not in processes
+            print "service still running"
             if uninstall:
                 break
     else:
+        say("agent uninstall, verify request")
         print "uninstall:DIALOG !!!"
         unistall_dialog_wait_and_press(commands_device, 120)
 
-    print "uninstall: wait 30sec"
-    time.sleep(30)
+    #print "uninstall: wait 30sec"
+    #time.sleep(30)
     results['uninstall'] = uninstall
 
     if not uninstall:
@@ -166,8 +175,12 @@ def test_device(test_specific, commands_rcs, command_dev, args, results, demo = 
         print "REBOOT"
         command_dev.reboot()
 
-    if args.build or not os.path.exists('assets/autotest.default.apk'):
-        print "BUILD"
+    apk_name_def = 'assets/autotest.%s.default.apk' % test_specific.get_name()
+    apk_name_v2 = 'assets/autotest.%s.v2.apk' % test_specific.get_name()
+    apk_names = {"agent" : apk_name_def, "agent_v2": apk_name_v2}
+
+    if args.build or not os.path.exists(apk_name_def) or not os.path.exists(apk_name_v2):
+        print "CONFIG"
 
         config = test_specific.get_config()
 
@@ -200,12 +213,16 @@ def test_device(test_specific, commands_rcs, command_dev, args, results, demo = 
         f.write(jparam)
         f.close()
 
+        print "BUILD"
         os.system(
             'ruby assets/rcs-core.rb -u %s -p %s -d %s -f %s -b %s -o and.zip' % (
                 commands_rcs.login, commands_rcs.password, commands_rcs.host, commands_rcs.factory, json_params))
         os.system('unzip -o  and.zip -d assets')
         os.remove('and.zip')
-    if not os.path.exists('assets/autotest.default.apk'):
+        shutil.copyfile('assets/autotest.default.apk', apk_name_def)
+        os.rename('assets/autotest.v2.apk', apk_name_v2)
+
+    if not os.path.exists(apk_name_def) or not os.path.exists(apk_name_v2):
         print "ERROR, cannot build apk"
         exit(0)
 
@@ -228,14 +245,14 @@ def test_device(test_specific, commands_rcs, command_dev, args, results, demo = 
             # unistall via "calc" and then use pm uninstall
             if test_specific.check_install(command_dev, results):
                 print "INSTALL"
-                install(command_dev, results)
+                install(command_dev, results, apk_names)
             else:
                 return "old installation present"
 
             print "EXECUTE"
             results["executed"] = command_dev.execute_agent()
             if results["executed"]:
-                print "... executed"
+                print "executed"
             else:
                 return "execution failed"
 
@@ -268,7 +285,7 @@ def test_device(test_specific, commands_rcs, command_dev, args, results, demo = 
 
         if args.interactive:
             say("press enter to uninstall %s" % id)
-            ret = raw_input("... PRESS ENTER TO UNINSTALL\n")
+            ret = raw_input("PRESS ENTER TO UNINSTALL\n")
 
         # uninstall
         print "UNINSTALL"
@@ -318,7 +335,13 @@ def test_functional_common(test_specific, CommandsRCS):
         traceback.print_exc()
         results['exception'] = ex
 
-    results["result"] = test_specific.final_assertions(results)
+    try:
+        results["result"] = test_specific.final_assertions(results)
+    except Exception, ex:
+        print ex
+        traceback.print_exc()
+        results['exception'] = ex
+        results["result"] = False
 
     report = report_build(results)
     report_files(results, report)
