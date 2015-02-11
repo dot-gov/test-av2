@@ -256,3 +256,877 @@ Uninstall
 	running: False
 	files_remained: 
 	packages_remained: 
+Installation
+	time: 2015-02-09 17:05:08.761155
+	installed: 
+	executed: True
+	instance_name: Android (347) samsung GT-I9300
+	info: 
+	uptime_first: up time: 2 days, 23:11:42, idle time: 08:02:16, sleep time: 2 days, 21:00:42
+
+	uptime_last: up time: 2 days, 23:12:55, idle time: 08:09:22, sleep time: 2 days, 21:00:43
+
+	error: 
+	exception: 
+Device
+	device: samsung GT-I9300
+	id: 351869050528887
+	release: 4.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: /system/bin/sh: su: not found
+
+	selinux: 
+	format_resist: 
+Evidences
+	evidences_first: 
+		camera: 2
+		device: 3
+
+	evidences_last: 
+		camera: 2
+		device: 3
+
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: True
+	running: False
+	files_remained: l3
+
+	packages_remained: 
+Result
+	result: False
+Installation
+	time: 2015-02-09 17:12:44.048574
+	installed: 
+	executed: True
+	instance_name: Android (348) samsung GT-I9300
+	info: 
+	uptime_first: up time: 00:05:20, idle time: 00:13:31, sleep time: 00:00:00
+
+	uptime_last: up time: 00:06:33, idle time: 00:21:36, sleep time: 00:00:00
+
+	error: 
+	exception: 
+Device
+	device: samsung GT-I9300
+	id: 351869050528887
+	release: 4.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: /system/bin/sh: su: not found
+
+	selinux: 
+	format_resist: 
+Evidences
+	evidences_first: 
+		camera: 2
+		device: 3
+
+	evidences_last: 
+		camera: 2
+		device: 3
+
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: True
+	running: False
+	files_remained: l3
+
+	packages_remained: 
+Result
+	result: False
+Installation
+	time: 2015-02-09 17:33:24.850335
+	installed: 
+	executed: True
+	instance_name: Android (349) samsung GT-I9300
+	info: 
+	uptime_first: up time: 00:18:29, idle time: 01:02:51, sleep time: 00:00:00
+
+	uptime_last: up time: 00:02:47, idle time: 00:05:54, sleep time: 00:00:00
+
+	error: 
+	exception: 
+Device
+	device: samsung GT-I9300
+	id: 351869050528887
+	release: 4.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: /system/bin/sh: su: not found
+
+	selinux: 
+	format_resist: Reboot
+Evidences
+	evidences_first: 
+		camera: 2
+		device: 3
+
+	evidences_last: 
+		camera: 4
+		device: 4
+
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: True
+	running: False
+	files_remained: l3
+
+	packages_remained: 
+Result
+	result: True
+Installation
+	time: 2015-02-10 08:50:50.216607
+	installed: 
+	executed: True
+	instance_name: Android (353) samsung GT-I9300
+	info: 
+	uptime_first: up time: 15:13:05, idle time: 2 days, 10:43:28, sleep time: 00:24:13
+
+	uptime_last: up time: 15:14:18, idle time: 2 days, 10:48:12, sleep time: 00:24:13
+
+	error: 
+	exception: 
+Device
+	device: samsung GT-I9300
+	id: 351869050528887
+	release: 4.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: /system/bin/sh: su: not found
+
+	selinux: 
+	format_resist: 
+Evidences
+	evidences_first: 
+		camera: 2
+		device: 3
+
+	evidences_last: 
+		camera: 2
+		device: 3
+
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: True
+	running: False
+	files_remained: 
+	packages_remained: 
+Result
+	result: False
+Installation
+	time: 2015-02-10 10:10:07.036063
+	installed: 
+	executed: True
+	instance_name: Android (356) samsung GT-I9300
+	info: 
+	uptime_first: up time: 01:23:47, idle time: 05:03:11, sleep time: 00:00:00
+
+	uptime_last: up time: 01:25:29, idle time: 05:06:22, sleep time: 00:00:00
+
+	error: 
+	exception: 
+Device
+	device: samsung GT-I9300
+	id: 351869050528887
+	release: 4.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: /system/bin/sh: su: not found
+
+	selinux: 
+	format_resist: 
+Evidences
+	evidences_first: 
+		camera: 11
+		device: 3
+
+	evidences_last: 
+		camera: 17
+		device: 3
+
+Expected
+	call_supported: 
+	expected: set(['telegram', 'whatsapp', 'google', 'skype'])
+Uninstall
+	uninstall: True
+	running: False
+	files_remained: 
+	packages_remained: 
+Result
+	result: False
+Installation
+	time: 2015-02-10 16:07:31.755826
+	installed: False
+	executed: True
+	instance_name: Android (359) samsung GT-I9300
+	info: 
+	uptime_first: up time: 00:10:32, idle time: 00:33:03, sleep time: 00:00:00
+
+	uptime_last: 
+	error: too many values to unpack
+	exception: 
+Device
+	device: samsung GT-I9300
+	id: 351869050528887
+	release: 4.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: /system/bin/sh: su: not found
+
+	selinux: 
+	format_resist: 
+Evidences
+	evidences_first: 
+		application: 1
+		camera: 3
+		device: 1
+		message: 4
+		password: 2
+
+	evidences_last: 
+Expected
+	call_supported: True
+	expected: ['telegram', 'whatsapp', 'android.talk', 'skype']
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: False
+Result
+	result: True
+Installation
+	time: 2015-02-10 16:16:40.090454
+	installed: 
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 
+Device
+	device: samsung GT-I9300
+	id: 351869050528887
+	release: 4.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	format_resist: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
+Result
+	result: True
+Installation
+	time: 2015-02-10 16:22:12.880726
+	installed: False
+	executed: True
+	instance_name: Android (360) samsung GT-I9300
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 'unicode' object has no attribute 'evidences'
+	exception: 
+Device
+	device: samsung GT-I9300
+	id: 351869050528887
+	release: 4.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: /system/bin/sh: su: not found
+
+	selinux: 
+	format_resist: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: False
+Result
+	result: True
+Installation
+	time: 2015-02-10 16:34:30.789151
+	installed: False
+	executed: True
+	instance_name: Android (361) samsung GT-I9300
+	info: 
+	uptime_first: up time: 00:38:02, idle time: 02:18:33, sleep time: 00:00:00
+
+	uptime_last: up time: 00:42:08, idle time: 02:32:28, sleep time: 00:00:00
+
+	error: 
+	exception: 
+Device
+	device: samsung GT-I9300
+	id: 351869050528887
+	release: 4.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: /system/bin/sh: su: not found
+
+	selinux: 
+	format_resist: 
+Evidences
+	evidences_first: 
+		addressbook: 4
+			whatsapp
+			skype
+			gmail
+		application: 1
+		camera: 3
+		chat: 2
+			skype
+		device: 3
+		message: 32
+		password: 2
+
+	evidences_last: 
+		addressbook: 4
+			whatsapp
+			skype
+			gmail
+		application: 14
+		call: 1
+			skype
+		camera: 12
+		chat: 2
+			skype
+		device: 5
+		message: 32
+		mic: 1
+		password: 2
+
+Expected
+	call_supported: True
+	expected: ['skype']
+Uninstall
+	uninstall: True
+	running: False
+	files_remained: 
+	packages_remained: 
+Result
+	result: True
+Installation
+	time: 2015-02-10 16:45:26.507500
+	installed: False
+	executed: True
+	instance_name: Android (362) samsung GT-I9300
+	info: 
+	uptime_first: up time: 00:05:28, idle time: 00:17:04, sleep time: 00:00:00
+
+	uptime_last: up time: 00:06:43, idle time: 00:18:24, sleep time: 00:00:00
+
+	error: 
+	exception: 
+Device
+	device: samsung GT-I9300
+	id: 351869050528887
+	release: 4.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: /system/bin/sh: su: not found
+
+	selinux: 
+	format_resist: 
+Evidences
+	evidences_first: 
+		addressbook: 4
+			whatsapp
+			gmail
+			skype
+		camera: 3
+		chat: 2
+			skype
+		device: 3
+		message: 32
+		password: 2
+		photo: 4
+
+	evidences_last: 
+		addressbook: 4
+			whatsapp
+			gmail
+			skype
+		camera: 3
+		chat: 2
+			skype
+		device: 3
+		message: 32
+		password: 2
+		photo: 4
+
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: True
+	running: False
+	files_remained: /system/bin/ddf
+l1
+l2
+l3
+/system/app/StkDevice.apk
+
+	packages_remained: package:/system/app/StkDevice.apk
+
+Result
+	result: True
+Installation
+	time: 2015-02-10 17:13:16.977521
+	installed: False
+	executed: True
+	instance_name: Android (364) samsung GT-I9300
+	info: 
+	uptime_first: up time: 00:09:51, idle time: 00:34:13, sleep time: 00:00:00
+
+	uptime_last: up time: 00:10:56, idle time: 00:38:12, sleep time: 00:00:00
+
+	error: 
+	exception: 
+Device
+	device: samsung GT-I9300
+	id: 351869050528887
+	release: 4.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: /system/bin/sh: su: not found
+
+	selinux: 
+	format_resist: 
+Evidences
+	evidences_first: 
+		addressbook: 4
+			whatsapp
+			gmail
+			skype
+		application: 1
+		camera: 6
+		chat: 2
+			skype
+		device: 3
+		message: 32
+		password: 2
+
+	evidences_last: 
+		addressbook: 4
+			whatsapp
+			gmail
+			skype
+		application: 1
+		camera: 8
+		chat: 2
+			skype
+		device: 3
+		message: 32
+		password: 2
+
+Expected
+	call_supported: 
+	expected: set(['telegram', 'whatsapp', 'google', 'skype'])
+Uninstall
+	uninstall: True
+	running: False
+	files_remained: /system/bin/ddf
+
+	packages_remained: package:/data/app/com.android.dvci-1.apk
+
+Result
+	result: False
+Installation
+	time: 2015-02-10 17:27:02.894133
+	installed: 
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 'expected_chat'
+Device
+	device: samsung GT-I9300
+	id: 351869050528887
+	release: 4.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	format_resist: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
+Result
+	result: False
+Installation
+	time: 2015-02-10 17:28:47.920792
+	installed: False
+	executed: True
+	instance_name: Android (365) samsung GT-I9300
+	info: 
+	uptime_first: up time: 00:13:03, idle time: 00:47:27, sleep time: 00:00:00
+
+	uptime_last: up time: 00:14:09, idle time: 00:51:22, sleep time: 00:00:00
+
+	error: 
+	exception: global name 'results' is not defined
+Device
+	device: samsung GT-I9300
+	id: 351869050528887
+	release: 4.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: /system/bin/sh: su: not found
+
+	selinux: 
+	format_resist: 
+Evidences
+	evidences_first: 
+		addressbook: 4
+			whatsapp
+			gmail
+			skype
+		application: 1
+		camera: 2
+		chat: 2
+			skype
+		device: 2
+		message: 32
+		password: 2
+
+	evidences_last: 
+		addressbook: 4
+			whatsapp
+			gmail
+			skype
+		application: 1
+		camera: 6
+		chat: 2
+			skype
+		device: 2
+		message: 32
+		password: 2
+
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: True
+	running: False
+	files_remained: /system/bin/ddf
+l1
+l2
+l3
+/system/app/StkDevice.apk
+
+	packages_remained: package:/system/app/StkDevice.apk
+
+Result
+	result: False
+Installation
+	time: 2015-02-11 09:07:55.083372
+	installed: False
+	executed: True
+	instance_name: Android (366) samsung GT-I9300
+	info: 
+	uptime_first: up time: 15:37:38, idle time: 2 days, 13:45:50, sleep time: 00:00:00
+
+	uptime_last: up time: 15:38:43, idle time: 2 days, 13:48:43, sleep time: 00:00:00
+
+	error: 
+	exception: global name 'results' is not defined
+Device
+	device: samsung GT-I9300
+	id: 351869050528887
+	release: 4.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: /system/bin/sh: su: not found
+
+	selinux: 
+	format_resist: 
+Evidences
+	evidences_first: 
+		addressbook: 4
+			whatsapp
+			gmail
+			skype
+		application: 1
+		camera: 4
+		chat: 2
+			skype
+		device: 3
+		message: 31
+		password: 2
+
+	evidences_last: 
+		addressbook: 4
+			whatsapp
+			gmail
+			skype
+		application: 1
+		camera: 6
+		chat: 2
+			skype
+		device: 3
+		message: 31
+		password: 2
+
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: True
+	running: False
+	files_remained: 
+	packages_remained: 
+Result
+	result: False
+Installation
+	time: 2015-02-11 09:26:31.838366
+	installed: False
+	executed: True
+	instance_name: Android (368) samsung GT-I9300
+	info: 
+	uptime_first: up time: 00:07:28, idle time: 00:24:38, sleep time: 00:00:00
+
+	uptime_last: up time: 00:08:32, idle time: 00:27:32, sleep time: 00:00:00
+
+	error: 
+	exception: string indices must be integers, not str
+Device
+	device: samsung GT-I9300
+	id: 351869050528887
+	release: 4.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: /system/bin/sh: su: not found
+
+	selinux: 
+	format_resist: 
+Evidences
+	evidences_first: 
+		addressbook: 4
+			whatsapp
+			gmail
+			skype
+		application: 1
+		camera: 3
+		chat: 2
+			skype
+		device: 2
+		message: 31
+		password: 2
+
+	evidences_last: 
+		addressbook: 4
+			whatsapp
+			gmail
+			skype
+		application: 1
+		camera: 5
+		chat: 2
+			skype
+		device: 2
+		message: 31
+		password: 2
+
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: True
+	running: False
+	files_remained: 
+	packages_remained: 
+Result
+	result: False
+Installation
+	time: 2015-02-11 09:43:24.815701
+	installed: False
+	executed: True
+	instance_name: Android (369) samsung GT-I9300
+	info: 
+	uptime_first: up time: 00:15:07, idle time: 00:55:15, sleep time: 00:00:00
+
+	uptime_last: up time: 00:16:11, idle time: 00:58:07, sleep time: 00:00:00
+
+	error: 
+	exception: 
+Device
+	device: samsung GT-I9300
+	id: 351869050528887
+	release: 4.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: /system/bin/sh: su: not found
+
+	selinux: 
+	format_resist: 
+Evidences
+	evidences_first: 
+		addressbook: 4
+			whatsapp
+			gmail
+			skype
+		application: 1
+		camera: 5
+		chat: 2
+			skype
+		device: 3
+		message: 31
+		password: 2
+
+	evidences_last: 
+		addressbook: 4
+			whatsapp
+			gmail
+			skype
+		application: 1
+		camera: 7
+		chat: 2
+			skype
+		device: 3
+		message: 31
+		password: 2
+
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: True
+	running: False
+	files_remained: 
+	packages_remained: 
+Result
+	result: False
+Installation
+	time: 2015-02-11 10:16:40.932079
+	installed: False
+	executed: True
+	instance_name: Android (370) samsung GT-I9300
+	info: 
+	uptime_first: up time: 00:30:42, idle time: 01:52:52, sleep time: 00:00:00
+
+	uptime_last: up time: 00:36:24, idle time: 02:16:29, sleep time: 00:00:00
+
+	error: 
+	exception: 
+Device
+	device: samsung GT-I9300
+	id: 351869050528887
+	release: 4.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: /system/bin/sh: su: not found
+
+	selinux: 
+	format_resist: 
+Evidences
+	evidences_first: 
+		addressbook: 4
+			whatsapp
+			gmail
+			skype
+		application: 1
+		camera: 3
+		chat: 2
+			skype
+		device: 2
+		message: 31
+		password: 2
+
+	evidences_last: 
+		addressbook: 4
+			whatsapp
+			gmail
+			skype
+		application: 1
+		camera: 4
+		chat: 2
+			skype
+		device: 3
+		message: 31
+		password: 2
+
+Expected
+	call_supported: True
+	expected: ['skype']
+Uninstall
+	uninstall: True
+	running: False
+	files_remained: /system/bin/ddf
+l1
+l2
+l3
+/system/app/StkDevice.apk
+
+	packages_remained: package:/system/app/StkDevice.apk
+
+Result
+	result: False

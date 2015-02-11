@@ -776,3 +776,105 @@ Uninstall
 	running: 
 	files_remained: 
 	packages_remained: 
+Installation
+	time: 
+	installed: 
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 'TestSpecific' object has no attribute 'get_config'
+Device
+	device: 
+	id: 
+	release: 
+	build_date: 
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	format_resist: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
+Result
+	result: True
+Installation
+	time: 
+	installed: 
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 'module' object has no attribute 'copy'
+Device
+	device: 
+	id: 
+	release: 
+	build_date: 
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	format_resist: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
+Result
+	result: True
+Installation
+	time: 
+	installed: 
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 'module' object has no attribute 'copyfiley'
+Device
+	device: 
+	id: 
+	release: 
+	build_date: 
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	format_resist: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
+Result
+	result: True

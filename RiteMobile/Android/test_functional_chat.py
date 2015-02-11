@@ -14,7 +14,7 @@ class ChatTestSpecific(functional_common.Check):
         chat = set()
         packs = []
         addressbook = []
-        addressbooks = ['skype', 'facebook', 'wechat', 'google']
+        addressbooks = ['skype', 'facebook', 'wechat', 'gmail']
         conversion={
             'tencent.mm':'facebook', 'android.talk':'google', 'line.android':'line'
         }
@@ -56,7 +56,7 @@ class ChatTestSpecific(functional_common.Check):
             print "CHAT"
             #self.check_chat(command_dev, packs)
 
-    def check_ev_program(self, prog, expected):
+    def check_ev_program(self, results, prog, expected):
         programs = results['evidence_programs_last'].get(prog, [])
         print "programs %s: " % prog, programs
         ret = True
@@ -75,8 +75,8 @@ class ChatTestSpecific(functional_common.Check):
 
     def final_assertions(self, results):
 
-        ret = self.check_ev_program('chat', results.get('expected_chat',[]))
-        ret &= self.check_ev_program('addressbook', results.get('expected_addressbook',[]))
+        ret = self.check_ev_program(results, 'chat',  results.get('expected_chat',[]))
+        ret &= self.check_ev_program(results, 'addressbook', results.get('expected_addressbook',[]))
 
         return ret
 

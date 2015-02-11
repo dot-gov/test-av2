@@ -64,7 +64,7 @@ def install(command_dev, results, apk_names = None):
 def uninstall_agent(commands_device, c, results):
     c.uninstall()
     uninstall = False
-
+    processes = []
     if results['have_root']:
         print "uninstall: without DIALOG"
         for i in range(12):

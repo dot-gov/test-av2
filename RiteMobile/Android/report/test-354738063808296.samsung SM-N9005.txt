@@ -236,3 +236,136 @@ Uninstall
 	running: 
 	files_remained: 
 	packages_remained: False
+Installation
+	time: 2015-02-10 08:22:08.519271
+	installed: 
+	executed: True
+	instance_name: Android (351) samsung SM-N9005
+	info: 
+	uptime_first: up time: 10 days, 23:22:09, idle time: 08:27:18, sleep time: 10 days, 13:15:53
+
+	uptime_last: up time: 00:04:35, idle time: 00:04:54, sleep time: 00:00:00
+
+	error: 
+	exception: 
+Device
+	device: samsung SM-N9005
+	id: 354738063808296
+	release: 4.4.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: No
+	root_first: True
+	su: /system/bin/sh: su: not found
+
+	selinux: 1
+	format_resist: No
+Evidences
+	evidences_first: 
+		camera: 2
+		device: 2
+
+	evidences_last: 
+		camera: 5
+		device: 3
+
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: True
+	running: False
+	files_remained: 
+	packages_remained: 
+Result
+	result: True
+Installation
+	time: 2015-02-10 08:34:56.071393
+	installed: 
+	executed: True
+	instance_name: Android (352) samsung SM-N9005
+	info: 
+	uptime_first: up time: 00:06:33, idle time: 00:06:44, sleep time: 00:00:00
+
+	uptime_last: up time: 00:07:35, idle time: 00:07:43, sleep time: 00:00:00
+
+	error: local variable 'processes' referenced before assignment
+	exception: 
+Device
+	device: samsung SM-N9005
+	id: 354738063808296
+	release: 4.4.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: No
+	root_first: False
+	su: /system/bin/sh: su: not found
+
+	selinux: 1
+	format_resist: No root
+Evidences
+	evidences_first: 
+		camera: 2
+		device: 2
+
+	evidences_last: 
+		camera: 3
+		device: 2
+
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: False
+	running: 
+	files_remained: 
+	packages_remained: False
+Result
+	result: False
+Installation
+	time: 2015-02-11 12:07:46.400567
+	installed: False
+	executed: True
+	instance_name: Android (371) samsung SM-N9005
+	info: 
+	uptime_first: up time: 1 days, 03:39:21, idle time: 01:18:32, sleep time: 1 days, 02:14:09
+
+	uptime_last: up time: 1 days, 03:40:23, idle time: 01:19:27, sleep time: 1 days, 02:14:09
+
+	error: local variable 'processes' referenced before assignment
+	exception: 
+Device
+	device: samsung SM-N9005
+	id: 354738063808296
+	release: 4.4.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: No
+	root_first: False
+	su: /system/bin/sh: su: not found
+
+	selinux: 1
+	format_resist: 
+Evidences
+	evidences_first: 
+		application: 1
+		calendar: 4
+		camera: 4
+		device: 2
+
+	evidences_last: 
+		application: 1
+		calendar: 4
+		camera: 5
+		device: 2
+
+Expected
+	call_supported: 
+	expected: []
+Uninstall
+	uninstall: False
+	running: 
+	files_remained: 
+	packages_remained: False
+Result
+	result: False
