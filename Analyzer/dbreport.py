@@ -41,7 +41,7 @@ class DBReport(object):
                                 FROM SUMMARY S
                                 WHERE MANUAL <> 1 AND
                                        START_TIMESTAMP = (
-                                                       SELECT MIN(START_TIMESTAMP)
+                                                       SELECT MAX(START_TIMESTAMP)
                                                          FROM SUMMARY X
                                                         WHERE S.VM = X.VM AND
                                                               S.TEST_NAME = X.TEST_NAME AND
@@ -54,7 +54,7 @@ class DBReport(object):
                                   FROM SUMMARY S
                                  WHERE MANUAL = 1 AND
                                        START_TIMESTAMP = (
-                                                       SELECT MIN(START_TIMESTAMP)
+                                                       SELECT MAX(START_TIMESTAMP)
                                                          FROM SUMMARY X
                                                         WHERE S.VM = X.VM AND
                                                               S.TEST_NAME = X.TEST_NAME AND
@@ -176,31 +176,19 @@ class DBReport(object):
     def apply_known_errors(self):
         self.conn.execute('DELETE FROM SUMMARY WHERE manual <> 0')
 
-                #ANALYZER TESTS
-                # self.insert_summary(SummaryData(0, u'VM_MELT_SRV_UTO', u'trendm', u'REPORT_KIND_INIT', 0, True, "TestTrendm",     u'VM_MELT_SRV_UTO', ResultStates.PASSED, False, u''))
-                # self.insert_summary(SummaryData(0, u'VM_MELT_SRV_UTO', u'trendm', u'CALL', 1, True, "TestTrendm",                 u'VM_MELT_SRV_UTO', ResultStates.PASSED, False, u''))
-                # self.insert_summary(SummaryData(0, u'VM_MELT_SRV_UTO', u'trendm', u'ENABLE', 2, True, "TestTrendm",               u"['tuesday', 'friday', 'sunday']", ResultStates.PASSED, False, u''))
-                # self.insert_summary(SummaryData(0, u'VM_MELT_SRV_UTO', u'trendm', u'CALL', 3, True, "TestTrendm",                 u'INIT_DISPATCH', ResultStates.PASSED, False, u''))
-                # self.insert_summary(SummaryData(0, 'VM_MELT_SRV_UTO', 'trendm', 'BUILD_SRV', 4, True, "TestTrendm",                   'windows_melt_uto', ResultStates.FAILED, False, ''))
-                # self.insert_summary(SummaryData(0, u'VM_MELT_SRV_UTO', u'trendm', u'REVERT', 5, True, "TestTrendm",               u'[]', ResultStates.PASSED, False, u'' ))
-                # self.insert_summary(SummaryData(0, u'VM_MELT_SRV_UTO', u'trendm', u'START_VM', 6, True, "TestTrendm",             u'AV_AGENT', ResultStates.PASSED, False, u'' ))
-                # self.insert_summary(SummaryData(0, u'VM_MELT_SRV_UTO', u'trendm', u'SLEEP', 7, True, "TestTrendm",                u'60', ResultStates.PASSED, False, u'' ))
-                # self.insert_summary(SummaryData(0, u'VM_MELT_SRV_UTO', u'trendm', u'END_CALL', 8, True, "TestTrendm",             u'INIT_DISPATCH', ResultStates.PASSED, False, u''))
-                # self.insert_summary(SummaryData(0, u'VM_MELT_SRV_UTO', u'trendm', u'BUILD_SRV', 9, True, "TestTrendm",            u"['scout', 'windows_melt_uto', 'melt', 'melt', 'avmaster', (u'54982ebb7263731198b4f102', u'54b8cf1972637306707b7500', u'RCS_0000222569'), 'C:\\\\AVTest\\\\AVAgent\\\\build_windows_melt_uto_scout_melt_melt.zip']", ResultStates.PASSED, False, u''))
-                # self.insert_summary(SummaryData(0, u'VM_MELT_SRV_UTO', u'trendm', u'REPORT_KIND_END', 10, True, "TestTrendm",      u"['VM_MELT_SRV_UTO', []]", ResultStates.PASSED, False, u''))
-                # #this to test failing of VM
-                # self.insert_summary(SummaryData(0, u'VM_MELT_SRV_UTO', u'avira', u'REPORT_KIND_INIT', 0, True, "No report FAIL MAnual Test avira",      u"['VM_MELT_SRV_UTO', []]", ResultStates.PASSED, True, "Failed because fail fail fail"))
-
         #kis 15 STATIC
-        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'kis15', u'BUILD_SRV', 39, u'\\[\\"\\+\\ FAILED\\ CHECK\\_STATIC\\.\\ SIGNATURE\\ DETECTION\\:\\ \\[\\\'build\\/blackberry\\\\\\\\\\\\\\\\install\\.bat\\\'\\,\\ \\\'build\\/blackberry\\\\\\\\\\\\\\\\res\\/inst\\_helper\\.exe\\\'\\,\\ \\\'build\\/blackberry\\\\\\\\\\\\\\\\res\\/facebook\\-1\\_4\\.5\\.cod\\\'\\,\\ \\\'build\\/blackberry\\\\\\\\\\\\\\\\res\\/facebook\\_4\\.5\\.cod\\\'\\]\\"\\,\\ \\"\\+\\ FAILED\\ SCOUT\\ BUILD\\.\\ SIGNATURE\\ DETECTION\\:\\ \\[\\\'build\\/blackberry\\\\\\\\\\\\\\\\install\\.bat\\\'\\,\\ \\\'build\\/blackberry\\\\\\\\\\\\\\\\res\\/inst\\_helper\\.exe\\\'\\,\\ \\\'build\\/blackberry\\\\\\\\\\\\\\\\res\\/facebook\\-1\\_4\\.5\\.cod\\\'\\,\\ \\\'build\\/blackberry\\\\\\\\\\\\\\\\res\\/facebook\\_4\\.5\\.cod\\\'\\]\\"\\,\\ \\\'\\+\\ ERROR\\:\\ Signature\\ detection\\\'\\]', 'FAILED', 0, u''), "KIS15 STATIC BB")
-        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'kis15', u'BUILD_SRV', 50, u'\\[\\"\\+\\ FAILED\\ CHECK\\_STATIC\\.\\ SIGNATURE\\ DETECTION\\:\\ \\[\\\'build\\/ios\\\\\\\\\\\\\\\\win\\/install\\.exe\\\'\\]\\"\\,\\ \\"\\+\\ FAILED\\ SCOUT\\ BUILD\\.\\ SIGNATURE\\ DETECTION\\:\\ \\[\\\'build\\/ios\\\\\\\\\\\\\\\\win\\/install\\.exe\\\'\\]\\"\\,\\ \\\'\\+\\ ERROR\\:\\ Signature\\ detection\\\'\\]', 'FAILED', 0, u''), "KIS15 STATIC IOS")
+        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'kis15', u'BUILD_SRV', 39, u'\\[\\"\\+\\ FAILED\\ CHECK\\_STATIC\\.\\ SIGNATURE\\ DETECTION\\:\\ \\[\\\'build\\/blackberry\\\\\\\\\\\\\\\\install\\.bat\\\'\\,\\ \\\'build\\/blackberry\\\\\\\\\\\\\\\\res\\/inst\\_helper\\.exe\\\'\\,\\ \\\'build\\/blackberry\\\\\\\\\\\\\\\\res\\/facebook\\-1\\_4\\.5\\.cod\\\'\\,\\ \\\'build\\/blackberry\\\\\\\\\\\\\\\\res\\/facebook\\_4\\.5\\.cod\\\'\\]\\"\\,\\ \\"\\+\\ FAILED\\ SCOUT\\ BUILD\\.\\ SIGNATURE\\ DETECTION\\:\\ \\[\\\'build\\/blackberry\\\\\\\\\\\\\\\\install\\.bat\\\'\\,\\ \\\'build\\/blackberry\\\\\\\\\\\\\\\\res\\/inst\\_helper\\.exe\\\'\\,\\ \\\'build\\/blackberry\\\\\\\\\\\\\\\\res\\/facebook\\-1\\_4\\.5\\.cod\\\'\\,\\ \\\'build\\/blackberry\\\\\\\\\\\\\\\\res\\/facebook\\_4\\.5\\.cod\\\'\\]\\"\\,\\ \\\'\\+\\ ERROR\\:\\ Signature\\ detection\\\'\\]', 'FAILED', 0, u''), "KIS15 STATIC IOS + BB")
+        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'kis15', u'BUILD_SRV', 50, u'\\[\\"\\+\\ FAILED\\ CHECK\\_STATIC\\.\\ SIGNATURE\\ DETECTION\\:\\ \\[\\\'build\\/ios\\\\\\\\\\\\\\\\win\\/install\\.exe\\\'\\]\\"\\,\\ \\"\\+\\ FAILED\\ SCOUT\\ BUILD\\.\\ SIGNATURE\\ DETECTION\\:\\ \\[\\\'build\\/ios\\\\\\\\\\\\\\\\win\\/install\\.exe\\\'\\]\\"\\,\\ \\\'\\+\\ ERROR\\:\\ Signature\\ detection\\\'\\]', 'FAILED', 0, u''), "KIS15 STATIC IOS + BB")
 
         #kis 14
             #Static
-        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'kis14', u'BUILD_SRV', 39, u'\\[\\"\\+\\ FAILED\\ CHECK\\_STATIC\\.\\ SIGNATURE\\ DETECTION\\:\\ \\[\\\'build\\/blackberry\\\\\\\\\\\\\\\\install\\.bat\\\'\\,\\ \\\'build\\/blackberry\\\\\\\\\\\\\\\\res\\/inst\\_helper\\.exe\\\'\\,\\ \\\'build\\/blackberry\\\\\\\\\\\\\\\\res\\/facebook\\-1\\_4\\.5\\.cod\\\'\\,\\ \\\'build\\/blackberry\\\\\\\\\\\\\\\\res\\/facebook\\_4\\.5\\.cod\\\'\\]\\"\\,\\ \\"\\+\\ FAILED\\ SCOUT\\ BUILD\\.\\ SIGNATURE\\ DETECTION\\:\\ \\[\\\'build\\/blackberry\\\\\\\\\\\\\\\\install\\.bat\\\'\\,\\ \\\'build\\/blackberry\\\\\\\\\\\\\\\\res\\/inst\\_helper\\.exe\\\'\\,\\ \\\'build\\/blackberry\\\\\\\\\\\\\\\\res\\/facebook\\-1\\_4\\.5\\.cod\\\'\\,\\ \\\'build\\/blackberry\\\\\\\\\\\\\\\\res\\/facebook\\_4\\.5\\.cod\\\'\\]\\"\\,\\ \\\'\\+\\ ERROR\\:\\ Signature\\ detection\\\'\\]', 'FAILED', 0, u''), "KIS14 STATIC BB")
-        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'kis14', u'BUILD_SRV', 48, u'\\[\\"\\+\\ ERROR\\:\\ \\[Errno\\ 13\\]\\ Permission\\ denied\\:\\ \\\'build\\/ios\\\\\\\\\\\\\\\\win\\/install\\.exe\\\'\\"\\]', 'FAILED', 0, u''), "KIS14 STATIC BB")
+        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'kis14', u'BUILD_SRV', 39, u'\\[\\"\\+\\ FAILED\\ CHECK\\_STATIC\\.\\ SIGNATURE\\ DETECTION\\:\\ \\[\\\'build\\/blackberry\\\\\\\\\\\\\\\\install\\.bat\\\'\\,\\ \\\'build\\/blackberry\\\\\\\\\\\\\\\\res\\/inst\\_helper\\.exe\\\'\\,\\ \\\'build\\/blackberry\\\\\\\\\\\\\\\\res\\/facebook\\-1\\_4\\.5\\.cod\\\'\\,\\ \\\'build\\/blackberry\\\\\\\\\\\\\\\\res\\/facebook\\_4\\.5\\.cod\\\'\\]\\"\\,\\ \\"\\+\\ FAILED\\ SCOUT\\ BUILD\\.\\ SIGNATURE\\ DETECTION\\:\\ \\[\\\'build\\/blackberry\\\\\\\\\\\\\\\\install\\.bat\\\'\\,\\ \\\'build\\/blackberry\\\\\\\\\\\\\\\\res\\/inst\\_helper\\.exe\\\'\\,\\ \\\'build\\/blackberry\\\\\\\\\\\\\\\\res\\/facebook\\-1\\_4\\.5\\.cod\\\'\\,\\ \\\'build\\/blackberry\\\\\\\\\\\\\\\\res\\/facebook\\_4\\.5\\.cod\\\'\\]\\"\\,\\ \\\'\\+\\ ERROR\\:\\ Signature\\ detection\\\'\\]', 'FAILED', 0, u''), "KIS14 STATIC IOS + BB")
+        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'kis14', u'BUILD_SRV', 48, u'\\[\\"\\+\\ ERROR\\:\\ \\[Errno\\ 13\\]\\ Permission\\ denied\\:\\ \\\'build\\/ios\\\\\\\\\\\\\\\\win\\/install\\.exe\\\'\\"\\]', 'FAILED', 0, u''), "KIS14 STATIC IOS + BB")
             #Exploit
         self.insert_summary_manual_error((u'VM_EXPLOIT_SRV', u'kis14', u'CHECK_INFECTION', 26, u'VM\\ is\\ INFECTED', 'FAILED', 0, u''), "KIS 14 EXPLOIT")
+
+        #eset soldier (is elite)
+        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'eset', u'BUILD_SRV', 12, u"\\[\\'\\+\\ FAILED\\ SCOUT\\ BUILD\\.\\ CANNOT\\ FIND\\ ZIP\\ FILE\\ C\\:\\\\\\\\AVTest\\\\\\\\AVAgent\\\\\\\\build\\_windows\\_scout\\_silent\\_soldier\\_fast\\.zip\\ TO\\ UNZIP\\ IT\\'\\,\\ \\'\\+\\ ERROR\\:\\ No\\ file\\ to\\ unzip\\'\\]", 'FAILED', 0, u''), "ESET Soldier (is an elite)")
 
         #eset7 soldier
         self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'eset7', u'BUILD_SRV', 25, u"\\[\\'\\+\\ SUCCESS\\ UPGRADED\\ SYNC\\'\\,\\ \\'\\+\\ ERROR\\:\\ \\[Error\\ 193\\]\\ \\%1\\ is\\ not\\ a\\ valid\\ Win32\\ application\\'\\]", 'FAILED', 0, u''), "ESET 7 Soldier (is an elite)")
@@ -216,6 +204,13 @@ class DBReport(object):
         #bitdef exploit
         self.insert_summary_manual_error((u'VM_EXPLOIT_SRV', u'bitdef', u'BUILD_SRV', 31, u'\\[\\"\\+\\ SUCCESS\\ CHECK\\_STATIC\\:\\ \\[\\\'build\\/exploit\\_pdf\\\\\\\\\\\\\\\\example\\.exe\\\'\\]\\"\\,\\ \\\'\\+\\ SUCCESS\\ SCOUT\\ BUILD\\ \\(no\\ signature\\ detection\\)\\\'\\,\\ \\\'\\+\\ SUCCESS\\ SCOUT\\ EXECUTE\\\'\\,\\ \\\'\\+\\ WARN\\ did\\ not\\ drop\\ startup\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ FAILED\\ SCOUT\\ SYNC\\\'\\]', 'FAILED', 0, u''), "BITDEF EXPLOIT")
 
+        #bitdef
+        # NB THIS MANUAL ERROR USES THE REGEXP (SO ANY IMAGE ID IN CROP WILL MATCH)
+             # soldier CROP
+        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'bitdef15', u'CROP', 28, u'\\[.*\\]', 'CROP', 0, u''), "BITDEFENDER produces a FP crop with Elite and Soldier. From time to time is better to check manually known crops.")
+             # elite CROP
+        self.insert_summary_manual_error((u'VM_ELITE_FAST_SRV', u'bitdef15', u'CROP', 25, u'\\[.*\\]', 'CROP', 0, u''), "BITDEFENDER produces a FP crop with Elite and Soldier. From time to time is better to check manually known crops.")
+
         #gdata exploit
         self.insert_summary_manual_error((u'VM_EXPLOIT_SRV', u'gdata', u'BUILD_SRV', 31, u'\\[\\"\\+\\ SUCCESS\\ CHECK\\_STATIC\\:\\ \\[\\\'build\\/exploit\\_pdf\\\\\\\\\\\\\\\\example\\.exe\\\'\\]\\"\\,\\ \\\'\\+\\ SUCCESS\\ SCOUT\\ BUILD\\ \\(no\\ signature\\ detection\\)\\\'\\,\\ \\\'\\+\\ SUCCESS\\ SCOUT\\ EXECUTE\\\'\\,\\ \\\'\\+\\ WARN\\ did\\ not\\ drop\\ startup\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ FAILED\\ SCOUT\\ SYNC\\\'\\]', 'FAILED', 0, u''), "GDATA EXPLOIT")
 
@@ -227,19 +222,29 @@ class DBReport(object):
         self.insert_summary_manual_error((u'VM_EXPLOIT_SRV', u'risint', u'BUILD_SRV', 21, u'\\[\\"\\+\\ SUCCESS\\ CHECK\\_STATIC\\:\\ \\[\\\'build\\/exploit\\_pdf\\\\\\\\\\\\\\\\example\\.exe\\\'\\]\\"\\,\\ \\\'\\+\\ SUCCESS\\ SCOUT\\ BUILD\\ \\(no\\ signature\\ detection\\)\\\'\\,\\ \\\'\\+\\ SUCCESS\\ SCOUT\\ EXECUTE\\\'\\,\\ \\\'\\+\\ ERROR\\:\\ \\[Error\\ 1\\]\\ Incorrect\\ function\\\'\\]', 'FAILED', 0, u''), "RISING (fails mostly every test)")
 
         #CMCAV
-            #static
+            #static (blacklisted the scout exits) (fails every test)
         self.insert_summary_manual_error((u'VM_STATIC_SRV', u'cmcav', u'BUILD_SRV', 50, u'\\[\\"\\+\\ FAILED\\ CHECK\\_STATIC\\.\\ SIGNATURE\\ DETECTION\\:\\ \\[\\\'build\\/ios\\\\\\\\\\\\\\\\win\\/install\\.exe\\\'\\]\\"\\,\\ \\"\\+\\ FAILED\\ SCOUT\\ BUILD\\.\\ SIGNATURE\\ DETECTION\\:\\ \\[\\\'build\\/ios\\\\\\\\\\\\\\\\win\\/install\\.exe\\\'\\]\\"\\,\\ \\\'\\+\\ ERROR\\:\\ Signature\\ detection\\\'\\]', 'FAILED', 0, u''), "CMCAV STATIC IOS")
         self.insert_summary_manual_error((u'VM_STATIC_SRV', u'cmcav', u'CROP', 71, u'\\[761\\,\\ 766\\]', 'CROP', 0, u''), "CMCAV IOS")
             #elite
         self.insert_summary_manual_error((u'VM_ELITE_FAST_SRV', u'cmcav', u'BUILD_SRV', 13, u'\\[\\"\\+\\ FAILED\\ CHECK\\_STATIC\\.\\ SIGNATURE\\ DETECTION\\:\\ \\[\\\'build\\/windows\\\\\\\\\\\\\\\\agent\\.exe\\\'\\]\\"\\,\\ \\"\\+\\ FAILED\\ SCOUT\\ BUILD\\.\\ SIGNATURE\\ DETECTION\\:\\ \\[\\\'build\\/windows\\\\\\\\\\\\\\\\agent\\.exe\\\'\\]\\"\\,\\ \\\'\\+\\ ERROR\\:\\ Signature\\ detection\\\'\\]', 'FAILED', 0, u''), "CMCAV (blacklisted av)")
-            #MELT AIR
-        self.insert_summary_manual_error((u'VM_MELT_SRV_AIR', u'cmcav', u'CHECK_INFECTION', 19, u'VM\\ is\\ INFECTED', 'FAILED', 0, u''), "CMCAV MELT AIR (blacklisted av)")
+            #MELT
+        self.insert_summary_manual_error((u'VM_MELT_SRV_AIR', u'cmcav', u'CHECK_INFECTION', 19, u'VM\\ is\\ INFECTED', 'FAILED', 0, u''), "CMCAV MELT (blacklisted av, the scout exits)")
+        self.insert_summary_manual_error((u'VM_MELT_SRV_FIF', u'cmcav', u'CHECK_INFECTION', 20, u'VM\\ is\\ INFECTED', 'FAILED', 0, u''), "CMCAV MELT (blacklisted av, the scout exits)")
+        self.insert_summary_manual_error((u'VM_MELT_SRV_FIF', u'cmcav', u'CHECK_INFECTION', 20, u'VM\\ is\\ INFECTED', 'FAILED', 0, u''), "CMCAV MELT (blacklisted av, the scout exits)")
             #exploit
-        self.insert_summary_manual_error((u'VM_EXPLOIT_SRV', u'cmcav', u'CHECK_INFECTION', 25, u'VM\\ is\\ INFECTED', 'FAILED', 0, u''), "CMCAV EXPLOIT(blacklisted av)")
+        self.insert_summary_manual_error((u'VM_EXPLOIT_SRV', u'cmcav', u'CHECK_INFECTION', 25, u'VM\\ is\\ INFECTED', 'FAILED', 0, u''), "CMCAV EXPLOIT (blacklisted av, the scout exits)")
+            #elite scoutdemo
+        self.insert_summary_manual_error((u'VM_ELITE_FAST_SCOUTDEMO_SRV', u'cmcav', u'RELOG', 18, u'Cannot\\ relogin', 'FAILED', 0, u''), "CMCAV Elite ScoutDemo (blacklisted av, the scout exits)")
 
-        #norton
+
+        #norton soldier (is elite)
         self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'norton', u'BUILD_SRV', 26, u"\\[\\'\\+\\ SUCCESS\\ UPGRADED\\ SYNC\\'\\,\\ \\'\\+\\ FAILED\\ UPGRADE\\ SOLDIER\\'\\]", 'FAILED', 0, u''), "NORTON SOLDIER (Norton is Elite)")
         self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'norton', u'CHECK_INFECTION', 30, u'VM\\ is\\ INFECTED', 'FAILED', 0, u''), "NORTON SOLDIER (Norton is Elite)")
+
+        #norton 15 soldier (is elite) NB crop regexp
+        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'norton15', u'BUILD_SRV', 24, u"\\[\\'\\+\\ SUCCESS\\ UPGRADED\\ SYNC\\'\\,\\ \\'\\+\\ FAILED\\ UPGRADE\\ SOLDIER\\'\\]", 'FAILED', 0, u''), "NORTON SOLDIER 15 (Norton is Elite)")
+        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'norton15', u'CROP', 25, u'\\[.*\\]', 'CROP', 0, u''), "NORTON SOLDIER 15 (Norton is Elite)")
+        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'norton15', u'CHECK_INFECTION', 28, u'VM\\ is\\ INFECTED', 'FAILED', 0, u''), "NORTON SOLDIER 15 (Norton is Elite)")
 
         #comodo
             #soldier
@@ -253,11 +258,13 @@ class DBReport(object):
         self.insert_summary_manual_error((u'VM_ELITE_FAST_SCOUTDEMO_SRV', u'comodo', u'CHECK_INFECTION', 24, u'VM\\ is\\ INFECTED', 'FAILED', 0, u''), "COMODO (fails mostly every test due to sandbox and firewall)")
 
         #avast
-        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'avast', u'CHECK_INFECTION', 31, u'VM\\ is\\ INFECTED', 'FAILED', 0, u''), "AVAST SOLDIER FAILES UNINSTALLATION (Avast is Elite)")
-        #clamav
-        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'clamav', u'CHECK_INFECTION', 31, u'VM\\ is\\ INFECTED', 'FAILED', 0, u''), "CLAMAV SOLDIER FAILES UNINSTALLATION (Clamav is Elite)")
+        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'avast', u'CHECK_INFECTION', 31, u'VM\\ is\\ INFECTED', 'FAILED', 0, u''), "AVAST SOLDIER FAILS UNINSTALLATION (Avast is Elite)")
 
-        #kis 32 (blacklisted)
+        #clamav (is Elite)
+            #soldier
+        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'cmcav', u'BUILD_SRV', 13, u'\\[\\"\\+\\ FAILED\\ CHECK\\_STATIC\\.\\ SIGNATURE\\ DETECTION\\:\\ \\[\\\'build\\/windows\\\\\\\\\\\\\\\\agent\\.exe\\\'\\]\\"\\,\\ \\"\\+\\ FAILED\\ SCOUT\\ BUILD\\.\\ SIGNATURE\\ DETECTION\\:\\ \\[\\\'build\\/windows\\\\\\\\\\\\\\\\agent\\.exe\\\'\\]\\"\\,\\ \\\'\\+\\ ERROR\\:\\ Signature\\ detection\\\'\\]', 'FAILED', 0, u''), "CLAMAV SOLDIER FAILES UNINSTALLATION (Clamav is Elite)")
+
+        #kis 32 (blacklisted the scout exits)
             # static bb + ios
         self.insert_summary_manual_error((u'VM_STATIC_SRV', u'kis32', u'BUILD_SRV', 37, u'\\[\\"\\+\\ ERROR\\:\\ \\[Errno\\ 13\\]\\ Permission\\ denied\\:\\ \\\'build\\/blackberry\\\\\\\\\\\\\\\\install\\.bat\\\'\\"\\]', 'FAILED', 0, u''), "KIS 32 STATIC BB+IOS")
         self.insert_summary_manual_error((u'VM_STATIC_SRV', u'kis32', u'BUILD_SRV', 46, u'\\[\\"\\+\\ ERROR\\:\\ \\[Errno\\ 13\\]\\ Permission\\ denied\\:\\ \\\'build\\/ios\\\\\\\\\\\\\\\\win\\/install\\.exe\\\'\\"\\]', 'FAILED', 0, u''), "KIS 32 STATIC BB+IOS")
@@ -269,6 +276,8 @@ class DBReport(object):
         self.insert_summary_manual_error((u'VM_ELITE_FAST_SCOUTDEMO_SRV', u'kis32', u'BUILD_SRV', 23, u'\\[\\"\\+\\ SUCCESS\\ CHECK\\_STATIC\\:\\ \\[\\\'build\\/windows\\_demo\\\\\\\\\\\\\\\\agent\\.exe\\\'\\]\\"\\,\\ \\\'\\+\\ SUCCESS\\ SCOUT\\ BUILD\\ \\(no\\ signature\\ detection\\)\\\'\\,\\ \\\'\\+\\ SUCCESS\\ SCOUT\\ EXECUTE\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ FAILED\\ SCOUT\\ SYNC\\\'\\]', 'FAILED', 0, u''), "KIS 32 ELITE DEMO (IS BLACKLISTED)")
             #exploit
         self.insert_summary_manual_error((u'VM_EXPLOIT_SRV', u'kis32', u'BUILD_SRV', 30, u'\\[\\"\\+\\ SUCCESS\\ CHECK\\_STATIC\\:\\ \\[\\\'build\\/exploit\\_pdf\\\\\\\\\\\\\\\\example\\.exe\\\'\\]\\"\\,\\ \\\'\\+\\ SUCCESS\\ SCOUT\\ BUILD\\ \\(no\\ signature\\ detection\\)\\\'\\,\\ \\\'\\+\\ SUCCESS\\ SCOUT\\ EXECUTE\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ FAILED\\ SCOUT\\ SYNC\\\'\\]', 'FAILED', 0, u''), "KIS 32 EXPLOIT (IS BLACKLISTED)")
+            #melt
+        self.insert_summary_manual_error((u'VM_MELT_SRV_FIF', u'kis32', u'BUILD_SRV', 24, u'\\[\\"\\+\\ SUCCESS\\ CHECK\\_STATIC\\:\\ \\[\\\'build\\/windows\\_melt\\_fif\\\\\\\\\\\\\\\\exp\\_rite\\.exe\\\'\\]\\"\\,\\ \\\'\\+\\ SUCCESS\\ SCOUT\\ BUILD\\ \\(no\\ signature\\ detection\\)\\\'\\,\\ \\\'\\+\\ SUCCESS\\ SCOUT\\ EXECUTE\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ FAILED\\ SCOUT\\ SYNC\\\'\\]', 'FAILED', 0, u''), "KIS 32 MELT (IS BLACKLISTED)")
 
         #syscare failes due to mouse emulation
             #soldier

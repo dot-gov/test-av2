@@ -58,6 +58,8 @@ class SummaryDataColl(object):
         return self.state_rows_to_string_full(full=False)
 
     def state_rows_to_string_full(self, full=True):
+        if len(self.rows) == 0:
+            return "Nothing was executed - 0 rows"
         output = "{"
         for row in self.rows:
             # if full: prints "RITE FAILED" if rite failed, else the result
@@ -70,6 +72,8 @@ class SummaryDataColl(object):
             elif row.parsed_result[0].strip() not in ['PASSED', 'NONE'] or full:
                 output += "["+row.command+"="+row.parsed_result[0]+"("+row.rite_result_log+")]"
         output += "}"
+        if output == "{}" and not full:
+            return "All ok - 0 error rows"
         return output
 
         #new errors and anomalies (manual state different from current state), and other problems are considered NOT OK
@@ -83,12 +87,13 @@ class SummaryDataColl(object):
         cur_err = self.get_error_rows_count()
         man_err = manual_state_rows.get_error_rows_count()
         prev_err = previous_state_rows.get_error_rows_count()
+        saved_error_comment = ""
 
         if cur_err == 0 and prev_err == 0 and man_err == 0:
             message = "All OK! Actual state is: PASSED, previous state was: PASSED, (known state is: PASSED)"
 
         elif cur_err == 0 and prev_err > 0 and man_err == 0:
-            message = "All Ok! Actual state is PASSED, we recovered from previous errorlist: %s" % self.state_rows_to_string_short()
+            message = "All Ok! Actual state is PASSED, we recovered from previous errorlist: %s" % previous_state_rows.state_rows_to_string_short()
 
         elif cur_err > 0 and prev_err == 0 and man_err == 0:
             message = "New error! Actual errorlist is: %s, previous state was: PASSED, (known state is: PASSED)" % self.state_rows_to_string_short()
@@ -99,7 +104,9 @@ class SummaryDataColl(object):
             ok = False
         elif cur_err == 0 and man_err > 0:
             message = "Anomaly! Actual state is PASSED, known errorlist is: %s" % manual_state_rows.state_rows_to_string_short()
-            ok = False
+            ok = True
+            saved_error = True
+            saved_error_comment = manual_state_rows.get_manual_comment()
         #compare_current_to_manual is true if commands are equal
         elif cur_err > 0 and self.compare_current_to_manual(manual_state_rows):
             message = "OK, but known errors occurred (known error comment is: %s). Actual errorlist and known errorlist are %s " \
@@ -107,6 +114,7 @@ class SummaryDataColl(object):
                                                        previous_state_rows.state_rows_to_string_short())
             ok = False
             saved_error = True
+            saved_error_comment = manual_state_rows.get_manual_comment()
         elif cur_err > 0 and self.compare_current_to_manual(manual_state_rows):
             x, differ_reason = self.compare_current_to_manual(manual_state_rows)
             message = "Anomaly! Actual errors differs from saved errors (reason: %s). Actual errorlist is: %s, known errorlist is: %s " \
@@ -120,7 +128,7 @@ class SummaryDataColl(object):
                                                                               manual_state_rows.state_rows_to_string_short(),
                                                                               previous_state_rows.state_rows_to_string_short())
             ok = False
-        return message, ok, saved_error
+        return message, ok, saved_error, saved_error_comment
 
     def compare_three_states_failure(self, manual_state_rows, message, previous_state_rows):
         #first of all, I check for failure. If there is a failure I don't check results

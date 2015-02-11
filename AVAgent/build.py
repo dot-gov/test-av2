@@ -483,6 +483,7 @@ class AgentBuild:
                 if upgraded:
                     break
                 else:
+                    # This for me is error...string.upper() will never equal a lowercase string
                     if got_level.upper() == "soldier":
                         self.terminate_every_agent()
                         executed = self.execute_agent_startup()
@@ -496,7 +497,7 @@ class AgentBuild:
 
         logging.debug("Upgraded: %s" % upgraded)
         if upgraded:
-
+            logging.debug("The vm upgraded to the desired level, now we check that execution is inibithed.")
             #if got_level != level:
             #    add_result("+ FAILED LEVEL: %s" % level)
             sleep(60)
@@ -640,9 +641,9 @@ class AgentBuild:
                 if self.kind == "melt":
                     try:
                         found = False
-                        for d,b in itertools.product(start_dirs,names):
-                            filename = "%s/%s.exe" % (d,b)
-                            filename = filename.replace("/","\\")
+                        for d, b in itertools.product(start_dirs, names):
+                            filename = "%s/%s.exe" % (d, b)
+                            filename = filename.replace("/", "\\")
                             if os.path.exists(filename):
                                 found = True
 
@@ -656,8 +657,8 @@ class AgentBuild:
                     logging.debug("- melt, uninstall: %s" % (time.ctime()))
                     #sleep(60)
                     self.uninstall(instance_id)
-
-                self.check_level(instance_id, "scout")
+                #already checked!
+                #self.check_level(instance_id, "scout")
         logging.debug("- Result: %s" % instance_id)
         return instance_id
 

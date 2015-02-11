@@ -1,14 +1,16 @@
 __author__ = 'fabrizio'
 
 import os
-import sys
-import glob
+import re
 from AVCommon.logger import logging
 from AVCommon import config
 import time
 import tempfile
 
 from AVCommon import command
+import DELETE_DIR
+import PUSHZIP
+import PULL
 
 vm = None
 
@@ -24,13 +26,80 @@ def execute(vm, protocol, inst_args):
     assert command.context is not None
 
     failed = False
+    reason = ""
+
+    force_push = False
+    redis = config.redis
 
     if inst_args:
-        redis = inst_args
-    else:
-        redis = config.redis
+        if isinstance(inst_args, list):
+            force_push_str = inst_args[0]
+            if len(inst_args) > 1:
+                redis = inst_args[1]
+        elif isinstance(inst_args, str):
+            force_push_str = inst_args
+        else:
+            return False, "Wrong arguments"
 
-    cmd = "rmdir /s /q C:\\AVTest\\running \r\n"\
+        if force_push_str == "FORCE_PUSH":
+            force_push = True
+        elif force_push_str == "NO_FORCE_PUSH":
+            force_push = False
+        else:
+            redis = force_push_str
+
+            # if inst_args:
+            #     redis = inst_args
+            # else:
+    #check if here is something to be pushed
+    #.py, .yaml, .exe, .json
+
+    matches = []
+    for root, dirnames, filenames in os.walk('./'):
+        for filename in filenames:
+            if re.match('.*\.py|.*\.yaml|.*\.exe|.*\.json', filename):  # fnmatch.filter(filenames, '*.c') or filename in fnmatch.filter(filenames, '*.c') or filename in fnmatch.filter(filenames, '*.c'):
+                matches.append(os.path.join(root, filename))
+
+    matches.sort(key=lambda fil: os.stat(fil).st_mtime)
+
+    last_edit_time = os.stat(matches[-1]).st_mtime
+
+    logging.debug("Last edit time: %s (last edited file: %s)" % (last_edit_time, matches[-1]))
+
+    timestamplocalfile = open("timestamp.txt", 'w')
+    timestamplocalfile.write(str(last_edit_time))
+    timestamplocalfile.close()
+
+    PULL.execute(vm, protocol, [['timestamp.txt'], "c:\\AVTest\\", "logs"])
+
+    if os.path.exists("logs/%s/timestamp.txt" % vm):
+        timestampremotefile = open("logs/%s/timestamp.txt" % vm, 'r')
+        timestampremoteint = float(timestampremotefile.read())
+        timestampremotefile.close()
+        logging.debug("Last edit REMOTE time: %s" % timestampremoteint)
+    else:
+        timestampremoteint = 0
+        logging.debug("Last edit REMOTE unknown: pushing AVAgent anyway.")
+
+    if timestampremoteint < last_edit_time:
+        logging.debug("New AVAgent version available. Pushing it.")
+    elif force_push:
+        logging.debug("Forced push of AVAgent.")
+    else:
+        return True, "No need to install AVAgent. Skipping."
+    # I need to emulate these commands
+    # - DELETE_DIR: /AVTest/
+    # - DELETE_DIR: /Users/avtest/Desktop/AVTest/
+    # - PUSHZIP: [ AVAgent/*.py, AVAgent/*.yaml, AVCommon/*.py, AVCommon/*.yml, AVCommon/commands/client/*.py, AVCommon/commands/meta/*.py, AVCommon/commands/*.py, AVAgent/assets/config*, AVAgent/assets/keyinject.exe, AVAgent/assets/getusertime.exe, AVAgent/assets/windows/*  ]
+
+    #deleteDirectoryInGuest
+    DELETE_DIR.execute(vm, protocol, "/AVTest/")
+    #not more useful
+    #DELETE_DIR.execute(vm, protocol, "/Users/avtest/Desktop/AVTest/")
+
+    PUSHZIP.execute(vm, protocol, ["timestamp.txt", "AVAgent/*.py", "AVAgent/*.yaml", "AVCommon/*.py", "AVCommon/*.yaml", "AVCommon/commands/client/*.py", "AVCommon/commands/meta/*.py", "AVCommon/commands/*.py", "AVAgent/assets/config*", "AVAgent/assets/keyinject.exe", "AVAgent/assets/getusertime.exe", "AVAgent/assets/windows/*"])
+
+    cmd = "rmdir /s /q C:\\AVTest\\running \r\n" \
           "cd C:\\AVTest\\AVAgent\r\n" \
           "c:\\python27\\python.exe"
     arg = ["C:\\AVTest\\AVAgent\\av_agent.py", "-m", vm, "-s", mq.session, "-d", redis]
@@ -40,7 +109,7 @@ def execute(vm, protocol, inst_args):
 
     # --------------av_agent.bat-----------------
     fd, filename = tempfile.mkstemp(".bat")
-    logging.debug("opening file %s with fd: %s" % (filename, fd))
+    logging.debug("Creation of av_agent.bat \nOpening file %s with fd: %s" % (filename, fd))
     os.write(fd, agent_bat)
     os.close(fd)
 
@@ -62,11 +131,13 @@ def execute(vm, protocol, inst_args):
         assert os.path.exists(filename)
         r = vm_manager.execute(vm, "copyFileToGuest", filename, remote_name)
         if r > 0:
-            time.sleep(5)
+            time.sleep(i * 5)
             failed = True
+            reason = "Can't copy av_agent.bat in Startup"
             logging.debug("Cannot copy %s" % filename)
         else:
             failed = False
+            reason = ""
             break
 
     if failed:
@@ -79,7 +150,7 @@ def execute(vm, protocol, inst_args):
     # --------------start.bat-----------------
 
     fd, filename = tempfile.mkstemp(".bat")
-    logging.debug("opening file %s with fd: %s" % (filename, fd))
+    logging.debug("Creation of start.bat \nOpening file %s with fd: %s" % (filename, fd))
     os.write(fd, start_bat)
     os.close(fd)
     assert os.path.exists(filename)
@@ -91,8 +162,9 @@ def execute(vm, protocol, inst_args):
         assert os.path.exists(filename)
         r = vm_manager.execute(vm, "copyFileToGuest", filename, remote_name)
         if r > 0:
-            time.sleep(5)
+            time.sleep(i * 5)
             failed = True
+            reason += "Can't copy start.bat in AVAgent (try %s)" % i
             logging.debug("Cannot copy %s" % filename)
         else:
             failed = False
@@ -106,21 +178,25 @@ def execute(vm, protocol, inst_args):
     os.remove(filename)
 
     # --------------delete running-----------------
+    logging.debug("Deleting 'running' dir (if not present, will print 'Error: A file was not found' but is ok")
     dirname = "%s/avagent/running" % config.basedir_av
     r = vm_manager.execute(vm, "deleteDirectoryInGuest", dirname)
     if r > 0:
         failed = True
+        reason += "Cannot delete running file"
         logging.debug("Cannot delete %s" % dirname)
 
     # --------------delete logs-----------------
+    logging.debug("Deleting 'logs' dir (if not present, will print 'Error: A file was not found' but is ok")
     dirname = "%s/logs" % config.basedir_av
     r = vm_manager.execute(vm, "deleteDirectoryInGuest", dirname)
     if r > 0:
         failed = True
+        reason += "Can't delete logs"
         logging.debug("Cannot delete %s" % dirname)
 
     if failed:
-        return False, "Cant Install Agent on VM"
+        return False, "Cant Install Agent on VM. Reason = %s" % reason
 
     else:
         return True, "Agent installed on VM"

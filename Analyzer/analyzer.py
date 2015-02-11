@@ -150,7 +150,10 @@ def process_yaml(filename):
                 retests[test_name].add(vm)
 
             elif not comparison_result['success'] and comparison_result['saved_error']:
-                mailsender.known_errors_add(vm, test_name, message)
+                mailsender.known_errors_add(vm, test_name, message, comparison_result['saved_error_comment'])
+            #case in wich ew saved an error but the test passed
+            elif comparison_result['success'] and comparison_result['saved_error']:
+                mailsender.known_errors_but_test_passed_add(vm, test_name, message, comparison_result['saved_error_comment'])
             # ok
             else:
                 mailsender.ok_add(vm, test_name, message)
@@ -252,10 +255,11 @@ def analyze(vm, comms):
             #if there are anomalies, then it IGNORES the states ad returns
             #else if the failure state is ok, it compares the results
             if rite_ok:
-                message, ok, saved_error = current_state_rows.compare_three_states_results(manual_state_rows, previous_state_rows)
+                message, ok, saved_error, saved_error_comment = current_state_rows.compare_three_states_results(manual_state_rows, previous_state_rows)
                 test_comparison_result['success'] = ok
                 test_comparison_result['message'] = message
                 test_comparison_result['saved_error'] = saved_error
+                test_comparison_result['saved_error_comment'] = saved_error_comment
 
         #     return True, ok, message, saved_error, current_state_rows.state_rows_to_string_short(), comms, current_state_rows
         # else:
