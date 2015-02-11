@@ -1,6 +1,8 @@
 __author__ = 'mlosito'
+
 import smtplib
 import socket
+import datetime
 from email.mime.text import MIMEText
 from email.header import Header
 from email.mime.multipart import MIMEMultipart
@@ -8,6 +10,24 @@ import cgi
 
 
 class MailSender(object):
+
+    invert_result_tests = ["VM_PUSH_VIRUS"]
+
+    important_tests = ['VM_ELITE_FAST_SCOUTDEMO_SRV', 'VM_ELITE_FAST_SRV', 'VM_EXPLOIT_SRV', 'VM_SOLDIER_SRV', 'VM_STATIC_SRV']
+
+    enabled = {'VM_ELITE_FAST_DEMO_SRV': ['sunday'],
+               'VM_EXPLOIT_SRV': ['sunday'],
+               'VM_MELT_SRV_AIR': ['wednesday', 'saturday'],
+               'VM_MELT_SRV_FIF': ['monday', 'thursday'],
+               'VM_MELT_SRV_UTO': ['tuesday', 'friday'],
+               'VM_MELT_SRV_VUZ': ['sunday']}
+
+    '''
+VM_ELITE_FAST_SCOUTDEMO_SRV
+VM_ELITE_FAST_SRV
+VM_EXPLOIT_SRV
+VM_SOLDIER_SRV
+VM_STATIC_SRV'''
 
     retestlist = ""
 
@@ -159,53 +179,66 @@ class MailSender(object):
         mail_message += self.generate_stats()
 
         mail_message += '<br><a id="retests"><div class="boldback" style="color: black">Retests to be run</div></a><br>'
+        mail_message += '<div class="cleancontainer">'
         mail_message += self.retestlist
-
+        mail_message += '</div>'
         mail_message += '<br><a id="rite_fails"><div class="boldback" style="background-color:darkred">RITE NEW FAILS - these are the tests in which the test system (rite) failed</div></a><br>'
+        mail_message += '<div class="cleancontainer">'
         for vm in sorted(self.rite_fails):
             mail_message += "<details close><summary>Analyzed VM: %s</summary><p><br>" % vm
             for test in self.rite_fails[vm]:
-                mail_message += '<span class="tab">Test: %s</p><br>' % test
+                mail_message += '<span class="tab">Test: %s</p><br>' % self.decorate_test(test)
                 mail_message += '<span class="doubletab">%s</p><br>' % cgi.escape(self.rite_fails[vm][test])
             mail_message += "</p></details><hr>"
+        mail_message += '</div>'
         mail_message += '<br><a id="rite_known_fails"><div class="boldback" style="background-color:green">RITE KNOWN FAILS - these are the tests in which the test system (rite) failed but we previously aknowledged that</div></a><br>'
+        mail_message += '<div class="cleancontainer">'
         for vm in sorted(self.rite_known_fails):
             mail_message += "<details close><summary>Analyzed VM: %s</summary><p><br>" % vm
             for test in self.rite_known_fails[vm]:
-                mail_message += '<span class="tab">Test: %s</p><br>' % test
+                mail_message += '<span class="tab">Test: %s</p><br>' % self.decorate_test(test)
                 mail_message += '<span class="doubletab">%s</p><br>' % cgi.escape(self.rite_known_fails[vm][test])
             mail_message += "</p></details><hr>"
+        mail_message += '</div>'
         mail_message += '<br><a id="errors"><div class="boldback" style="background-color:red">NEW ERRORS - these are the tests in which the test FAILED</div></a><br>'
+        mail_message += '<div class="cleancontainer">'
         for vm in sorted(self.errors):
             mail_message += "<details close><summary>Analyzed VM: %s</summary><p><br>" % vm
             for test in self.errors[vm]:
-                mail_message += '<p class="tab">Test: %s</p><br>' % test
+                mail_message += '<p class="tab">Test: %s</p><br>' % self.decorate_test(test)
                 mail_message += '<p class="doubletab">%s</p><br>' % cgi.escape(self.errors[vm][test][0])  # gets only the message
             mail_message += "\n</p></details><hr>"
+        mail_message += '</div>'
         mail_message += '<br><a id="known_errors"><div class="boldback" style="background-color:green">KNOWN ERRORS - these are the tests in which the test failed, but we previously aknowledged that</div></a><br>'
+        mail_message += '<div class="cleancontainer">'
         for vm in sorted(self.known_errors):
             mail_message += "<details close><summary>Analyzed VM: %s</summary><p><br>" % vm
             for test in self.known_errors[vm]:
-                mail_message += '<p class="tab">Test: %s</p><br>' % test
+                mail_message += '<p class="tab">Test: %s</p><br>' % self.decorate_test(test)
                 mail_message += '<p class="doubletab" style="color: red;">Comment: %s</p><br>' % cgi.escape(self.known_errors[vm][test][1])
                 mail_message += '<p class="doubletab">%s</p><br>' % cgi.escape(self.known_errors[vm][test][0])
             mail_message += "</p></details><hr>"
+        mail_message += '</div>'
         mail_message += '<br><a id="known_errors"><div class="boldback" style="background-color:green">KNOWN ERRORS BUT PASSED - these are the tests in which the test passed, but we previously aknowledged an error. Some are not enabled tests.</div></a><br>'
+        mail_message += '<div class="cleancontainer">'
         for vm in sorted(self.known_errors_but_test_passed):
             mail_message += "<details close><summary>Analyzed VM: %s</summary><p><br>" % vm
             for test in self.known_errors_but_test_passed[vm]:
-                mail_message += '<p class="tab">Test: %s</p><br>' % test
+                mail_message += '<p class="tab">Test: %s</p><br>' % self.decorate_test(test)
                 mail_message += '<p class="doubletab" style="color: red;">Comment: %s</p><br>' % cgi.escape(self.known_errors_but_test_passed[vm][test][1])
                 mail_message += '<p class="doubletab">%s</p><br>' % cgi.escape(self.known_errors_but_test_passed[vm][test][0])
             mail_message += "</p></details><hr>"
+        mail_message += '</div>'
         mail_message += '<br><a id="ok"><div class="boldback" style="background-color:green">OK - Passed tests</div></a><br>'
+        mail_message += '<div class="cleancontainer">'
         for vm in sorted(self.ok):
             mail_message += "<details close><summary>Analyzed VM: %s</summary><p><br>" % vm
             tmp = ""
             for test in self.ok[vm]:
-                mail_message += '<p class="tab">Test: %s</p><br>' % test
+                mail_message += '<p class="tab">Test: %s</p><br>' % self.decorate_test(test)
                 mail_message += '<p class="doubletab">%s</p><br>' % cgi.escape(self.ok[vm][test])
             mail_message += "</p></details><hr>"
+        mail_message += '</div>'
         #not implemented
         # mail_message += '<br><a id="not_enabled"><div class="boldback" style="background-color:gray">Not Enabled - Tests which are not enabled in this run</div></a><br>'
         # for vm in sorted(self.not_enabled):
@@ -216,10 +249,11 @@ class MailSender(object):
         #         mail_message += '<p class="doubletab">%s</p><br>' % cgi.escape(self.not_enabled[vm][test])
         #     mail_message += "</p></details><hr>"
         mail_message += '<br><a id="errorsdetails"><div class="boldback" style="background-color:red">ERROR DETAILS - log of every operation and python code to acknowledge the error</div></a><br>'
+        mail_message += '<div class="cleancontainer">'
         for vm in sorted(self.errors):
             mail_message += "<details close><summary>Analyzed VM: %s</summary><p><br>" % vm
             for test in self.errors[vm]:
-                mail_message += '<p class="tab">Test: %s</p><br>' % test
+                mail_message += '<p class="tab">Test: %s</p><br>' % self.decorate_test(test)
                 mail_message += '<p class="doubletab">%s</p><br>' % self.errors[vm][test][0]
                 # mail_message += "<hr>"
                 mail_message += '<details close><summary class="bold">ERROR LOG</summary><p class="doubletab">'
@@ -230,40 +264,58 @@ class MailSender(object):
                 mail_message += self.errors[vm][test][2]
                 mail_message += "</p></details>"
             mail_message += "</p></details><hr>"
-
+        mail_message += '</div>'
         mail_message += self.get_html_footer()
         return mail_message
 
     def get_html_header(self):
         return '''
+        <!DOCTYPE html>
         <html>
         <head>
         <style>
             div.title   {font-weight: bold;
                         background-color: lightgray;
-                        text-align: center;}
-            div.test    {font-weight: normal;
+                        text-align: center;
+                        padding: 8px;
+                        }
+            div.testcontainer {
                         background-color: #e0e0e0;
                         margin-left: auto;
                         margin-right: auto;
-                        text-align: center;
+                        margin-top: 4px;
+                        margin-bottom: 4px;
                         border: 2px solid #707070;
                         border-radius: 5px;
                         box-shadow: 3px 3px 2px #888888;
                         padding: 4px;
-                        width:55%;}
+
+                        max-width: 500px;
+                        }
+            div.cleancontainer {
+                        border: 1px solid #707070;
+                        border-radius: 7px;
+                        box-shadow: 2px 3px 2px #A0A0A0;
+                        padding: 4px;
+                        }
+            div.test    {
+                        font-weight: normal;
+                        text-align: center;
+                        }
             div.bold {font-weight: bold}
+            span.bold {font-weight: bold}
             summary.bold {font-weight: bold;
                           padding-left:6em}
             div.boldback   {font-weight: bold;
                           background-color: #b0b0b0;
                           color: white;
-                          text-align: center;}
+                          text-align: center;
+                          padding: 4px;}
             p.tab    {padding-left:3em}
             p.doubletab    {padding-left:6em}
-            .percentbar { background: red; border:1px solid #000000; height:10px; margin-left: auto;
+            .percentbar { background: red; border:1px solid #000000; height:10px; width:200px; margin-left: auto;
                           margin-right: auto; box-shadow: 3px 3px 2px #888888; }
-            .percentbar div { background: green; height: 10px; }
+            .percentbar div { background: green ; height: 10px; float: left;}
         </style>
         </head>
         <body>
@@ -287,14 +339,15 @@ class MailSender(object):
             self.sanity = "Unknown"
 
         stat_text = '<div class="title">'
-        stat_text += '<div style="font-size: 140%;background-color: #b0b0b0;">Analyzer Report RITE</div>'
-        #if sanity is a numner, displays percentage bar
+        stat_text += '<div style="font-size: 140%;background-color: #b0b0b0;padding: 5px;">Analyzer Report RITE</div>'
+        stat_text += '<div class="testcontainer">'
+        #if sanity is a number, displays percentage bar
         if not self.sanity == "Unknown":
-            stat_text += "Sanity: %s%% (Rite fails: %s%%)" % (self.sanity, rite_fails)
+            stat_text += "Global Sanity: %s%% (Rite fails: %s%%)" % (self.sanity, rite_fails)
             stat_text += '''
-                <div class="percentbar" style="width:200px;">
+                <div class="percentbar">
                     <div style="width:%spx;"></div>
-                    <div style="width:%spx;background:darkred;float: right"></div>
+                    <div style="width:%spx;background:darkred;"></div>
                 </div>
                 </br>
                 ''' % (self.sanity*2, rite_fails*2)
@@ -311,22 +364,60 @@ class MailSender(object):
         #stat_text += '<a href="#not_enabled">Not Enabled: %s<br></a>' % self.not_enabled_num
         stat_text += "TOTAL: %s<br>" % self.total_tests_num
         stat_text += '<p style="font-weight: normal;">Always remember that th "Known Errors" are very very important because they are the problems we known we have. Every known error have a comment.</p><br>'
+        stat_text += '</div>'
         stat_text += '<br><a id="retests"><div class="boldback" style="color: black; font-size: 125%;">Stats by test</div></a><br>'
-
+        stat_text += '<div class="testcontainer">'
         for test in sorted(self.stats_by_test):
             test_sanity = round((((self.stats_by_test[test][1])*100.0)/(self.stats_by_test[test][0]*100.0))*100, 2)
             test_rite_fails = round(((self.stats_by_test[test][2]*100.0)/(self.stats_by_test[test][0]*100.0))*100, 2)
+
             stat_text += '''
             <div class="test"> Test: %s (Sane: %s%%, Rite fails: %s%%)
-                <div class="percentbar" style="width:200px;">
+                <div class="percentbar">
 
                     <div style="width:%spx;"></div>
-                    <div style="width:%spx;background:darkred;float: right"></div>
+                    <div style="width:%spx;background:darkred;"></div>
 
                 </div>
             </div>
-            </br>
-            ''' % (test, test_sanity, rite_fails, test_sanity*2, rite_fails*2)
-
+            </br><hr>
+            ''' % (self.decorate_test(test), test_sanity, test_rite_fails, test_sanity*2, test_rite_fails*2)
+        #end testcontainer
+        stat_text += '</div>'
+        #end title
         stat_text += '</div>'
         return stat_text
+
+    def decorate_test(self, test):
+        decorated_test = test
+
+        if test in self.important_tests:
+            decorated_test = '<span class="bold" style="text-decoration: underline;">%s</span>' % test
+
+        if test in self.invert_result_tests:
+            decorated_test = '<span class="bold">Inverted: </span>%s' % decorated_test
+
+        if self.disabled_today(test):
+            decorated_test =  '<span style="color: darkgray; text-decoration: line-through;">Disabled today: %s</span>' % decorated_test
+
+        return decorated_test
+
+
+    def disabled_today(self, test):
+        week = ['monday',
+                  'tuesday',
+                  'wednesday',
+                  'thursday',
+                  'friday',
+                  'saturday',
+                  'sunday', ]
+        today = datetime.datetime.today().weekday()
+        today_week = week[today]
+        #if the test is one enabled only on single days
+        if test in self.enabled:
+            # and if not enabled today
+            if today_week not in self.enabled[test]:
+                return True
+
+        return False
+

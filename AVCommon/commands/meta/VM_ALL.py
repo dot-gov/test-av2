@@ -16,8 +16,8 @@ def execute(vm, protocol, level):
     vm_first = "eset7,avast,avg,avg15,panda15,avg32,avira,avira15,kis15,kis14,kis32,mcafee,bitdef15,norton,comodo,eset,msessential,panda,norton15".split(',')
     #disattivato DEFINITIVAMENTE kis (kis e' un kis 2013 che ormai non si usa piu')
     #disattivato TEMPORANEAMENTE avast32
-    vm_second = "fortinet,drweb,360cn5,cmcav,adaware,fprot,bitdef,fsecure,gdata,vba32,iobit32,risint,syscare,trendm15,zoneal,clamav,360ts,norman,ahnlab".split(',')
-    #disattivato DEFINITIVAMENTE trendm (abbiamo trendm15)
+    vm_second = "fortinet,drweb,cmcav,adaware,fprot,bitdef,fsecure,gdata,vba32,iobit32,risint,syscare,trendm15,zoneal,clamav,360ts,norman,ahnlab".split(',')
+    #disattivati DEFINITIVAMENTE trendm (abbiamo trendm15) e 360cn5 (abbiamo 360ts)
     # just as a documentation
     # TEMPORARY disabled mbytes,
     # vm_not_working_first = "".split(',')

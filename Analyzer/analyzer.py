@@ -54,23 +54,56 @@ def main():
         if hostname == 'rite':
             prefix = '/home/avmonitor/Rite/logs/'
 
-        filelist = sorted(glob.glob(prefix + "*/report_for_analyzer.*.SYSTEM_DAILY_*SRV.yaml"), key=os.path.getmtime, reverse=True)
+        filelist_update = sorted(glob.glob(prefix + "*/report_for_analyzer.*.UPDATE_AV.yaml"), key=os.path.getmtime, reverse=True)
+        filelist_positive = sorted(glob.glob(prefix + "*/report_for_analyzer.*.SYSTEM_POSITIVE.yaml"), key=os.path.getmtime, reverse=True)
+        filelist_daily = sorted(glob.glob(prefix + "*/report_for_analyzer.*.SYSTEM_DAILY_*SRV.yaml"), key=os.path.getmtime, reverse=True)
 
-        if not len(filelist):
-            print "No yaml report files found in logs dirs:"
+        if not len(filelist_daily):
+            print "No yaml DAILY report files found in logs dirs:"
             sys.exit()
 
-        filename = os.path.join(prefix, filelist[0])
+        filename_update = os.path.join(prefix, filelist_update[0])
+        filename_positive = os.path.join(prefix, filelist_positive[0])
+        filename_daily = os.path.join(prefix, filelist_daily[0])
+        filename = [filename_update, filename_positive, filename_daily]
         #print filelist
 
-    print "I'll process: %s" % filename
+    print "I'll process: %s" % str(filename)
 
     process_yaml(filename)
 
 
 def process_yaml(filename):
-    f = open(filename)
-    commands_results = yaml.load(f)
+    #if one file is provided, then it's a manual execution
+    manual = True
+    if isinstance(filename, list):
+        manual = False
+        commands_results = {}
+        #opening updates
+        f_update = open(filename[0])
+        f_positive = open(filename[1])
+        f_daily = open(filename[2])
+        commands_update = yaml.load(f_update)
+        commands_positive = yaml.load(f_positive)
+        commands_daily = yaml.load(f_daily)
+
+        for vm, com in commands_update.items():
+            commands_results[vm] = com
+        for vm, com in commands_positive.items():
+            if vm in commands_results:
+                commands_results[vm].extend(com)
+            else:
+                commands_results[vm] = com
+        for vm, com in commands_daily.items():
+            if vm in commands_results:
+                commands_results[vm].extend(com)
+            else:
+                commands_results[vm] = com
+        filename = filename[2]
+    else:
+        f = open(filename[0])
+        commands_results = yaml.load(f)
+
     if not commands_results:
         print "No results in yaml file."
         #TODO qui bisognerebbe mandare un'email di avviso (volendo con yaml allegato)
@@ -143,12 +176,15 @@ def process_yaml(filename):
             elif not comparison_result['rite_ok'] and comparison_result['saved_error']:
                 mailsender.rite_known_fails_add(vm, test_name, message)
             elif not comparison_result['success'] and not comparison_result['saved_error']:
-                mailsender.errors_add(vm, test_name, message, comparison_result['rows_obj'].get_causes(), comparison_result['rows_obj'].get_manual_save_string())
-                #adds retest
-                if test_name not in retests:
-                    retests[test_name] = set()
-                retests[test_name].add(vm)
-
+                if test_name not in mailsender.invert_result_tests:
+                    mailsender.errors_add(vm, test_name, message, comparison_result['rows_obj'].get_causes(), comparison_result['rows_obj'].get_manual_save_string())
+                    #adds retest
+                    if test_name not in retests:
+                        retests[test_name] = set()
+                    retests[test_name].add(vm)
+                #invert
+                else:
+                    mailsender.ok_add(vm, test_name, message)
             elif not comparison_result['success'] and comparison_result['saved_error']:
                 mailsender.known_errors_add(vm, test_name, message, comparison_result['saved_error_comment'])
             #case in wich ew saved an error but the test passed
@@ -156,7 +192,11 @@ def process_yaml(filename):
                 mailsender.known_errors_but_test_passed_add(vm, test_name, message, comparison_result['saved_error_comment'])
             # ok
             else:
-                mailsender.ok_add(vm, test_name, message)
+                if test_name not in mailsender.invert_result_tests:
+                    mailsender.ok_add(vm, test_name, message)
+                else:
+                    mailsender.errors_add(vm, test_name, message, comparison_result['rows_obj'].get_causes(), comparison_result['rows_obj'].get_manual_save_string())
+                    #NB does not sets retest for inverted results
 
         #count processed vms
         vm_count += 1
@@ -173,6 +213,14 @@ def process_yaml(filename):
     mailsender.retestlist = retestlist
 
     print retestlist
+    if not manual:
+        #writing to file retests
+        file_retest_name = "/opt/AVTest2/rite_retest_analyzer.sh"
+        retestlist = '''#!/bin/sh\ncd /home/avmonitor\n''' + retestlist.replace("<br>", "\n")
+        with open(file_retest_name, 'w') as retestfile:
+            retestfile.write(retestlist)
+
+        os.chmod(file_retest_name, 0755)
 
     if send_mail:
         mailsender.send_mail()
@@ -214,14 +262,19 @@ def analyze(vm, comms):
         prg = 0
         #inserts the parsed line into the db for reference
         print "Inserting results and summary from yaml data! (%s lines in yaml)" % len(comms)
+        rows_omitted = 0
         for i in comms:
-            db.insert_result(i)
-            # if i.get_value() > 0:
+            #this was commented because the tables are growing too big and this historic data is not so important
+            # db.insert_result(i)
 
-            db.insert_summary(SummaryData(test_approximate_start_time, test_name, vm, i.command, prg, 0, "", i.rite_result_log, i.parsed_result,
-                                          i.rite_failed, i.rite_fail_log))
+            if not db.insert_summary(SummaryData(test_approximate_start_time, test_name, vm, i.command, prg, 0, "", i.rite_result_log, i.parsed_result,
+                                          i.rite_failed, i.rite_fail_log)):
+                rows_omitted += 1
+
             prg += 1
 
+        if rows_omitted:
+            print('%s inserts were skipped, because the summary already existed. This analysis was already run.' % rows_omitted)
         #debug, prints results
         #db.get_results_rows(vm, test_name, True)
         #debug, prints summary

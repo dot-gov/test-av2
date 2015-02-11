@@ -2,7 +2,9 @@
 | Breve documentazione analyzer |
 '-------------------------------'
 
+---------------------------------------------------
 INFORMAZIONI GENERALI (ri-generazione del report e generazione di report su test parziali)
+---------------------------------------------------
 
 L'analyzer funziona in questo modo:
 Rite ad ogni esecuzione produce in output uno yaml per l'analyzer.
@@ -10,11 +12,13 @@ L'analyzer opera sullo yaml, si salva dei dati in un database SQLite locale, e p
 
 Rite -> file report_for_analyzer.<timestamp>.<test>.yaml -> Analyzer -> Email di report
 
-Lanciato senza paramentri l'analyzer process l'ultimo file di un SYSTEM_DAILY_SRV o SYSTEM_DAILY_FAST_SRV, in alternativa e' possibile passare esplicitamente un file di report:
+Lanciato senza paramentri l'analyzer process l'ultimo file di un SYSTEM_DAILY_SRV o SYSTEM_DAILY_FAST_SRV, o in alternativa e' possibile passare esplicitamente un file di report:
 
 $python ./Rite/Analyzer/analyzer.py 
 
 $python ./Rite/Analyzer/analyzer.py Rite/logs/150203/report_for_analyzer.150203-093221.SYSTEM_ELITE_FAST_SRV.yaml
+
+Nel caso venga lanciato senza parametri, oltre al DAILY, l'anlyzer cerca gli ultimi UPDATE ed POSITIVE e li processa insieme, mentre quando viene lanciato passando un file non e' possibile fare analizzare file multipli.
 
 Se non si e' certi su cosa sia stata fatta l'analisi, l'ultima riga dell'email di report indica il file processato.
 Ad oggi non e' possibile processare files multipli contemporaneamente.
@@ -23,7 +27,10 @@ L'analyzer ha una memoria "persistente" (il db sqlite) ma evita di inserire piu'
 
 Ri-eseguendo un test parziale (ad esempio: dopo il DAILY notturno, ri-eseguo l'Elite), vengono aggiunti i dati della nuova esecuzione del solo Elite, preservando gli altri test (es: Soldier) del Daily. I dati dell'Elite vengono anche confrontati con gli elite precedenti (ovvero in questo caso quelli del Daily).
 
+
+---------------------------------------------------
 INFORMAZIONI REALTIVE AL SALVATAGGIO DI ERRORI NOTI
+---------------------------------------------------
 
 L'analyzer funziona basandosi sull'analisi di sequenze di "commands" multipli, contenuti nel REPORT di un test. Il risultato di un test potrebbe quindi essere di questo tipo (semplificato):
 
@@ -61,3 +68,19 @@ Esistono casi multi-comando, nei quali anno inserite piu' righe come in questo e
         self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'eset7', u'BUILD_SRV', 25, u"\\[\\'\\+\\ SUCCESS\\ UPGRADED\\ SYNC\\'\\,\\ \\'\\+\\ ERROR\\:\\ \\[Error\\ 193\\]\\ \\%1\\ is\\ not\\ a\\ valid\\ Win32\\ application\\'\\]", 'FAILED', 0, u''), "ESET 7 Soldier (is an elite)")
         self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'eset7', u'CROP', 26, u'\\[.*\\]', 'CROP', 0, u''), "ESET 7 Soldier (is an elite)")
         self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'eset7', u'CHECK_INFECTION', 29, u'VM\\ is\\ INFECTED', 'FAILED', 0, u''), "ESET 7 Soldier (is an elite)")
+
+---------------------------------------------------
+POSSIBILI ERRORI
+---------------------------------------------------
+
+Se non arriva nessuna email, probabilmente il file report_for_analyzer*.yaml e' vuoto, perche' e' fallita o la generazione del report o il dump in yaml.
+
+Nel secondo caso, i dati vengono stampati in console ed e' possibile quindi recuperarli dall'avmonitor.log, salvarli in un txt e correggerli. Di solito c'e' un qualche oggetto che viene erroneamente memorizzato dal command in un campo che dovrebbe contenere testo.
+Basta quindi correggere il singolo errore, salvare il txt, aprire python e:
+fi = open('f.txt',r)
+fip = fi.read()
+dat = eval(fip)
+fiout = open('out.yaml', "a")
+yaml.dump(dat, fiout)
+
+$python ./Rite/Analyzer/analyzer.py out.yaml

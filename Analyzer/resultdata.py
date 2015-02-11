@@ -2,7 +2,7 @@ __author__ = 'mlosito'
 
 from resultstates import ResultStates
 
-failing_commands = ["BUILD", "BUILD_SRV", "CHECK_INFECTION"]
+failing_commands = ["BUILD", "BUILD_SRV", "CHECK_INFECTION", "CHECK_STATIC"]
 cropping_commands = ["CROP"]
 always_passed_commands = ["REPORT_KIND_END", "REPORT_KIND_INIT", "ENABLE"]
 

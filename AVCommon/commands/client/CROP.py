@@ -11,11 +11,13 @@ thread = None
 found = []
 go_on = True
 
+
 def on_init(protocol, args):
     return True
 
 from AVCommon import config
 from AVCommon import logger
+
 
 def on_answer(vm, success, answer):
     from AVMaster import vm_manager
@@ -26,7 +28,8 @@ def on_answer(vm, success, answer):
     # answer = [1,5,7]
 
     if answer and isinstance(answer, list):
-
+        if len(answer) == 0:
+            logging.debug("No images in crop or image saving not enabled.")
         logging.warn("We have to PULL images: %s" % answer)
         dir = "%s/crop" % logger.logdir
 
@@ -44,6 +47,7 @@ def on_answer(vm, success, answer):
                 vm_manager.execute(vm, "copyFileFromGuest", src ,dst)
             except:
                 logging.exception("Cannot get image %s" % src)
+
 
 def execute(vm, args):
     from PIL import ImageGrab
@@ -76,7 +80,7 @@ def execute(vm, args):
         # stops the crop server
         logging.debug("stop grab_loop")
 
-        crop_whitelist = command.context.get("crop_whitelist",[])
+        crop_whitelist = command.context.get("crop_whitelist", [])
         logging.debug("crop_whitelist: %s" % crop_whitelist)
 
         go_on = False

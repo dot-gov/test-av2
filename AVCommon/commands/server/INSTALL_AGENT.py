@@ -1,3 +1,5 @@
+from AVMaster.lib import util_master
+
 __author__ = 'fabrizio'
 
 import os
@@ -97,7 +99,7 @@ def execute(vm, protocol, inst_args):
     #not more useful
     #DELETE_DIR.execute(vm, protocol, "/Users/avtest/Desktop/AVTest/")
 
-    PUSHZIP.execute(vm, protocol, ["timestamp.txt", "AVAgent/*.py", "AVAgent/*.yaml", "AVCommon/*.py", "AVCommon/*.yaml", "AVCommon/commands/client/*.py", "AVCommon/commands/meta/*.py", "AVCommon/commands/*.py", "AVAgent/assets/config*", "AVAgent/assets/keyinject.exe", "AVAgent/assets/getusertime.exe", "AVAgent/assets/windows/*"])
+    PUSHZIP.execute(vm, protocol, ["timestamp.txt", "AVAgent/*.py", "AVAgent/*.yaml", "AVCommon/*.py", "AVCommon/*.yaml", "AVCommon/commands/client/*.py", "AVCommon/commands/meta/*.py", "AVCommon/commands/*.py", "AVAgent/assets/config*", "AVAgent/assets/keyinject.exe", "AVAgent/assets/exec_zip.exe", "AVAgent/assets/getusertime.exe", "AVAgent/assets/windows/*"])
 
     cmd = "rmdir /s /q C:\\AVTest\\running \r\n" \
           "cd C:\\AVTest\\AVAgent\r\n" \
@@ -125,6 +127,8 @@ def execute(vm, protocol, inst_args):
 
     remote_name = "%s/av_agent.bat" % startup_dir
     remote_name = remote_name.replace("/", "\\")
+
+    delete_startup_av_agent(vm_manager, vm, remote_name)
 
     for i in range(1, 3):
         logging.debug("I'll copy %s (try %s of 3)" % (filename, i))
@@ -200,3 +204,10 @@ def execute(vm, protocol, inst_args):
 
     else:
         return True, "Agent installed on VM"
+
+
+def delete_startup_av_agent(vm_manager, vm, remote_name):
+    util_master.run_agent_cmd(vm_manager, vm, "del", [remote_name])
+    # arg = ['/c', 'del', remote_name]
+    # cm = ("c:\\Windows\\System32\\cmd.exe", arg, 40, True, True)
+    # vm_manager.execute(vm, "executeCmd", *cm)

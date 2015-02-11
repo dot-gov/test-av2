@@ -69,35 +69,35 @@ class DBReport(object):
     def get_conn(self):
         return self.conn
 
-    def get_results_rows(self, vm, test_name, print_data=False):
-
-        cursor = self.conn.cursor()
-
-        if vm and test_name:
-            cursor.execute('SELECT * FROM RESULTS WHERE vm = ? and test_name = ?', (vm, test_name))
-
-        if vm and not test_name:
-            cursor.execute('SELECT * FROM RESULTS WHERE vm = ?', [vm])
-
-        if not vm and test_name:
-            cursor.execute('SELECT * FROM RESULTS WHERE test_name = ?', [test_name])
-
-        if not vm and not test_name:
-            cursor.execute('SELECT * FROM RESULTS')
-
-        rows = cursor.fetchall()
-
-        cursor.close()
-
-        if print_data:
-            print "................................................................. "
-            print "Dumping RESULT Table! (vm = %s , test_name = %s )" % (vm, test_name)
-            print "................................................................. "
-
-            for i in rows:
-                print i
-
-        return rows
+    # def get_results_rows(self, vm, test_name, print_data=False):
+    #
+    #     cursor = self.conn.cursor()
+    #
+    #     if vm and test_name:
+    #         cursor.execute('SELECT * FROM RESULTS WHERE vm = ? and test_name = ?', (vm, test_name))
+    #
+    #     if vm and not test_name:
+    #         cursor.execute('SELECT * FROM RESULTS WHERE vm = ?', [vm])
+    #
+    #     if not vm and test_name:
+    #         cursor.execute('SELECT * FROM RESULTS WHERE test_name = ?', [test_name])
+    #
+    #     if not vm and not test_name:
+    #         cursor.execute('SELECT * FROM RESULTS')
+    #
+    #     rows = cursor.fetchall()
+    #
+    #     cursor.close()
+    #
+    #     if print_data:
+    #         print "................................................................. "
+    #         print "Dumping RESULT Table! (vm = %s , test_name = %s )" % (vm, test_name)
+    #         print "................................................................. "
+    #
+    #         for i in rows:
+    #             print i
+    #
+    #     return rows
 
     def insert_result(self, result):
         #nine params MISSING RITE LOG
@@ -106,8 +106,8 @@ class DBReport(object):
                                                                                 result.parsed_result[0], result.rite_failed, result.rite_fail_log,
                                                                                 result.side))
 
-    def print_results_table(self):
-        self.get_results_rows(None, None, True)
+    # def print_results_table(self):
+    #     self.get_results_rows(None, None, True)
 
     def annichilate_result_table(self):
         print "REMOVING COMPLETELY THE RESULTS TABLE!"
@@ -124,9 +124,11 @@ class DBReport(object):
                                                                                  summary.command, summary.parsed_result[0], str(summary.rite_result_log),
                                                                                  summary.rite_failed, summary.rite_fail_log,
                                                                                  summary.manual, summary.manual_comment))
+            return True
             #print "inserted 1 row"
         except sqlite3.IntegrityError:
-            print('Skipping insert, this summary already exists.')
+            #print('Skipping insert, this summary already exists.')
+            return False
 
     #this gets time-ordered (latest first) summary for a specific vm/test
     def get_latest_summary_rows(self, vm, test_name, print_data=False):

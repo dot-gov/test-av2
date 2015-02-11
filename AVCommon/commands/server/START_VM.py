@@ -120,7 +120,7 @@ def execute(vm, protocol, args):
                 if started and not check_avagent:
                     return True, "Started VM"
                 else:
-                    sleep(20)
+                    sleep(30)
 
             if not started:
                 logging.debug("%s: reboot requested" % vm)
