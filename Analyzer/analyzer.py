@@ -15,10 +15,12 @@ import sys
 
 debug = False
 send_mail = True
+write_retests = True
 
 
 def main():
 
+    global write_retests
     global debug
 
     #f = open('/home/avmonitor/logs/150108/report_for_analyzer.150108-103448.SYSTEM_ELITE_FAST_DEMO_SRV.yaml', 'r')
@@ -41,68 +43,81 @@ def main():
     print "  /__/     \__\ |__| \__| /__/     \__\ |_______|    |__|      /________||_______|| _| `._____|"
     print ""
 
-    filename = ""
+    filenames = []
 
     #first argument is the script
-    if len(sys.argv) == 2:
-        filename = sys.argv[1]
+    #if more than one argument, i'll process every file in order.
+
+    #if no arguments, parses the daily (and update, positive)
+    if len(sys.argv) == 1:
+        write_retests = True
+        print "No filename provided in command line, I'll use the latest (using file modification date) UPDATE_AV," \
+              "SYSTEM_POSITIVE and SYSTEM_DAILY_*SRV from the logs dirs."
+        filenames = ["UPDATE_AV", "SYSTEM_POSITIVE", "SYSTEM_DAILY_SRV"]
     else:
-        print "No filename provided in command line, I'll use the latest (using file modification date) SYSTEM_DAILY_*SRV from the logs dirs."
-        #finds report for analyzer files
-        prefix = '/home/avmonitor/logs/'
-        hostname = socket.gethostname()
-        if hostname == 'rite':
-            prefix = '/home/avmonitor/Rite/logs/'
+        write_retests = False
+        filenames = sys.argv[1:]
 
-        filelist_update = sorted(glob.glob(prefix + "*/report_for_analyzer.*.UPDATE_AV.yaml"), key=os.path.getmtime, reverse=True)
-        filelist_positive = sorted(glob.glob(prefix + "*/report_for_analyzer.*.SYSTEM_POSITIVE.yaml"), key=os.path.getmtime, reverse=True)
-        filelist_daily = sorted(glob.glob(prefix + "*/report_for_analyzer.*.SYSTEM_DAILY_*SRV.yaml"), key=os.path.getmtime, reverse=True)
+    prefix = '/home/avmonitor/logs/'
+    hostname = socket.gethostname()
+    if hostname == 'rite':
+        prefix = '/home/avmonitor/Rite/logs/'
 
-        if not len(filelist_daily):
-            print "No yaml DAILY report files found in logs dirs:"
-            sys.exit()
+    filenames2 = []
+    for name in filenames:
+        #if the file is not a filename but a test name, extract the last filename for this test from filesystem
 
-        filename_update = os.path.join(prefix, filelist_update[0])
-        filename_positive = os.path.join(prefix, filelist_positive[0])
-        filename_daily = os.path.join(prefix, filelist_daily[0])
-        filename = [filename_update, filename_positive, filename_daily]
-        #print filelist
+        if not name.lower().endswith(".yaml"):
+            filename = sorted(glob.glob(prefix + "*/report_for_analyzer.*.%s.yaml" % name), key=os.path.getmtime, reverse=True)[0]
+            filenames2.append(filename)
+        else:
+            filenames2.append(name)
 
-    print "I'll process: %s" % str(filename)
+    filenames = filenames2
 
-    process_yaml(filename)
+    # if len(sys.argv) > 1:
+    #     filenames = sys.argv[1:]
+    #     write_retests = False
+    # else:
+    #
+    #     #finds report for analyzer files
+    #
+    #
+    #     filelist_update = sorted(glob.glob(prefix + "*/report_for_analyzer.*.UPDATE_AV.yaml"), key=os.path.getmtime, reverse=True)
+    #     filelist_positive = sorted(glob.glob(prefix + "*/report_for_analyzer.*.SYSTEM_POSITIVE.yaml"), key=os.path.getmtime, reverse=True)
+    #     filelist_daily = sorted(glob.glob(prefix + "*/report_for_analyzer.*.SYSTEM_DAILY_*SRV.yaml"), key=os.path.getmtime, reverse=True)
+    #
+    #     if not len(filelist_daily):
+    #         print "No yaml DAILY report files found in logs dirs:"
+    #         sys.exit()
+    #
+    #     filename_update = os.path.join(prefix, filelist_update[0])
+    #     filename_positive = os.path.join(prefix, filelist_positive[0])
+    #     filename_daily = os.path.join(prefix, filelist_daily[0])
+    #     filenames = [filename_update, filename_positive, filename_daily]
+    #     #print filelist
+    #     write_retests = True
+
+    print "I'll process: %s" % str(filenames)
+
+    process_yaml(filenames)
 
 
-def process_yaml(filename):
-    #if one file is provided, then it's a manual execution
-    manual = True
-    if isinstance(filename, list):
-        manual = False
-        commands_results = {}
-        #opening updates
-        f_update = open(filename[0])
-        f_positive = open(filename[1])
-        f_daily = open(filename[2])
-        commands_update = yaml.load(f_update)
-        commands_positive = yaml.load(f_positive)
-        commands_daily = yaml.load(f_daily)
+def process_yaml(filenames):
 
-        for vm, com in commands_update.items():
-            commands_results[vm] = com
-        for vm, com in commands_positive.items():
+    #I parse the files in order. ORDER MATTERS!
+
+    commands_results = {}
+    #opening updates
+
+    for f in filenames:
+        fil = open(f)
+        commands = yaml.load(fil)
+        for vm, com in commands.items():
             if vm in commands_results:
                 commands_results[vm].extend(com)
             else:
                 commands_results[vm] = com
-        for vm, com in commands_daily.items():
-            if vm in commands_results:
-                commands_results[vm].extend(com)
-            else:
-                commands_results[vm] = com
-        filename = filename[2]
-    else:
-        f = open(filename[0])
-        commands_results = yaml.load(f)
 
     if not commands_results:
         print "No results in yaml file."
@@ -113,8 +128,6 @@ def process_yaml(filename):
     with DBReport() as db:
         db.recreate_database(debug)
 
-    #global test name splitted from filename (for the report)
-    testname = filename.split(".")[-2]
     total_vms = len(commands_results)
     print "Number of VM to analyze: ", total_vms
     print ""
@@ -127,7 +140,7 @@ def process_yaml(filename):
 
     mailsender = MailSender()
 
-    mailsender.yaml_analyzed = filename
+    mailsender.yaml_analyzed = filenames
 
     for vm, v in commands_results.items():
         comm2 = preparse_command_list(v)
@@ -185,6 +198,7 @@ def process_yaml(filename):
                 #invert
                 else:
                     mailsender.ok_add(vm, test_name, message)
+                mailsender.crop_filenames_add(vm, test_name, comparison_result['crop_filenames'])
             elif not comparison_result['success'] and comparison_result['saved_error']:
                 mailsender.known_errors_add(vm, test_name, message, comparison_result['saved_error_comment'])
             #case in wich ew saved an error but the test passed
@@ -202,18 +216,41 @@ def process_yaml(filename):
         vm_count += 1
 
     #print retests
+
     retestlist = ""
+
+    tests_to_analyze = "UPDATE_AV SYSTEM_POSITIVE SYSTEM_DAILY_SRV"
     for testname, machines in retests.items():
         testname_system = testname.replace("VM", "SYSTEM")
         retest = "./run.sh %s -m " % testname_system
         for vm in machines:
             retest += "%s," % vm
         retestlist += "%s -c -p 40<br>" % retest[0:-1]
+        tests_to_analyze += " " + testname_system
+
+#             prefix + "./??????/report_for_analyzer.*.%s.yaml"
+#
+#     #prefix + "*/report_for_analyzer.*.UPDATE_AV.yaml"
+#
+# #     SYSTEM_SOLDIER_SRV -m avira15f,clamav,panda,360ts -c -p 40
+# # ./run.sh SYSTEM_MELT_SRV_UTO -m kis32,norton,avg,360ts,cmcav -c -p 40
+# # ./run.sh SYSTEM_ELITE_FAST_SRV -m panda15,norton15,clamav,360ts -c -p 40
+# # ./run.sh SYSTEM_ELITE_FAST_SCOUTDEMO_SRV -m trendm15,zoneal -c -p 40
+# # ./run.sh SYSTEM_STATIC_SRV -m fsecure,norman,avast,adaware,bitdef,avg15f,bitdef15,comodo -c -p 40
+# ls ./??????/*.yaml
+# ./150213/report_for_analyzer.150213-051504.SYSTEM_SOLDIER_SRV.yaml
+# ./150213/report_for_analyzer.150213-061228.SYSTEM_MELT_SRV_UTO.yaml
+# ./150213/report_for_analyzer.150213-065342.SYSTEM_ELITE_FAST_SRV.yaml
+# ./150213/report_for_analyzer.150213-073048.SYSTEM_ELITE_FAST_SCOUTDEMO_SRV.yaml
+# ./150213/report_for_analyzer.150213-080040.SYSTEM_STATIC_SRV.yaml
+# ./150213/report_for_analyzer.150213-082411.SYSTEM_STOP.yaml
+
+    retestlist += "python ./Rite/Analyzer/analyzer.py %s" % tests_to_analyze
 
     mailsender.retestlist = retestlist
 
     print retestlist
-    if not manual:
+    if write_retests:
         #writing to file retests
         file_retest_name = "/opt/AVTest2/rite_retest_analyzer.sh"
         retestlist = '''#!/bin/sh\ncd /home/avmonitor\n''' + retestlist.replace("<br>", "\n")
@@ -222,6 +259,8 @@ def process_yaml(filename):
 
         os.chmod(file_retest_name, 0755)
 
+    #For now I send both mails
+    #if not write_retests and send_mail:
     if send_mail:
         mailsender.send_mail()
 
@@ -313,6 +352,8 @@ def analyze(vm, comms):
                 test_comparison_result['message'] = message
                 test_comparison_result['saved_error'] = saved_error
                 test_comparison_result['saved_error_comment'] = saved_error_comment
+                if not ok:
+                    test_comparison_result['crop_filenames'] = current_state_rows.get_crop_filenames()
 
         #     return True, ok, message, saved_error, current_state_rows.state_rows_to_string_short(), comms, current_state_rows
         # else:
