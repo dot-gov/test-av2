@@ -76,6 +76,21 @@ class SummaryDataColl(object):
             return "All ok - 0 error rows"
         return output
 
+    def get_crop_filenames(self):
+        filenames = []
+        for i in self.rows:
+            if i.parsed_result[0] in ['CROP']:
+                #log example: [3]
+                log = eval(i.rite_result_log)
+                # if len(log) > 0:
+                #     for crop in log:
+                if isinstance(log, list):
+                    filenames.extend(log)
+                else:
+                    filenames.append(log)
+        print ("Debug: crop numbers= %s" % filenames)
+        return filenames
+
         #new errors and anomalies (manual state different from current state), and other problems are considered NOT OK
         #saved state = current state is considered "SAVED STATE=True".
         # Other cases are NOT OK

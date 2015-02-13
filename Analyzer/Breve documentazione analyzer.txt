@@ -84,3 +84,16 @@ fiout = open('out.yaml', "a")
 yaml.dump(dat, fiout)
 
 $python ./Rite/Analyzer/analyzer.py out.yaml
+
+
+---------------------------------------------------
+CROP
+---------------------------------------------------
+
+Notare che ad ora i crop NON influenzano i risultati. I crop vengono analizzati solo se non sono "noti" e:
+IF una parola rientra in blacklist vengono marcati come BAD
+ELIF una parola rientra in crashlist (es: "stopped") vengono marcati come CRASH
+ELIF se una parola e' in whitelist (es:update) vengono marcati come GOOD e non vengono allegati
+ELSE vengono marcati come NO_TEXT o UNKNOWN
+
+Se un errore e' noto ed ha dei crop, viene segnalato come noto e i crop non vengono analizzati.

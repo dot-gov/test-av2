@@ -1,12 +1,18 @@
+from Analyzer.ocrdict import OcrDict
+
 __author__ = 'mlosito'
 
 import smtplib
 import socket
 import datetime
+import cgi
+
+import tesserhackt
+
 from email.mime.text import MIMEText
 from email.header import Header
 from email.mime.multipart import MIMEMultipart
-import cgi
+from email.mime.image import MIMEImage
 
 
 class MailSender(object):
@@ -23,11 +29,11 @@ class MailSender(object):
                'VM_MELT_SRV_VUZ': ['sunday']}
 
     '''
-VM_ELITE_FAST_SCOUTDEMO_SRV
-VM_ELITE_FAST_SRV
-VM_EXPLOIT_SRV
-VM_SOLDIER_SRV
-VM_STATIC_SRV'''
+    VM_ELITE_FAST_SCOUTDEMO_SRV
+    VM_ELITE_FAST_SRV
+    VM_EXPLOIT_SRV
+    VM_SOLDIER_SRV
+    VM_STATIC_SRV'''
 
     retestlist = ""
 
@@ -38,6 +44,7 @@ VM_STATIC_SRV'''
     known_errors_but_test_passed = {}
     ok = {}
     not_enabled = {}
+    crop_filenames = {}
 
     rite_fails_num = 0
     rite_known_fails_num = 0
@@ -53,10 +60,10 @@ VM_STATIC_SRV'''
     #contains a list with the values: total, sane, rite_failed
     stats_by_test = {}
 
-    yaml_analyzed = ""
+    yaml_analyzed = []
 
     # , "f.cornelli@hackingteam.com", "m.oliva@hackingteam.com"
-    def send_mail(self, mail_recipients=["m.losito@hackingteam.com", "f.cornelli@hackingteam.com", "m.oliva@hackingteam.com"], mail_server="mail.hackingteam.com"):
+    def send_mail(self, mail_recipients=["m.losito@hackingteam.com"], mail_server="mail.hackingteam.com"):
         # Create a text/plain message
 
         header_charset = 'ISO-8859-1'
@@ -66,8 +73,11 @@ VM_STATIC_SRV'''
 
         for recipient in mail_recipients:
 
-            message = self.generate_text()
+            msg_root = MIMEMultipart('related')
             msg = MIMEMultipart('alternative')
+            msg_root.attach(msg)
+
+            message = self.generate_text(msg_root)
 
             #part1 = MIMEText(text, 'plain')
             htmlpart = MIMEText(message.encode(body_charset), 'html', body_charset)
@@ -84,17 +94,26 @@ VM_STATIC_SRV'''
 
             recipient = recipient.encode('ascii')
 
-            msg['Subject'] = Header(unicode(subject), header_charset)
-            msg['From'] = sender_name
-            msg['To'] = recipient
+            msg_root['Subject'] = Header(unicode(subject), header_charset)
+            msg_root['From'] = sender_name
+            msg_root['To'] = recipient
 
-            print "Mail enabled. Msg to: %s to be sent" % msg['To']
+            print "Mail enabled. Msg to: %s to be sent" % msg_root['To']
             # Send the message via our own SMTP server, but don't include the
             # envelope header.
             s = smtplib.SMTP(mail_server)
 
-            s.sendmail(msg['From'], [msg['To']], msg.as_string())
+            s.sendmail(msg_root['From'], [msg_root['To']], msg_root.as_string())
             s.quit()
+
+    def remove_result(self, vm, test):
+        if vm in self.errors:
+            #if exists remove
+            if self.errors[vm].pop(test, False):
+                #if removed I recalculate stats
+                self.total_tests_num -= 1
+                self.errors_num -= 1
+                self.stats_by_test[test][0] -= 1
 
     def rite_fails_add(self, vm, test, message):
         if not vm in self.rite_fails:
@@ -151,6 +170,7 @@ VM_STATIC_SRV'''
         self.stats_by_test[test][1] += 1  # adds sane
 
     def ok_add(self, vm, test, message):
+        self.remove_result(vm, test)
         if not vm in self.ok:
             self.ok[vm] = {}
         self.ok[vm][test] = message
@@ -172,7 +192,15 @@ VM_STATIC_SRV'''
         self.stats_by_test[test][0] += 1  # adds total
         self.stats_by_test[test][1] += 1  # adds sane
 
-    def generate_text(self):
+    def crop_filenames_add(self, vm, test,  crop_filenames):
+        if len(crop_filenames):
+            if not vm in self.crop_filenames:
+                self.crop_filenames[vm] = {}
+            self.crop_filenames[vm][test] = crop_filenames
+
+
+    #we pass msg that is the "root" multipart. We have to attach to it the images.
+    def generate_text(self, msg):
 
         #css styles
         mail_message = self.get_html_header()
@@ -248,6 +276,40 @@ VM_STATIC_SRV'''
         #         mail_message += '<p class="tab">Test: %s</p><br>' % test
         #         mail_message += '<p class="doubletab">%s</p><br>' % cgi.escape(self.not_enabled[vm][test])
         #     mail_message += "</p></details><hr>"
+
+        ocrd = OcrDict()
+
+        mail_message += '<br><a id="crop"><div class="boldback" style="background-color:green">CROPs - partial screenshots of popups</div></a><br>'
+        mail_message += '<div class="cleancontainer">'
+        for vm in sorted(self.crop_filenames):
+            mail_message += "<details close><summary>Analyzed VM: %s</summary><p><br>" % vm
+            for test in self.crop_filenames[vm]:
+                mail_message += '<p class="tab">Test: %s</p><br>' % self.decorate_test(test)
+                mail_message += '<p class="doubletab">%s</p><br>' % self.crop_filenames[vm][test]
+                for crop in self.crop_filenames[vm][test]:
+                    result, word, thumb_filename = tesserhackt.process(av=vm, num=crop, ocrd=ocrd)
+                    #good case:
+                    if thumb_filename == "":
+                        mail_message += '<p class="doubletab">%s - <b>%s</b> - got word: %s - [image omitted] </p><br>' % (str(crop), result, word)
+                    #not good:
+                    else:
+                        mail_message += '<p class="doubletab">%s - <b>%s</b> - got word: %s - filename: %s </p><br>' % (str(crop), result, word, thumb_filename)
+                        img_fp = open(thumb_filename, 'rb')
+                        img_data = img_fp.read()
+                        # Now create the MIME container for the image
+                        cid = vm+"-"+str(crop)
+                        img = MIMEImage(img_data)  # , 'jpeg'
+
+                        img.add_header('Content-Id', '<%s>' % cid)  # angle brackets are important
+                        #not necessary
+                        # img.add_header("Content-Disposition", "inline", filename=thumb_filename)  # David Hess recommended this edit
+                        msg.attach(img)
+                        img_fp.close()
+                        mail_message += '<img class="tab" src="cid:%s">' % cid  # 57EC4E91-046B-44EC-B685-4CC3BB5AEDC7@hackingteam.it
+
+            mail_message += "</p></details><hr>"
+        mail_message += '</div>'
+
         mail_message += '<br><a id="errorsdetails"><div class="boldback" style="background-color:red">ERROR DETAILS - log of every operation and python code to acknowledge the error</div></a><br>'
         mail_message += '<div class="cleancontainer">'
         for vm in sorted(self.errors):
@@ -313,6 +375,7 @@ VM_STATIC_SRV'''
                           padding: 4px;}
             p.tab    {padding-left:3em}
             p.doubletab    {padding-left:6em}
+            img.tab  {padding-left:9em}
             .percentbar { background: red; border:1px solid #000000; height:10px; width:200px; margin-left: auto;
                           margin-right: auto; box-shadow: 3px 3px 2px #888888; }
             .percentbar div { background: green ; height: 10px; float: left;}
@@ -324,9 +387,9 @@ VM_STATIC_SRV'''
     def get_html_footer(self):
         return '''<br>
                   <br>
-                    File analyzed: %s
+                    Files analyzed: %s
                   </body>
-                  </html>''' % self.yaml_analyzed
+                  </html>''' % str(self.yaml_analyzed)
 
     def generate_stats(self):
         #calculate sanity  - test success percentage, higher is better
@@ -359,6 +422,7 @@ VM_STATIC_SRV'''
         stat_text += '<a href="#errors">New Errors: %s</a><br>' % self.errors_num
         stat_text += '<a href="#errorsdetails">Error details link</a><br>'
         stat_text += '<a href="#known_errors">Known Errors: %s<br></a>' % self.known_errors_num
+        stat_text += '<a href="#crop">Crops<br></a>'
         stat_text += '<a href="#ok">OK: %s<br></a>' % self.ok_num
         #not implemented
         #stat_text += '<a href="#not_enabled">Not Enabled: %s<br></a>' % self.not_enabled_num

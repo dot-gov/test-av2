@@ -13,7 +13,8 @@ def execute(vm, protocol, level):
     assert command.context is not None
 
     #vm_first = "avast,avast32,avg,avg32,avira,kis,kis14,kis32,mcafee,norton,panda,comodo,eset,msessential".split(',')
-    vm_first = "eset7,avast,avg,avg15,panda15,avg32,avira,avira15,kis15,kis14,kis32,mcafee,bitdef15,norton,comodo,eset,msessential,panda,norton15".split(',')
+    vm_first = "eset7,avast,avg,avg15,panda15,avg32,avira,avira15,kis15,kis14,kis32,mcafee,bitdef15,norton,comodo,eset,msessential,panda,norton15,avira15f,avg15f,defender".split(',')
+
     #disattivato DEFINITIVAMENTE kis (kis e' un kis 2013 che ormai non si usa piu')
     #disattivato TEMPORANEAMENTE avast32
     vm_second = "fortinet,drweb,cmcav,adaware,fprot,bitdef,fsecure,gdata,vba32,iobit32,risint,syscare,trendm15,zoneal,clamav,360ts,norman,ahnlab".split(',')
