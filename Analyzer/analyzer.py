@@ -6,11 +6,16 @@ import sys
 import copy
 import socket
 
+sys.path.append("./Rite/")
+# from AVMaster.av_master import AVMaster
+from AVCommon.procedure import Procedure
+
 from dbreport import DBReport
 from resultdata import ResultData
 from resultstates import ResultStates
 from summarydata import SummaryData
 from mailsender import MailSender
+from ocrdict import OcrDict
 import sys
 
 debug = False
@@ -63,47 +68,31 @@ def main():
     if hostname == 'rite':
         prefix = '/home/avmonitor/Rite/logs/'
 
+    results_to_receive = []
+    # # parser = argparse.ArgumentParser(description='AVMonitor master.')
+    # # args = parser.parse_args()
+    # # av_master = AVMaster(args)
+    Procedure.load_procedures()
+
     filenames2 = []
     for name in filenames:
         #if the file is not a filename but a test name, extract the last filename for this test from filesystem
-
         if not name.lower().endswith(".yaml"):
             filename = sorted(glob.glob(prefix + "*/report_for_analyzer.*.%s.yaml" % name), key=os.path.getmtime, reverse=True)[0]
             filenames2.append(filename)
+            x, resultslist = Procedure.check_procedure(name)
+            results_to_receive.extend(i for i in resultslist if i not in results_to_receive)
         else:
             filenames2.append(name)
 
     filenames = filenames2
 
-    # if len(sys.argv) > 1:
-    #     filenames = sys.argv[1:]
-    #     write_retests = False
-    # else:
-    #
-    #     #finds report for analyzer files
-    #
-    #
-    #     filelist_update = sorted(glob.glob(prefix + "*/report_for_analyzer.*.UPDATE_AV.yaml"), key=os.path.getmtime, reverse=True)
-    #     filelist_positive = sorted(glob.glob(prefix + "*/report_for_analyzer.*.SYSTEM_POSITIVE.yaml"), key=os.path.getmtime, reverse=True)
-    #     filelist_daily = sorted(glob.glob(prefix + "*/report_for_analyzer.*.SYSTEM_DAILY_*SRV.yaml"), key=os.path.getmtime, reverse=True)
-    #
-    #     if not len(filelist_daily):
-    #         print "No yaml DAILY report files found in logs dirs:"
-    #         sys.exit()
-    #
-    #     filename_update = os.path.join(prefix, filelist_update[0])
-    #     filename_positive = os.path.join(prefix, filelist_positive[0])
-    #     filename_daily = os.path.join(prefix, filelist_daily[0])
-    #     filenames = [filename_update, filename_positive, filename_daily]
-    #     #print filelist
-    #     write_retests = True
-
     print "I'll process: %s" % str(filenames)
 
-    process_yaml(filenames)
+    process_yaml(filenames, results_to_receive)
 
 
-def process_yaml(filenames):
+def process_yaml(filenames, results_to_receive):
 
     #I parse the files in order. ORDER MATTERS!
 
@@ -130,7 +119,8 @@ def process_yaml(filenames):
 
     total_vms = len(commands_results)
     print "Number of VM to analyze: ", total_vms
-    print ""
+    print "Tests to analyze: ", results_to_receive
+
     vms = commands_results.keys()
 
     retests = {}
@@ -141,6 +131,7 @@ def process_yaml(filenames):
     mailsender = MailSender()
 
     mailsender.yaml_analyzed = filenames
+    mailsender.results_to_receive = results_to_receive
 
     for vm, v in commands_results.items():
         comm2 = preparse_command_list(v)
@@ -182,35 +173,46 @@ def process_yaml(filenames):
             print text
             print "####################   RESULTS END   ####################"
 
-            if comparison_result['not_enabled']:
-                mailsender.rite_not_enabled_add(vm, test_name, message)
-            elif not comparison_result['rite_ok'] and not comparison_result['saved_error']:
-                mailsender.rite_fails_add(vm, test_name, message)
+            # if comparison_result['not_enabled']:
+            #     mailsender.rite_not_enabled_add(vm, test_name, message)
+            if not comparison_result['rite_ok'] and not comparison_result['saved_error']:
+                mailsender.add_result(vm, test_name, mailsender.ResultTypes.RITE_FAILS, message)
             elif not comparison_result['rite_ok'] and comparison_result['saved_error']:
-                mailsender.rite_known_fails_add(vm, test_name, message)
+                mailsender.add_result(vm, test_name, mailsender.ResultTypes.RITE_KNOWN_FAILS, message)
             elif not comparison_result['success'] and not comparison_result['saved_error']:
                 if test_name not in mailsender.invert_result_tests:
-                    mailsender.errors_add(vm, test_name, message, comparison_result['rows_obj'].get_causes(), comparison_result['rows_obj'].get_manual_save_string())
+                    mailsender.add_result(vm, test_name, mailsender.ResultTypes.NEW_ERRORS, message,
+                                          details=comparison_result['rows_obj'].get_causes(),
+                                          save_strings=comparison_result['rows_obj'].get_manual_save_string(),
+                                          crop_filenames=comparison_result['crop_filenames'])
                     #adds retest
                     if test_name not in retests:
                         retests[test_name] = set()
                     retests[test_name].add(vm)
                 #invert
                 else:
-                    mailsender.ok_add(vm, test_name, message)
-                mailsender.crop_filenames_add(vm, test_name, comparison_result['crop_filenames'])
+                    mailsender.add_result(vm, test_name, mailsender.ResultTypes.OK, message,
+                                          crop_filenames=comparison_result['crop_filenames'])
+                # mailsender.crop_filenames_add(vm, test_name, comparison_result['crop_filenames'])
             elif not comparison_result['success'] and comparison_result['saved_error']:
-                mailsender.known_errors_add(vm, test_name, message, comparison_result['saved_error_comment'])
-            #case in wich ew saved an error but the test passed
+                mailsender.add_result(vm, test_name, mailsender.ResultTypes.KNOWN_ERRORS, message,
+                                      saved_error_comment=comparison_result['saved_error_comment'])
+            #case in wich we saved an error but the test passed
             elif comparison_result['success'] and comparison_result['saved_error']:
-                mailsender.known_errors_but_test_passed_add(vm, test_name, message, comparison_result['saved_error_comment'])
+                mailsender.add_result(vm, test_name, mailsender.ResultTypes.KNOWN_ERRORS_BUT_PASSED, message, comparison_result['saved_error_comment'])
             # ok
             else:
                 if test_name not in mailsender.invert_result_tests:
-                    mailsender.ok_add(vm, test_name, message)
+                    mailsender.add_result(vm, test_name, mailsender.ResultTypes.OK, message)
                 else:
-                    mailsender.errors_add(vm, test_name, message, comparison_result['rows_obj'].get_causes(), comparison_result['rows_obj'].get_manual_save_string())
+                    mailsender.add_result(vm, test_name, mailsender.ResultTypes.NEW_ERRORS, message,
+                                          details=comparison_result['rows_obj'].get_causes(),
+                                          save_strings=comparison_result['rows_obj'].get_manual_save_string(),
+                                          crop_filenames=comparison_result['crop_filenames'])
                     #NB does not sets retest for inverted results
+
+            print "*********************     DEBUG YESTERDAY     *********************"
+            # print comparison_result['oldies']
 
         #count processed vms
         vm_count += 1
@@ -228,23 +230,7 @@ def process_yaml(filenames):
         retestlist += "%s -c -p 40<br>" % retest[0:-1]
         tests_to_analyze += " " + testname_system
 
-#             prefix + "./??????/report_for_analyzer.*.%s.yaml"
-#
-#     #prefix + "*/report_for_analyzer.*.UPDATE_AV.yaml"
-#
-# #     SYSTEM_SOLDIER_SRV -m avira15f,clamav,panda,360ts -c -p 40
-# # ./run.sh SYSTEM_MELT_SRV_UTO -m kis32,norton,avg,360ts,cmcav -c -p 40
-# # ./run.sh SYSTEM_ELITE_FAST_SRV -m panda15,norton15,clamav,360ts -c -p 40
-# # ./run.sh SYSTEM_ELITE_FAST_SCOUTDEMO_SRV -m trendm15,zoneal -c -p 40
-# # ./run.sh SYSTEM_STATIC_SRV -m fsecure,norman,avast,adaware,bitdef,avg15f,bitdef15,comodo -c -p 40
-# ls ./??????/*.yaml
-# ./150213/report_for_analyzer.150213-051504.SYSTEM_SOLDIER_SRV.yaml
-# ./150213/report_for_analyzer.150213-061228.SYSTEM_MELT_SRV_UTO.yaml
-# ./150213/report_for_analyzer.150213-065342.SYSTEM_ELITE_FAST_SRV.yaml
-# ./150213/report_for_analyzer.150213-073048.SYSTEM_ELITE_FAST_SCOUTDEMO_SRV.yaml
-# ./150213/report_for_analyzer.150213-080040.SYSTEM_STATIC_SRV.yaml
-# ./150213/report_for_analyzer.150213-082411.SYSTEM_STOP.yaml
-
+    # command to re-run analysis.
     retestlist += "python ./Rite/Analyzer/analyzer.py %s" % tests_to_analyze
 
     mailsender.retestlist = retestlist
@@ -298,6 +284,8 @@ def analyze(vm, comms):
             print "\n>>>>>>>>>>>>>>>>>>>>>>>>>>> MANUAL <<<<<<<<<<<<<<<<<<<<<<<<<<<<"
         manual_state_rows = db.get_known_summary_rows(vm, test_name, debug)
 
+        ocrd = OcrDict()
+
         prg = 0
         #inserts the parsed line into the db for reference
         print "Inserting results and summary from yaml data! (%s lines in yaml)" % len(comms)
@@ -305,9 +293,14 @@ def analyze(vm, comms):
         for i in comms:
             #this was commented because the tables are growing too big and this historic data is not so important
             # db.insert_result(i)
+            summ_data = SummaryData(test_approximate_start_time, test_name, vm, i.command, prg, 0, "", i.rite_result_log, i.parsed_result,
+                                    i.rite_failed, i.rite_fail_log)
 
-            if not db.insert_summary(SummaryData(test_approximate_start_time, test_name, vm, i.command, prg, 0, "", i.rite_result_log, i.parsed_result,
-                                          i.rite_failed, i.rite_fail_log)):
+            #refine crops with tesseract
+            summ_data.refine_crop_with_tesseract(ocrd)
+
+            #that save the refined data into he Database
+            if not db.insert_summary(summ_data):
                 rows_omitted += 1
 
             prg += 1
@@ -331,34 +324,41 @@ def analyze(vm, comms):
 
         test_comparison_result = dict()
 
-        test_comparison_result['not_enabled'] = current_state_rows.get_not_to_test()[0]
-        test_comparison_result['message'] = current_state_rows.get_not_to_test()[1]
+        # test_comparison_result['not_enabled'] = current_state_rows.get_not_to_test()[0]
+        # test_comparison_result['message'] = current_state_rows.get_not_to_test()[1]
         # test_comparison_result['rows_string_short'] = current_state_rows.state_rows_to_string_short()
         # test_comparison_result['commands'] = comms
         test_comparison_result['rows_obj'] = current_state_rows
 
-        if not current_state_rows.get_not_to_test()[0]:
-            #checks for Rite Failure or other anomalies in failure states
-            message, rite_ok, saved_error = current_state_rows.compare_three_states_failure(manual_state_rows, message, previous_state_rows)
-            test_comparison_result['rite_ok'] = rite_ok
-            test_comparison_result['success'] = False
+        # if not current_state_rows.get_not_to_test()[0]:
+
+        #checks for Rite Failure or other anomalies in failure states
+        message, rite_ok, saved_error = current_state_rows.compare_three_states_failure(manual_state_rows, message, previous_state_rows)
+        test_comparison_result['rite_ok'] = rite_ok
+        test_comparison_result['success'] = False
+        test_comparison_result['message'] = message
+        test_comparison_result['saved_error'] = saved_error
+        test_comparison_result['crop_filenames'] = None
+        #if there are anomalies, then it IGNORES the states ad returns
+        #else if the failure state is ok, it compares the results
+        if rite_ok:
+            message, ok, saved_error, saved_error_comment = current_state_rows.compare_three_states_results(manual_state_rows, previous_state_rows)
+            test_comparison_result['success'] = ok
             test_comparison_result['message'] = message
             test_comparison_result['saved_error'] = saved_error
-            #if there are anomalies, then it IGNORES the states ad returns
-            #else if the failure state is ok, it compares the results
-            if rite_ok:
-                message, ok, saved_error, saved_error_comment = current_state_rows.compare_three_states_results(manual_state_rows, previous_state_rows)
-                test_comparison_result['success'] = ok
-                test_comparison_result['message'] = message
-                test_comparison_result['saved_error'] = saved_error
-                test_comparison_result['saved_error_comment'] = saved_error_comment
-                if not ok:
-                    test_comparison_result['crop_filenames'] = current_state_rows.get_crop_filenames()
+            test_comparison_result['saved_error_comment'] = saved_error_comment
+            if not ok:
+                test_comparison_result['crop_filenames'] = current_state_rows.get_crop_filenames()
 
         #     return True, ok, message, saved_error, current_state_rows.state_rows_to_string_short(), comms, current_state_rows
         # else:
         #     #rite failed. Also the rite_fail can have a saved error or not. "ok" is False because the test didn't complete
         #     return False, False, message, saved_error, current_state_rows.state_rows_to_string_short(), comms, current_state_rows
+
+        # TODO
+        # yesterday_state_rows = db.get_previous_summary_rows(vm, test_name, 1, debug)
+        #
+        # test_comparison_result['oldies'] = yesterday_state_rows
 
         return test_comparison_result
 
@@ -375,6 +375,18 @@ def preparse_command_list(comms):
 
         parsed.append(ResultData(i[0], i[0], i[1], i[2], i[3], i[4], i[5], i[6], ResultStates.NONE, i[7], i[8], i[9]))
     return parsed
+
+
+def load_procedures(procedure):
+    if os.path.exists("AVMaster/conf/procedures.yaml"):
+        procedure.load_from_file("AVMaster/conf/procedures.yaml")
+
+    confs = glob.glob("AVMaster/conf/procedures/*.yaml")
+    for conf in confs:
+        # logging.info("Loading conf: %s" % conf)
+        procedure.load_from_file(conf)
+    if not procedure.check():
+        raise SyntaxError("Errors in procedures")
 
 
 if __name__ == "__main__":

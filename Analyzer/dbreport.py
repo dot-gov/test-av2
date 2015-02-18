@@ -1,4 +1,6 @@
 import sqlite3
+import time
+from datetime import date, timedelta, datetime
 from summarydata import SummaryData
 from summarydatacoll import SummaryDataColl
 from resultstates import ResultStates
@@ -137,9 +139,31 @@ class DBReport(object):
     def get_known_summary_rows(self, vm, test_name, print_data=False):
         return self.get_summary_rows(vm, test_name, 'SELECT * FROM SUMMARY_MANUAL WHERE vm = ? and test_name = ? ORDER BY prg ASC', print_data)
 
-    # def get_known_summary_rows(self, vm, test_name, print_data=False, strip_passed=True):
-    #     return self.get_summary_rows(vm, test_name, 'SELECT * FROM SUMMARY ORDER BY ?, ?', print_data,
-    #                                  strip_passed)
+    #gets previous summarys going back x DAYS
+    def get_previous_summary_rows(self, vm, test_name, days, print_data=False):
+        datenow = date.today()
+        dateback = datenow - timedelta(days=days)
+        timestamp_day = datetime.combine(dateback, datetime.min.time())
+        #strips away fraction of seconds
+        timestamp_day = str(timestamp_day.strftime("%s")).split('.')[0]
+        print timestamp_day
+        query = '''SELECT S.* FROM SUMMARY S
+                    WHERE MANUAL <> 1 AND
+                        START_TIMESTAMP < %s AND
+                           START_TIMESTAMP = (
+                                           SELECT MAX(START_TIMESTAMP)
+                                            FROM SUMMARY X
+                                            WHERE S.VM = X.VM AND
+                                                  S.TEST_NAME = X.TEST_NAME AND
+                                                  MANUAL <> 1 AND
+                                                  START_TIMESTAMP < %s
+
+                                       )
+                            AND vm = ?
+                            AND test_name = ?
+                            ORDER BY prg ASC
+                            ;''' % (timestamp_day, timestamp_day)
+        return self.get_summary_rows(vm, test_name, query, True)
 
     def get_summary_rows(self, vm, test_name, query, print_data=False):
         cursor = self.conn.cursor()

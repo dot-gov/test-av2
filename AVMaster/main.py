@@ -33,7 +33,7 @@ def main():
     parser.add_argument('-q', '--quiet', action='store_true', default=False,
                         help="Quiet")
     parser.add_argument('-k', '--check', action='store_true', default="",
-                        help="Static Check Context -does not execute")
+                        help="Static Check Context - does not execute")
 
     args = parser.parse_args()
 
@@ -45,7 +45,7 @@ def main():
     logger.init(report, quiet=args.quiet)
 
     from AVCommon.logger import logging
-    globals()['logging']=logging
+    globals()['logging'] = logging
 
     logging.debug(args)
     from av_master import AVMaster

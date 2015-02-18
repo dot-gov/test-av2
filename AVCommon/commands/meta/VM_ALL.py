@@ -5,6 +5,25 @@ import socket
 
 from AVCommon import command
 
+
+#vm_first = "avast,avast32,avg,avg32,avira,kis,kis14,kis32,mcafee,norton,panda,comodo,eset,msessential".split(',')
+vm_first_rite = "eset7,avast,avg,avg15,panda15,avg32,avira,avira15,kis15,kis14,kis32,mcafee,bitdef15,norton,comodo,eset,msessential,panda,norton15,avira15f,avg15f,defender".split(',')
+
+#disattivato DEFINITIVAMENTE kis (kis e' un kis 2013 che ormai non si usa piu')
+# just as a documentation
+
+#disattivato TEMPORANEAMENTE avast32
+# TEMPORARY disabled mbytes,
+vm_deactivated_temp = "avast32,mbytes"
+
+vm_second_rite = "fortinet,drweb,cmcav,adaware,fprot,bitdef,fsecure,gdata,vba32,iobit32,risint,syscare,trendm15,zoneal,clamav,360ts,norman,ahnlab".split(',')
+#disattivati DEFINITIVAMENTE trendm (abbiamo trendm15) e 360cn5 (abbiamo 360ts)
+
+# vm_not_working_first = "".split(',')
+# vm_not_working_second = "".split(',')
+vm_ignored_rite = ""
+
+
 def execute(vm, protocol, level):
     """ client side, returns (bool,*) """
     logging.debug("    VM_ALL")
@@ -12,18 +31,8 @@ def execute(vm, protocol, level):
     assert vm, "null vm"
     assert command.context is not None
 
-    #vm_first = "avast,avast32,avg,avg32,avira,kis,kis14,kis32,mcafee,norton,panda,comodo,eset,msessential".split(',')
-    vm_first = "eset7,avast,avg,avg15,panda15,avg32,avira,avira15,kis15,kis14,kis32,mcafee,bitdef15,norton,comodo,eset,msessential,panda,norton15,avira15f,avg15f,defender".split(',')
-
-    #disattivato DEFINITIVAMENTE kis (kis e' un kis 2013 che ormai non si usa piu')
-    #disattivato TEMPORANEAMENTE avast32
-    vm_second = "fortinet,drweb,cmcav,adaware,fprot,bitdef,fsecure,gdata,vba32,iobit32,risint,syscare,trendm15,zoneal,clamav,360ts,norman,ahnlab".split(',')
-    #disattivati DEFINITIVAMENTE trendm (abbiamo trendm15) e 360cn5 (abbiamo 360ts)
-    # just as a documentation
-    # TEMPORARY disabled mbytes,
-    # vm_not_working_first = "".split(',')
-    # vm_not_working_second = "".split(',')
-    vm_ignored = ""
+    vm_first = vm_first_rite
+    vm_second = vm_second_rite
 
     #in case of "puppet" host, I have different vms
     if "avmaster" == socket.gethostname():

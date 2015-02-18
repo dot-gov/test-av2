@@ -1,18 +1,22 @@
-from Analyzer.ocrdict import OcrDict
-
 __author__ = 'mlosito'
 
 import smtplib
 import socket
 import datetime
 import cgi
+import sys
 
 import tesserhackt
+from ocrdict import OcrDict
+
+sys.path.append("./Rite/")
 
 from email.mime.text import MIMEText
 from email.header import Header
 from email.mime.multipart import MIMEMultipart
 from email.mime.image import MIMEImage
+
+from AVCommon.commands.meta import VM_ALL
 
 
 class MailSender(object):
@@ -28,42 +32,37 @@ class MailSender(object):
                'VM_MELT_SRV_UTO': ['tuesday', 'friday'],
                'VM_MELT_SRV_VUZ': ['sunday']}
 
-    '''
-    VM_ELITE_FAST_SCOUTDEMO_SRV
-    VM_ELITE_FAST_SRV
-    VM_EXPLOIT_SRV
-    VM_SOLDIER_SRV
-    VM_STATIC_SRV'''
-
     retestlist = ""
 
-    rite_fails = {}
-    rite_known_fails = {}
-    errors = {}
-    known_errors = {}
-    known_errors_but_test_passed = {}
-    ok = {}
-    not_enabled = {}
-    crop_filenames = {}
+    class ResultTypes(object):
+        RITE_FAILS = "RITE NEW FAILS"
+        RITE_KNOWN_FAILS = "RITE KNOWN FAILS"
+        NEW_ERRORS = "NEW ERRORS"
+        KNOWN_ERRORS = "KNOWN ERRORS"
+        KNOWN_ERRORS_BUT_PASSED = "KNOWN ERRORS BUT PASSED"
+        OK = "OK"
 
-    rite_fails_num = 0
-    rite_known_fails_num = 0
-    errors_num = 0
-    known_errors_num = 0
-    ok_num = 0
-    not_enabled_num = 0
+    #all datas on tests
+    all_results = {}
 
+    #stats
     total_tests_num = 0
-
-    sanity = 0
-
-    #contains a list with the values: total, sane, rite_failed
+    sanity_percentage = 0
+    rite_fails_percentage = 0
+    #stats dicts
     stats_by_test = {}
+    stats_by_result_type = {}
+    #stat vm/test matrix (which is an av-indexed dictionary)
+    expected_table = {}
 
+    #for footer
     yaml_analyzed = []
 
+    # (ordered) list of the results every test should return
+    results_to_receive = []
+
     # , "f.cornelli@hackingteam.com", "m.oliva@hackingteam.com"
-    def send_mail(self, mail_recipients=["m.losito@hackingteam.com"], mail_server="mail.hackingteam.com"):
+    def send_mail(self, mail_recipients=["m.losito@hackingteam.com", "f.cornelli@hackingteam.com", "m.oliva@hackingteam.com"], mail_server="mail.hackingteam.com"):
         # Create a text/plain message
 
         header_charset = 'ISO-8859-1'
@@ -71,133 +70,50 @@ class MailSender(object):
 
         sender_name = str(Header(unicode("avtest@hackingteam.com"), header_charset))
 
+        msg_root = MIMEMultipart('related')
+        msg = MIMEMultipart('alternative')
+        msg_root.attach(msg)
+
+        message = self.generate_text(msg_root)
+
+        htmlpart = MIMEText(message.encode(body_charset), 'html', body_charset)
+
+        # According to RFC 2046, the last part of a multipart message, in this case the HTML message, is best and preferred (here we have just html).
+        msg.attach(htmlpart)
+
+        hostname = socket.gethostname()
+        subject = 'ANALYZER_REPORT@%s - Sanity=%s%%' % (hostname, self.sanity_percentage)
+
         for recipient in mail_recipients:
-
-            msg_root = MIMEMultipart('related')
-            msg = MIMEMultipart('alternative')
-            msg_root.attach(msg)
-
-            message = self.generate_text(msg_root)
-
-            #part1 = MIMEText(text, 'plain')
-            htmlpart = MIMEText(message.encode(body_charset), 'html', body_charset)
-
-            # According to RFC 2046, the last part of a multipart message, in this case the HTML message, is best and preferred.
-            msg.attach(htmlpart)
-
-            # msg = MIMEText(message)
-            hostname = socket.gethostname()
-
-            subject = 'ANALYZER_REPORT@%s - Sanity=%s%%' % (hostname, self.sanity)
-
             # Make sure email addresses do not contain non-ASCII characters
-
             recipient = recipient.encode('ascii')
+            msg_root.Message.add_header('To', recipient)
 
-            msg_root['Subject'] = Header(unicode(subject), header_charset)
-            msg_root['From'] = sender_name
-            msg_root['To'] = recipient
+        # recipient = recipient.encode('ascii')
+        msg_root['Subject'] = Header(unicode(subject), header_charset)
+        msg_root['From'] = sender_name
+        # msg_root['To'] = recipient
 
-            print "Mail enabled. Msg to: %s to be sent" % msg_root['To']
-            # Send the message via our own SMTP server, but don't include the
-            # envelope header.
-            s = smtplib.SMTP(mail_server)
+        print "Mail enabled. Msg to: %s to be sent" % msg_root['To']
+        # Send the message via our own SMTP server, but don't include the
+        # envelope header.
+        s = smtplib.SMTP(mail_server)
 
-            s.sendmail(msg_root['From'], [msg_root['To']], msg_root.as_string())
-            s.quit()
+        # reci[pients as list [msg_root['To']]
+        s.sendmail(msg_root['From'], msg_root.Message.get_all('To'), msg_root.as_string())
+        s.quit()
 
-    def remove_result(self, vm, test):
-        if vm in self.errors:
-            #if exists remove
-            if self.errors[vm].pop(test, False):
-                #if removed I recalculate stats
-                self.total_tests_num -= 1
-                self.errors_num -= 1
-                self.stats_by_test[test][0] -= 1
-
-    def rite_fails_add(self, vm, test, message):
-        if not vm in self.rite_fails:
-            self.rite_fails[vm] = {}
-        self.rite_fails[vm][test] = message
-        self.total_tests_num += 1
-        self.rite_fails_num += 1
-        if not test in self.stats_by_test:
-            self.stats_by_test[test] = [0, 0, 0]
-        self.stats_by_test[test][0] += 1  # adds total
-        self.stats_by_test[test][2] += 1  # adds RITE_FAIL
-
-    def rite_known_fails_add(self, vm, test, message):
-        if not vm in self.rite_known_fails:
-            self.rite_known_fails[vm] = {}
-        self.rite_known_fails[vm][test] = message
-        self.total_tests_num += 1
-        self.rite_known_fails_num += 1
-        if not test in self.stats_by_test:
-            self.stats_by_test[test] = [0, 0, 0]
-        self.stats_by_test[test][0] += 1  # adds total
-        self.stats_by_test[test][1] += 1  # adds sane
-
-    def errors_add(self, vm, test, message, details, save_strings):
-        if not vm in self.errors:
-            self.errors[vm] = {}
-        self.errors[vm][test] = message, details, save_strings
-        self.total_tests_num += 1
-        self.errors_num += 1
-        if not test in self.stats_by_test:
-            self.stats_by_test[test] = [0, 0, 0]
-        self.stats_by_test[test][0] += 1  # adds total
-
-    def known_errors_add(self, vm, test, message, saved_error_comment):
-        if not vm in self.known_errors:
-            self.known_errors[vm] = {}
-        self.known_errors[vm][test] = message, saved_error_comment
-        self.total_tests_num += 1
-        self.known_errors_num += 1
-        if not test in self.stats_by_test:
-            self.stats_by_test[test] = [0, 0, 0]
-        self.stats_by_test[test][0] += 1  # adds total
-        self.stats_by_test[test][1] += 1  # adds sane
-
-    def known_errors_but_test_passed_add(self, vm, test, message, saved_error_comment):
-        if not vm in self.known_errors_but_test_passed:
-            self.known_errors_but_test_passed[vm] = {}
-        self.known_errors_but_test_passed[vm][test] = message, saved_error_comment
-        self.total_tests_num += 1
-        self.ok_num += 1
-        if not test in self.stats_by_test:
-            self.stats_by_test[test] = [0, 0, 0]
-        self.stats_by_test[test][0] += 1  # adds total
-        self.stats_by_test[test][1] += 1  # adds sane
-
-    def ok_add(self, vm, test, message):
-        self.remove_result(vm, test)
-        if not vm in self.ok:
-            self.ok[vm] = {}
-        self.ok[vm][test] = message
-        self.total_tests_num += 1
-        self.ok_num += 1
-        if not test in self.stats_by_test:
-            self.stats_by_test[test] = [0, 0, 0]
-        self.stats_by_test[test][0] += 1  # adds total
-        self.stats_by_test[test][1] += 1  # adds sane
-
-    def rite_not_enabled_add(self, vm, test, message):
-        if not vm in self.not_enabled:
-            self.not_enabled[vm] = {}
-        self.not_enabled[vm][test] = message
-        self.total_tests_num += 1
-        self.not_enabled_num += 1
-        if not test in self.stats_by_test:
-            self.stats_by_test[test] = [0, 0, 0]
-        self.stats_by_test[test][0] += 1  # adds total
-        self.stats_by_test[test][1] += 1  # adds sane
-
-    def crop_filenames_add(self, vm, test,  crop_filenames):
-        if len(crop_filenames):
-            if not vm in self.crop_filenames:
-                self.crop_filenames[vm] = {}
-            self.crop_filenames[vm][test] = crop_filenames
-
+    def add_result(self, vm, test, result_types, message, details=None, save_strings=None, saved_error_comment=None, crop_filenames=None):
+        if not vm in self.all_results:
+            self.all_results[vm] = {}
+        if not test in self.all_results[vm]:
+            self.all_results[vm][test] = {}
+        self.all_results[vm][test]['result_type'] = result_types
+        self.all_results[vm][test]['message'] = message
+        self.all_results[vm][test]['details'] = details
+        self.all_results[vm][test]['save_string'] = save_strings
+        self.all_results[vm][test]['saved_error_comment'] = saved_error_comment
+        self.all_results[vm][test]['crop_filenames'] = crop_filenames
 
     #we pass msg that is the "root" multipart. We have to attach to it the images.
     def generate_text(self, msg):
@@ -206,128 +122,20 @@ class MailSender(object):
         mail_message = self.get_html_header()
         mail_message += self.generate_stats()
 
-        mail_message += '<br><a id="retests"><div class="boldback" style="color: black">Retests to be run</div></a><br>'
+        mail_message += self.get_html_retests()
+
+        mail_message += self.get_html_avtest_table()
+
+        mail_message += self.get_html_body(msg)
+
+        mail_message += self.get_html_footer()
+        return mail_message
+
+    def get_html_retests(self):
+        mail_message = '<br><a id="retests"><div class="boldback" style="color: black">Retests to be run</div></a><br>'
         mail_message += '<div class="cleancontainer">'
         mail_message += self.retestlist
         mail_message += '</div>'
-        mail_message += '<br><a id="rite_fails"><div class="boldback" style="background-color:darkred">RITE NEW FAILS - these are the tests in which the test system (rite) failed</div></a><br>'
-        mail_message += '<div class="cleancontainer">'
-        for vm in sorted(self.rite_fails):
-            mail_message += "<details close><summary>Analyzed VM: %s</summary><p><br>" % vm
-            for test in self.rite_fails[vm]:
-                mail_message += '<span class="tab">Test: %s</p><br>' % self.decorate_test(test)
-                mail_message += '<span class="doubletab">%s</p><br>' % cgi.escape(self.rite_fails[vm][test])
-            mail_message += "</p></details><hr>"
-        mail_message += '</div>'
-        mail_message += '<br><a id="rite_known_fails"><div class="boldback" style="background-color:green">RITE KNOWN FAILS - these are the tests in which the test system (rite) failed but we previously aknowledged that</div></a><br>'
-        mail_message += '<div class="cleancontainer">'
-        for vm in sorted(self.rite_known_fails):
-            mail_message += "<details close><summary>Analyzed VM: %s</summary><p><br>" % vm
-            for test in self.rite_known_fails[vm]:
-                mail_message += '<span class="tab">Test: %s</p><br>' % self.decorate_test(test)
-                mail_message += '<span class="doubletab">%s</p><br>' % cgi.escape(self.rite_known_fails[vm][test])
-            mail_message += "</p></details><hr>"
-        mail_message += '</div>'
-        mail_message += '<br><a id="errors"><div class="boldback" style="background-color:red">NEW ERRORS - these are the tests in which the test FAILED</div></a><br>'
-        mail_message += '<div class="cleancontainer">'
-        for vm in sorted(self.errors):
-            mail_message += "<details close><summary>Analyzed VM: %s</summary><p><br>" % vm
-            for test in self.errors[vm]:
-                mail_message += '<p class="tab">Test: %s</p><br>' % self.decorate_test(test)
-                mail_message += '<p class="doubletab">%s</p><br>' % cgi.escape(self.errors[vm][test][0])  # gets only the message
-            mail_message += "\n</p></details><hr>"
-        mail_message += '</div>'
-        mail_message += '<br><a id="known_errors"><div class="boldback" style="background-color:green">KNOWN ERRORS - these are the tests in which the test failed, but we previously aknowledged that</div></a><br>'
-        mail_message += '<div class="cleancontainer">'
-        for vm in sorted(self.known_errors):
-            mail_message += "<details close><summary>Analyzed VM: %s</summary><p><br>" % vm
-            for test in self.known_errors[vm]:
-                mail_message += '<p class="tab">Test: %s</p><br>' % self.decorate_test(test)
-                mail_message += '<p class="doubletab" style="color: red;">Comment: %s</p><br>' % cgi.escape(self.known_errors[vm][test][1])
-                mail_message += '<p class="doubletab">%s</p><br>' % cgi.escape(self.known_errors[vm][test][0])
-            mail_message += "</p></details><hr>"
-        mail_message += '</div>'
-        mail_message += '<br><a id="known_errors"><div class="boldback" style="background-color:green">KNOWN ERRORS BUT PASSED - these are the tests in which the test passed, but we previously aknowledged an error. Some are not enabled tests.</div></a><br>'
-        mail_message += '<div class="cleancontainer">'
-        for vm in sorted(self.known_errors_but_test_passed):
-            mail_message += "<details close><summary>Analyzed VM: %s</summary><p><br>" % vm
-            for test in self.known_errors_but_test_passed[vm]:
-                mail_message += '<p class="tab">Test: %s</p><br>' % self.decorate_test(test)
-                mail_message += '<p class="doubletab" style="color: red;">Comment: %s</p><br>' % cgi.escape(self.known_errors_but_test_passed[vm][test][1])
-                mail_message += '<p class="doubletab">%s</p><br>' % cgi.escape(self.known_errors_but_test_passed[vm][test][0])
-            mail_message += "</p></details><hr>"
-        mail_message += '</div>'
-        mail_message += '<br><a id="ok"><div class="boldback" style="background-color:green">OK - Passed tests</div></a><br>'
-        mail_message += '<div class="cleancontainer">'
-        for vm in sorted(self.ok):
-            mail_message += "<details close><summary>Analyzed VM: %s</summary><p><br>" % vm
-            tmp = ""
-            for test in self.ok[vm]:
-                mail_message += '<p class="tab">Test: %s</p><br>' % self.decorate_test(test)
-                mail_message += '<p class="doubletab">%s</p><br>' % cgi.escape(self.ok[vm][test])
-            mail_message += "</p></details><hr>"
-        mail_message += '</div>'
-        #not implemented
-        # mail_message += '<br><a id="not_enabled"><div class="boldback" style="background-color:gray">Not Enabled - Tests which are not enabled in this run</div></a><br>'
-        # for vm in sorted(self.not_enabled):
-        #     mail_message += "<details close><summary>Analyzed VM: %s</summary><p><br>" % vm
-        #     tmp = ""
-        #     for test in self.not_enabled[vm]:
-        #         mail_message += '<p class="tab">Test: %s</p><br>' % test
-        #         mail_message += '<p class="doubletab">%s</p><br>' % cgi.escape(self.not_enabled[vm][test])
-        #     mail_message += "</p></details><hr>"
-
-        ocrd = OcrDict()
-
-        mail_message += '<br><a id="crop"><div class="boldback" style="background-color:green">CROPs - partial screenshots of popups</div></a><br>'
-        mail_message += '<div class="cleancontainer">'
-        for vm in sorted(self.crop_filenames):
-            mail_message += "<details close><summary>Analyzed VM: %s</summary><p><br>" % vm
-            for test in self.crop_filenames[vm]:
-                mail_message += '<p class="tab">Test: %s</p><br>' % self.decorate_test(test)
-                mail_message += '<p class="doubletab">%s</p><br>' % self.crop_filenames[vm][test]
-                for crop in self.crop_filenames[vm][test]:
-                    result, word, thumb_filename = tesserhackt.process(av=vm, num=crop, ocrd=ocrd)
-                    #good case:
-                    if thumb_filename == "":
-                        mail_message += '<p class="doubletab">%s - <b>%s</b> - got word: %s - [image omitted] </p><br>' % (str(crop), result, word)
-                    #not good:
-                    else:
-                        mail_message += '<p class="doubletab">%s - <b>%s</b> - got word: %s - filename: %s </p><br>' % (str(crop), result, word, thumb_filename)
-                        img_fp = open(thumb_filename, 'rb')
-                        img_data = img_fp.read()
-                        # Now create the MIME container for the image
-                        cid = vm+"-"+str(crop)
-                        img = MIMEImage(img_data)  # , 'jpeg'
-
-                        img.add_header('Content-Id', '<%s>' % cid)  # angle brackets are important
-                        #not necessary
-                        # img.add_header("Content-Disposition", "inline", filename=thumb_filename)  # David Hess recommended this edit
-                        msg.attach(img)
-                        img_fp.close()
-                        mail_message += '<img class="tab" src="cid:%s">' % cid  # 57EC4E91-046B-44EC-B685-4CC3BB5AEDC7@hackingteam.it
-
-            mail_message += "</p></details><hr>"
-        mail_message += '</div>'
-
-        mail_message += '<br><a id="errorsdetails"><div class="boldback" style="background-color:red">ERROR DETAILS - log of every operation and python code to acknowledge the error</div></a><br>'
-        mail_message += '<div class="cleancontainer">'
-        for vm in sorted(self.errors):
-            mail_message += "<details close><summary>Analyzed VM: %s</summary><p><br>" % vm
-            for test in self.errors[vm]:
-                mail_message += '<p class="tab">Test: %s</p><br>' % self.decorate_test(test)
-                mail_message += '<p class="doubletab">%s</p><br>' % self.errors[vm][test][0]
-                # mail_message += "<hr>"
-                mail_message += '<details close><summary class="bold">ERROR LOG</summary><p class="doubletab">'
-                # mail_message += "<hr>"
-                mail_message += self.errors[vm][test][1]
-                mail_message += "</p></details>"
-                mail_message += '<details close><summary class="bold">HELPER FOR MANUAL</summary><p class="doubletab">'
-                mail_message += self.errors[vm][test][2]
-                mail_message += "</p></details>"
-            mail_message += "</p></details><hr>"
-        mail_message += '</div>'
-        mail_message += self.get_html_footer()
         return mail_message
 
     def get_html_header(self):
@@ -376,9 +184,61 @@ class MailSender(object):
             p.tab    {padding-left:3em}
             p.doubletab    {padding-left:6em}
             img.tab  {padding-left:9em}
-            .percentbar { background: red; border:1px solid #000000; height:10px; width:200px; margin-left: auto;
-                          margin-right: auto; box-shadow: 3px 3px 2px #888888; }
-            .percentbar div { background: green ; height: 10px; float: left;}
+            .percentbar {   background: red;
+                            border:1px solid #000000;
+                            height:10px; width:200px;
+                            margin-left: auto;
+                            margin-right: auto;
+                            box-shadow: 3px 3px 2px #888888;
+                        }
+            .percentbar div { background: green ;
+                                height: 10px;
+                                float: left;
+                                }
+
+            th {
+                border-collapse: collapse;
+                /* border: 1px solid black;*/
+                color: black;
+                background-color: white;
+                vertical-align: bottom;
+                }
+            table, td, th {
+                -webkit-border-radius: 4px;
+                -moz-border-radius:    4px;
+                border-radius:         4px;
+                }
+            table {
+                   margin-left: auto;
+                   margin-right: auto;
+                  }
+            td.av {
+                border-collapse: collapse;
+                background-color: white;
+                color: black;
+                text-align: right;
+                font-weight: bold;
+                }
+            td.green {
+                background-color: green;
+                color: white;
+                }
+            td.red {
+                background-color: red;
+                color: white;
+                }
+            td.darkred {
+                background-color: darkred;
+                color: white;
+                }
+            td.white {
+                background-color: white;
+                color: black;
+                }
+            /* All link in the table should be white!*/
+            table a {
+                color: white;
+                }
         </style>
         </head>
         <body>
@@ -391,39 +251,116 @@ class MailSender(object):
                   </body>
                   </html>''' % str(self.yaml_analyzed)
 
-    def generate_stats(self):
-        #calculate sanity  - test success percentage, higher is better
-        rite_fails = 0
-        if self.total_tests_num > 0:
+    def get_result_type_section_html(self, result_type, ocrd, mime_msg, error_details=False):
+        mail_message = '<div class="cleancontainer">'
+        for vm in sorted(self.all_results):
+            #if it hase some results of this type I put the header and
+            found = False
+            for test in self.all_results[vm]:
+                # print test
+                # print result_type
+                if self.all_results[vm][test]['result_type'] == result_type:
+                    found = True
+            if found:
+                mail_message += '<details close><summary style="display:inline">Analyzed VM: %s</summary><p><br>' % self.decorate_vm(vm)
+                for test in self.all_results[vm]:
+                    if self.all_results[vm][test]['result_type'] == result_type:
+                        mail_message += '<p class="tab">Test: %s</p><br>' % self.decorate_test(test, vm)
+                        mail_message += '<p class="doubletab">%s</p><br>' % self.all_results[vm][test]['message']  # before here was used cgi.escape(
+                        if self.all_results[vm][test]['saved_error_comment']:
+                            mail_message += '<p class="doubletab" style="color: red;">Comment: %s</p><br>' % cgi.escape(self.all_results[vm][test]['saved_error_comment'])
+                        #details for errors
+                        if error_details:
+                            mail_message += '<details close><summary class="bold">ERROR LOG</summary><p class="doubletab">'
+                            mail_message += self.all_results[vm][test]['details']
+                            mail_message += "</p></details>"
+                            mail_message += '<details close><summary class="bold">HELPER FOR MANUAL</summary><p class="doubletab">'
+                            mail_message += self.all_results[vm][test]['save_string']
+                            mail_message += "</p></details>"
 
-            self.sanity = round((((self.ok_num+self.known_errors_num+self.rite_known_fails_num+self.not_enabled_num)*100.0)/(self.total_tests_num*100.0))*100, 2)
-            rite_fails = round(((self.rite_fails_num*100.0)/(self.total_tests_num*100.0))*100, 2)
-        else:
-            self.sanity = "Unknown"
+                        #in error details I dont's show crops
+                        elif self.all_results[vm][test]['crop_filenames']:
+                        #crops
+                        #here I re-analyze every crop, for 2 reasons: 1: i do not have to bring all the values to this level; 2 to check consistency
+                            for crop in self.all_results[vm][test]['crop_filenames']:
+                                result, word, thumb_filename = tesserhackt.process(av=vm, num=crop, ocrd=ocrd)
+                                #good case:
+                                if thumb_filename == "":
+                                    mail_message += '<p class="doubletab">%s - <b>%s</b> - got word: %s - [image omitted] </p><br>' % (str(crop), result, word)
+                                #not good:
+                                else:
+                                    mail_message += '<p class="doubletab">%s - <b>%s</b> - got word: %s - filename: %s </p><br>' % (str(crop), result, word, thumb_filename)
+                                    img_fp = open(thumb_filename, 'rb')
+                                    img_data = img_fp.read()
+                                    # Now create the MIME container for the image
+                                    cid = vm+"-"+str(crop)
+                                    img = MIMEImage(img_data)  # , 'jpeg'
+
+                                    img.add_header('Content-Id', '<%s>' % cid)  # angle brackets are important
+                                    #not necessary
+                                    # img.add_header("Content-Disposition", "inline", filename=thumb_filename)  # David Hess recommended this edit
+                                    mime_msg.attach(img)
+                                    img_fp.close()
+                                    mail_message += '<img class="tab" src="cid:%s">' % cid
+
+                mail_message += "</p></details><hr>"
+        mail_message += '</div>'
+        return mail_message
+
+    def get_html_body(self, mime_msg):
+
+        ocrd = OcrDict()
+
+        mail_message = '<br><a id="rite_fails"><div class="boldback" style="background-color:darkred">RITE NEW FAILS - these are the tests in which the test system (rite) failed</div></a><br>'
+        mail_message += self.get_result_type_section_html(self.ResultTypes.RITE_FAILS, ocrd, mime_msg)
+
+        mail_message += '<br><a id="rite_known_fails"><div class="boldback" style="background-color:green">RITE KNOWN FAILS - these are the tests in which the test system (rite) failed but we previously aknowledged that</div></a><br>'
+        mail_message += self.get_result_type_section_html(self.ResultTypes.RITE_KNOWN_FAILS, ocrd, mime_msg)
+
+        mail_message += '<br><a id="errors"><div class="boldback" style="background-color:red">NEW ERRORS - these are the tests in which the test FAILED</div></a><br>'
+        mail_message += self.get_result_type_section_html(self.ResultTypes.NEW_ERRORS, ocrd, mime_msg)
+
+        mail_message += '<br><a id="known_errors"><div class="boldback" style="background-color:green">KNOWN ERRORS - these are the tests in which the test failed, but we previously aknowledged that</div></a><br>'
+        mail_message += self.get_result_type_section_html(self.ResultTypes.KNOWN_ERRORS, ocrd, mime_msg)
+
+        mail_message += '<br><a id="known_errors"><div class="boldback" style="background-color:green">KNOWN ERRORS BUT PASSED - these are the tests in which the test passed, but we previously aknowledged an error. Some are not enabled tests.</div></a><br>'
+        mail_message += self.get_result_type_section_html(self.ResultTypes.KNOWN_ERRORS_BUT_PASSED, ocrd, mime_msg)
+
+        mail_message += '<br><a id="ok"><div class="boldback" style="background-color:green">OK - Passed tests</div></a><br>'
+        mail_message += self.get_result_type_section_html(self.ResultTypes.OK, ocrd, mime_msg)
+
+        mail_message += '<br><a id="errorsdetails"><div class="boldback" style="background-color:red">ERROR DETAILS - log of every operation and python code to acknowledge the error (crops are not shown here)</div></a><br>'
+        mail_message += self.get_result_type_section_html(self.ResultTypes.NEW_ERRORS, ocrd, mime_msg, error_details=True)
+
+        return mail_message
+
+    def generate_stats(self):
+
+        self.calculate_stats()
 
         stat_text = '<div class="title">'
         stat_text += '<div style="font-size: 140%;background-color: #b0b0b0;padding: 5px;">Analyzer Report RITE</div>'
         stat_text += '<div class="testcontainer">'
         #if sanity is a number, displays percentage bar
-        if not self.sanity == "Unknown":
-            stat_text += "Global Sanity: %s%% (Rite fails: %s%%)" % (self.sanity, rite_fails)
+        if not self.sanity_percentage == "Unknown":
+            stat_text += "Global Sanity: %s%% (Rite fails: %s%%)" % (self.sanity_percentage, self.rite_fails_percentage)
             stat_text += '''
                 <div class="percentbar">
                     <div style="width:%spx;"></div>
                     <div style="width:%spx;background:darkred;"></div>
                 </div>
                 </br>
-                ''' % (self.sanity*2, rite_fails*2)
+                ''' % (self.sanity_percentage*2, self.rite_fails_percentage*2)
         else:
             stat_text += "Unknown Sanity (0 test runs reported from Rite)<br>"
 
-        stat_text += '<a href="#rite_fails">Rite new fails: %s</a><br>' % self.rite_fails_num
-        stat_text += '<a href="#rite_known_fails">Rite known fails: %s</a><br>' % self.rite_known_fails_num
-        stat_text += '<a href="#errors">New Errors: %s</a><br>' % self.errors_num
+        stat_text += '<a href="#rite_fails">Rite new fails: %s</a><br>' % self.stats_by_result_type[self.ResultTypes.RITE_FAILS]
+        stat_text += '<a href="#rite_known_fails">Rite known fails: %s</a><br>' % self.stats_by_result_type[self.ResultTypes.RITE_KNOWN_FAILS]
+        stat_text += '<a href="#errors">New Errors: %s</a><br>' % self.stats_by_result_type[self.ResultTypes.NEW_ERRORS]
         stat_text += '<a href="#errorsdetails">Error details link</a><br>'
-        stat_text += '<a href="#known_errors">Known Errors: %s<br></a>' % self.known_errors_num
-        stat_text += '<a href="#crop">Crops<br></a>'
-        stat_text += '<a href="#ok">OK: %s<br></a>' % self.ok_num
+        stat_text += '<a href="#known_errors">Known Errors: %s<br></a>' % self.stats_by_result_type[self.ResultTypes.KNOWN_ERRORS]
+        # stat_text += '<a href="#crop">Crops<br></a>'
+        stat_text += '<a href="#ok">OK: %s<br></a>' % str(self.stats_by_result_type[self.ResultTypes.OK] + self.stats_by_result_type[self.ResultTypes.KNOWN_ERRORS_BUT_PASSED])
         #not implemented
         #stat_text += '<a href="#not_enabled">Not Enabled: %s<br></a>' % self.not_enabled_num
         stat_text += "TOTAL: %s<br>" % self.total_tests_num
@@ -432,8 +369,10 @@ class MailSender(object):
         stat_text += '<br><a id="retests"><div class="boldback" style="color: black; font-size: 125%;">Stats by test</div></a><br>'
         stat_text += '<div class="testcontainer">'
         for test in sorted(self.stats_by_test):
-            test_sanity = round((((self.stats_by_test[test][1])*100.0)/(self.stats_by_test[test][0]*100.0))*100, 2)
-            test_rite_fails = round(((self.stats_by_test[test][2]*100.0)/(self.stats_by_test[test][0]*100.0))*100, 2)
+            test_sane = self.stats_by_test[test][self.ResultTypes.OK] + self.stats_by_test[test][self.ResultTypes.KNOWN_ERRORS_BUT_PASSED] +\
+                self.stats_by_test[test][self.ResultTypes.KNOWN_ERRORS] + self.stats_by_test[test][self.ResultTypes.RITE_KNOWN_FAILS]
+            test_sanity = round(((test_sane*100.0)/(self.stats_by_test[test]['total']*100.0))*100, 2)
+            test_rite_fails = round(((self.stats_by_test[test][self.ResultTypes.RITE_FAILS]*100.0)/(self.stats_by_test[test]['total']*100.0))*100, 2)
 
             stat_text += '''
             <div class="test"> Test: %s (Sane: %s%%, Rite fails: %s%%)
@@ -446,35 +385,158 @@ class MailSender(object):
             </div>
             </br><hr>
             ''' % (self.decorate_test(test), test_sanity, test_rite_fails, test_sanity*2, test_rite_fails*2)
+
         #end testcontainer
         stat_text += '</div>'
         #end title
         stat_text += '</div>'
         return stat_text
 
-    def decorate_test(self, test):
-        decorated_test = test
+    def get_html_avtest_table(self):
+        table_text = '<br><div class="boldback" style="background-color:lightgray; color: black">Result matrix</div><br>'
+        table_text += '<div class="testcontainer">'
+        table_text += "<table><tr>"
+        table_text += '<th style="background-color:#e0e0e0;border: none;"></th>'
+        # here I search for the expected results
+        for test in self.results_to_receive:
+        #for test in sorted(self.stats_by_test):
+            test_title = ""
+            for letter in test:
+                test_title += letter + '<br>'
+            table_text += '<th><span title="%s">%s</span></th>' % (test, test_title)
+        for vm in sorted(self.expected_table):
+            table_text += '<tr>'
+            table_text += '<td class="av">%s</td>' % self.decorate_vm(vm)
+            for test in self.results_to_receive:
+                table_text += self.decorate_result(self.expected_table[vm][test], vm, test)
+            table_text += '</tr>'
+        table_text += "</table>"
+
+        table_text += '<div style="margin-left:auto;margin-right:auto;">RF=Rite new Fails, RK=Rite Known fails, NE=New Error, KE=Known Error, KP=Known error but Passed, OK=OK, ??=WTF:) </div>'
+        table_text += '<div style="margin-left:auto;margin-right:auto;">Temporarily deactivated vms: %s</div>' % VM_ALL.vm_deactivated_temp
+
+        table_text += "</div>"
+        return table_text
+
+    def calculate_stats(self):
+
+        self.stats_by_result_type[self.ResultTypes.RITE_FAILS] = 0
+        self.stats_by_result_type[self.ResultTypes.RITE_KNOWN_FAILS] = 0
+        self.stats_by_result_type[self.ResultTypes.OK] = 0
+        self.stats_by_result_type[self.ResultTypes.NEW_ERRORS] = 0
+        self.stats_by_result_type[self.ResultTypes.KNOWN_ERRORS] = 0
+        self.stats_by_result_type[self.ResultTypes.KNOWN_ERRORS_BUT_PASSED] = 0
+
+        for vm in self.all_results:
+            for test in self.all_results[vm]:
+                #adds to total
+                self.total_tests_num += 1
+                #adds result by test
+                if not test in self.stats_by_test:
+                    self.stats_by_test[test] = {}
+                    self.stats_by_test[test][self.ResultTypes.RITE_FAILS] = 0
+                    self.stats_by_test[test][self.ResultTypes.RITE_KNOWN_FAILS] = 0
+                    self.stats_by_test[test][self.ResultTypes.OK] = 0
+                    self.stats_by_test[test][self.ResultTypes.NEW_ERRORS] = 0
+                    self.stats_by_test[test][self.ResultTypes.KNOWN_ERRORS] = 0
+                    self.stats_by_test[test][self.ResultTypes.KNOWN_ERRORS_BUT_PASSED] = 0
+                if not self.all_results[vm][test]['result_type'] in self.stats_by_test[test]:
+                    self.stats_by_test[test][self.all_results[vm][test]['result_type']] = 1
+                else:
+                    self.stats_by_test[test][self.all_results[vm][test]['result_type']] += 1
+                if not 'total' in self.stats_by_test[test]:
+                    self.stats_by_test[test]['total'] = 1
+                else:
+                    self.stats_by_test[test]['total'] += 1
+
+                #adds stats by result_type
+                if not self.all_results[vm][test]['result_type'] in self.stats_by_result_type:
+                    self.stats_by_result_type[self.all_results[vm][test]['result_type']] = 1
+                else:
+                    self.stats_by_result_type[self.all_results[vm][test]['result_type']] += 1
+
+        #calculate sanity  - test success percentage, higher is better
+        # self.stats_by_result_type[self.ResultTypes.RITE_FAILS]
+        if self.total_tests_num > 0:
+
+            self.sanity_percentage = round((((self.stats_by_result_type[self.ResultTypes.OK] +
+                                              self.stats_by_result_type[self.ResultTypes.KNOWN_ERRORS] +
+                                              self.stats_by_result_type[self.ResultTypes.RITE_KNOWN_FAILS] +
+                                              self.stats_by_result_type[self.ResultTypes.KNOWN_ERRORS_BUT_PASSED])*100.0) /
+                                            (self.total_tests_num*100.0))*100, 2)
+            self.rite_fails_percentage = round(((self.stats_by_result_type[self.ResultTypes.RITE_FAILS]*100.0)/(self.total_tests_num*100.0))*100, 2)
+        else:
+            self.sanity_percentage = "Unknown"
+
+        #calculate test/vm matrix
+        for vm in self.all_results:
+            self.expected_table[vm] = {}
+            #here I searche for tehe expected results
+            for test in self.results_to_receive:
+            #for test in self.stats_by_test:
+                if test in self.all_results[vm]:
+                    self.expected_table[vm][test] = self.all_results[vm][test]['result_type']
+                else:
+                    self.expected_table[vm][test] = "NO RUN"
+
+    def decorate_test(self, test, vm=None):
+        if vm:
+            decorated_test = '<a id="res_%s_%s">%s</a>' % (vm, test, test)
+        else:
+            decorated_test = test
 
         if test in self.important_tests:
-            decorated_test = '<span class="bold" style="text-decoration: underline;">%s</span>' % test
+            decorated_test = '<span class="bold" style="text-decoration: underline;">%s</span>' % decorated_test
 
         if test in self.invert_result_tests:
-            decorated_test = '<span class="bold">Inverted: </span>%s' % decorated_test
+            decorated_test = '<span class="bold">Inverted: %s</span>' % decorated_test
 
         if self.disabled_today(test):
-            decorated_test =  '<span style="color: darkgray; text-decoration: line-through;">Disabled today: %s</span>' % decorated_test
+            decorated_test = '<span style="color: darkgray; text-decoration: line-through;">Disabled today: %s</span>' % decorated_test
 
         return decorated_test
 
+    def decorate_result(self, result, vm, test):
+
+        def create_link(text, vm, test, css_class):
+            return '<td class="%s"><a href="#res_%s_%s">%s</td>' % (css_class, vm, test, text)
+
+        if result == self.ResultTypes.RITE_FAILS:
+            return create_link("RF", vm, test, "darkred")
+        elif result == self.ResultTypes.RITE_KNOWN_FAILS:
+            return create_link("RK", vm, test, "green")
+            # return '<td class="green">RK</td>'
+        elif result == self.ResultTypes.NEW_ERRORS:
+            return create_link("NE", vm, test, "red")
+            # return '<td class="red">NE</td>'
+        elif result == self.ResultTypes.KNOWN_ERRORS:
+            return create_link("KE", vm, test, "green")
+            # return '<td class="green">KE</td>'
+        elif result == self.ResultTypes.KNOWN_ERRORS_BUT_PASSED:
+            return create_link("KP", vm, test, "green")
+            # return '<td class="green">KP</td>'
+        elif result == self.ResultTypes.OK:
+            return create_link("OK", vm, test, "green")
+            # return '<td class="green">OK</td>'
+        elif result == "NO RUN":
+            return '<td class="white">NR</td>'
+        else:
+            return '<td class="white">??</td>'
+
+    def decorate_vm(self, vm):
+        if vm in VM_ALL.vm_first_rite:
+            return '<div style="color: red;font-weight: bold; display:inline;">%s</div>' % vm
+        else:
+            return vm
 
     def disabled_today(self, test):
         week = ['monday',
-                  'tuesday',
-                  'wednesday',
-                  'thursday',
-                  'friday',
-                  'saturday',
-                  'sunday', ]
+                'tuesday',
+                'wednesday',
+                'thursday',
+                'friday',
+                'saturday',
+                'sunday', ]
         today = datetime.datetime.today().weekday()
         today_week = week[today]
         #if the test is one enabled only on single days
@@ -484,4 +546,3 @@ class MailSender(object):
                 return True
 
         return False
-

@@ -32,11 +32,12 @@ class SummaryDataColl(object):
                 error_num += 1
         return error_num
 
-    def get_not_to_test(self):
-        for i in self.rows:
-            if i.parsed_result[0] in ['NOT_TO_TEST']:
-                return True, i.rite_result_log
-        return False, "Have to be tested"
+
+    # def get_not_to_test(self):
+    #     for i in self.rows:
+    #         if i.parsed_result[0] in ['NOT_TO_TEST']:
+    #             return True, i.rite_result_log
+    #     return False, "Have to be tested"
 
     def is_rite_failed(self):
         if len(self.rows) == 0:
@@ -60,20 +61,20 @@ class SummaryDataColl(object):
     def state_rows_to_string_full(self, full=True):
         if len(self.rows) == 0:
             return "Nothing was executed - 0 rows"
-        output = "{"
+        output = "<br>{"
         for row in self.rows:
             # if full: prints "RITE FAILED" if rite failed, else the result
             # if NOT full: prints "RITE FAILED" if rite failed, else the result, but only if it's a failed result (omits success)
 
             # rite failed
             if row.rite_failed:
-                output += "["+row.command+"=RITE FAILED!("+row.rite_fail_log+")]"
+                output += "["+row.command+"=RITE FAILED!("+row.rite_fail_log+")]<br>"
             # test failed
             elif row.parsed_result[0].strip() not in ['PASSED', 'NONE'] or full:
-                output += "["+row.command+"="+row.parsed_result[0]+"("+row.rite_result_log+")]"
-        output += "}"
+                output += "["+row.command+"="+row.parsed_result[0]+"("+row.rite_result_log+")]<br>"
+        output += "}<br>"
         if output == "{}" and not full:
-            return "All ok - 0 error rows"
+            return "All ok - 0 error rows<br>"
         return output
 
     def get_crop_filenames(self):
@@ -90,6 +91,10 @@ class SummaryDataColl(object):
                     filenames.append(log)
         print ("Debug: crop numbers= %s" % filenames)
         return filenames
+
+    def refine_crops_with_tesseract(self, ocrd=None):
+        for i in self.rows:
+            i.refine_crop_with_tesseract(ocrd)
 
         #new errors and anomalies (manual state different from current state), and other problems are considered NOT OK
         #saved state = current state is considered "SAVED STATE=True".

@@ -434,7 +434,7 @@ class AgentBuild:
                 add_result("+ SUCCESS UPGRADE BLACKLISTED (The av is in blacklist and I cannot upgrade)")
             else:
                 if level == "Error409":
-                    add_result("+ FAILED CANUPGRADE, NO DEVICE EVIDENCE (or other server error)")
+                    add_result("+ FAILED CANUPGRADE, NO DEVICE EVIDENCE (or other server error. Maybe antivm were not disabled.)")
                 else:
                     add_result("+ FAILED CANUPGRADE. Can_upgrade gave me this level: %s" % level)
             logging.debug("- Uninstalling and closing instance: %s" % instance_id)

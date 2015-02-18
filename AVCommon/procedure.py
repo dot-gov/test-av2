@@ -1,3 +1,5 @@
+import glob
+import os
 import sys
 
 sys.path.append("../AVCommon")
@@ -146,23 +148,50 @@ class Procedure:
         procedure_to_check = Procedure.procedures[procedure]
         logging.debug("\n\n  #######  Procedure to check: %s  #######  \n" % procedure_to_check.name)
         flat_command_list = []
-        Procedure.print_proc(procedure_to_check, flat_command_list, limit=80)
+        reportslist = []
+        Procedure.print_proc(procedure_to_check, flat_command_list, reportslist, limit=80)
         logging.debug("\n\n  #######  Flat command list: %s  #######  \n" % flat_command_list)
-        return flat_command_list
+
+        logging.debug("\n\n  #######  Reports to receive: %s  #######  \n" % reportslist)
+
+        return flat_command_list, reportslist
 
     @staticmethod
-    def print_proc(proc, flat_command_list, space="", limit=999):
+    def print_proc(proc, flat_command_list, reportslist, space="", limit=999):
         for c in proc.command_list:
             if c.name == "CALL":
                 logging.debug(space + "|----, (%s)" % str(c)[:limit])
                 flat_command_list.append(c.name)
                 called_proc = c.args
-                Procedure.print_proc(Procedure.procedures[called_proc], flat_command_list, space=space + "     ", limit=limit)
+                Procedure.print_proc(Procedure.procedures[called_proc], flat_command_list, reportslist, space=space + "     ", limit=limit)
             elif c.name == "REPORT":
                 logging.debug(space + "|----, (%s)" % str(c)[:limit])
                 for called_proc in c.args:
+
+                    if isinstance(called_proc, dict):
+                        to_report_name = called_proc.keys()[0]
+                    else:
+                        to_report_name = called_proc
+                    logging.debug(space + "     " + "|PROCEDURE: %s" % to_report_name)
+                    reportslist.append(to_report_name)
                     flat_command_list.append(c.name)
-                    Procedure.print_proc(Procedure.procedures[called_proc.keys()[0]], flat_command_list, space=space + "     ", limit=limit)
+                    if isinstance(called_proc, dict):
+                        Procedure.print_proc(Procedure.procedures[to_report_name], flat_command_list, reportslist, space=space + "     ", limit=limit)
+                    else:
+                        Procedure.print_proc(Procedure.procedures[to_report_name], flat_command_list, reportslist, space=space + "     ", limit=limit)
             else:
                 logging.debug(space + "|----> %s" % str(c)[:limit])
                 flat_command_list.append(c.name)
+
+    #this loads the procedures ONLY FOR CHECK_PROCEDURE!!!
+    @staticmethod
+    def load_procedures():
+        if os.path.exists("./Rite/AVMaster/conf/procedures.yaml"):
+            Procedure.load_from_file("./Rite/AVMaster/conf/procedures.yaml")
+
+        confs = glob.glob("./Rite/AVMaster/conf/procedures/*.yaml")
+        for conf in confs:
+            # logging.info("Loading conf: %s" % conf)
+            Procedure.load_from_file(conf)
+        # if not Procedure.check():
+        #     raise SyntaxError("Errors in procedures")

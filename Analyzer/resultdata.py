@@ -1,3 +1,5 @@
+from Analyzer import tesserhackt
+
 __author__ = 'mlosito'
 
 from resultstates import ResultStates
@@ -76,6 +78,8 @@ class ResultData(object):
             self.parsed_result = ResultStates.PASSED
 
         #crop case
+        #for default setting, the CROP is NOT parsed with TESSERACT.
+        #To parse with tesseract you need to call the REFINE_CROP method
         if self.command in cropping_commands and self.rite_result is False:
             self.parsed_result = ResultStates.CROP
 
@@ -89,3 +93,29 @@ class ResultData(object):
 
         #debug
         # print "# Parsed result %s for cmd %s -> %s" % (self.rite_result, self.command, self.parsed_result[0])
+
+    def refine_crop_with_tesseract(self, ocrd=None):
+        #if it is not a crop
+        if self.parsed_result != ResultStates.CROP or not self.rite_result_log:
+            return
+        print self.rite_result_log
+        filenames = []
+        log = self.rite_result_log
+        if isinstance(log, list):
+            filenames.extend(log)
+        else:
+            filenames.append(log)
+        print ("Debug: crop numbers= %s" % filenames)
+
+        ok = True
+
+        for filename in filenames:
+            result, word, thumb_filename = tesserhackt.process(av=self.vm, num=filename, ocrd=ocrd)
+            # good states: "GOOD", "NO_TEXT"
+            if result in ['UNKNOWN', 'BAD', 'CRASH']:
+                ok = False
+
+        if ok:
+            self.parsed_result = ResultStates.PASSED
+
+        return ok

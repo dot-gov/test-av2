@@ -25,17 +25,18 @@ _bad = {'Block', 'blocked', 'nimocia', 'quarantena', 'Maggiori', 'Disinfezione',
        'Accessing', 'contains', 'Trojan', 'IOSinfector', 'Deleted', 'Virus', 'removed', 'Betas', 'Threat',
        'found', 'Threat', 'variant', 'Win32', 'Boychi', 'cleaned', 'deleting', 'quarantined', 'vira', 'eliminazione',
        'MalwaelRisk',
-        ' Spy', ' PID', 'worm ', 'Blackberry', 'Mekina'}
-        # removed: 'program'  'detagi', 'dettagli', 'Details',
+        ' Spy', 'worm ', 'Blackberry', 'Mekina'}
+        # removed: 'program'  'detagi', 'dettagli', 'Details', ' PID'
 
 _badbad = {'Intel', 'lntel', 'Chipset', 'Utility', 'Backup', 'ChipUtil', 'SmartDefrag', 'DiskInfo', 'EditPad', 'TreeSizeFree', 'bkmaker', 'agent',
-           'Crisis', 'Morkut', 'zrcs', 'hackingteam', 'hacking', 'CrystalDisklnfo', 'lntel(c)', 'Chipset', 'Utility'}
+           'Crisis', 'Morkut', 'zrcs', 'hackingteam', 'hacking', 'CrystalDisklnfo', 'lntel(c)', 'Chipset', 'Utility', 'TreeSize', 'harddisk',
+           'space manager'}
 
 _ignore_list_av = {'Kaspersky', 'Internet', 'Security', '2013', 'COMODO', 'Norton', 'SMART', 'AVG', 'Bitdefender', 'avira',
                    'CMC'}
 _ignore_list = {'AntiVirus'}
 
-_white_white_list = {'First Computer Scan'}
+_white_white_list = {'First Computer Scan', 'High-performance'}
 
 class OcrDict():
 
@@ -72,7 +73,7 @@ class OcrDict():
 
         self.original_size = len(self.white_white_list) + len(self.good) + len(self.crash) + len(self.badall)
 
-        print("...expanded from %s to  %s words" % (ocrd.original_size, ocrd.size))
+        print("...expanded from %s to  %s words" % (self.original_size, self.size))
 
     def parseresult(self, text):
 
@@ -85,7 +86,7 @@ class OcrDict():
         for k, v in self.white_white_list.items():
             for word in v:
                 if word in text:
-                    return "VGOOD", word, k, " - found: '%s' sounds like: '%s'" % (word, k)
+                    return "GOOD", word, k, " - found: '%s' sounds like: '%s'" % (word, k)
 
         for k, v in self.badall.items():
             for word in v:
