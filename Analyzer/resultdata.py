@@ -116,6 +116,6 @@ class ResultData(object):
                 ok = False
 
         if ok:
-            self.parsed_result = ResultStates.PASSED
+            self.parsed_result = ResultStates.GOOD_CROP
 
         return ok

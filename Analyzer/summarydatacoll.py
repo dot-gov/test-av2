@@ -21,17 +21,23 @@ class SummaryDataColl(object):
     def get_error_rows(self):
         error_rows = []
         for i in self.rows:
-            if i.parsed_result[0] not in ['PASSED', 'NONE'] or i.rite_failed:
+            if i.parsed_result[0] not in ['PASSED', 'NONE', 'GOOD_CROP'] or i.rite_failed:
                 error_rows.append(i)
         return error_rows
 
     def get_error_rows_count(self):
         error_num = 0
         for i in self.rows:
-            if i.parsed_result[0] not in ['PASSED', 'NONE'] or i.rite_failed:
+            if i.parsed_result[0] not in ['PASSED', 'NONE', 'GOOD_CROP'] or i.rite_failed:
                 error_num += 1
         return error_num
 
+    def get_good_crops_rows_count(self):
+        good_crop_num = 0
+        for i in self.rows:
+            if i.parsed_result[0] in ['GOOD_CROP']:
+                good_crop_num += 1
+        return good_crop_num
 
     # def get_not_to_test(self):
     #     for i in self.rows:
@@ -70,9 +76,9 @@ class SummaryDataColl(object):
             if row.rite_failed:
                 output += "["+row.command+"=RITE FAILED!("+row.rite_fail_log+")]<br>"
             # test failed
-            elif row.parsed_result[0].strip() not in ['PASSED', 'NONE'] or full:
+            elif row.parsed_result[0].strip() not in ['PASSED', 'NONE', 'GOOD_CROP'] or full:
                 output += "["+row.command+"="+row.parsed_result[0]+"("+row.rite_result_log+")]<br>"
-        output += "}<br>"
+        output += "}"
         if output == "{}" and not full:
             return "All ok - 0 error rows<br>"
         return output
@@ -108,6 +114,8 @@ class SummaryDataColl(object):
         man_err = manual_state_rows.get_error_rows_count()
         prev_err = previous_state_rows.get_error_rows_count()
         saved_error_comment = ""
+
+        good_crop_curr_num = self.get_good_crops_rows_count()
 
         if cur_err == 0 and prev_err == 0 and man_err == 0:
             message = "All OK! Actual state is: PASSED, previous state was: PASSED, (known state is: PASSED)"
@@ -148,6 +156,9 @@ class SummaryDataColl(object):
                                                                               manual_state_rows.state_rows_to_string_short(),
                                                                               previous_state_rows.state_rows_to_string_short())
             ok = False
+
+        if good_crop_curr_num > 0:
+            message += "- Also %s crops considered not detections (or empty) were ignored." % good_crop_curr_num
         return message, ok, saved_error, saved_error_comment
 
     def compare_three_states_failure(self, manual_state_rows, message, previous_state_rows):
