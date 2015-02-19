@@ -211,8 +211,11 @@ def process_yaml(filenames, results_to_receive):
                                           crop_filenames=comparison_result['crop_filenames'])
                     #NB does not sets retest for inverted results
 
-            print "*********************     DEBUG YESTERDAY     *********************"
-            # print comparison_result['oldies']
+            #try to print yesterday's data
+            # if 'oldies' in comparison_result:
+            #     print "*********************     DEBUG YESTERDAY     *********************"
+            #     oldies = comparison_result['oldies']
+            #     print oldies
 
         #count processed vms
         vm_count += 1

@@ -41,6 +41,7 @@ class MailSender(object):
         KNOWN_ERRORS = "KNOWN ERRORS"
         KNOWN_ERRORS_BUT_PASSED = "KNOWN ERRORS BUT PASSED"
         OK = "OK"
+        NOT_RUN = "NO RUN"
 
     #all datas on tests
     all_results = {}
@@ -49,6 +50,7 @@ class MailSender(object):
     total_tests_num = 0
     sanity_percentage = 0
     rite_fails_percentage = 0
+    not_run_percentage = 0
     #stats dicts
     stats_by_test = {}
     stats_by_result_type = {}
@@ -84,15 +86,15 @@ class MailSender(object):
         hostname = socket.gethostname()
         subject = 'ANALYZER_REPORT@%s - Sanity=%s%%' % (hostname, self.sanity_percentage)
 
-        for recipient in mail_recipients:
-            # Make sure email addresses do not contain non-ASCII characters
-            recipient = recipient.encode('ascii')
-            msg_root.Message.add_header('To', recipient)
+        # for recipient in mail_recipients:
+        #     # Make sure email addresses do not contain non-ASCII characters
+        #     recipient = recipient.encode('ascii')
+        #     msg_root.Message.add_header('To', recipient)
 
         # recipient = recipient.encode('ascii')
         msg_root['Subject'] = Header(unicode(subject), header_charset)
         msg_root['From'] = sender_name
-        # msg_root['To'] = recipient
+        #msg_root['To'] = ", ".join(mail_recipients)
 
         print "Mail enabled. Msg to: %s to be sent" % msg_root['To']
         # Send the message via our own SMTP server, but don't include the
@@ -100,7 +102,7 @@ class MailSender(object):
         s = smtplib.SMTP(mail_server)
 
         # reci[pients as list [msg_root['To']]
-        s.sendmail(msg_root['From'], msg_root.Message.get_all('To'), msg_root.as_string())
+        s.sendmail(msg_root['From'], mail_recipients, msg_root.as_string())
         s.quit()
 
     def add_result(self, vm, test, result_types, message, details=None, save_strings=None, saved_error_comment=None, crop_filenames=None):
@@ -235,6 +237,10 @@ class MailSender(object):
                 background-color: white;
                 color: black;
                 }
+            td.gray {
+                background-color: gray;
+                color: black;
+                }
             /* All link in the table should be white!*/
             table a {
                 color: white;
@@ -343,14 +349,15 @@ class MailSender(object):
         stat_text += '<div class="testcontainer">'
         #if sanity is a number, displays percentage bar
         if not self.sanity_percentage == "Unknown":
-            stat_text += "Global Sanity: %s%% (Rite fails: %s%%)" % (self.sanity_percentage, self.rite_fails_percentage)
+            stat_text += "Global Sanity: %s%% (Not run: %s%% - Rite fails: %s%%)" % (self.sanity_percentage, self.not_run_percentage, self.rite_fails_percentage)
             stat_text += '''
                 <div class="percentbar">
                     <div style="width:%spx;"></div>
+                    <div style="width:%spx;background:white;"></div>
                     <div style="width:%spx;background:darkred;"></div>
                 </div>
                 </br>
-                ''' % (self.sanity_percentage*2, self.rite_fails_percentage*2)
+                ''' % (self.sanity_percentage*2, self.not_run_percentage*2, self.rite_fails_percentage*2)
         else:
             stat_text += "Unknown Sanity (0 test runs reported from Rite)<br>"
 
@@ -372,19 +379,21 @@ class MailSender(object):
             test_sane = self.stats_by_test[test][self.ResultTypes.OK] + self.stats_by_test[test][self.ResultTypes.KNOWN_ERRORS_BUT_PASSED] +\
                 self.stats_by_test[test][self.ResultTypes.KNOWN_ERRORS] + self.stats_by_test[test][self.ResultTypes.RITE_KNOWN_FAILS]
             test_sanity = round(((test_sane*100.0)/(self.stats_by_test[test]['total']*100.0))*100, 2)
+            test_no_run = round(((self.stats_by_test[test][self.ResultTypes.NOT_RUN]*100.0)/(self.stats_by_test[test]['total']*100.0))*100, 2)
             test_rite_fails = round(((self.stats_by_test[test][self.ResultTypes.RITE_FAILS]*100.0)/(self.stats_by_test[test]['total']*100.0))*100, 2)
 
             stat_text += '''
-            <div class="test"> Test: %s (Sane: %s%%, Rite fails: %s%%)
+            <div class="test"> Test: %s (Sane: %s%%, Not run: %s%%, Rite fails: %s%%)
                 <div class="percentbar">
 
                     <div style="width:%spx;"></div>
+                    <div style="width:%spx;background:white;"></div>
                     <div style="width:%spx;background:darkred;"></div>
 
                 </div>
             </div>
             </br><hr>
-            ''' % (self.decorate_test(test), test_sanity, test_rite_fails, test_sanity*2, test_rite_fails*2)
+            ''' % (self.decorate_test(test), test_sanity, test_no_run, test_rite_fails, test_sanity*2, test_no_run*2, test_rite_fails*2)
 
         #end testcontainer
         stat_text += '</div>'
@@ -403,7 +412,11 @@ class MailSender(object):
             test_title = ""
             for letter in test:
                 test_title += letter + '<br>'
-            table_text += '<th><span title="%s">%s</span></th>' % (test, test_title)
+            #if disabled, text is gray
+            if self.disabled_today(test):
+                table_text += '<th><span style="color: darkgray;" title="%s">%s</span></th>' % (test, test_title)
+            else:
+                table_text += '<th><span title="%s">%s</span></th>' % (test, test_title)
         for vm in sorted(self.expected_table):
             table_text += '<tr>'
             table_text += '<td class="av">%s</td>' % self.decorate_vm(vm)
@@ -412,7 +425,7 @@ class MailSender(object):
             table_text += '</tr>'
         table_text += "</table>"
 
-        table_text += '<div style="margin-left:auto;margin-right:auto;">RF=Rite new Fails, RK=Rite Known fails, NE=New Error, KE=Known Error, KP=Known error but Passed, OK=OK, ??=WTF:) </div>'
+        table_text += '<div style="margin-left:auto;margin-right:auto;">RF=Rite new Fails, RK=Rite Known fails, NE=New Error, KE=Known Error, KP=Known error but Passed, OK=OK, NT=Not enabled Today, ??=WTF:) </div>'
         table_text += '<div style="margin-left:auto;margin-right:auto;">Temporarily deactivated vms: %s</div>' % VM_ALL.vm_deactivated_temp
 
         table_text += "</div>"
@@ -420,12 +433,20 @@ class MailSender(object):
 
     def calculate_stats(self):
 
+        #detect NOT RUN
+        for vm in self.all_results:
+            for test in self.results_to_receive:
+                if test not in self.all_results[vm]:
+                    self.add_result(vm, test, self.ResultTypes.NOT_RUN, "No Message")
+
+        #initialize structures:
         self.stats_by_result_type[self.ResultTypes.RITE_FAILS] = 0
         self.stats_by_result_type[self.ResultTypes.RITE_KNOWN_FAILS] = 0
         self.stats_by_result_type[self.ResultTypes.OK] = 0
         self.stats_by_result_type[self.ResultTypes.NEW_ERRORS] = 0
         self.stats_by_result_type[self.ResultTypes.KNOWN_ERRORS] = 0
         self.stats_by_result_type[self.ResultTypes.KNOWN_ERRORS_BUT_PASSED] = 0
+        self.stats_by_result_type[self.ResultTypes.NOT_RUN] = 0
 
         for vm in self.all_results:
             for test in self.all_results[vm]:
@@ -440,6 +461,7 @@ class MailSender(object):
                     self.stats_by_test[test][self.ResultTypes.NEW_ERRORS] = 0
                     self.stats_by_test[test][self.ResultTypes.KNOWN_ERRORS] = 0
                     self.stats_by_test[test][self.ResultTypes.KNOWN_ERRORS_BUT_PASSED] = 0
+                    self.stats_by_test[test][self.ResultTypes.NOT_RUN] = 0
                 if not self.all_results[vm][test]['result_type'] in self.stats_by_test[test]:
                     self.stats_by_test[test][self.all_results[vm][test]['result_type']] = 1
                 else:
@@ -465,6 +487,7 @@ class MailSender(object):
                                               self.stats_by_result_type[self.ResultTypes.KNOWN_ERRORS_BUT_PASSED])*100.0) /
                                             (self.total_tests_num*100.0))*100, 2)
             self.rite_fails_percentage = round(((self.stats_by_result_type[self.ResultTypes.RITE_FAILS]*100.0)/(self.total_tests_num*100.0))*100, 2)
+            self.not_run_percentage = round(((self.stats_by_result_type[self.ResultTypes.NOT_RUN]*100.0)/(self.total_tests_num*100.0))*100, 2)
         else:
             self.sanity_percentage = "Unknown"
 
@@ -473,11 +496,10 @@ class MailSender(object):
             self.expected_table[vm] = {}
             #here I searche for tehe expected results
             for test in self.results_to_receive:
-            #for test in self.stats_by_test:
-                if test in self.all_results[vm]:
-                    self.expected_table[vm][test] = self.all_results[vm][test]['result_type']
-                else:
-                    self.expected_table[vm][test] = "NO RUN"
+                # if test in self.all_results[vm]:
+                self.expected_table[vm][test] = self.all_results[vm][test]['result_type']
+                # else:
+                #     self.expected_table[vm][test] = self.ResultTypes.NOT_RUN
 
     def decorate_test(self, test, vm=None):
         if vm:
@@ -501,6 +523,9 @@ class MailSender(object):
         def create_link(text, vm, test, css_class):
             return '<td class="%s"><a href="#res_%s_%s">%s</td>' % (css_class, vm, test, text)
 
+        if self.disabled_today(test):
+            return create_link("NT", vm, test, "gray")
+
         if result == self.ResultTypes.RITE_FAILS:
             return create_link("RF", vm, test, "darkred")
         elif result == self.ResultTypes.RITE_KNOWN_FAILS:
@@ -518,7 +543,7 @@ class MailSender(object):
         elif result == self.ResultTypes.OK:
             return create_link("OK", vm, test, "green")
             # return '<td class="green">OK</td>'
-        elif result == "NO RUN":
+        elif result == self.ResultTypes.NOT_RUN:
             return '<td class="white">NR</td>'
         else:
             return '<td class="white">??</td>'

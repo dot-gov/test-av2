@@ -122,18 +122,18 @@ def crop(iter):
     global im1
 
     logging.debug("crop: %s" % iter)
-    d1= im1.getdata()
+    d1 = im1.getdata()
     try:
         im2 = ImageGrab.grab()
     except:
         logging.exception("Cannot grab")
         return "ERROR"
 
-    d2=im2.getdata()
+    d2 = im2.getdata()
 
     w = d1.size[0]
     h = d1.size[1] - 40
-    l,r,t,b = w,0,h,0
+    l, r, t, b = w, 0, h, 0
 
     for y in range(h):
         for x in range(w):
@@ -141,20 +141,20 @@ def crop(iter):
             assert i < w*h
             if(d1[i] != d2[i]):
                 #print x,y
-                l = min(x,l)
-                r = max(x,r)
-                b = max(y,b)
-                t = min(y,t)
+                l = min(x, l)
+                r = max(x, r)
+                b = max(y, b)
+                t = min(y, t)
 
     #logging.debug("crop box: %s" % str((l,t,r,b)))
 
-    c=im2.crop((l,t,r,b))
+    c = im2.crop((l, t, r, b))
     im1 = im2
-    if c.size[0] > 50 and c.size[1] > 50 and ( c.size[0] * c.size[1] > 75*68 ):
-        name = "%s/%s.png" % ( config.basedir_crop, iter)
+    if c.size[0] > 50 and c.size[1] > 50 and (c.size[0] * c.size[1] > 75*68):
+        name = "%s/%s.png" % (config.basedir_crop, iter)
         logging.debug("actual crop save: %s" % name)
-        logging.debug("name: %s size: %s" % ( name, c.size ))
-        name = name.replace('/','\\')
+        logging.debug("name: %s size: %s" % (name, c.size))
+        name = name.replace('/', '\\')
         c.save(name)
         return iter
     else:

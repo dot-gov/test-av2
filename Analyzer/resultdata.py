@@ -110,6 +110,7 @@ class ResultData(object):
         ok = True
 
         for filename in filenames:
+            print filename
             result, word, thumb_filename = tesserhackt.process(av=self.vm, num=filename, ocrd=ocrd)
             # good states: "GOOD", "NO_TEXT"
             if result in ['UNKNOWN', 'BAD', 'CRASH']:

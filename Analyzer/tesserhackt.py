@@ -9,7 +9,7 @@ import subprocess
 
 from ocrdict import OcrDict
 
-debug = True
+debug = False
 
 
 def main():
@@ -33,13 +33,19 @@ def process(av="*", num="*", ocrd=None):
         print("No crop file found.")
         return "NO CROP FOUND", "", ""
 
-    if debug or (av == "*" and num == "*"):
-        return processlist(prefix, filelist, ocrd)
-    else:
-        return processlist(prefix, filelist[:1], ocrd)
+    return processlist(prefix, filelist, ocrd)
+
+    # if debug or (av == "*" and num == "*"):
+    #     #processes all
+    #     return processlist(prefix, filelist, ocrd)
+    #     #it should process only one image but in rare case if there are multiple images with the same number, may be multiple
+    # else:
+    #     # print filelist[:1]
+    #     return processlist(prefix, filelist, ocrd)
 
 
 def processlist(prefix, filelist, ocrd):
+    result_list = []
     if ocrd is None:
         ocrd = OcrDict()
 
@@ -58,6 +64,16 @@ def processlist(prefix, filelist, ocrd):
 
         if len(filelist) == 1:
             return result, word, thumb_filename
+        else:
+            if result in ['UNKNOWN', 'BAD', 'CRASH']:
+                return result, word, thumb_filename
+            else:
+                result_list.append([result, word, thumb_filename])
+
+    #I came here if the filelist is multiple and has non bad/crash/unknown
+    #i return just the first result
+    return result_list[0]
+
 
 
 def parse_crop(crop_filename):
