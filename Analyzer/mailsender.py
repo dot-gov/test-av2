@@ -25,8 +25,8 @@ class MailSender(object):
 
     important_tests = ['VM_ELITE_FAST_SCOUTDEMO_SRV', 'VM_ELITE_FAST_SRV', 'VM_EXPLOIT_SRV', 'VM_SOLDIER_SRV', 'VM_STATIC_SRV']
 
-    enabled = {'VM_ELITE_FAST_DEMO_SRV': ['sunday'],
-               'VM_EXPLOIT_SRV': ['sunday'],
+    # 'VM_ELITE_FAST_DEMO_SRV': ['sunday'],
+    enabled = {'VM_EXPLOIT_SRV': ['sunday'],
                'VM_MELT_SRV_AIR': ['wednesday', 'saturday'],
                'VM_MELT_SRV_FIF': ['monday', 'thursday'],
                'VM_MELT_SRV_UTO': ['tuesday', 'friday'],
@@ -520,31 +520,35 @@ class MailSender(object):
 
     def decorate_result(self, result, vm, test):
 
+        #function to create a link
         def create_link(text, vm, test, css_class):
             return '<td class="%s"><a href="#res_%s_%s">%s</td>' % (css_class, vm, test, text)
 
+        if result == self.ResultTypes.RITE_FAILS:
+            return create_link("RF", vm, test, "darkred")
+
+        elif result == self.ResultTypes.NEW_ERRORS:
+            return create_link("NE", vm, test, "red")
+
+        elif result == self.ResultTypes.NOT_RUN:
+            return '<td class="white">NR</td>'
+
+        #I see if there is an error before using the "Not Today" Option
         if self.disabled_today(test):
             return create_link("NT", vm, test, "gray")
 
-        if result == self.ResultTypes.RITE_FAILS:
-            return create_link("RF", vm, test, "darkred")
         elif result == self.ResultTypes.RITE_KNOWN_FAILS:
             return create_link("RK", vm, test, "green")
-            # return '<td class="green">RK</td>'
-        elif result == self.ResultTypes.NEW_ERRORS:
-            return create_link("NE", vm, test, "red")
-            # return '<td class="red">NE</td>'
+
         elif result == self.ResultTypes.KNOWN_ERRORS:
             return create_link("KE", vm, test, "green")
-            # return '<td class="green">KE</td>'
+
         elif result == self.ResultTypes.KNOWN_ERRORS_BUT_PASSED:
             return create_link("KP", vm, test, "green")
-            # return '<td class="green">KP</td>'
+
         elif result == self.ResultTypes.OK:
             return create_link("OK", vm, test, "green")
-            # return '<td class="green">OK</td>'
-        elif result == self.ResultTypes.NOT_RUN:
-            return '<td class="white">NR</td>'
+
         else:
             return '<td class="white">??</td>'
 
