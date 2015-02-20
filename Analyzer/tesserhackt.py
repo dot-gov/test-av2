@@ -11,29 +11,31 @@ from ocrdict import OcrDict
 
 debug = False
 
+log_dir = '/home/avmonitor/logs/'
+hostname = socket.gethostname()
+if hostname == 'rite':
+    log_dir = '/home/avmonitor/Rite/logs/'
+    # to test
+    #prefix = '/home/avmonitor/AVTest2_old/logs/'
+
 
 def main():
     process()
 
 
+#process is a wrapper which finds the filenames and passes them to processlist
 def process(av="*", num="*", ocrd=None):
-    prefix = '/home/avmonitor/logs/'
-    hostname = socket.gethostname()
-    if hostname == 'rite':
-        prefix = '/home/avmonitor/Rite/logs/'
-        # to test
-        #prefix = '/home/avmonitor/AVTest2_old/logs/'
 
     print("av = %s, nume = %s" % (av, num))
 
     #if num is not * it gets only the file with the specified number
-    filelist = sorted(glob.glob(prefix + "*/crop/%s/%s.png" % (av, num)))  # key=os.path.getmtime, reverse=True)
+    filelist = sorted(glob.glob(log_dir + "*/crop/%s/%s.png" % (av, num)))  # key=os.path.getmtime, reverse=True)
 
     if not len(filelist):
         print("No crop file found.")
         return "NO CROP FOUND", "", ""
 
-    return processlist(prefix, filelist, ocrd)
+    return processlist(log_dir, filelist, ocrd)
 
     # if debug or (av == "*" and num == "*"):
     #     #processes all
@@ -44,7 +46,7 @@ def process(av="*", num="*", ocrd=None):
     #     return processlist(prefix, filelist, ocrd)
 
 
-def processlist(prefix, filelist, ocrd):
+def processlist(prefix, filelist, ocrd, av=None):
     result_list = []
     if ocrd is None:
         ocrd = OcrDict()
@@ -59,8 +61,18 @@ def processlist(prefix, filelist, ocrd):
         thumb_filename = ""
 
         # saves
-        if result in ['UNKNOWN', 'BAD', 'CRASH', "NO_TEXT"]:
-            thumb_filename = save_thumbnail(file_input_full)
+        if not av:
+            if result in ['UNKNOWN', 'BAD', 'CRASH', "NO_TEXT"]:
+                thumb_filename = save_thumbnail(file_input_full)
+        #if called from tesserest we should save the image!
+        else:
+            out_dir = "%spopup_thumbs/%s/" % (log_dir, av)
+            if result in ['UNKNOWN', 'BAD', 'CRASH']:
+                out_dir += "OK/"
+                thumb_filename = save_thumbnail(file_input_full, out_dir)
+            elif result in ['GOOD', "NO_TEXT"]:
+                out_dir += "NOK/"
+                thumb_filename = save_thumbnail(file_input_full, out_dir)
 
         if len(filelist) == 1:
             return result, word, thumb_filename
@@ -73,7 +85,6 @@ def processlist(prefix, filelist, ocrd):
     #I came here if the filelist is multiple and has non bad/crash/unknown
     #i return just the first result
     return result_list[0]
-
 
 
 def parse_crop(crop_filename):
@@ -100,13 +111,24 @@ def exec_tesseract(out_filename):
     return str(comm[0])
 
 
-def is_text_ok(text):
-    return True
+#if you want the thumb in another dir prlease provide a FULL out_dir name
+#it will becreated if does not exists
+def save_thumbnail(crop_filename, out_dir=None):
+    if out_dir:
+        if not os.path.exists(out_dir):
+            os.makedirs(out_dir)
 
-
-def save_thumbnail(crop_filename):
     im = Image.open(crop_filename)
+
+    if out_dir:
+        crop_filename = os.path.join(out_dir, os.path.basename(crop_filename))
+
     out_filename = crop_filename.replace(".png", "_thumb.jpg")
+    i = 0
+    while os.path.exists(out_filename):
+        out_filename = crop_filename.replace(".png", "_thumb_%s.jpg" % i)
+        i += 1
+
     im.save(out_filename, quality=80, optimize=True)
     return out_filename
 

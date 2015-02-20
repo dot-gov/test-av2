@@ -45,6 +45,10 @@ def show_home():
 
 def parsefile(my_request, ocrd):
     f = my_request.files['image']
+    if 'av' in my_request.form:
+        av = my_request.form['av']
+    else:
+        av = None
     cli_filename = secure_filename(f.filename)
     directory_name = tempfile.mkdtemp()
     print directory_name
@@ -54,17 +58,20 @@ def parsefile(my_request, ocrd):
     print out_filename
     f.close()
     # sends a list of a single file
-    result, word, thumb_filename = tesserhackt.processlist(directory_name, [cli_filename], ocrd)
+    result, word, thumb_filename = tesserhackt.processlist(directory_name, [cli_filename], ocrd, av)
 
+    #temp cleanup!
     os.remove(out_filename)
     os.remove(out_filename.replace(".png", ".jpg"))
-    os.remove(thumb_filename)
+    if not av:
+        os.remove(thumb_filename)
+
     os.removedirs(directory_name)
 
     print 'Parsed_file=%s' % out_filename
     res_out = 'Result= %s\n' % result
-    res_out += 'Found= %s\n' % word
     res_out += 'Thumb= %s\n' % thumb_filename
+    res_out += 'Found= %s\n' % word
     return res_out
 
 if __name__ == '__main__':

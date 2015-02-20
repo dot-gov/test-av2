@@ -17,12 +17,12 @@ _bad = {'Block', 'blocked', 'nimocia', 'quarantena', 'Maggiori', 'Disinfezione',
        'been', 'deleted', 'action', 'alert', 'THREAT', 'DELETED', 'default.apk', 'classes.dex', 'quarantena', 'Maggioi', 'maggiori',
        'Disinfezione', 'minaccia', 'rievata', 'eininazione.', 'Attendi', 'prooesso', 'Disinfezione', 'minaccia', 'rievata', 'rilevata',
        'eininazione', 'eliminazione', 'Attendi', 'termine', 'processo', 'prooesso', 'installdefaultapk', 'infected', 'handling', 'failed',
-       'action', 'alert', 'Request', 'Outbound', 'Traffc', 'Detected', 'detected', 'large', 'amount', 'suspicious',
+       'action', 'alert', 'Request', 'Outbound', 'Traffc', 'large', 'amount', 'suspicious',
        'outbound', 'traffc', 'infected', 'something', 'Power', 'Eraser', 'detect', 'remove', 'Power', 'Eraser', 'message', 'outbound',
        'traffti', 'traffic', 'virus', 'W0rm', 'Kid0', 'install.exe', 'Malware', 'detected', 'MPRESS', 'HEUR', 'contains',
-       'Trojan', 'IphcuneOS', 'Malware', 'detected', 'contains', 'Trojan', 'IphoneOS', 'Mekir', 'Accessing',
-       'contains', 'Trojan', 'Malware', 'detected', 'Accessing', 'contains', 'Trojan', 'IOSinfect0r',
-       'Accessing', 'contains', 'Trojan', 'IOSinfector', 'Deleted', 'Virus', 'removed', 'Betas', 'Threat',
+       'Trojan', 'IphcuneOS', 'Malware', 'contains', 'Trojan', 'IphoneOS', 'Mekir', 'Accessing',
+       'contains', 'Trojan', 'Malware', 'Accessing', 'contains', 'Trojan', 'IOSinfect0r', 'detection',
+       'Accessing', 'contains', 'Trojan', 'IOSinfector', 'Deleted', 'Virus', 'removed', 'Betas', 'Threat', 'Malicious',
        'found', 'Threat', 'variant', 'Win32', 'Boychi', 'cleaned', 'deleting', 'quarantined', 'vira', 'eliminazione',
        'MalwaelRisk',
         ' Spy', 'worm ', 'Blackberry', 'Mekina'}
@@ -30,7 +30,8 @@ _bad = {'Block', 'blocked', 'nimocia', 'quarantena', 'Maggiori', 'Disinfezione',
 
 _badbad = {'Intel', 'lntel', 'Chipset', 'Utility', 'Backup', 'ChipUtil', 'SmartDefrag', 'DiskInfo', 'EditPad', 'TreeSizeFree', 'bkmaker', 'agent',
            'Crisis', 'Morkut', 'zrcs', 'hackingteam', 'hacking', 'CrystalDisklnfo', 'lntel(c)', 'Chipset', 'Utility', 'TreeSize', 'harddisk',
-           'space manager'}
+           'space manager',  'Backdoor', 'Trojan', 'Morcut', 'DaVinci', 'Da.Vinci', 'FinSpy', 'Mekir', 'Riskware', 'Infostealer',
+           'Fakeinst', 'Korablin', 'Dropper', 'Boychi', 'Injector', 'ZPack', 'DaVinci', 'Da Vinci'}
 
 _ignore_list_av = {'Kaspersky', 'Internet', 'Security', '2013', 'COMODO', 'Norton', 'SMART', 'AVG', 'Bitdefender', 'avira',
                    'CMC'}
@@ -66,8 +67,8 @@ class OcrDict():
             perm = permutation(e.lower())
             self.badall[e] = perm
             self.size += len(perm)
-            perm = permutation(e.lower())
         for e in _badbad:
+            perm = permutation(e.lower())
             self.badall[e] = perm
             self.size += len(perm)
 

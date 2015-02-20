@@ -6,10 +6,10 @@ import mimetools
 import os
 
 
-def post_image():
-    to_post_file_name = "/Users/mlosito/Desktop/241.png"
+#use just ip for host (default = Rit# e)
+def post_image(to_post_file_name, host="172.20.20.192", av=None):
 
-    dest = "http://172.20.20.192:55002/"
+    dest = "http://%s:55002/" % host
 
     to_post_file_handle = open(to_post_file_name, "rb")
     payload = to_post_file_handle.read()
@@ -21,6 +21,13 @@ def post_image():
     bound = mimetools.choose_boundary()
 
     post_string = '--' + bound + '\r\n'
+
+    if av:
+        post_string += 'Content-Disposition: form-data; name="av"\r\n'
+        post_string += '\r\n'
+        post_string += av + '\r\n'
+        post_string += '--' + bound + '\r\n'
+
     post_string += 'Content-Disposition: file; name="%s"; filename="%s" \r\n' % ('image', os.path.basename(to_post_file_name))
     post_string += 'Content-Type: %s \r\n' % mimetype
     post_string += '' + '\r\n'
@@ -35,7 +42,7 @@ def post_image():
     request.add_data(body)
 
     #debug
-    # print request.get_data()
+    print request.get_data()
 
     resp = urllib2.urlopen(request).read()
 
@@ -44,12 +51,19 @@ def post_image():
 
 
 def parse_response(resp):
-    result = resp.splitlines()[0]
-    result = result.replace("Result= ").strip()
-    if result in ["NO_TEXT", "GOOD", "BAD", "CRASH", "UNKNOWN"]:
-        return result
+    resu = resp.splitlines()[0]
+    resu = resu.replace("Result= ", "").strip()
+
+    filename = resp.splitlines()[1]
+    filename = filename.replace("Thumb= ", "").strip()
+
+    if resu in ["NO_TEXT", "GOOD", "BAD", "CRASH", "UNKNOWN"]:
+        return resu, filename
     else:
         return False
 
 if __name__ == "__main__":
-    post_image()
+    resp = post_image("/Users/mlosito/Desktop/241.png", host="172.20.20.192", av="avira")
+    resu, thumb_filename = parse_response(resp)
+    print resu
+    print thumb_filename
