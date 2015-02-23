@@ -100,9 +100,9 @@ class AudioTestSpecific(functional_common.Check):
             print "CAMERA"
             self.check_camera(command_dev)
 
-            # check mic
-            print "MIC"
-            self.check_mic(command_dev, c)
+        # check mic
+        print "MIC"
+        self.check_mic(command_dev, c)
 
     def final_assertions(self, results):
         programs = results['evidence_programs_last'].get('call',[])
@@ -120,10 +120,16 @@ class AudioTestSpecific(functional_common.Check):
                 print "FAILED: " + e
                 ret = False
 
-        for t in ['mic','call','camera']:
+        for t in ['mic']:
             if t not in results['evidence_types_last']:
                 print "FAILED: " + t
                 ret = False
+
+        if results['have_root']:
+            for t in ['call','camera']:
+                if t not in results['evidence_types_last']:
+                    print "FAILED: " + t
+                    ret = False
 
 
         return ret
