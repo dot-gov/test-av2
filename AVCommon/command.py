@@ -34,7 +34,7 @@ class WEFake:
     def __str__(self):
         return "%s %s" % ("WindowsError", self.args)
 
-if "WindowsError" not in dir (exceptions):
+if "WindowsError" not in dir(exceptions):
     exceptions.WindowsError = WEFake
 
 
@@ -211,7 +211,9 @@ class Command(object):
         self.name = name
         self.success = success
         self.args = args
-        if  isinstance(result, Exception):
+        if isinstance(result, Exception):
+            self.result = str(result)
+        elif isinstance(result, WEFake):
             self.result = str(result)
         else:
             self.result = result
@@ -229,7 +231,7 @@ class Command(object):
     def serialize(self):
         logging.debug("serialize result: %s" % self.result)
 
-        serialized = pickle.dumps(( self.name, self.success, self.args, self.result, self.vm, self.side, self.timestamp ),
+        serialized = pickle.dumps((self.name, self.success, self.args, self.result, self.vm, self.side, self.timestamp),
                                   pickle.HIGHEST_PROTOCOL)
         #logging.debug("pickle.dumps(%s)" % serialized)
         return base64.b64encode(serialized)

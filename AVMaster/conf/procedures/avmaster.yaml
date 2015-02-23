@@ -9,7 +9,7 @@ SYSTEM_FUNCTIONAL_AVMASTER:
     - SET:
         backend: 192.168.100.201
         frontend: 192.168.100.204
-    - CALL: VM_CLEAN_EVIDENCES
+    - CALL: VM_CLEAN_EVIDENCES_AND_CACHE
     - UNINSTALL
     - PUSH: [ AVAgent/assets/facebook.bat ]
     - BUILD: [ pull, windows_elite, silent ]
@@ -76,7 +76,7 @@ SYSTEM_FUNCTIONAL_SKYPE_AVMASTER:
         frontend: 192.168.100.204
 
     - UNINSTALL
-    - CALL: VM_CLEAN_EVIDENCES
+    - CALL: VM_CLEAN_EVIDENCES_AND_CACHE
 
     - PUSH: [ AVAgent/assets/skype.bat ]
     - BUILD: [ pull, windows_elite, silent ]

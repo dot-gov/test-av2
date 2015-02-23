@@ -19,6 +19,7 @@ from ConfigParser import ConfigParser
 import ctypes
 import shutil
 import glob
+from AVAgent import util_agent
 
 from AVCommon.logger import logging
 from AVCommon import process
@@ -231,17 +232,22 @@ class AgentBuild:
         ctypes.windll.user32.mouse_event(MOUSEEVENTF_MOVEABS, x, y, 0, 0)
         # then click
         ctypes.windll.user32.mouse_event(MOUSEEVENTF_CLICK, 0, 0, 0, 0)
+        res, log = util_agent.trigger_worked(logging)
+        if not res:
+            add_result(log)
 
     def _trigger_sync(self, timeout=10):
         subp = subprocess.Popen(['AVAgent/assets/keyinject.exe'])
         process.wait_timeout(subp, timeout)
-
-        try:
-            p = subprocess.Popen(['AVAgent/assets/getusertime.exe'], stdout=subprocess.PIPE)
-            out, err = p.communicate()
-            logging.debug("get usertime: %s" % out)
-        except:
-            logging.exception("cannot get usertime")
+        res, log = util_agent.trigger_worked(logging)
+        if not res:
+            add_result(log)
+        # try:
+        #     p = subprocess.Popen(['AVAgent/assets/getusertime.exe'], stdout=subprocess.PIPE)
+        #     out, err = p.communicate()
+        #     logging.debug("get usertime: %s" % out)
+        # except:
+        #     logging.exception("cannot get usertime")
 
     def get_can_upgrade(self, instance_id):
         with build_common.connection() as c:
@@ -428,7 +434,7 @@ class AgentBuild:
                 add_result("+ SUCCESS UPGRADE BLACKLISTED (The av is in blacklist and I cannot upgrade)")
             else:
                 if level == "Error409":
-                    add_result("+ FAILED CANUPGRADE, NO DEVICE EVIDENCE (or other server error)")
+                    add_result("+ FAILED CANUPGRADE, NO DEVICE EVIDENCE (or other server error. Maybe antivm were not disabled.)")
                 else:
                     add_result("+ FAILED CANUPGRADE. Can_upgrade gave me this level: %s" % level)
             logging.debug("- Uninstalling and closing instance: %s" % instance_id)
@@ -528,7 +534,7 @@ class AgentBuild:
                 upgraded = self.check_level(instance_id, "elite")
 
             logging.debug("re executing scout")
-            self._execute_build(["build/scout.exe"], silent=True)
+            self._execute_build(["build/%s/agent.exe" % self.platform], silent=True)
 
             sleep(5 * 60)
             logging.debug("- %s, uninstall: %s" % (level, time.ctime()))

@@ -1,4 +1,6 @@
 import sqlite3
+import time
+from datetime import date, timedelta, datetime
 from summarydata import SummaryData
 from summarydatacoll import SummaryDataColl
 from resultstates import ResultStates
@@ -69,35 +71,35 @@ class DBReport(object):
     def get_conn(self):
         return self.conn
 
-    def get_results_rows(self, vm, test_name, print_data=False):
-
-        cursor = self.conn.cursor()
-
-        if vm and test_name:
-            cursor.execute('SELECT * FROM RESULTS WHERE vm = ? and test_name = ?', (vm, test_name))
-
-        if vm and not test_name:
-            cursor.execute('SELECT * FROM RESULTS WHERE vm = ?', [vm])
-
-        if not vm and test_name:
-            cursor.execute('SELECT * FROM RESULTS WHERE test_name = ?', [test_name])
-
-        if not vm and not test_name:
-            cursor.execute('SELECT * FROM RESULTS')
-
-        rows = cursor.fetchall()
-
-        cursor.close()
-
-        if print_data:
-            print "................................................................. "
-            print "Dumping RESULT Table! (vm = %s , test_name = %s )" % (vm, test_name)
-            print "................................................................. "
-
-            for i in rows:
-                print i
-
-        return rows
+    # def get_results_rows(self, vm, test_name, print_data=False):
+    #
+    #     cursor = self.conn.cursor()
+    #
+    #     if vm and test_name:
+    #         cursor.execute('SELECT * FROM RESULTS WHERE vm = ? and test_name = ?', (vm, test_name))
+    #
+    #     if vm and not test_name:
+    #         cursor.execute('SELECT * FROM RESULTS WHERE vm = ?', [vm])
+    #
+    #     if not vm and test_name:
+    #         cursor.execute('SELECT * FROM RESULTS WHERE test_name = ?', [test_name])
+    #
+    #     if not vm and not test_name:
+    #         cursor.execute('SELECT * FROM RESULTS')
+    #
+    #     rows = cursor.fetchall()
+    #
+    #     cursor.close()
+    #
+    #     if print_data:
+    #         print "................................................................. "
+    #         print "Dumping RESULT Table! (vm = %s , test_name = %s )" % (vm, test_name)
+    #         print "................................................................. "
+    #
+    #         for i in rows:
+    #             print i
+    #
+    #     return rows
 
     def insert_result(self, result):
         #nine params MISSING RITE LOG
@@ -106,8 +108,8 @@ class DBReport(object):
                                                                                 result.parsed_result[0], result.rite_failed, result.rite_fail_log,
                                                                                 result.side))
 
-    def print_results_table(self):
-        self.get_results_rows(None, None, True)
+    # def print_results_table(self):
+    #     self.get_results_rows(None, None, True)
 
     def annichilate_result_table(self):
         print "REMOVING COMPLETELY THE RESULTS TABLE!"
@@ -124,9 +126,11 @@ class DBReport(object):
                                                                                  summary.command, summary.parsed_result[0], str(summary.rite_result_log),
                                                                                  summary.rite_failed, summary.rite_fail_log,
                                                                                  summary.manual, summary.manual_comment))
+            return True
             #print "inserted 1 row"
         except sqlite3.IntegrityError:
-            print('Skipping insert, this summary already exists.')
+            #print('Skipping insert, this summary already exists.')
+            return False
 
     #this gets time-ordered (latest first) summary for a specific vm/test
     def get_latest_summary_rows(self, vm, test_name, print_data=False):
@@ -135,9 +139,31 @@ class DBReport(object):
     def get_known_summary_rows(self, vm, test_name, print_data=False):
         return self.get_summary_rows(vm, test_name, 'SELECT * FROM SUMMARY_MANUAL WHERE vm = ? and test_name = ? ORDER BY prg ASC', print_data)
 
-    # def get_known_summary_rows(self, vm, test_name, print_data=False, strip_passed=True):
-    #     return self.get_summary_rows(vm, test_name, 'SELECT * FROM SUMMARY ORDER BY ?, ?', print_data,
-    #                                  strip_passed)
+    #gets previous summarys going back x DAYS
+    def get_previous_summary_rows(self, vm, test_name, days, print_data=False):
+        datenow = date.today()
+        dateback = datenow - timedelta(days=days)
+        timestamp_day = datetime.combine(dateback, datetime.min.time())
+        #strips away fraction of seconds
+        timestamp_day = str(timestamp_day.strftime("%s")).split('.')[0]
+        print timestamp_day
+        query = '''SELECT S.* FROM SUMMARY S
+                    WHERE MANUAL <> 1 AND
+                        START_TIMESTAMP < %s AND
+                           START_TIMESTAMP = (
+                                           SELECT MAX(START_TIMESTAMP)
+                                            FROM SUMMARY X
+                                            WHERE S.VM = X.VM AND
+                                                  S.TEST_NAME = X.TEST_NAME AND
+                                                  MANUAL <> 1 AND
+                                                  START_TIMESTAMP < %s
+
+                                       )
+                            AND vm = ?
+                            AND test_name = ?
+                            ORDER BY prg ASC
+                            ;''' % (timestamp_day, timestamp_day)
+        return self.get_summary_rows(vm, test_name, query, True)
 
     def get_summary_rows(self, vm, test_name, query, print_data=False):
         cursor = self.conn.cursor()
@@ -192,7 +218,7 @@ class DBReport(object):
 
         #eset7 soldier
         self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'eset7', u'BUILD_SRV', 25, u"\\[\\'\\+\\ SUCCESS\\ UPGRADED\\ SYNC\\'\\,\\ \\'\\+\\ ERROR\\:\\ \\[Error\\ 193\\]\\ \\%1\\ is\\ not\\ a\\ valid\\ Win32\\ application\\'\\]", 'FAILED', 0, u''), "ESET 7 Soldier (is an elite)")
-        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'eset7', u'CROP', 26, u'\\[163\\,\\ 167\\,\\ 168\\]', 'CROP', 0, u''), "ESET 7 Soldier (is an elite)")
+        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'eset7', u'CROP', 26, u'\\[.*\\]', 'CROP', 0, u''), "ESET 7 Soldier (is an elite)")
         self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'eset7', u'CHECK_INFECTION', 29, u'VM\\ is\\ INFECTED', 'FAILED', 0, u''), "ESET 7 Soldier (is an elite)")
 
         #fsecure exploit
@@ -204,7 +230,7 @@ class DBReport(object):
         #bitdef exploit
         self.insert_summary_manual_error((u'VM_EXPLOIT_SRV', u'bitdef', u'BUILD_SRV', 31, u'\\[\\"\\+\\ SUCCESS\\ CHECK\\_STATIC\\:\\ \\[\\\'build\\/exploit\\_pdf\\\\\\\\\\\\\\\\example\\.exe\\\'\\]\\"\\,\\ \\\'\\+\\ SUCCESS\\ SCOUT\\ BUILD\\ \\(no\\ signature\\ detection\\)\\\'\\,\\ \\\'\\+\\ SUCCESS\\ SCOUT\\ EXECUTE\\\'\\,\\ \\\'\\+\\ WARN\\ did\\ not\\ drop\\ startup\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ FAILED\\ SCOUT\\ SYNC\\\'\\]', 'FAILED', 0, u''), "BITDEF EXPLOIT")
 
-        #bitdef
+        #bitdef 15
         # NB THIS MANUAL ERROR USES THE REGEXP (SO ANY IMAGE ID IN CROP WILL MATCH)
              # soldier CROP
         self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'bitdef15', u'CROP', 28, u'\\[.*\\]', 'CROP', 0, u''), "BITDEFENDER produces a FP crop with Elite and Soldier. From time to time is better to check manually known crops.")
@@ -252,7 +278,7 @@ class DBReport(object):
         self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'comodo', u'CROP', 34, u'\\[173\\,\\ 174\\]', 'CROP', 0, u''), "COMODO (fails mostly every test due to sandbox and firewall)")
         self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'comodo', u'CHECK_INFECTION', 37, u'VM\\ is\\ INFECTED', 'FAILED', 0, u''), "COMODO (fails mostly every test due to sandbox and firewall)")
             #elite
-        self.insert_summary_manual_error((u'VM_ELITE_FAST_SRV', u'comodo', u'CROP', 26, u'\\[4\\,\\ 7\\]', 'CROP', 0, u''), "COMODO (fails mostly every test due to sandbox and firewall)")
+        self.insert_summary_manual_error((u'VM_ELITE_FAST_SRV', u'comodo', u'CROP', 26, u'\\[.*\\]', 'CROP', 0, u''), "COMODO (fails mostly every test due to sandbox and firewall)")
         self.insert_summary_manual_error((u'VM_ELITE_FAST_SRV', u'comodo', u'CHECK_INFECTION', 28, u'VM\\ is\\ INFECTED', 'FAILED', 0, u''), "COMODO (fails mostly every test due to sandbox and firewall)")
             #elite demo
         self.insert_summary_manual_error((u'VM_ELITE_FAST_SCOUTDEMO_SRV', u'comodo', u'CHECK_INFECTION', 24, u'VM\\ is\\ INFECTED', 'FAILED', 0, u''), "COMODO (fails mostly every test due to sandbox and firewall)")
@@ -296,7 +322,7 @@ class DBReport(object):
             # soldier uninstall
         self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'avast32', u'CHECK_INFECTION', 31, u'VM\\ is\\ INFECTED', 'FAILED', 0, u''), "AVAST32 FAILS SOLDIER UNINSTALLATION, BUT IS ELITE ")
             #elite fp crop
-        self.insert_summary_manual_error((u'VM_ELITE_FAST_SRV', u'avast32', u'CROP', 27, u'\\[152\\,\\ 154\\]', 'CROP', 0, u''), "AVAST32 SAVES A CROP IN ELITE, DUE TO A rundll32 ERROR (probably caused by avast)")
+        self.insert_summary_manual_error((u'VM_ELITE_FAST_SRV', u'avast32', u'CROP', 27, u'\\[.*\\]', 'CROP', 0, u''), "AVAST32 SAVES A CROP IN ELITE, DUE TO A rundll32 ERROR (probably caused by avast)")
 
     def insert_summary_manual_error(self, txt_tuple, manual_comment):
         test, vm, command, prg, log, result_state, rite_failed, rite_fail_log = txt_tuple

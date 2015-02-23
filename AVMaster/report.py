@@ -292,6 +292,10 @@ def create_report_for_analyzer(report):
                     continue
                 comm_list_for_this_vm.append(command_to_array(comm, test_name))
 
+            #check if last command is a REPORT_KIND_END
+            if len(comm_list_for_this_vm) > 0:
+                        if comm_list_for_this_vm[-1][3] != "REPORT_KIND_END":
+                            mark_as_failed(comm_list_for_this_vm, comm_list_for_this_vm[-1][1], "No Report")
             to_yaml_dump_vms_dict[k] = comm_list_for_this_vm
 
         try:

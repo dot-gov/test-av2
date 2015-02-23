@@ -50,7 +50,7 @@ SYSTEM_STATIC_MOBILE:
     - VM_ALL: IMPORTANT
     - INTERNET: False
     - SLEEP: [0, 600]
-    - CLEAN_EVIDENCES: Ok
+    - CALL: VM_CLEAN_EVIDENCES_AND_CACHE
     - CROP: True
     - REPORT:
         - BUILD_MOBILE
@@ -133,7 +133,7 @@ VM_ELITE_FAST_SRV:
 
 VM_ELITE_FAST_DEMO_SRV:
     #andrebbe eseguito solo una volta a settimana
-    - ENABLE: [ sunday ]
+    #- ENABLE: [ sunday ]
     #NB: no crop for DEMO
     - CALL: INIT_DISPATCH
     #- SLEEP: 60
@@ -347,7 +347,7 @@ SYSTEM_STATIC:
     - ON_ERROR: SKIP
     - SLEEP: [1, 600]
     # CLEAN_EV no more useful - instances are deleted during run and factories are deleted daily
-    #- CALL: VM_CLEAN_EVIDENCES
+    #- CALL: VM_CLEAN_EVIDENCES_AND_CACHE
     - CALL: SET_MAIL
     - REPORT:
         - VM_STATIC: ['AV Invisibility Static', 'Static check on builds']
@@ -361,7 +361,7 @@ SYSTEM_STATIC_SRV:
     # CLEAN_EV no more useful - instances are deleted during run and factories are deleted daily
     # init_dispatch needed for clean evidences (to be removed)
     #- CALL: INIT_DISPATCH
-    #- CALL: VM_CLEAN_EVIDENCES
+    #- CALL: VM_CLEAN_EVIDENCES_AND_CACHE
     - CALL: SET_MAIL
     - REPORT:
         - VM_STATIC_SRV: ['AV Invisibility Static', 'Static check on builds']
@@ -374,7 +374,7 @@ SYSTEM_MELT:
     - SLEEP: [1, 600]
     # CLEAN_EV no more useful - instances are deleted during run and factories are deleted daily
     #- CALL: INIT_DISPATCH
-    #- CALL: VM_CLEAN_EVIDENCES
+    #- CALL: VM_CLEAN_EVIDENCES_AND_CACHE
     - CALL: SET_MAIL
     - REPORT:
         - VM_MELT: ['AV Invisibility', 'Melt']
@@ -391,7 +391,7 @@ SYSTEM_MELT_SRV:
     # CLEAN_EV no more useful - instances are deleted during run and factories are deleted daily
     # init_dispatch needed for clean evidences (to be removed)
     #- CALL: INIT_DISPATCH
-    #- CALL: VM_CLEAN_EVIDENCES
+    #- CALL: VM_CLEAN_EVIDENCES_AND_CACHE
     - CALL: SET_MAIL
     - REPORT:
         - VM_MELT_SRV: ['AV Invisibility', 'Melt']
@@ -443,7 +443,7 @@ SYSTEM_ELITE_FAST:
     - SLEEP: [1, 600]
     # CLEAN_EV no more useful - instances are deleted during run and factories are deleted daily
     #- CALL: INIT_DISPATCH
-    #- CALL: VM_CLEAN_EVIDENCES
+    #- CALL: VM_CLEAN_EVIDENCES_AND_CACHE
     - CALL: SET_MAIL
     - REPORT:
         - VM_ELITE_FAST: ['AV Invisibility', 'Elite']
@@ -461,7 +461,7 @@ SYSTEM_ELITE_FAST_SRV:
     # CLEAN_EV no more useful - instances are deleted during run and factories are deleted daily
     # init_dispatch needed for clean evidences (to be removed)
     #- CALL: INIT_DISPATCH
-    #- CALL: VM_CLEAN_EVIDENCES
+    #- CALL: VM_CLEAN_EVIDENCES_AND_CACHE
     - CALL: SET_MAIL
     - REPORT:
         - VM_ELITE_FAST_SRV: ['AV Invisibility', 'Elite']
@@ -479,7 +479,7 @@ SYSTEM_ELITE_FAST_DEMO_SRV:
     # CLEAN_EV no more useful - instances are deleted during run and factories are deleted daily
     # init_dispatch needed for clean evidences (to be removed)
     #- CALL: INIT_DISPATCH
-    #- CALL: VM_CLEAN_EVIDENCES
+    #- CALL: VM_CLEAN_EVIDENCES_AND_CACHE
     - CALL: SET_MAIL
     - REPORT:
         - VM_ELITE_FAST_DEMO_SRV: ['AV Invisibility', 'Elite_Demo']
@@ -496,7 +496,7 @@ SYSTEM_ELITE_FAST_SCOUTDEMO_SRV:
     # CLEAN_EV no more useful - instances are deleted during run and factories are deleted daily
     # init_dispatch needed for clean evidences (to be removed)
     #- CALL: INIT_DISPATCH
-    #- CALL: VM_CLEAN_EVIDENCES
+    #- CALL: VM_CLEAN_EVIDENCES_AND_CACHE
     - CALL: SET_MAIL
     - REPORT:
         - VM_ELITE_FAST_SCOUTDEMO_SRV: ['AV Invisibility', 'Elite_Scout_Demo']
@@ -514,7 +514,7 @@ SYSTEM_ELITE:
     # CLEAN_EV no more useful - instances are deleted during run and factories are deleted daily
     # init_dispatch needed for clean evidences (to be removed)
     #- CALL: INIT_DISPATCH
-    #- CALL: VM_CLEAN_EVIDENCES
+    #- CALL: VM_CLEAN_EVIDENCES_AND_CACHE
     - CALL: SET_MAIL
     - REPORT:
         - VM_ELITE: ['AV Invisibility', 'Elite']
@@ -531,7 +531,7 @@ SYSTEM_SOLDIER:
     # CLEAN_EV no more useful - instances are deleted during run and factories are deleted daily
     # init_dispatch needed for clean evidences (to be removed)
     #- CALL: INIT_DISPATCH
-    #- CALL: VM_CLEAN_EVIDENCES
+    #- CALL: VM_CLEAN_EVIDENCES_AND_CACHE
     - CALL: SET_MAIL
     - REPORT:
         - VM_SOLDIER: ['AV Invisibility', 'Soldier']
@@ -549,7 +549,7 @@ SYSTEM_SOLDIER_SRV:
     # CLEAN_EV no more useful - instances are deleted during run and factories are deleted daily
     # init_dispatch needed for clean evidences (to be removed)
     #- CALL: INIT_DISPATCH
-    #- CALL: VM_CLEAN_EVIDENCES
+    #- CALL: VM_CLEAN_EVIDENCES_AND_CACHE
     - CALL: SET_MAIL
     - REPORT:
         - VM_SOLDIER_SRV: ['AV Invisibility', 'Soldier']
@@ -566,7 +566,7 @@ SYSTEM_EXPLOIT:
     - SLEEP: [1, 600]
     # CLEAN_EV no more useful - instances are deleted during run and factories are deleted daily
     #- CALL: INIT_DISPATCH
-    #- CALL: VM_CLEAN_EVIDENCES
+    #- CALL: VM_CLEAN_EVIDENCES_AND_CACHE
     - CALL: SET_MAIL
     - REPORT:
         - VM_EXPLOIT: ['AV Invisibility', 'Exploit']
@@ -584,7 +584,7 @@ SYSTEM_EXPLOIT_SRV:
     # CLEAN_EV no more useful - instances are deleted during run and factories are deleted daily
     # init_dispatch needed for clean evidences (to be removed)
     #- CALL: INIT_DISPATCH
-    #- CALL: VM_CLEAN_EVIDENCES
+    #- CALL: VM_CLEAN_EVIDENCES_AND_CACHE
     - CALL: SET_MAIL
     - REPORT:
         - VM_EXPLOIT_SRV: ['AV Invisibility', 'Exploit']
@@ -620,7 +620,7 @@ SYSTEM_DAILY:
     - CALL: SET_MAIL
     - ON_ERROR: SKIP
     - SLEEP: [1, 1800]
-    - CALL: VM_CLEAN_EVIDENCES
+    - CALL: VM_CLEAN_EVIDENCES_AND_CACHE
     - REPORT:
         - VM_STATIC: ['AV Invisibility Static', 'Static check on builds']
         - VM_SOLDIER: ['AV Invisibility', 'Soldier']
@@ -640,7 +640,7 @@ SYSTEM_DAILY_SRV:
     - SLEEP: [1, 1800]
     #init is needed by clean_evidences (just here)
     - CALL: INIT_DISPATCH
-    - CALL: VM_CLEAN_EVIDENCES
+    - CALL: VM_CLEAN_EVIDENCES_AND_CACHE
     #qui cancello tutti i sample per la giornata!
     - BUILD_CACHE_CLEAN: False
     - REPORT:
@@ -666,7 +666,7 @@ SYSTEM_DAILY_FAST:
     - CALL: SET_MAIL
     - ON_ERROR: SKIP
     - SLEEP: [1, 300]
-    - CALL: VM_CLEAN_EVIDENCES
+    - CALL: VM_CLEAN_EVIDENCES_AND_CACHE
     - REPORT:
         - VM_STATIC: ['AV Invisibility Static', 'Static check on builds']
         - VM_SOLDIER: ['AV Invisibility', 'Soldier']
@@ -685,7 +685,7 @@ SYSTEM_DAILY_FAST_SRV:
     - SLEEP: [1, 300]
     #Clean evidences should be called only during nighttime automatic tests (next 2 commands have to be commented)
     #- CALL: INIT_DISPATCH
-    #- CALL: VM_CLEAN_EVIDENCES
+    #- CALL: VM_CLEAN_EVIDENCES_AND_CACHE
     #qui cancello tutti i sample per la giornata!
     - BUILD_CACHE_CLEAN: False
     - REPORT:
@@ -744,7 +744,7 @@ SYSTEM_ANDROID_FAST:
     - VM_ALL
     - ON_ERROR: SKIP
     - SLEEP: [1, 300]
-    - CALL: VM_CLEAN_EVIDENCES
+    - CALL: VM_CLEAN_EVIDENCES_AND_CACHE
     - CALL: SET_MAIL
     - REPORT:
         - VM_STATIC_ANDROID: ['AV Invisibility Static', 'Static check on builds']
@@ -763,7 +763,7 @@ VM_PUSH_VIRUS:
     - SLEEP: 90
     - CHECK_STATIC: [ AVAgent/assets/vira/conficker.dll, AVAgent/assets/vira/eicar.com ]
     - SLEEP: 30
-    - CROP: False, False
+    - CROP: [ False, False ]
 
 SYSTEM_POSITIVE:
     - VM_ALL
@@ -885,6 +885,7 @@ BUILD_ELITE:
 BUILD_SOLDIER:
     - BUILD: [ pull, windows_soldier, silent ]
 
+#never used?
 BUILD_WINDOWS:
     - CALL: CHECK_STATIC_MODULES
     - CALL: CHECK_STATIC_MODULES_SCOUT_ICONS
@@ -917,6 +918,7 @@ CHECK_STATIC_MODULES:
 
 
 CHECK_STATIC_MODULES_SCOUT_ICONS:
+    - ENABLE: [ sunday ]
     - PUSHZIP: [ AVAgent/assets/scouts/* ]
     - SLEEP: 20
     - CHECK_STATIC: ['AVAgent/assets/scouts/agent.exe',
@@ -976,7 +978,7 @@ CHECK_STATIC_MODULES_TNI:
 
 BUILD_DESKTOP:
     - CALL: CHECK_STATIC_MODULES
-    #- CALL: CHECK_STATIC_MODULES_SCOUT_ICONS
+    - CALL: CHECK_STATIC_MODULES_SCOUT_ICONS
     - CALL: CHECK_STATIC_MODULES_DOCS
     #- CALL: CHECK_STATIC_MODULES_9_4_SAMPLES
     #- CALL: CHECK_STATIC_MODULES_TNI
@@ -1076,8 +1078,10 @@ VM_STATIC_MOBILE:
     - CALL: BUILD_MOBILE
     - CROP: False
 
-VM_CLEAN_EVIDENCES:
+VM_CLEAN_EVIDENCES_AND_CACHE:
     - CLEAN_EVIDENCES: [ Ok ]
+    #also cleaning cache because these agents will never sync on new factories!
+    - BUILD_CACHE_CLEAN: False
 
 BUILD_MELT_FAST:
     - BUILD: [ pull, windows, melt ]
@@ -1237,7 +1241,6 @@ UPD_AGENT:
     - WAIT_SHUTDOWN
     - START_VM: AV_AGENT
     - UNINSTALL
-    #- CLEAN_EVIDENCES: [ Ok ]
 
 #indirectly called by update.sh
 UPD_REFRESH:
@@ -1450,7 +1453,7 @@ DISABLE_ANALYSIS:
     - VM_ALL
     - ON_ERROR: SKIP
     - CALL: INIT_DISPATCH
-    - CALL: VM_CLEAN_EVIDENCES
+    - CLEAN_EVIDENCES: [ Ok ]
 
 
 CLEAN_SAMPLES:

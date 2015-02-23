@@ -11,11 +11,13 @@ thread = None
 found = []
 go_on = True
 
+
 def on_init(protocol, args):
     return True
 
 from AVCommon import config
 from AVCommon import logger
+
 
 def on_answer(vm, success, answer):
     from AVMaster import vm_manager
@@ -26,7 +28,8 @@ def on_answer(vm, success, answer):
     # answer = [1,5,7]
 
     if answer and isinstance(answer, list):
-
+        if len(answer) == 0:
+            logging.debug("No images in crop or image saving not enabled.")
         logging.warn("We have to PULL images: %s" % answer)
         dir = "%s/crop" % logger.logdir
 
@@ -44,6 +47,7 @@ def on_answer(vm, success, answer):
                 vm_manager.execute(vm, "copyFileFromGuest", src ,dst)
             except:
                 logging.exception("Cannot get image %s" % src)
+
 
 def execute(vm, args):
     from PIL import ImageGrab
@@ -76,7 +80,7 @@ def execute(vm, args):
         # stops the crop server
         logging.debug("stop grab_loop")
 
-        crop_whitelist = command.context.get("crop_whitelist",[])
+        crop_whitelist = command.context.get("crop_whitelist", [])
         logging.debug("crop_whitelist: %s" % crop_whitelist)
 
         go_on = False
@@ -118,18 +122,18 @@ def crop(iter):
     global im1
 
     logging.debug("crop: %s" % iter)
-    d1= im1.getdata()
+    d1 = im1.getdata()
     try:
         im2 = ImageGrab.grab()
     except:
         logging.exception("Cannot grab")
         return "ERROR"
 
-    d2=im2.getdata()
+    d2 = im2.getdata()
 
     w = d1.size[0]
     h = d1.size[1] - 40
-    l,r,t,b = w,0,h,0
+    l, r, t, b = w, 0, h, 0
 
     for y in range(h):
         for x in range(w):
@@ -137,20 +141,20 @@ def crop(iter):
             assert i < w*h
             if(d1[i] != d2[i]):
                 #print x,y
-                l = min(x,l)
-                r = max(x,r)
-                b = max(y,b)
-                t = min(y,t)
+                l = min(x, l)
+                r = max(x, r)
+                b = max(y, b)
+                t = min(y, t)
 
     #logging.debug("crop box: %s" % str((l,t,r,b)))
 
-    c=im2.crop((l,t,r,b))
+    c = im2.crop((l, t, r, b))
     im1 = im2
-    if c.size[0] > 50 and c.size[1] > 50 and ( c.size[0] * c.size[1] > 75*68 ):
-        name = "%s/%s.png" % ( config.basedir_crop, iter)
+    if c.size[0] > 50 and c.size[1] > 50 and (c.size[0] * c.size[1] > 75*68):
+        name = "%s/%s.png" % (config.basedir_crop, iter)
         logging.debug("actual crop save: %s" % name)
-        logging.debug("name: %s size: %s" % ( name, c.size ))
-        name = name.replace('/','\\')
+        logging.debug("name: %s size: %s" % (name, c.size))
+        name = name.replace('/', '\\')
         c.save(name)
         return iter
     else:

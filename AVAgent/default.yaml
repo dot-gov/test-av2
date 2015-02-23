@@ -1,8 +1,8 @@
 
-soldierlist: [adaware,iobit32,bitdef,bitdef15,comodo,fsecure,gdata,drweb,360cn5,avg,avg15,avg32,norman,avira,avira15,panda,panda15]
+soldierlist: [adaware,iobit32,bitdef,bitdef15,comodo,fsecure,gdata,drweb,360cn5,avg,avg15,avg32,norman,avira,avira15,panda,panda15,avira15f,avg15f]
 blacklist: [emsisoft,sophos,kis32,cmcav]
 
-crop_whitelist: [kis,kis32]
+crop_whitelist: []
 
 backend: 192.168.100.201
 frontend: 192.168.100.204
