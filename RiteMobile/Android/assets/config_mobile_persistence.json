@@ -100,7 +100,7 @@
         {
             "event": "timer",
             "subtype": "loop",
-            "delay": 60,
+            "delay": 30,
             "te": "23:59:59",
             "ts": "00:00:00",
             "enabled": true,
