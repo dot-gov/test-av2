@@ -34,7 +34,7 @@ class PersistenceTestSpecific(functional_common.Check):
                 results["format_resist"] = "Reboot"
         elif "/system/app/" in inst:
             results["format_resist"] = "Yes";
-            print "got format_resist"
+            print "got format_resist = Yes"
         else:
             results["format_resist"] = "Error";
 
@@ -56,7 +56,16 @@ class PersistenceTestSpecific(functional_common.Check):
 
 
     def final_assertions(self, results):
-        return results["format_resist"] == "Yes"
+        if not results["have_root"]:
+            print "FAILED, NO ROOT"
+        ret = results["format_resist"] == "Yes"
+
+        if results["files_remained"] or results["packages_remained"]:
+            print "UNINSTALL ERROR, remained stuff"
+            ret = False
+
+        return ret
+
 
 
 from RiteMobile.Android.commands_rcs import CommandsRCSCastore as CommandsRCS
