@@ -12,6 +12,8 @@ import argparse
 import inspect
 import sys
 
+
+
 from check_common import Check
 
 inspect_getfile = inspect.getfile(inspect.currentframe())
@@ -148,7 +150,7 @@ def report_build(results):
 
 
 def report_files(results, report):
-    with open('report/test-%s.%s.txt' % (results.get('id', 0), results.get('device', "device")), 'ab') as tfile:
+    with open('report/test-%s.%s.txt' % (results.get('id', 0), results.get('device', "device")), 'wb') as tfile:
         tfile.write(report)
 
     # with open('report/test-%s.%s.csv' % (results.get('id', 0), results.get('device', "device")), 'ab') as csvfile:
@@ -166,7 +168,7 @@ def report_files(results, report):
         logfile.write("\n")
 
 
-def test_device(test_specific, commands_rcs, command_dev, args, results, demo = True,  persist = True):
+def test_device_specific(test_specific, commands_rcs, command_dev, args, results, demo = True,  persist = True):
     if args.fastnet:
         command_dev.wifi('open', check_connection=False, install=True)
         exit(0)
@@ -317,6 +319,12 @@ def parse_args():
     return args
 
 
+def test_functional_all(test_list, CommandsRCS):
+    from test_all_specific import AllTestSpecific
+    alltest = AllTestSpecific(test_list)
+
+    return test_functional_common(alltest, CommandsRCS)
+
 def test_functional_common(test_specific, CommandsRCS):
     args = parse_args()
     if args.device:
@@ -329,7 +337,7 @@ def test_functional_common(test_specific, CommandsRCS):
     commands_rcs = CommandsRCS(login_id=command_dev.uid, device_id=command_dev.device_id)
 
     try:
-        test_device(test_specific, commands_rcs, command_dev, args, results)
+        test_device_specific(test_specific, commands_rcs, command_dev, args, results)
     except Exception, ex:
         print ex
         traceback.print_exc()
