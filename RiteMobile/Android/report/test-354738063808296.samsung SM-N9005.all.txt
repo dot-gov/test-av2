@@ -1,0 +1,63 @@
+Installation
+	time: 2015-02-24 15:57:26.524411
+	installed: False
+	executed: True
+	instance_name: Android (389) samsung SM-N9005
+	info: 
+	uptime_first: up time: 05:18:48, idle time: 02:04:22, sleep time: 04:14:42
+
+	uptime_last: up time: 05:21:03, idle time: 02:09:03, sleep time: 04:14:43
+
+	error: 
+	exception: {}
+Device
+	device: samsung SM-N9005
+	id: 354738063808296
+	release: 4.4.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: No
+	root_first: False
+	su: /system/bin/sh: su: not found
+
+	selinux: 1
+	format_resist: No root
+Evidences
+	evidences_first: 
+		application: 1
+		calendar: 4
+		camera: 12
+		device: 2
+		photo: 5
+
+	evidences_last: 
+		application: 9
+		calendar: 4
+		camera: 16
+		device: 2
+		mic: 1
+		photo: 5
+
+Expected
+	call_supported: 
+	expected: []
+Uninstall
+	uninstall: True
+	running: False
+	files_remained: 
+	packages_remained: 
+Result
+	test_name: all
+	result: False
+	result_info: 
+
+		persistence: False
+			FAILED: NO ROOT
+
+		photo: True
+
+		audio: True
+
+		chat: False
+			FAILED: no ROOT
+

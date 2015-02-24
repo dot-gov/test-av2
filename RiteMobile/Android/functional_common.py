@@ -69,27 +69,29 @@ def uninstall_agent(commands_device, c, results):
     processes = []
     if results['have_root']:
         print "uninstall: without DIALOG"
-        for i in range(12):
-            time.sleep(10)
 
-            processes = commands_device.get_processes()
-            uninstall = Check.service not in processes
-            print "service still running"
-            if uninstall:
-                break
     else:
         say("agent uninstall, verify request")
         print "uninstall:DIALOG !!!"
         unistall_dialog_wait_and_press(commands_device, 120)
 
+    for i in range(12):
+        processes = commands_device.get_processes()
+        uninstall = Check.service not in processes
+        print "service still running"
+        if uninstall:
+            break
+
+        time.sleep(10)
+
     #print "uninstall: wait 30sec"
-    time.sleep(5)
+    time.sleep(10)
     results['uninstall'] = uninstall
 
     if not uninstall:
         print "uninstall: ERROR"
         print "processes: %s" % processes
-        commands_device.uninstall_agent()
+        #commands_device.uninstall_agent()
     else:
         print "uninstall: OK"
 

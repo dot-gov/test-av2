@@ -340,7 +340,7 @@ class CommandsDevice:
         if not self.is_package_installed(report.package_name):
             report.install(self.device_serialno)
 
-        extra = "result "
+        extra = "result RITE"
         self.send_intent(report.package_name, ".ReportActivity", [extra])
 
         return report

@@ -55,8 +55,8 @@ def parse_args():
     parser = argparse.ArgumentParser(description='run install and uninstall.')
     parser.add_argument('-d', '--device', required=False,
                         help="choose serial number of the device to use")
-    parser.add_argument('-A', '--all', required=False, action='store_true',
-                        help="run all devices")
+    parser.add_argument('-i', '--interactive', required=False, action='store_true',
+                        help="ask on which device")
     args = parser.parse_args()
     return args
 
@@ -120,7 +120,11 @@ def main():
     main_cmd = ""
     for i in sys.argv[1:]:
         main_cmd += i + " "
-    if args.all:
+
+    if not os.path.exists('run'):
+        os.mkdir('run')
+
+    if not args.interactive:
         main_cmd = ""
         for i in sys.argv[1:]:
             if i not in "-d" and i not in "-A":
@@ -131,10 +135,10 @@ def main():
         for id in range(len(devices)):
             #print "`which python` test_install_root_unistall.py %s -d %s" % (main_cmd, devices[id])
             add_thread(myprocess.GenericThread(
-                "`which python` test_functional_persistence.py %s -d %s" % (main_cmd, devices[id])))
+                "`which python` test_all.py %s -d %s > run/%s.txt" % (main_cmd, devices[id], devices[id])))
             time.sleep(1)
     else:
-        add_thread(myprocess.GenericThread("`which python` test_functional_persistence.py %s" % main_cmd))
+        add_thread(myprocess.GenericThread("`which python` test_all.py %s" % main_cmd))
 
     time.sleep(2)
     while something_running():

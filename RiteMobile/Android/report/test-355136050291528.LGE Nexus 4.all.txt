@@ -1,0 +1,80 @@
+Installation
+	time: 2015-02-24 16:39:56.829363
+	installed: False
+	executed: True
+	instance_name: Android (392) LGE Nexus 4
+	info: 
+	uptime_first: up time: 00:10:13, idle time: 00:28:08, sleep time: 00:00:00
+
+	uptime_last: 
+	error: 
+	exception: {}
+Device
+	device: LGE Nexus 4
+	id: 355136050291528
+	release: 4.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: 2.15:SUPERSU
+
+	selinux: 
+	format_resist: Yes
+Evidences
+	evidences_first: 
+		addressbook: 1
+			facebook
+		application: 2
+		camera: 7
+		device: 3
+		message: 32
+		password: 2
+		photo: 1
+
+	evidences_last: 
+		addressbook: 8
+			telegram
+			viber
+			facebook
+			skype
+			whatsapp
+			gmail
+		application: 13
+		camera: 8
+		chat: 36
+			telegram
+			viber
+			facebook
+			skype
+			whatsapp
+			line
+		device: 6
+		message: 55
+		password: 2
+		photo: 1
+
+Expected
+	call_supported: True
+	expected: ['skype']
+Uninstall
+	uninstall: True
+	running: False
+	files_remained: 
+	packages_remained: 
+Result
+	test_name: all
+	result: False
+	result_info: 
+
+		persistence: True
+
+		photo: True
+
+		audio: False
+			FAILED: skype
+			FAILED: mic
+			FAILED: call
+
+		chat: True
+

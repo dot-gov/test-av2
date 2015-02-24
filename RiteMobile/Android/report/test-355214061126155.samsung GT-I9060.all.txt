@@ -1,0 +1,59 @@
+Installation
+	time: 2015-02-24 16:39:54.362734
+	installed: False
+	executed: True
+	instance_name: Android (391) samsung GT-I9060
+	info: 
+	uptime_first: up time: 00:05:48, idle time: 00:19:36, sleep time: 00:00:00
+
+	uptime_last: up time: 00:08:26, idle time: 00:29:09, sleep time: 00:00:00
+
+	error: 
+	exception: {}
+Device
+	device: samsung GT-I9060
+	id: 355214061126155
+	release: 4.2.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: No
+	root_first: False
+	su: /system/bin/sh: su: not found
+
+	selinux: 
+	format_resist: No root
+Evidences
+	evidences_first: 
+		application: 1
+		camera: 7
+		device: 2
+
+	evidences_last: 
+		application: 9
+		camera: 13
+		device: 2
+		mic: 1
+
+Expected
+	call_supported: 
+	expected: []
+Uninstall
+	uninstall: True
+	running: False
+	files_remained: 
+	packages_remained: 
+Result
+	test_name: all
+	result: False
+	result_info: 
+
+		persistence: False
+			FAILED: NO ROOT
+
+		photo: False
+
+		audio: True
+
+		chat: False
+			FAILED: no ROOT
+

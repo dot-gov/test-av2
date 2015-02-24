@@ -1,0 +1,77 @@
+Installation
+	time: 2015-02-24 16:14:37.876148
+	installed: False
+	executed: True
+	instance_name: Android (390) samsung GT-I9000
+	info: 
+	uptime_first: up time: 00:11:04, idle time: 00:02:21, sleep time: 00:00:00
+
+	uptime_last: up time: 00:06:04, idle time: 00:02:34, sleep time: 00:00:00
+
+	error: 
+	exception: {}
+Device
+	device: samsung GT-I9000
+	id: 354795047321044
+	release: 2.3.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: noshufou
+	selinux: 
+	format_resist: Yes
+Evidences
+	evidences_first: 
+		addressbook: 3
+			phone
+			whatsapp
+			skype
+		application: 1
+		chat: 26
+			whatsapp
+			skype
+		device: 3
+		message: 7
+		password: 1
+		screenshot: 3
+
+	evidences_last: 
+		addressbook: 3
+			phone
+			whatsapp
+			skype
+		application: 14
+		chat: 26
+			whatsapp
+			skype
+		device: 5
+		message: 7
+		password: 1
+		screenshot: 4
+
+Expected
+	call_supported: False
+	expected: []
+Uninstall
+	uninstall: True
+	running: False
+	files_remained: 
+	packages_remained: 
+Result
+	test_name: all
+	result: False
+	result_info: 
+
+		persistence: True
+
+		photo: False
+
+		audio: False
+			FAILED: mic
+			FAILED: call
+			FAILED: camera
+
+		chat: False
+			FAILED: google
+
