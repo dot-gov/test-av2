@@ -60,3 +60,122 @@ Expected
 Uninstall
 	uninstall: True
 	running: False
+Installation
+	time: 2015-02-23 14:49:56.122978
+	installed: False
+	executed: True
+	instance_name: Android (373) samsung Galaxy Nexus
+	info: 
+	uptime_first: up time: 3 days, 04:53:24, idle time: 1 days, 08:31:25, sleep time: 2 days, 12:14:54
+
+	uptime_last: up time: 00:02:41, idle time: 00:03:26, sleep time: 00:00:00
+
+	error: 
+	exception: 
+Device
+	device: samsung Galaxy Nexus
+	id: 351554050449108
+	release: 4.0.4
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: 2.15:SUPERSU
+
+	selinux: 
+	format_resist: Yes
+Evidences
+	evidences_first: 
+		device: 3
+
+	evidences_last: 
+		device: 4
+
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: True
+	running: False
+	files_remained: /system/bin/ddf
+/system/app/StkDevice.apk
+
+	packages_remained: package:/system/app/StkDevice.apk
+
+Result
+	result: True
+Installation
+	time: 2015-02-23 14:58:43.755817
+	installed: 
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 'evidence_types_last'
+Device
+	device: samsung Galaxy Nexus
+	id: 351554050449108
+	release: 4.0.4
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	format_resist: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
+Result
+	result: False
+Installation
+	time: 2015-02-23 15:25:06.145759
+	installed: False
+	executed: True
+	instance_name: Android (375) samsung Galaxy Nexus
+	info: 
+	uptime_first: up time: 00:25:21, idle time: 00:46:18, sleep time: 00:00:00
+
+	uptime_last: up time: 00:02:40, idle time: 00:03:39, sleep time: 00:00:00
+
+	error: 
+	exception: 
+Device
+	device: samsung Galaxy Nexus
+	id: 351554050449108
+	release: 4.0.4
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: 2.15:SUPERSU
+
+	selinux: 
+	format_resist: Yes
+Evidences
+	evidences_first: 
+		device: 3
+
+	evidences_last: 
+		device: 4
+
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: True
+	running: False
+	files_remained: 
+	packages_remained: 
+Result
+	result: True

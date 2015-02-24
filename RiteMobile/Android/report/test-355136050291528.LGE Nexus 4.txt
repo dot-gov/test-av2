@@ -1,0 +1,1270 @@
+Installation
+	time: 2015-01-13 14:50:58.552922
+	installed: 
+	executed: True
+	instance_name: Android (319) LGE Nexus 4
+	info: 
+	uptime_first: up time: 1 days, 03:17:23, idle time: 1 days, 01:22:03, sleep time: 20:31:15
+
+	uptime_last: up time: 1 days, 03:28:01, idle time: 1 days, 01:58:49, sleep time: 20:31:15
+
+	error: 
+	exception: 
+Device
+	device: LGE Nexus 4
+	id: 355136050291528
+	release: 4.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: 2.15:SUPERSU
+
+	selinux: 
+	format_resist: 
+Evidences
+	evidences_first: 
+		addressbook: 8
+			phone
+			whatsapp
+			skype
+			facebook
+			gmail
+		application: 1
+		call: 0
+		camera: 0
+		chat: 0
+		device: 3
+		message: 4
+		mic: 0
+		password: 1
+
+	evidences_last: 
+		addressbook: 19
+			telegram
+			phone
+			viber
+			facebook
+			skype
+			whatsapp
+			gmail
+		application: 43
+		call: 0
+		camera: 0
+		chat: 12
+			telegram
+			whatsapp
+			viber
+			line
+			skype
+		device: 5
+		message: 11
+		mic: 1
+		password: 1
+		screenshot: 3
+
+Expected
+	call_supported: True
+	expected: ['telegram', 'android.talk', 'viber', 'facebook', 'line.android', 'skype', 'whatsapp', 'tencent.mm']
+Uninstall
+	uninstall: False
+	running: False
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 2015-02-02 11:16:16.076123
+	installed: 
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: check_install() takes exactly 2 arguments (3 given)
+	exception: 
+Device
+	device: LGE Nexus 4
+	id: 355136050291528
+	release: 4.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	format_resist: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 2015-02-02 11:18:09.825235
+	installed: 
+	executed: True
+	instance_name: Android (327) LGE Nexus 4
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: TestSpecific instance has no __call__ method
+	exception: 
+Device
+	device: LGE Nexus 4
+	id: 355136050291528
+	release: 4.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	format_resist: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: False
+Installation
+	time: 2015-02-02 11:23:38.206412
+	installed: 
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 
+Device
+	device: LGE Nexus 4
+	id: 355136050291528
+	release: 4.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	format_resist: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 2015-02-02 11:25:01.553545
+	installed: 
+	executed: True
+	instance_name: Android (328) LGE Nexus 4
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: check_evidences() takes at most 4 arguments (5 given)
+	exception: 
+Device
+	device: LGE Nexus 4
+	id: 355136050291528
+	release: 4.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: 2.15:SUPERSU
+
+	selinux: 
+	format_resist: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: False
+Installation
+	time: 2015-02-02 11:31:09.839485
+	installed: 
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 
+Device
+	device: LGE Nexus 4
+	id: 355136050291528
+	release: 4.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	format_resist: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 2015-02-02 11:41:35.914809
+	installed: 
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 
+Device
+	device: LGE Nexus 4
+	id: 355136050291528
+	release: 4.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	format_resist: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 2015-02-02 11:43:19.095197
+	installed: 
+	executed: True
+	instance_name: Android (329) LGE Nexus 4
+	info: 
+	uptime_first: up time: 4 days, 00:51:57, idle time: 15 days, 12:27:07, sleep time: 00:00:00
+
+	uptime_last: 
+	error: 'module' object has no attribute 'get_chat_packages'
+	exception: 
+Device
+	device: LGE Nexus 4
+	id: 355136050291528
+	release: 4.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: 2.15:SUPERSU
+
+	selinux: 
+	format_resist: 
+Evidences
+	evidences_first: 
+		addressbook: 30
+			telegram
+			phone
+			viber
+			facebook
+			skype
+			wechat
+			whatsapp
+			gmail
+		application: 1
+		call: 0
+		camera: 0
+		chat: 42
+			telegram
+			viber
+			wechat
+			skype
+			facebook
+			whatsapp
+			line
+		device: 3
+		message: 43
+		mic: 0
+		password: 2
+
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: False
+Installation
+	time: 2015-02-02 11:49:37.768653
+	installed: 
+	executed: True
+	instance_name: Android (330) LGE Nexus 4
+	info: 
+	uptime_first: up time: 4 days, 00:58:45, idle time: 15 days, 12:51:23, sleep time: 00:00:00
+
+	uptime_last: 
+	error: 'module' object has no attribute 'check_evidences_present'
+	exception: 
+Device
+	device: LGE Nexus 4
+	id: 355136050291528
+	release: 4.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: 2.15:SUPERSU
+
+	selinux: 
+	format_resist: 
+Evidences
+	evidences_first: 
+		addressbook: 8
+			phone
+		application: 1
+		call: 0
+		camera: 0
+		chat: 0
+		device: 2
+		message: 5
+		mic: 0
+
+	evidences_last: 
+Expected
+	call_supported: True
+	expected: ['telegram', 'android.talk', 'viber', 'facebook', 'line.android', 'skype', 'whatsapp', 'tencent.mm']
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: False
+Installation
+	time: 2015-02-02 11:59:15.000661
+	installed: 
+	executed: True
+	instance_name: Android (331) LGE Nexus 4
+	info: 
+	uptime_first: up time: 00:04:15, idle time: 00:11:37, sleep time: 00:00:00
+
+	uptime_last: up time: 00:11:37, idle time: 00:36:35, sleep time: 00:00:00
+
+	error: 
+	exception: 
+Device
+	device: LGE Nexus 4
+	id: 355136050291528
+	release: 4.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: 2.15:SUPERSU
+
+	selinux: 
+	format_resist: 
+Evidences
+	evidences_first: 
+		addressbook: 30
+			telegram
+			phone
+			viber
+			facebook
+			skype
+			wechat
+			whatsapp
+			gmail
+		application: 1
+		call: 0
+		camera: 1
+		chat: 42
+			telegram
+			viber
+			wechat
+			skype
+			facebook
+			whatsapp
+			line
+		device: 3
+		message: 43
+		mic: 0
+		password: 2
+
+	evidences_last: 
+		addressbook: 31
+			telegram
+			phone
+			viber
+			facebook
+			skype
+			wechat
+			whatsapp
+			gmail
+		application: 47
+		call: 1
+			skype
+		camera: 1
+		chat: 42
+			telegram
+			viber
+			wechat
+			skype
+			facebook
+			whatsapp
+			line
+		device: 3
+		message: 43
+		mic: 1
+		password: 2
+
+Expected
+	call_supported: True
+	expected: ['telegram', 'android.talk', 'viber', 'facebook', 'line.android', 'skype', 'whatsapp', 'tencent.mm']
+Uninstall
+	uninstall: True
+	running: False
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 2015-02-02 12:16:23.122430
+	installed: 
+	executed: True
+	instance_name: Android (332) LGE Nexus 4
+	info: 
+	uptime_first: up time: 00:09:20, idle time: 00:28:14, sleep time: 00:00:-1
+
+	uptime_last: up time: 00:15:48, idle time: 00:55:11, sleep time: 00:00:00
+
+	error: 
+	exception: 
+Device
+	device: LGE Nexus 4
+	id: 355136050291528
+	release: 4.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: 2.15:SUPERSU
+
+	selinux: 
+	format_resist: 
+Evidences
+	evidences_first: 
+		addressbook: 8
+			phone
+		application: 1
+		call: 0
+		camera: 8
+		chat: 0
+		device: 2
+		message: 5
+		mic: 0
+
+	evidences_last: 
+		addressbook: 8
+			phone
+		application: 33
+		call: 0
+		camera: 20
+		chat: 0
+		device: 2
+		message: 5
+		mic: 0
+
+Expected
+	call_supported: 
+	expected: ['telegram', 'android.talk', 'viber', 'facebook', 'line.android', 'skype', 'whatsapp', 'tencent.mm']
+Uninstall
+	uninstall: True
+	running: False
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 2015-02-02 13:55:01.106470
+	installed: 
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: TestSpecific instance has no attribute 'check_install'
+	exception: 
+Device
+	device: LGE Nexus 4
+	id: 355136050291528
+	release: 4.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	format_resist: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 2015-02-02 14:01:00.136050
+	installed: 
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: TestSpecific instance has no attribute 'check_install'
+	exception: 
+Device
+	device: LGE Nexus 4
+	id: 355136050291528
+	release: 4.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	format_resist: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 2015-02-02 14:23:31.244214
+	installed: 
+	executed: True
+	instance_name: Android (333) LGE Nexus 4
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: test_device() takes exactly 4 arguments (5 given)
+	exception: 
+Device
+	device: LGE Nexus 4
+	id: 355136050291528
+	release: 4.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	format_resist: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: False
+Installation
+	time: 2015-02-02 14:26:41.368272
+	installed: 
+	executed: True
+	instance_name: Android (334) LGE Nexus 4
+	info: 
+	uptime_first: up time: 02:00:39, idle time: 07:38:53, sleep time: 00:00:00
+
+	uptime_last: up time: 02:01:40, idle time: 07:42:52, sleep time: 00:00:00
+
+	error: 'root'
+	exception: 
+Device
+	device: LGE Nexus 4
+	id: 355136050291528
+	release: 4.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	format_resist: 
+Evidences
+	evidences_first: 
+		application: 0
+		call: 0
+		camera: 2
+		chat: 0
+		device: 3
+		mic: 0
+		photo: 1
+
+	evidences_last: 
+		application: 0
+		call: 0
+		camera: 4
+		chat: 0
+		device: 3
+		mic: 0
+		photo: 1
+
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: False
+Installation
+	time: 2015-02-02 16:05:07.833552
+	installed: 
+	executed: True
+	instance_name: Android (335) LGE Nexus 4
+	info: 
+	uptime_first: up time: 03:41:53, idle time: 14:08:19, sleep time: 00:00:00
+
+	uptime_last: up time: 03:42:54, idle time: 14:10:10, sleep time: 00:00:00
+
+	error: 
+	exception: 
+Device
+	device: LGE Nexus 4
+	id: 355136050291528
+	release: 4.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: 2.15:SUPERSU
+
+	selinux: 
+	format_resist: 
+Evidences
+	evidences_first: 
+		application: 0
+		call: 0
+		camera: 6
+		chat: 0
+		device: 4
+		mic: 0
+		photo: 1
+
+	evidences_last: 
+		application: 0
+		call: 0
+		camera: 8
+		chat: 0
+		device: 4
+		mic: 0
+		photo: 1
+
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: True
+	running: False
+	files_remained: 
+	packages_remained: 
+Installation
+	time: 2015-02-02 16:33:48.303108
+	installed: 
+	executed: True
+	instance_name: Android (336) LGE Nexus 4
+	info: 
+	uptime_first: up time: 00:25:16, idle time: 01:28:47, sleep time: 00:00:00
+
+	uptime_last: 
+	error: check_evidences_present() takes exactly 3 arguments (1 given)
+	exception: 
+Device
+	device: LGE Nexus 4
+	id: 355136050291528
+	release: 4.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: 2.15:SUPERSU
+
+	selinux: 
+	format_resist: 
+Evidences
+	evidences_first: 
+		application: 0
+		call: 0
+		camera: 6
+		chat: 0
+		device: 3
+		mic: 0
+		photo: 1
+
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: False
+Asserts
+	asserts: 
+Installation
+	time: 2015-02-02 17:01:07.657688
+	installed: 
+	executed: True
+	instance_name: Android (338) LGE Nexus 4
+	info: 
+	uptime_first: up time: 00:16:38, idle time: 00:56:32, sleep time: 00:00:00
+
+	uptime_last: up time: 00:17:39, idle time: 00:58:22, sleep time: 00:00:00
+
+	error: 
+	exception: 
+Device
+	device: LGE Nexus 4
+	id: 355136050291528
+	release: 4.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: 2.15:SUPERSU
+
+	selinux: 
+	format_resist: 
+Evidences
+	evidences_first: 
+		camera: 6
+		device: 4
+		photo: 1
+
+	evidences_last: 
+		camera: 8
+		device: 4
+		photo: 1
+
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: True
+	running: False
+	files_remained: 
+	packages_remained: 
+Result
+	result: True
+Installation
+	time: 2015-02-02 17:17:40.843717
+	installed: 
+	executed: True
+	instance_name: Android (339) LGE Nexus 4
+	info: 
+	uptime_first: up time: 00:12:42, idle time: 00:42:21, sleep time: 00:00:00
+
+	uptime_last: up time: 00:13:54, idle time: 00:47:36, sleep time: 00:00:00
+
+	error: 
+	exception: 
+Device
+	device: LGE Nexus 4
+	id: 355136050291528
+	release: 4.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: 2.15:SUPERSU
+
+	selinux: 
+	format_resist: 
+Evidences
+	evidences_first: 
+		camera: 4
+		device: 4
+		photo: 1
+
+	evidences_last: 
+		camera: 6
+		device: 4
+		photo: 1
+
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: True
+	running: False
+	files_remained: 
+	packages_remained: 
+Result
+	result: True
+Installation
+	time: 2015-02-03 13:48:33.324445
+	installed: 
+	executed: True
+	instance_name: Android (340) LGE Nexus 4
+	info: 
+	uptime_first: up time: 00:22:20, idle time: 01:17:42, sleep time: 00:00:00
+
+	uptime_last: up time: 00:27:08, idle time: 01:36:49, sleep time: 00:00:00
+
+	error: 
+	exception: 
+Device
+	device: LGE Nexus 4
+	id: 355136050291528
+	release: 4.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: 2.15:SUPERSU
+
+	selinux: 
+	format_resist: 
+Evidences
+	evidences_first: 
+		camera: 6
+		device: 4
+		photo: 1
+
+	evidences_last: 
+		camera: 14
+		device: 4
+		photo: 1
+
+Expected
+	call_supported: 
+	expected: ['telegram', 'android.talk', 'viber', 'facebook', 'line.android', 'skype', 'whatsapp', 'tencent.mm']
+Uninstall
+	uninstall: True
+	running: False
+	files_remained: 
+	packages_remained: 
+Result
+	result: False
+Installation
+	time: 2015-02-03 14:09:25.332381
+	installed: 
+	executed: True
+	instance_name: Android (341) LGE Nexus 4
+	info: 
+	uptime_first: up time: 00:14:07, idle time: 00:47:38, sleep time: 00:00:00
+
+	uptime_last: up time: 00:18:28, idle time: 01:03:43, sleep time: 00:00:00
+
+	error: 
+	exception: 
+Device
+	device: LGE Nexus 4
+	id: 355136050291528
+	release: 4.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: 2.15:SUPERSU
+
+	selinux: 
+	format_resist: 
+Evidences
+	evidences_first: 
+		addressbook: 30
+			telegram
+			phone
+			viber
+			facebook
+			skype
+			wechat
+			whatsapp
+			gmail
+		application: 2
+		camera: 7
+		chat: 42
+			telegram
+			viber
+			wechat
+			skype
+			facebook
+			whatsapp
+			line
+		device: 3
+		message: 43
+		password: 2
+
+	evidences_last: 
+		addressbook: 31
+			telegram
+			phone
+			viber
+			facebook
+			skype
+			wechat
+			whatsapp
+			gmail
+		application: 38
+		camera: 7
+		chat: 43
+			telegram
+			viber
+			wechat
+			skype
+			facebook
+			whatsapp
+			line
+		device: 4
+		message: 43
+		password: 2
+
+Expected
+	call_supported: 
+	expected: ['telegram', 'android.talk', 'viber', 'facebook', 'line.android', 'skype', 'whatsapp', 'tencent.mm']
+Uninstall
+	uninstall: True
+	running: False
+	files_remained: 
+	packages_remained: 
+Result
+	result: False
+Installation
+	time: 2015-02-03 14:27:26.284056
+	installed: 
+	executed: True
+	instance_name: Android (342) LGE Nexus 4
+	info: 
+	uptime_first: up time: 00:12:13, idle time: 00:41:05, sleep time: 00:00:00
+
+	uptime_last: up time: 00:17:44, idle time: 01:02:09, sleep time: 00:00:00
+
+	error: local variable 'uninstall' referenced before assignment
+	exception: 
+Device
+	device: LGE Nexus 4
+	id: 355136050291528
+	release: 4.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: No
+	root_first: True
+	su: 2.15:SUPERSU
+
+	selinux: 
+	format_resist: 
+Evidences
+	evidences_first: 
+		addressbook: 30
+			telegram
+			phone
+			viber
+			facebook
+			skype
+			wechat
+			whatsapp
+			gmail
+		application: 2
+		camera: 6
+		chat: 43
+			telegram
+			viber
+			wechat
+			skype
+			facebook
+			whatsapp
+			line
+		device: 4
+		message: 43
+		password: 2
+		screenshot: 1
+
+	evidences_last: 
+		addressbook: 31
+			telegram
+			phone
+			viber
+			facebook
+			skype
+			wechat
+			whatsapp
+			gmail
+		application: 38
+		camera: 6
+		chat: 43
+			telegram
+			viber
+			wechat
+			skype
+			facebook
+			whatsapp
+			line
+		device: 4
+		message: 43
+		password: 2
+		screenshot: 1
+
+Expected
+	call_supported: 
+	expected: ['telegram', 'android.talk', 'viber', 'facebook', 'line.android', 'skype', 'whatsapp', 'tencent.mm']
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: False
+Result
+	result: False
+Installation
+	time: 2015-02-03 15:11:25.032181
+	installed: 
+	executed: True
+	instance_name: Android (344) LGE Nexus 4
+	info: 
+	uptime_first: up time: 00:56:11, idle time: 03:21:27, sleep time: 00:00:00
+
+	uptime_last: up time: 00:57:18, idle time: 03:22:24, sleep time: 00:00:00
+
+	error: 
+	exception: 
+Device
+	device: LGE Nexus 4
+	id: 355136050291528
+	release: 4.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: 2.15:SUPERSU
+
+	selinux: 
+	format_resist: 
+Evidences
+	evidences_first: 
+		addressbook: 30
+			telegram
+			phone
+			viber
+			facebook
+			skype
+			wechat
+			whatsapp
+			gmail
+		application: 2
+		chat: 43
+			telegram
+			viber
+			wechat
+			skype
+			facebook
+			whatsapp
+			line
+		device: 4
+		message: 43
+		password: 2
+
+	evidences_last: 
+		addressbook: 30
+			telegram
+			phone
+			viber
+			facebook
+			skype
+			wechat
+			whatsapp
+			gmail
+		application: 2
+		chat: 43
+			telegram
+			viber
+			wechat
+			skype
+			facebook
+			whatsapp
+			line
+		device: 4
+		message: 43
+		password: 2
+
+Expected
+	call_supported: 
+	expected: set(['google', 'telegram', 'viber', 'facebook', 'skype', 'line', 'whatsapp'])
+Uninstall
+	uninstall: True
+	running: False
+	files_remained: 
+	packages_remained: 
+Result
+	result: False
+Installation
+	time: 2015-02-05 17:07:41.433770
+	installed: 
+	executed: True
+	instance_name: Android (345) LGE Nexus 4
+	info: 
+	uptime_first: up time: 08:22:24, idle time: 18:16:21, sleep time: 03:36:22
+
+	uptime_last: 
+	error: 'Namespace' object has no attribute 'persistence'
+	exception: 
+Device
+	device: LGE Nexus 4
+	id: 355136050291528
+	release: 4.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: No
+	root_first: True
+	su: 2.15:SUPERSU
+
+	selinux: 
+	format_resist: 
+Evidences
+	evidences_first: 
+		addressbook: 13
+			telegram
+			viber
+			wechat
+			skype
+			facebook
+			whatsapp
+			gmail
+		application: 2
+		call: 0
+		camera: 7
+		chat: 43
+			telegram
+			viber
+			wechat
+			skype
+			facebook
+			whatsapp
+			line
+		device: 4
+		message: 44
+		mic: 0
+		password: 2
+
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: ['telegram', 'android.talk', 'viber', 'facebook', 'line.android', 'skype', 'whatsapp', 'tencent.mm']
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: False
+Result
+	result: True
+Installation
+	time: 2015-02-05 17:21:23.736582
+	installed: 
+	executed: 
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 
+Device
+	device: LGE Nexus 4
+	id: 355136050291528
+	release: 4.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	format_resist: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: 
+Result
+	result: True
+Installation
+	time: 2015-02-05 17:23:01.077457
+	installed: 
+	executed: True
+	instance_name: Android (346) LGE Nexus 4
+	info: 
+	uptime_first: up time: 08:37:16, idle time: 19:10:42, sleep time: 03:36:21
+
+	uptime_last: up time: 00:02:33, idle time: 00:05:55, sleep time: 00:00:00
+
+	error: 
+	exception: 
+Device
+	device: LGE Nexus 4
+	id: 355136050291528
+	release: 4.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: 2.15:SUPERSU
+
+	selinux: 
+	format_resist: Yes
+Evidences
+	evidences_first: 
+		device: 4
+
+	evidences_last: 
+		device: 5
+
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: True
+	running: False
+	files_remained: 
+	packages_remained: 
+Result
+	result: True

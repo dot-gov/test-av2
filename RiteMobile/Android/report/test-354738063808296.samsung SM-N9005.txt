@@ -369,3 +369,51 @@ Uninstall
 	packages_remained: False
 Result
 	result: False
+Installation
+	time: 2015-02-11 16:13:05.316905
+	installed: False
+	executed: True
+	instance_name: Android (372) samsung SM-N9005
+	info: 
+	uptime_first: up time: 1 days, 07:44:39, idle time: 05:11:27, sleep time: 1 days, 02:14:09
+
+	uptime_last: up time: 1 days, 07:45:51, idle time: 05:14:19, sleep time: 1 days, 02:14:09
+
+	error: 
+	exception: 
+Device
+	device: samsung SM-N9005
+	id: 354738063808296
+	release: 4.4.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: No
+	root_first: False
+	su: /system/bin/sh: su: not found
+
+	selinux: 1
+	format_resist: 
+Evidences
+	evidences_first: 
+		calendar: 4
+		camera: 3
+		device: 2
+		photo: 3
+
+	evidences_last: 
+		application: 2
+		calendar: 4
+		camera: 5
+		device: 2
+		photo: 3
+
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: False
+	running: False
+	files_remained: 
+	packages_remained: 
+Result
+	result: True
