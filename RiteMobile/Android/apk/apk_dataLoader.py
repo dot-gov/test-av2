@@ -46,6 +46,14 @@ apksConf['wifi_enabler'] = {'type': 'apk',
                             'apk_conf_backup_file': '',
                             'package_name': 'com.accati.wifichangestatus'}
 
+apksConf['report'] = {'type': 'apk',
+                            'apk_path': 'assets/report.apk',
+                            'conf_file': '',
+                            'conf_gzip': '',
+                            'launch_activity': 'com.example.zad.report/.ReportActivity',
+                            'apk_conf_backup_file': '',
+                            'package_name': 'com.example.zad.report'}
+
 #Che backup si usa:
 #*avast: adb backup (done 16/09/14 @ 18PM)
 #*360: fck

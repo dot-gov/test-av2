@@ -558,7 +558,7 @@ def test_device(command_dev, args, results):
 
 def parse_args():
     parser = argparse.ArgumentParser(description='run install and uninstall.')
-    parser.add_argument('-a', '--apk', required=True,
+    parser.add_argument('-a', '--apk', required=False,
                         help="apk to use")
     parser.add_argument('-d', '--device', required=False,
                         help="choose serial number of the device to use")

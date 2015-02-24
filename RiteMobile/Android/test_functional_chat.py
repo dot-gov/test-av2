@@ -53,8 +53,10 @@ class ChatTestSpecific(functional_common.Check):
 
         if results['have_root']:
             # check chat
+
             print "CHAT"
-            #self.check_chat(command_dev, packs)
+            if args.interactive:
+                self.check_chat(command_dev, packs)
 
     def check_ev_program(self, results, prog, expected):
         programs = results['evidence_programs_last'].get(prog, [])

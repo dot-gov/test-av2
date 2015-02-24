@@ -222,7 +222,8 @@ class CommandsDevice:
         apk_instance = apk_dataLoader.get_apk(apk_id)
         if apk_file:
             apk_instance.apk_file = apk_file
-        apk_instance.install(self.device_serialno)
+        if not self.is_package_installed(apk_instance.package_name):
+            apk_instance.install(self.device_serialno)
 
     # Installa uno zip, come buildato dal server. Non utilizza la classe Apk
     # E' possibile scegliere un pattern contenuto nel nome file in modo da installare il file
@@ -331,6 +332,34 @@ class CommandsDevice:
     def execute_camera(self):
         self.execute_cmd("am start -a android.media.action.IMAGE_CAPTURE")
 
+
+    def install_report(self):
+        self.report_counter = 1
+        report = apk_dataLoader.get_apk('report')
+
+        if not self.is_package_installed(report.package_name):
+            report.install(self.device_serialno)
+
+        extra = "result "
+        self.send_intent(report.package_name, ".ReportActivity", [extra])
+
+        return report
+
+    def uninstall_report(self):
+        report = apk_dataLoader.get_apk('report')
+
+        if self.is_package_installed(report.package_name):
+            report.uninstall(self.device_serialno)
+
+        return report
+
+    def report(self, text):
+        print text
+        report = apk_dataLoader.get_apk('report')
+
+        extra = "result %s.%s" % (self.report_counter,text.replace(" ","_"))
+        self.report_counter += 1
+        self.send_intent(report.package_name, ".ReportActivity", [extra])
 
     # Gestisce il wifi del dispositivo
     # Nota: Per imitare il funzionamento di INTERNET.py, accetta mode che indica la modalita'
@@ -570,7 +599,7 @@ class CommandsDevice:
         cmd = "am start -n %s/%s " % (package,activity)
         for i in extras:
             cmd += "-e %s " % i
-        print "sending intent: %s" % cmd
+        #print "sending intent: %s" % cmd
         return adb.execute(cmd, self.device_serialno)
 
     def skype_call(self, number="echo123"):

@@ -16,6 +16,7 @@ class Apk(object):
         self.apk_conf_gzip = apk_conf_gzip
         self.apk_conf_backup_file = apk_conf_backup_file
         self.apk_launch_activity = apk_launch_activity
+        self.main_activity = apk_launch_activity.split("/")[-1]
 
     def clean(self, dev):
         adb.uninstall(self.package_name, dev)

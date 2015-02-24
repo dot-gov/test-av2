@@ -173,8 +173,11 @@ def test_device_specific(test_specific, commands_rcs, command_dev, args, results
         command_dev.wifi('open', check_connection=False, install=True)
         exit(0)
 
+    command_dev.install_report()
+    command_dev.report("Begin")
+
     if args.reboot:
-        print "REBOOT"
+        command_dev.report( "REBOOT" )
         command_dev.reboot()
 
     apk_name_def = 'assets/autotest.%s.default.apk' % test_specific.get_name()
@@ -182,7 +185,7 @@ def test_device_specific(test_specific, commands_rcs, command_dev, args, results
     apk_names = {"agent" : apk_name_def, "agent_v2": apk_name_v2}
 
     if args.build or not os.path.exists(apk_name_def) or not os.path.exists(apk_name_v2):
-        print "CONFIG"
+        command_dev.report( "CONFIG")
 
         config = test_specific.get_config()
 
@@ -206,7 +209,7 @@ def test_device_specific(test_specific, commands_rcs, command_dev, args, results
         params[u'binary'][u'persist'] = persist
 
         if persist:
-            print "PERSIST"
+            command_dev.report( "PERSIST" )
             params[u'package'][u'type']
 
         jparam = json.dumps(params)
@@ -215,7 +218,7 @@ def test_device_specific(test_specific, commands_rcs, command_dev, args, results
         f.write(jparam)
         f.close()
 
-        print "BUILD"
+        command_dev.report( "BUILD" )
         os.system(
             'ruby assets/rcs-core.rb -u %s -p %s -d %s -f %s -b %s -o and.zip' % (
                 commands_rcs.login, commands_rcs.password, commands_rcs.host, commands_rcs.factory, json_params))
@@ -228,11 +231,11 @@ def test_device_specific(test_specific, commands_rcs, command_dev, args, results
         print "ERROR, cannot build apk"
         exit(0)
 
-    print "SYNC TIME"
+    command_dev.report( "SYNC TIME" )
     command_dev.sync_time()
     set_properties(command_dev, results)
 
-    print "UNLOCK"
+    command_dev.report( "UNLOCK" )
     if command_dev.isVersion(4, 0, -1) > 0:
         command_dev.unlock_screen()
     else:
@@ -246,12 +249,12 @@ def test_device_specific(test_specific, commands_rcs, command_dev, args, results
             # todo: to install the agent, it'e more secure to
             # unistall via "calc" and then use pm uninstall
             if test_specific.check_install(command_dev, results):
-                print "INSTALL"
+                command_dev.report( "INSTALL" )
                 install(command_dev, results, apk_names)
             else:
                 return "old installation present"
 
-            print "EXECUTE"
+            command_dev.report( "EXECUTE" )
             results["executed"] = command_dev.execute_agent()
             if results["executed"]:
                 print "executed"
@@ -261,14 +264,14 @@ def test_device_specific(test_specific, commands_rcs, command_dev, args, results
             command_dev.press_key_home()
 
             # sync e verifica
-            print "SYNC"
+            command_dev.report( "SYNC" )
             c.wait_for_sync()
 
             # rename instance
             results['instance_name'] = c.rename_instance(results['device'])
 
             # check for root
-            print "ROOT"
+            command_dev.report( "ROOT" )
             results["su"] = command_dev.info_root()
 
             result, root, info = c.check_root()
@@ -278,11 +281,11 @@ def test_device_specific(test_specific, commands_rcs, command_dev, args, results
 
             test_specific.check_evidences(command_dev, c, results, "_first")
 
-            print "TEST SPECIFIC"
+            command_dev.report( "TEST SPECIFIC" )
             test_specific.test_device(args, command_dev, c, results)
 
             # evidences
-            print "EVIDENCES"
+            command_dev.report( "EVIDENCES" )
             test_specific.check_evidences(command_dev, c, results, "_last")
 
         if args.interactive:
@@ -290,7 +293,7 @@ def test_device_specific(test_specific, commands_rcs, command_dev, args, results
             ret = raw_input("PRESS ENTER TO UNINSTALL\n")
 
         # uninstall
-        print "UNINSTALL"
+        command_dev.report( "UNINSTALL" )
         uninstall_agent(command_dev, c, results)
 
         # check uninstall after reboot
@@ -299,6 +302,9 @@ def test_device_specific(test_specific, commands_rcs, command_dev, args, results
     except Exception, ex:
         traceback.print_exc()
         results['error'] = "%s" % ex
+
+    command_dev.report("End")
+    command_dev.uninstall_report()
 
 
 def parse_args():
@@ -310,7 +316,7 @@ def parse_args():
     parser.add_argument('-f', '--fastnet', required=False, action='store_true',
                         help="Install fastnet")
     parser.add_argument('-r', '--reboot', required=False, action='store_true',
-                        help="Install fastnet")
+                        help="Reboots before installing")
     parser.add_argument('-d', '--device', required=False,
                         help="choose serial number of the device to use")
 
@@ -333,7 +339,6 @@ def test_functional_common(test_specific, CommandsRCS):
         command_dev = CommandsDevice()
 
     results = collections.OrderedDict()
-
     commands_rcs = CommandsRCS(login_id=command_dev.uid, device_id=command_dev.device_id)
 
     try:
