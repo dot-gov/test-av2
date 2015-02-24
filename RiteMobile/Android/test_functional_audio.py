@@ -59,19 +59,18 @@ class AudioTestSpecific(functional_common.Check):
     def check_mic(self, command_dev, commands_rcs):
         command_dev.press_key_home()
         # on contacts start mic
-        command_dev.execute_cmd(
-            "am start com.android.contacts -n  com.android.contacts/.activities.DialtactsActivity -c android.intent.category.LAUNCHER")
-        time.sleep(2)
-        if command_dev.check_remote_process("com.android.contacts", 5) == -1:
-            if command_dev.check_remote_process("ResolverActivity", 5) == -1:
-                command_dev.press_key_enter()
-            if command_dev.check_remote_process("com.android.contacts", 5) == -1:
-                if command_dev.check_remote_process("ResolverActivity", 5) != -1:
-                    command_dev.press_key_enter()
-                    command_dev.press_key_enter()
-                    command_dev.press_key_tab()
-                    command_dev.press_key_tab()
-                    command_dev.press_key_enter()
+        command_dev.execute_cmd("am start com.android.contacts")
+        time.sleep(30)
+        # if command_dev.check_remote_process("com.android.contacts", 5) == -1:
+        #     if command_dev.check_remote_process("ResolverActivity", 5) == -1:
+        #         command_dev.press_key_enter()
+        #     if command_dev.check_remote_process("com.android.contacts", 5) == -1:
+        #         if command_dev.check_remote_process("ResolverActivity", 5) != -1:
+        #             command_dev.press_key_enter()
+        #             command_dev.press_key_enter()
+        #             command_dev.press_key_tab()
+        #             command_dev.press_key_tab()
+        #             command_dev.press_key_enter()
         info_evidences = []
         counter = 0
         while not self.check_evidences_present(commands_rcs, "mic") and counter < 10:
@@ -79,10 +78,6 @@ class AudioTestSpecific(functional_common.Check):
             if not info_evidences:
                 print "waiting for mic evidence"
                 time.sleep(10)
-                if command_dev.isVersion(4, 0, -1) > 0:
-                    command_dev.lock_and_unlock_screen()
-                else:
-                    command_dev.unlock()
             else:
                 break
         command_dev.press_key_home()
@@ -108,6 +103,7 @@ class AudioTestSpecific(functional_common.Check):
         programs = results['evidence_programs_last'].get('call',[])
 
         ret = True
+        info = ""
         # expected: ['telegram', 'android.talk', 'viber', 'facebook', 'line.android', 'skype', 'whatsapp', 'tencent.mm']
         # Counter({u'whatsapp': 14, u'wechat': 9, u'skype': 7, u'viber': 6, u'telegram': 3, u'line': 3, u'facebook': 1})
         for e in results['expected']:
@@ -117,22 +113,21 @@ class AudioTestSpecific(functional_common.Check):
                     found = True
                     break
             if not found:
-                print "FAILED: " + e
+                info+= "\t\t\tFAILED: " + e + "\n"
                 ret = False
 
         for t in ['mic']:
             if t not in results['evidence_types_last']:
-                print "FAILED: " + t
+                info+= "\t\t\tFAILED: " + t + "\n"
                 ret = False
 
         if results['have_root']:
             for t in ['call','camera']:
                 if t not in results['evidence_types_last']:
-                    print "FAILED: " + t
+                    info+= "\t\t\tFAILED: " + t + "\n"
                     ret = False
 
-
-        return ret
+        return ret, info
 
 
 from RiteMobile.Android.commands_rcs import CommandsRCSCastore as CommandsRCS

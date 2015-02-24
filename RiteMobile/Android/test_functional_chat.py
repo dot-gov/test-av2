@@ -62,6 +62,7 @@ class ChatTestSpecific(functional_common.Check):
         programs = results['evidence_programs_last'].get(prog, [])
         print "programs %s: " % prog, programs
         ret = True
+        info = ""
         # expected: ['telegram', 'android.talk', 'viber', 'facebook', 'line.android', 'skype', 'whatsapp', 'tencent.mm']
         # Counter({u'whatsapp': 14, u'wechat': 9, u'skype': 7, u'viber': 6, u'telegram': 3, u'line': 3, u'facebook': 1})
         for e in expected:
@@ -71,16 +72,20 @@ class ChatTestSpecific(functional_common.Check):
                     found = True
                     break
             if not found:
-                print "FAILED: " + e
+                info+= "\t\t\tFAILED: " + e + "\n"
                 ret = False
-        return ret
+        return ret, info
 
     def final_assertions(self, results):
+        info = ""
+        if not results['have_root']:
+            info = "\t\t\tFAILED: no ROOT\n"
+            return False, info
 
-        ret = self.check_ev_program(results, 'chat',  results.get('expected_chat',[]))
-        ret &= self.check_ev_program(results, 'addressbook', results.get('expected_addressbook',[]))
+        ret1, info1 = self.check_ev_program(results, 'chat',  results.get('expected_chat',[]))
+        ret2, info2= self.check_ev_program(results, 'addressbook', results.get('expected_addressbook',[]))
 
-        return ret
+        return ret1 and ret2, info1 + info2
 
 
 from RiteMobile.Android.commands_rcs import CommandsRCSCastore as CommandsRCS

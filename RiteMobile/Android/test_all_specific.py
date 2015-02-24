@@ -26,16 +26,23 @@ class AllTestSpecific(functional_common.Check):
         return "all"
 
     def final_assertions(self, results):
-        ret = {}
+
+        ret = True
+        info = ""
         for t in self.test_list:
             name = t.get_name()
             print "testing: " + name
             try:
-                r = t.final_assertions(results)
+                r,i = t.final_assertions(results)
             except Exception, ex:
                 print ex
+                i = ex
                 r = False
-            print "ASSERTION: %s %s" % (name, r)
-            ret[name] = r
+            print "ASSERTION: %s %s %s" % (name, r, i)
 
-        return all(ret.values())
+            ret = ret and r
+            if r and not i:
+                i = ""
+            info += "\n\t\t%s: %s\n%s" % (name, r, i)
+
+        return ret, info

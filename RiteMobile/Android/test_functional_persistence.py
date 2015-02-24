@@ -56,16 +56,17 @@ class PersistenceTestSpecific(functional_common.Check):
 
 
     def final_assertions(self, results):
+        info = ""
         if not results["have_root"]:
-            print "FAILED, NO ROOT"
+            info= "\t\t\tFAILED: NO ROOT\n"
+
         ret = results["format_resist"] == "Yes"
 
         if results["files_remained"] or results["packages_remained"]:
-            print "UNINSTALL ERROR, remained stuff"
-            ret = False
+            info+= "\t\t\tUNINSTALL ERROR, remained stuff\n"
+            ret = False, info
 
-        return ret
-
+        return ret, info
 
 
 from RiteMobile.Android.commands_rcs import CommandsRCSCastore as CommandsRCS

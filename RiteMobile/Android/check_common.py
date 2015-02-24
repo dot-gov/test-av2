@@ -81,7 +81,6 @@ class Check:
 
 
     def check_evidences(self, command_dev, c, results, timestamp=""):
-        print "check_evidences"
         time.sleep(60)
         #evidences, kinds = c.evidences()
         stat = c.kinds()

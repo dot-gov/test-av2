@@ -83,7 +83,7 @@ def uninstall_agent(commands_device, c, results):
         unistall_dialog_wait_and_press(commands_device, 120)
 
     #print "uninstall: wait 30sec"
-    #time.sleep(30)
+    time.sleep(5)
     results['uninstall'] = uninstall
 
     if not uninstall:
@@ -144,13 +144,13 @@ def report_build(results):
     report += "Uninstall\n"
     report += report_if_exists(results, ["uninstall", "running", "files_remained", "packages_remained"])
     report += "Result\n"
-    report += report_if_exists(results, ["result"])
+    report += report_if_exists(results, ["test_name", "result", "result_info"])
     #print report
     return report
 
 
 def report_files(results, report):
-    with open('report/test-%s.%s.txt' % (results.get('id', 0), results.get('device', "device")), 'wb') as tfile:
+    with open('report/test-%s.%s.%s.txt' % (results.get('id', 0), results.get('device', "device"), results.get('test_name','none')), 'wb') as tfile:
         tfile.write(report)
 
     # with open('report/test-%s.%s.csv' % (results.get('id', 0), results.get('device', "device")), 'ab') as csvfile:
@@ -279,6 +279,7 @@ def test_device_specific(test_specific, commands_rcs, command_dev, args, results
             results['root_first'] = result
             results['have_root'] = result
 
+            command_dev.report( "CHECK EVIDENCES" )
             test_specific.check_evidences(command_dev, c, results, "_first")
 
             command_dev.report( "TEST SPECIFIC" )
@@ -342,6 +343,7 @@ def test_functional_common(test_specific, CommandsRCS):
     commands_rcs = CommandsRCS(login_id=command_dev.uid, device_id=command_dev.device_id)
 
     try:
+        results['test_name'] = test_specific.get_name()
         test_device_specific(test_specific, commands_rcs, command_dev, args, results)
     except Exception, ex:
         print ex
@@ -349,12 +351,15 @@ def test_functional_common(test_specific, CommandsRCS):
         results['exception'] = ex
 
     try:
-        results["result"] = test_specific.final_assertions(results)
+        res, info = test_specific.final_assertions(results)
+        info = "\n%s" % info
+        results["result"], results["result_info"] = res, info
     except Exception, ex:
         print ex
         traceback.print_exc()
-        results['exception'] = ex
-        results["result"] = False
+        results['result_info'] = ex
+        results['result'] = False
+
 
     report = report_build(results)
     report_files(results, report)

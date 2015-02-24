@@ -1,12 +1,14 @@
 Installation
-	time: 2015-02-23 16:49:29.107597
+	time: 2015-02-24 14:02:22.053875
 	installed: False
 	executed: True
-	instance_name: 
+	instance_name: Android (385) samsung GT-I9300
 	info: 
-	uptime_first: 
-	uptime_last: 
-	error: HTTP Error 403: Forbidden
+	uptime_first: up time: 00:13:06, idle time: 00:46:49, sleep time: 00:00:00
+
+	uptime_last: up time: 00:14:12, idle time: 00:50:51, sleep time: 00:00:00
+
+	error: 
 	exception: 
 Device
 	device: samsung GT-I9300
@@ -14,21 +16,54 @@ Device
 	release: 4.3
 	build_date: 2013-05-01T09:11:19
 Root
-	root: 
-	root_first: 
-	su: 
+	root: Root
+	root_first: True
+	su: /system/bin/sh: su: not found
+
 	selinux: 
 	format_resist: 
 Evidences
 	evidences_first: 
+		addressbook: 4
+			whatsapp
+			gmail
+			skype
+		application: 2
+		camera: 5
+		chat: 2
+			skype
+		device: 4
+		message: 25
+		password: 2
+		photo: 8
+		screenshot: 1
+
 	evidences_last: 
+		addressbook: 4
+			whatsapp
+			gmail
+			skype
+		application: 2
+		camera: 12
+		chat: 2
+			skype
+		device: 4
+		message: 25
+		password: 2
+		photo: 8
+		screenshot: 1
+
 Expected
 	call_supported: 
 	expected: 
 Uninstall
-	uninstall: 
-	running: 
+	uninstall: True
+	running: False
 	files_remained: 
-	packages_remained: False
+	packages_remained: 
 Result
-	result: True
+	result: False
+	result_info: FAILED: telegram
+FAILED: whatsapp
+FAILED: google
+

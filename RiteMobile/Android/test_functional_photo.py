@@ -17,13 +17,15 @@ class PhotoTestSpecific(functional_common.Check):
     def check_photo(self, command_dev):
         command_dev.execute_camera()
 
-        time.sleep(10)
+        time.sleep(20)
         pass
 
     def final_assertions(self, results):
         print "evidence_types_last: ", results["evidence_types_last"]
         ret = "photo" in results["evidence_types_last"]
-        return ret
+        info = ""
+
+        return ret, info
 
 
 if __name__ == '__main__':
