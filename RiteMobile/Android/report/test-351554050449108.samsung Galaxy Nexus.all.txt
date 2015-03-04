@@ -1,0 +1,86 @@
+Installation
+	time: 2015-03-04 11:29:35.825577
+	installed: False
+	executed: True
+	instance_name: AutomaticTest (4) samsung Galaxy Nexus
+	info: 
+	uptime_first: up time: 00:08:19, idle time: 00:12:54, sleep time: 00:00:03
+
+	uptime_last: up time: 00:07:22, idle time: 00:11:03, sleep time: 00:00:00
+
+	error: 
+	exception: {}
+Device
+	device: samsung Galaxy Nexus
+	id: 351554050449108
+	release: 4.0.4
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: 2.15:SUPERSU
+
+	selinux: 
+	format_resist: Yes
+Evidences
+	evidences_first: 
+		addressbook: 3
+			whatsapp
+			gmail
+			skype
+		application: 1
+		calendar: 1
+		chat: 104
+			whatsapp
+			gmail
+		device: 3
+		message: 51
+		password: 3
+		photo: 1
+
+	evidences_last: 
+		addressbook: 3
+			whatsapp
+			gmail
+			skype
+		application: 14
+		calendar: 1
+		call: 1
+			skype
+		chat: 104
+			whatsapp
+			gmail
+		device: 5
+		message: 51
+		password: 3
+		photo: 1
+		screenshot: 1
+
+Expected
+	call_supported: True
+	expected: ['skype']
+Uninstall
+	uninstall: True
+	running: False
+	files_remained: 
+	packages_remained: 
+Result
+	test_name: all
+	result: False
+	result_info: 
+
+		persistence: True
+
+		photo: True
+
+		audio: False
+			FAILED: mic
+			FAILED: camera
+
+		chat: False
+			FAILED: facebook
+			FAILED: google
+			FAILED: viber
+			FAILED: skype
+			FAILED: facebook
+

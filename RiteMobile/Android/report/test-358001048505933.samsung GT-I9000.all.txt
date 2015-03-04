@@ -1,0 +1,64 @@
+Installation
+	time: 2015-03-03 16:48:29.397924
+	installed: False
+	executed: True
+	instance_name: TestFunctional (6) samsung GT-I9000
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: {}
+Device
+	device: samsung GT-I9000
+	id: 358001048505933
+	release: 2.3.6
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: 
+	selinux: 
+	format_resist: No
+Evidences
+	evidences_first: 
+		addressbook: 1
+			facebook
+		application: 1
+		device: 3
+		message: 1
+		password: 4
+		screenshot: 3
+
+	evidences_last: 
+		addressbook: 1
+			facebook
+		application: 5
+		device: 3
+		message: 1
+		password: 4
+		screenshot: 3
+
+Expected
+	call_supported: False
+	expected: []
+Uninstall
+	uninstall: True
+	running: False
+	files_remained: 
+	packages_remained: 
+Result
+	test_name: all
+	result: False
+	result_info: 
+
+		persistence: False
+
+		photo: False
+
+		audio: False
+			FAILED: mic
+			FAILED: call
+			FAILED: camera
+
+		chat: True
+

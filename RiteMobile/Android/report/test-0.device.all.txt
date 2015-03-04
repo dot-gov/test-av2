@@ -1,18 +1,18 @@
 Installation
-	time: 2015-03-04 15:54:31.560780
-	installed: False
-	executed: True
+	time: 
+	installed: 
+	executed: 
 	instance_name: 
 	info: 
 	uptime_first: 
 	uptime_last: 
 	error: 
-	exception: 
+	exception: [Errno 2] No such file or directory: 'and.zip'
 Device
-	device: motorola Nexus 6
-	id: c20d3d17575f7b37
-	release: 5.0.1
-	build_date: 2013-05-01T09:11:19
+	device: 
+	id: 
+	release: 
+	build_date: 
 Root
 	root: 
 	root_first: 
@@ -29,7 +29,7 @@ Uninstall
 	uninstall: 
 	running: 
 	files_remained: 
-	packages_remained: False
+	packages_remained: 
 Result
 	test_name: all
 	result: False

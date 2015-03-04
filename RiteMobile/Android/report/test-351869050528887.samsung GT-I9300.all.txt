@@ -1,0 +1,80 @@
+Installation
+	time: 2015-03-03 15:41:20.763522
+	installed: False
+	executed: True
+	instance_name: TestFunctional (1) samsung GT-I9300
+	info: 
+	uptime_first: up time: 00:04:53, idle time: 00:15:37, sleep time: 00:00:00
+
+	uptime_last: up time: 00:05:53, idle time: 00:18:26, sleep time: 00:00:00
+
+	error: 
+	exception: {}
+Device
+	device: samsung GT-I9300
+	id: 351869050528887
+	release: 4.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: /system/bin/sh: su: not found
+
+	selinux: 
+	format_resist: Yes
+Evidences
+	evidences_first: 
+		addressbook: 4
+			whatsapp
+			skype
+			gmail
+		application: 4
+		camera: 10
+		chat: 2
+			skype
+		device: 4
+		message: 21
+		password: 2
+		photo: 8
+
+	evidences_last: 
+		addressbook: 4
+			whatsapp
+			skype
+			gmail
+		application: 15
+		call: 1
+			skype
+		camera: 31
+		chat: 2
+			skype
+		device: 6
+		message: 21
+		mic: 1
+		password: 2
+		photo: 8
+
+Expected
+	call_supported: True
+	expected: ['skype']
+Uninstall
+	uninstall: True
+	running: False
+	files_remained: 
+	packages_remained: 
+Result
+	test_name: all
+	result: False
+	result_info: 
+
+		persistence: True
+
+		photo: True
+
+		audio: True
+
+		chat: False
+			FAILED: telegram
+			FAILED: whatsapp
+			FAILED: google
+

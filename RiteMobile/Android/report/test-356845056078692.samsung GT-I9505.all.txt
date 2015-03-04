@@ -1,0 +1,59 @@
+Installation
+	time: 2015-03-04 11:04:56.843189
+	installed: False
+	executed: True
+	instance_name: AutomaticTest (1) samsung GT-I9505
+	info: 
+	uptime_first: up time: 18:44:34, idle time: 16:57:20, sleep time: 00:28:24
+
+	uptime_last: up time: 18:46:59, idle time: 16:59:09, sleep time: 00:28:24
+
+	error: 
+	exception: {}
+Device
+	device: samsung GT-I9505
+	id: 356845056078692
+	release: 4.4.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: No
+	root_first: False
+	su: /system/bin/sh: su: not found
+
+	selinux: 1
+	format_resist: No root
+Evidences
+	evidences_first: 
+		application: 1
+		camera: 7
+		device: 2
+
+	evidences_last: 
+		application: 11
+		camera: 13
+		device: 2
+		mic: 1
+
+Expected
+	call_supported: 
+	expected: []
+Uninstall
+	uninstall: True
+	running: False
+	files_remained: 
+	packages_remained: 
+Result
+	test_name: all
+	result: False
+	result_info: 
+
+		persistence: False
+			FAILED: NO ROOT
+
+		photo: False
+
+		audio: True
+
+		chat: False
+			FAILED: no ROOT
+

@@ -1,0 +1,73 @@
+Installation
+	time: 2015-03-04 15:19:28.264698
+	installed: False
+	executed: True
+	instance_name: AutomaticTest (7) LGE LG-D405
+	info: 
+	uptime_first: up time: 00:11:34, idle time: 00:04:17, sleep time: 00:06:08
+
+	uptime_last: up time: 00:04:05, idle time: 00:03:59, sleep time: 00:00:00
+
+	error: 
+	exception: {}
+Device
+	device: LGE LG-D405
+	id: 352763062740391
+	release: 4.4.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: 1.99:SUPERSU
+
+	selinux: 
+	format_resist: Yes
+Evidences
+	evidences_first: 
+		addressbook: 3
+			phone
+			gmail
+			skype
+		application: 1
+		device: 2
+		message: 133
+		password: 1
+		screenshot: 1
+
+	evidences_last: 
+		addressbook: 3
+			phone
+			gmail
+			skype
+		application: 32
+		device: 5
+		message: 133
+		mic: 1
+		password: 1
+		screenshot: 2
+
+Expected
+	call_supported: False
+	expected: []
+Uninstall
+	uninstall: True
+	running: False
+	files_remained: 
+	packages_remained: 
+Result
+	test_name: all
+	result: False
+	result_info: 
+
+		persistence: True
+
+		photo: False
+
+		audio: False
+			FAILED: call
+			FAILED: camera
+
+		chat: False
+			FAILED: google
+			FAILED: skype
+
