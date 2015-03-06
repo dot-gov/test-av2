@@ -265,7 +265,7 @@ class CommandsRCSPolluce(CommandsRCS):
 
 class CommandsRCSZeus(CommandsRCS):
     def __init__(self, device_id, login_id = 0):
-        super(self.__class__, self).__init__(host = "192.168.100.190", endpoint = "192.168.100.193",  login_id = login_id, device_id = device_id, password = "testriteP123", operation = "Rite_Mobile", target_name = "HardwareFunctional", factory = 'RCS_0000000023')
+        super(self.__class__, self).__init__(host = "192.168.100.190", endpoint = "192.168.100.193",  login_id = login_id, device_id = device_id, password = "testriteP123", operation = "Rite_Mobile", target_name = "HardwareFunctional", factory = 'RCS_0000000007', login='avmonitor')
         #self.server_params = servers['polluce']
 
 

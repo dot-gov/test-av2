@@ -1,0 +1,74 @@
+Installation
+	time: 2015-03-04 14:48:01.820790
+	installed: False
+	executed: True
+	instance_name: AutomaticTest (5) samsung GT-N7100
+	info: 
+	uptime_first: up time: 00:24:39, idle time: 01:31:32, sleep time: 00:00:00
+
+	uptime_last: up time: 00:04:18, idle time: 00:11:21, sleep time: 00:00:00
+
+	error: 
+	exception: {}
+Device
+	device: samsung GT-N7100
+	id: 354666054979513
+	release: 4.4.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: /system/bin/sh: su: not found
+
+	selinux: 1
+	format_resist: Yes
+Evidences
+	evidences_first: 
+		addressbook: 2
+			gmail
+			skype
+		application: 2
+		calendar: 5
+		camera: 10
+		chat: 5
+			gmail
+		device: 3
+		password: 1
+
+	evidences_last: 
+		addressbook: 2
+			gmail
+			skype
+		application: 13
+		calendar: 5
+		camera: 30
+		chat: 5
+			gmail
+		device: 5
+		mic: 1
+		password: 1
+
+Expected
+	call_supported: False
+	expected: []
+Uninstall
+	uninstall: True
+	running: False
+	files_remained: 
+	packages_remained: 
+Result
+	test_name: all
+	result: False
+	result_info: 
+
+		persistence: True
+
+		photo: False
+
+		audio: False
+			FAILED: call
+
+		chat: False
+			FAILED: google
+			FAILED: skype
+

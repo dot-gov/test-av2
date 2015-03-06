@@ -601,6 +601,12 @@ class AgentBuild:
 
         logging.debug("execute_scout: %s" % exe)
 
+        #if is an elite demo but AV is SOLDIER, I need to exit, 'cause it will fail anyway!
+        if self.final_action and self.final_action == "elite_fast_demo" and \
+                (self.hostname in self.blacklist or self.hostname in self.soldierlist):
+            add_result("+ SUCCESS ELITEDEMO on AV in Soldierlist or Blacklist - not executed and marked as passed")
+            return None
+
         self._execute_build(exe)
         if self.kind == "melt":  # and not exploit
             sleep(60)

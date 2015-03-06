@@ -1,0 +1,63 @@
+Installation
+	time: 2015-03-04 15:09:55.312491
+	installed: False
+	executed: True
+	instance_name: AutomaticTest (6) samsung GT-I8190
+	info: 
+	uptime_first: up time: 00:10:37, idle time: 00:13:17, sleep time: 00:00:-1
+
+	uptime_last: up time: 00:13:01, idle time: 00:17:15, sleep time: 00:00:-1
+
+	error: 
+	exception: {}
+Device
+	device: samsung GT-I8190
+	id: 354784051181692
+	release: 4.1.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: No
+	root_first: False
+	su: /system/bin/sh: su: not found
+
+	selinux: 
+	format_resist: No root
+Evidences
+	evidences_first: 
+		application: 1
+		calendar: 6
+		camera: 14
+		device: 2
+		message: 1
+
+	evidences_last: 
+		application: 13
+		calendar: 6
+		camera: 21
+		device: 2
+		message: 1
+		mic: 1
+
+Expected
+	call_supported: 
+	expected: []
+Uninstall
+	uninstall: True
+	running: False
+	files_remained: 
+	packages_remained: 
+Result
+	test_name: all
+	result: False
+	result_info: 
+
+		persistence: False
+			FAILED: NO ROOT
+
+		photo: False
+
+		audio: True
+
+		chat: False
+			FAILED: no ROOT
+

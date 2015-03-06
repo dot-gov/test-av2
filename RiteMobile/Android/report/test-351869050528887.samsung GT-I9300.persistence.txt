@@ -1,0 +1,46 @@
+Installation
+	time: 2015-03-03 15:59:21.518052
+	installed: False
+	executed: True
+	instance_name: Android (402) samsung GT-I9300
+	info: 
+	uptime_first: up time: 00:04:58, idle time: 00:12:52, sleep time: 00:00:00
+
+	uptime_last: up time: 00:02:38, idle time: 00:04:00, sleep time: 00:00:00
+
+	error: 
+	exception: 
+Device
+	device: samsung GT-I9300
+	id: 351869050528887
+	release: 4.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: /system/bin/sh: su: not found
+
+	selinux: 
+	format_resist: Yes
+Evidences
+	evidences_first: 
+		camera: 3
+		device: 4
+
+	evidences_last: 
+		camera: 10
+		device: 6
+
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: True
+	running: False
+	files_remained: 
+	packages_remained: 
+Result
+	test_name: persistence
+	result: True
+	result_info: 
+
