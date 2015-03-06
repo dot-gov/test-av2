@@ -1,3 +1,5 @@
+#!/bin/sh
+# installed on rite
 cd /home/avmonitor/checkrepo/
 
 for repo in botherder/detekt citizenlab/spyware-scan
