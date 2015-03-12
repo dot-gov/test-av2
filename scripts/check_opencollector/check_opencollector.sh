@@ -1,20 +1,35 @@
 #!/bin/bash
-cat blacklist.txt known_collectors.txt > all.txt
 
-flags="-P0 -O -sV -sC --osscan-guess -p 139,80,22,1"
-nmap -iL all.txt --excludefile known_vps.txt $flags -oA nmap_results
+cd /root/collectors/
+file=$(tempfile /tmp/c)
 
-xmllint --xpath '//port[@portid="80"]/state[@state="open"]/../service[@product="nginx"]/../../../os/osmatch[contains(@name,"Windows")]/../../address[@addr]' nmap_results.xml > addreses.xml
+error=0
 
-#grep -Fxvf known_vps.txt blacklist.txt known_collectors.txt | cut -d: -f2 | sort -n > all.txt
-# grep -Fxf known_vps.txt blacklist.txt known_collectors.txt | sort -n
-#for b in $all
-#do
-#    nmap $b $flags results/$b
-#    xmllint --xpath '//state[@state="open"]/../../port[@portid="80"]' nmap_results.xml
-#    xmllint --xpath '//port[@portid="80"]/state[@state="open"]' nmap_results.xml
-#    xmllint --xpath '//port[@portid="80"]/state[@state="open"]/../service[@product="nginx"]/../../../os/osmatch[contains(@name,"Windows")]' results.xml
-#done
+for ip in $( cat known_collectors.txt )
+do
+    echo PING: $ip
+    hping3 $ip -S -c 3 -1
+    if [ $? -eq 0 ]
+    then
+        echo PING $ip >> $file
+        error=1
+    fi
+done
 
-xmllint --xpath '//port[@portid="80"]/state[@state="open"]/../../../os/osmatch[contains(@name,"Windows") and @accuracy > 90]/../../address[@addr]/' nmap_results.xml
+nmap -iL known_collectors.txt -oA $file -sS -P0 -O -sV -p 1,21,22,53,80,135,139,445,3389,5900,49154
+grep open $file.gnmap >> $file && error=1
+
+if [ $error -eq 1 ]
+then
+      for m in zeno@hackingteam.com alor@hackingteam.com fabio@hackingteam.com
+        do cat $file | mail -s "CHECK COLLECTORS: ERROR" $m
+      done
+
+else
+    for m in zeno@hackingteam.com
+        do echo OK | mail -s "CHECK COLLECTORS: OK" $m
+    done
+fi
+
+rm -f $file*
 

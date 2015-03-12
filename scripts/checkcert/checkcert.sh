@@ -8,6 +8,7 @@ file=$(tempfile /tmp/p)
 
 rm toZeno.mail 2> /dev/null
 
+error="OK"
 for cert in xx.pem ma.pem me.pem mt.pem mw.pem
 do
   echo CERT: $cert
@@ -24,9 +25,10 @@ do
   # | mail -s "CHECKCERT: $good" zeno@hackingteam.com
 
   if [ -z "$(grep good $file)" ]
-  then 
+  then
+    error="ERRORS"
     for m in zeno@hackingteam.com alor@hackingteam.com f.busatto@hackingteam.com
-      do cat $file | mail -s "CHECKCERT: $good" $m
+      do cat $file | mail -s "CHECK CERT: $good" $m
       #do cat $file
     done
   fi
@@ -34,4 +36,4 @@ do
   rm $file
 done
 
-cat toZeno.mail | mail -s "CHECKCERT summary" zeno@hackingteam.com
+cat toZeno.mail | mail -s "CHECK CERT $error" zeno@hackingteam.com
