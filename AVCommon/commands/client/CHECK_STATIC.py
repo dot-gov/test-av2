@@ -25,5 +25,5 @@ def execute(vm, args):
     flat = [ item for sublist in files for item in sublist ]
     logging.debug("files: %s, expanded files: %s" % (files, flat))
     failed = build.check_static(flat, command.context["report"])
-
+    logging.debug("DEBUG - result from build.check_static: %s", failed)
     return failed==[], failed

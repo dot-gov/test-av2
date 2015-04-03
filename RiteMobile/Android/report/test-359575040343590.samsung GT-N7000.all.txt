@@ -1,0 +1,67 @@
+Installation
+	time: 2015-03-05 14:47:11.220431
+	installed: False
+	executed: True
+	instance_name: new (7) samsung GT-N7000
+	info: 
+	uptime_first: up time: 00:10:01, idle time: 00:15:14, sleep time: 00:00:00
+
+	uptime_last: up time: 00:05:27, idle time: 00:07:07, sleep time: 00:00:00
+
+	error: 
+	exception: {}
+Device
+	device: samsung GT-N7000
+	id: 359575040343590
+	release: 4.1.2
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: /system/bin/sh: su: not found
+
+	selinux: 
+	format_resist: Yes
+Evidences
+	evidences_first: 
+		addressbook: 2
+			gmail
+		application: 1
+		camera: 5
+		device: 3
+		message: 8
+		password: 1
+
+	evidences_last: 
+		addressbook: 2
+			gmail
+		application: 26
+		camera: 15
+		device: 5
+		message: 8
+		mic: 2
+		password: 1
+
+Expected
+	call_supported: True
+	expected: []
+Uninstall
+	uninstall: True
+	running: False
+	files_remained: 
+	packages_remained: 
+Result
+	test_name: all
+	result: False
+	result_info: 
+
+		persistence: True
+
+		photo: False
+
+		audio: False
+			FAILED: call
+
+		chat: False
+			FAILED: google
+

@@ -161,7 +161,8 @@ UPD_AGENT_PUPPET:
     - REVERT
     - START_VM
     - CHECK_INFECTION # questo non e' necessario, ma e' meglio assicurarsene
-    - CALL: VM_PUSH_AGENT
+    #should be incorporeated in INSTALL_AGENT
+    #- CALL: VM_PUSH_AGENT
     - INSTALL_AGENT: 10.1.20.1
     - SLEEP: 60
     - STOP_VM: 300
@@ -177,7 +178,8 @@ UPD_AGENT_AND_SNAP_PUPPET:
     - REVERT
     - START_VM
     - CHECK_INFECTION # questo non e' necessario, ma e' meglio assicurarsene
-    - CALL: VM_PUSH_AGENT
+    #should be incorporeated in INSTALL_AGENT
+    #- CALL: VM_PUSH_AGENT
     - INSTALL_AGENT: 10.1.20.1
     - SLEEP: 60
     - STOP_VM: 300

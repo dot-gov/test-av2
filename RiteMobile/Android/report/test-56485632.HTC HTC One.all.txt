@@ -1,0 +1,72 @@
+Installation
+	time: 2015-03-06 12:32:05.502809
+	installed: False
+	executed: True
+	instance_name: new (12) HTC HTC One
+	info: 
+	uptime_first: up time: 20:22:43, idle time: 02:44:26, sleep time: 17:36:40
+
+	uptime_last: up time: 00:05:30, idle time: 00:05:43, sleep time: 00:00:00
+
+	error: 
+	exception: {}
+Device
+	device: HTC HTC One
+	id: 56485632
+	release: 4.4.3
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: /system/bin/sh: su: not found
+
+	selinux: 
+	format_resist: No
+Evidences
+	evidences_first: 
+		addressbook: 1
+			gmail
+		application: 6
+		camera: 10
+		device: 3
+		password: 3
+		photo: 1
+
+	evidences_last: 
+		addressbook: 1
+			gmail
+		application: 6
+		camera: 28
+		device: 6
+		password: 3
+		photo: 1
+
+Expected
+	call_supported: False
+	expected: []
+Uninstall
+	uninstall: True
+	running: False
+	files_remained: 
+	packages_remained: 
+Result
+	test_name: all
+	result: False
+	result_info: 
+
+		persistence: False
+
+		photo: True
+
+		audio: False
+			FAILED: mic
+			FAILED: call
+
+		chat: False
+			FAILED: google
+			FAILED: facebook
+			FAILED: skype
+			FAILED: skype
+			FAILED: facebook
+			FAILED: facebook
+

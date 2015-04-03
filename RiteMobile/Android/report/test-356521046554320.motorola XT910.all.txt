@@ -1,5 +1,5 @@
 Installation
-	time: 2015-03-06 13:31:29.937453
+	time: 2015-03-05 15:56:23.552720
 	installed: False
 	executed: True
 	instance_name: 
@@ -9,9 +9,9 @@ Installation
 	error: 
 	exception: 
 Device
-	device: LGE Nexus 5
-	id: cafc58eb4dfbb96a
-	release: 5.0.1
+	device: motorola XT910
+	id: 356521046554320
+	release: 2.3.6
 	build_date: 2013-05-01T09:11:19
 Root
 	root: 

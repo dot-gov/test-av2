@@ -579,6 +579,8 @@ TEST_TRIGGER:
     - TRIGGER
 
 TEST_UPDATE_CODE_ML_PUPPET:
+    - VM_ALL
+    - SLEEP: [3, 240]
     #- CALL: VM_PUSH_AGENT
     - INSTALL_AGENT: 10.1.20.1
 
@@ -614,3 +616,114 @@ TEST_CROP_ON:
 
 TEST_CROP_OFF:
     - CROP: [ False, False ]
+
+
+TEST_POPUP_ON:
+    - POPUP: [ True, True ]
+
+TEST_POPUP_OFF:
+    - POPUP: [ False, True ]
+
+TEST_POPUP_ON_LEARN:
+    - POPUP: [ True, True, True ]
+
+TEST_POPUP_OFF_LEARN:
+    - POPUP: [ False, True, True ]
+
+TEST_POPUP_FULL:
+    - START_AGENT
+    - CALL: TEST_POPUP_ON
+    - SLEEP: 60
+    - CALL: TEST_POPUP_OFF
+
+TEST_POPUP_FULL_LEARNING:
+    - START_AGENT
+    - CALL: TEST_POPUP_ON_LEARN
+    - SLEEP: 90
+    - CALL: TEST_POPUP_OFF_LEARN
+
+INSTALL_POPUP_LIBS:
+    - VM_ALL
+    - ON_ERROR: SKIP
+    - SLEEP: [10, 600]
+    - CALL: INIT_DISPATCH
+    - INTERNET: True
+    - CALL: SET_MAIL
+    - SLEEP: 60
+    - EXECUTE_VM: [ /Python27/Scripts/pip.exe, ['install', 'pywinauto'], 90, True, True  ]
+    - SLEEP: 60
+    - EXECUTE_VM: [ /Python27/Scripts/easy_install.exe, ['pil'], 90, True, True  ]
+    - SLEEP: 600
+    - STOP_VM: 180
+    - REFRESH_SNAPSHOT
+    #remember to turn internet off after
+
+#like an init_dispatch with no revert...
+TEST_STARTUP:
+    - VM_ALL
+    - ON_ERROR: SKIP
+    - SLEEP: [10, 180]
+    - INTERNET: False
+    - START_VM: AV_AGENT
+    - SLEEP: 60
+    - CALL: SET_MAIL
+
+TEST_SHUTDOWN:
+    - VM_ALL
+    - STOP_VM: 60
+
+THE_BIG_TEST_WHICH_WILL_NOT_WORK:
+    - VM_ALL
+    - ON_ERROR: SKIP
+    - SLEEP: [10, 180]
+    - RELOG
+    - CALL: SET_MAIL
+    - SLEEP: 60
+    - REPORT:
+        - VM_POPUP_VIRUS: ['AVM Update', 'Positive static check', INVERT]
+    # don't stop so I can check saved files...
+    #- CALL: END_DISPATCH
+
+VM_POPUP_VIRUS:
+    - POPUP: [True, True, True ]
+    - PUSH: [ AVAgent/assets/vira/conficker.dll, AVAgent/assets/vira/eicar.com ]
+    - SLEEP: 90
+    - CHECK_STATIC: [ AVAgent/assets/vira/conficker.dll, AVAgent/assets/vira/eicar.com ]
+    - POPUP: [ False, False, True ]
+
+TEST_STATIC:
+    - VM_ALL
+    - INTERNET: False
+    - SLEEP: 10
+    - POPUP: [True, True, False ]
+    - CALL: SET_MAIL
+    - REPORT:
+        - TEST_BUILD_PULL
+    # - BUILD: [ pull, osx, silent ]
+    # - BUILD: [ pull, linux, silent ]
+      #  - CHECK_STATIC_MODULES
+      #  - CHECK_STATIC_MODULES_SCOUT_ICONS
+      #  - CHECK_STATIC_MODULES_DOCS
+    - POPUP: [ False, True, False ]
+
+TEST_BUILD_PULL:
+    - BUILD_SRV: [ pull, windows, silent, pull ]
+
+SYSTEM_MELT_TEST:
+    - VM_ALL
+    - ON_ERROR: SKIP
+    - SLEEP: [1, 600]
+    - CALL: SET_MAIL
+    - REPORT:
+        - VM_MELT_SRV_UTO_TEST: ['AV Invisibility', 'Melt']
+    - CALL: END_DISPATCH
+
+
+VM_MELT_SRV_UTO_TEST:
+    - ENABLE: [ tuesday, friday ]
+    #- CALL: INIT_DISPATCH
+    - BUILD_SRV: [ scout, windows_melt_uto, melt, melt ]
+    - SCREENSHOT
+    - CHECK_INFECTION
+    #to be sure, we uninstall
+    - UNINSTALL

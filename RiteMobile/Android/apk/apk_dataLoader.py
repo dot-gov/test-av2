@@ -56,13 +56,14 @@ apksConf['report'] = {'type': 'apk',
 
 #Che backup si usa:
 #*avast: adb backup (done 16/09/14 @ 18PM)
+#ahnlab
 #*360: fck
 #*AVG adb backup (done 16/09/14 @ 18PM)
 #*avira adb backup (done 16/09/14 @ 18:30PM)
 #*Lookout: fck
 #*Norton: no adb, no gzip
 #*fsecure: adb (done 25/09/14 @ 11AM)
-
+#eset
 apksConf['avast'] = {'type': 'av',
                      'apk_path': 'avassets/avast/com.avast.android.mobilesecurity-1.apk',
                      'conf_file': [['avassets/avast/data/com.avast.android.mobilesecurity/shared_prefs/prefs.xml','/data/data/com.avast.android.mobilesecurity/shared_prefs/']],
@@ -78,7 +79,7 @@ apksConf['ahnlab'] = {'type': 'av',
                      'conf_gzip': '',
                      'launch_activity': '',
                      'apk_conf_backup_file': '',
-                     'package_name': '',
+                     'package_name': 'unknown',
                      'start_scan_activity': ''}
 
 apksConf['360security'] = {'type': 'av',

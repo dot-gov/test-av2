@@ -121,8 +121,28 @@ VM_ELITE_FAST_SRV:
 
     - ON_ERROR: CONTINUE
     - CROP: True
+    #- POPUP: [ True, True ]
     - BUILD_SRV: [ elite_fast, windows, silent, elite_fast ]
     - CROP: False
+    #- POPUP: [ False, True ]
+    - SCREENSHOT
+    #CHECKING IF UNINSTALLATION SUCCEDEED
+    - CHECK_INFECTION
+    #to be sure, we uninstall
+    - UNINSTALL
+    #- RELOG
+
+VM_ELITE_FAST_SRV_POP:
+    - CALL: INIT_DISPATCH
+    - POPUP: [ True, True ]
+    - BUILD_SRV: [ scout, windows, silent, elite_fast ]
+    - SLEEP: 30
+    - POPUP: [ False, True ]
+    - RELOG
+    - ON_ERROR: CONTINUE
+    - POPUP: [ True, True ]
+    - BUILD_SRV: [ elite_fast, windows, silent, elite_fast ]
+    - POPUP: [ False, True ]
     - SCREENSHOT
     #CHECKING IF UNINSTALLATION SUCCEDEED
     - CHECK_INFECTION
@@ -133,7 +153,7 @@ VM_ELITE_FAST_SRV:
 
 VM_ELITE_FAST_DEMO_SRV:
     #andrebbe eseguito solo una volta a settimana
-    #- ENABLE: [ sunday ]
+    - ENABLE: [ sunday ]
     #NB: no crop for DEMO
     - CALL: INIT_DISPATCH
     #- SLEEP: 60
@@ -470,7 +490,24 @@ SYSTEM_ELITE_FAST_SRV:
     #- UNINSTALL
     - CALL: VM_GET_LOG
     - CALL: END_DISPATCH
- 
+
+
+SYSTEM_ELITE_FAST_SRV_POP:
+    - VM_ALL
+    - ON_ERROR: SKIP
+    - SLEEP: [1, 600]
+    # CLEAN_EV no more useful - instances are deleted during run and factories are deleted daily
+    # init_dispatch needed for clean evidences (to be removed)
+    #- CALL: INIT_DISPATCH
+    #- CALL: VM_CLEAN_EVIDENCES_AND_CACHE
+    - CALL: SET_MAIL
+    - REPORT:
+        - VM_ELITE_FAST_SRV_POP: ['AV Invisibility', 'Elite']
+    # moved in VM_procedures: screnshot and uninstall
+    #- SCREENSHOT
+    #- UNINSTALL
+    - CALL: VM_GET_LOG
+    - CALL: END_DISPATCH
 
 SYSTEM_ELITE_FAST_DEMO_SRV:
     - VM_ALL
@@ -890,9 +927,8 @@ BUILD_WINDOWS:
     - CALL: CHECK_STATIC_MODULES
     - CALL: CHECK_STATIC_MODULES_SCOUT_ICONS
     - CALL: CHECK_STATIC_MODULES_DOCS
-    - CALL: CHECK_STATIC_MODULES_9_4_SAMPLES
     #- CALL: CHECK_STATIC_MODULES_TNI
-    - CALL: CHECK_STATIC_MODULES_MELT
+    #- CALL: CHECK_STATIC_MODULES_MELT
     - BUILD: [ pull, windows, silent ]
 
 CHECK_STATIC_MODULES:
@@ -941,23 +977,10 @@ CHECK_STATIC_MODULES_MELT:
         'AVAgent/assets/melt/agent_vlc.exe',
         'AVAgent/assets/melt/agent_yahoo.exe']
 
-CHECK_STATIC_MODULES_TMP_ANDROID:
-    - PUSHZIP: [ AVAgent/assets/tmp/* ]
-    - SLEEP: 20
-    - CHECK_STATIC: [ 'AVAgent/assets/tmp/install.m.apk',
-        'AVAgent/assets/tmp/installer.default.apk',
-        'AVAgent/assets/tmp/installer.v2.apk' ]
-
 CHECK_STATIC_MODULES_DOCS:
     - PUSHZIP: [ AVAgent/assets/doc_link/* ]
     - SLEEP: 20
-    - CHECK_STATIC: ['AVAgent/assets/doc_link/clean_Doc1.docx']
-
-CHECK_STATIC_MODULES_9_4_SAMPLES:
-    - PUSHZIP: [ AVAgent/assets/9_4_agents/* ]
-    - SLEEP: 20
-    - CHECK_STATIC: ['AVAgent/assets/9_4_agents/agent.exe',
-        'AVAgent/assets/9_4_agents/agent2.exe']
+    - CHECK_STATIC: [ 'AVAgent/assets/doc_link/clean_Doc1.docx' ]
 
 CHECK_STATIC_MODULES_TNI:
     - PUSHZIP: [ AVAgent/assets/check_tni/* ]
@@ -980,7 +1003,6 @@ BUILD_DESKTOP:
     - CALL: CHECK_STATIC_MODULES
     - CALL: CHECK_STATIC_MODULES_SCOUT_ICONS
     - CALL: CHECK_STATIC_MODULES_DOCS
-    #- CALL: CHECK_STATIC_MODULES_9_4_SAMPLES
     #- CALL: CHECK_STATIC_MODULES_TNI
     - ON_ERROR: CONTINUE
     - BUILD: [ pull, windows, silent ]
@@ -1011,7 +1033,6 @@ BUILD_MOBILE_SRV:
     - BUILD_SRV: [ pull, android, silent, pull ]
     - BUILD_SRV: [ pull, ios, silent, pull ]
     - BUILD_SRV: [ pull, winphone, silent, pull ]
-    - CALL: CHECK_STATIC_MODULES_TMP_ANDROID
     - ON_ERROR: SKIP
 
 BUILD_EXPLOIT:
@@ -1455,7 +1476,6 @@ DISABLE_ANALYSIS:
     - CALL: INIT_DISPATCH
     - CLEAN_EVIDENCES: [ Ok ]
 
-
 CLEAN_SAMPLES:
     - VM_ALL
     - BUILD_CACHE_CLEAN: False
@@ -1463,19 +1483,6 @@ CLEAN_SAMPLES:
 SAVE_SAMPLES:
     - VM_ALL
     - BUILD_CACHE_CLEAN: True
-
-#check statically some files in assets/tmp folder
-SYSTEM_STATIC_CHECK_TMP:
-    - VM_ALL
-    - INTERNET: False
-    - SLEEP: [1, 120]
-    - CALL: INIT_DISPATCH
-    - CROP: True
-    - CALL: SET_MAIL
-    - REPORT:
-        - CHECK_STATIC_MODULES_TMP_ANDROID
-    - CROP: False
-    - CALL: END_DISPATCH
 
 SYSTEM_STATIC_CHECK_MELT:
     - VM_ALL

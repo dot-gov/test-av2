@@ -130,7 +130,7 @@ class CommandsRCS:
         print "sleeping for sync"
         time.sleep(60)
         for i in range(10):
-            print "getting instances"
+            print "getting instances for device: %s, Factory: %s" % (self.device_id, self.factory)
             instances = self.conn.instances_by_factory(self.device_id, self.factory)
             if not instances:
                 #print "waiting for sync (now i trigger)"

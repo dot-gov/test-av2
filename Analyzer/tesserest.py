@@ -1,3 +1,5 @@
+import socket
+
 __author__ = 'mlosito'
 
 import os
@@ -61,11 +63,25 @@ def parsefile(my_request, ocrd):
     result, word, thumb_filename = tesserhackt.processlist(directory_name, [cli_filename], ocrd, av)
 
     #temp cleanup!
-    os.remove(out_filename)
-    os.remove(out_filename.replace(".png", ".jpg"))
+    #sometimes the removal fails, usualy because the call is made with an invalid image (0*0) so it's not saved.
+    try:
+        os.remove(out_filename)
+    except OSError:
+        pass
+    try:
+        os.remove(out_filename.replace(".png", ".jpg"))
+    except OSError:
+        pass
     if not av:
-        os.remove(thumb_filename)
-
+        try:
+            os.remove(thumb_filename)
+        except OSError:
+            pass
+    if "avmaster" == socket.gethostname():
+        try:
+            os.remove(out_filename.replace(".png", ".txt"))
+        except OSError:
+            pass
     os.removedirs(directory_name)
 
     print 'Parsed_file=%s' % out_filename

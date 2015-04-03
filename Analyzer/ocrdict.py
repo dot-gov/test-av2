@@ -8,16 +8,17 @@ alphabet = 'abcdefghijklmnopqrstuvwxyz1234567890'
 _good = {'performance', 'complete', 'Protection', 'enabled', 'LIVE', 'TECH', 'SUPPORT', 'Awake', 'ACTIVATE',
          'Mobile', 'Family', 'Safety', 'Update', 'UPDATE', 'FAILED', 'top-rated', 'tablet', 'Maxumize', 'maximiza',
          'free', 'trial', 'shopping', 'banking', 'watching', 'videos', 'Gamirg', 'surfirg', 'Protectior', 'actually', 'Surf', 'without',
-         'interruptions', 'speeds', 'performance', 'complete', '24171365', 'LIVE', 'TECH', 'SUPPORT', 'databases', 'ugdatg', 'update', 'updating'}
+         'interruptions', 'speeds', 'performance', 'complete', '24171365', 'LIVE', 'TECH', 'SUPPORT', 'databases', 'ugdatg', 'update', 'updating',
+         'Windows', 'Enterprise', 'Build'}
 
-_crash = {'stopped', 'working', 'solution', 'problem', 'time', 'online', 'solution', 'later', 'close'}
+_crash = {'stopped', 'working', 'solution', 'problem', 'time', 'online', 'solution', 'close'}
 
 _bad = {'Block', 'blocked', 'nimocia', 'quarantena', 'Maggiori', 'Disinfezione', 'eininazione', 'Attendi', 'prooesso', 'Hilaccia', 'rievata',
        'minaccia', 'devata', 'quarantena', 'Maggiori', 'deltagi', 'Virus', 'removed', 'infected',
-       'been', 'deleted', 'action', 'alert', 'THREAT', 'DELETED', 'default.apk', 'classes.dex', 'quarantena', 'Maggioi', 'maggiori',
+       'been', 'deleted', 'action', ' alert', 'THREAT', 'DELETED', 'default.apk', 'classes.dex', 'quarantena', 'Maggioi', 'maggiori',
        'Disinfezione', 'minaccia', 'rievata', 'eininazione.', 'Attendi', 'prooesso', 'Disinfezione', 'minaccia', 'rievata', 'rilevata',
        'eininazione', 'eliminazione', 'Attendi', 'termine', 'processo', 'prooesso', 'installdefaultapk', 'infected', 'handling', 'failed',
-       'action', 'alert', 'Request', 'Outbound', 'Traffc', 'large', 'amount', 'suspicious',
+       'action', 'Request', 'Outbound', 'Traffc', 'large', 'amount', 'suspicious',
        'outbound', 'traffc', 'infected', 'something', 'Power', 'Eraser', 'detect', 'remove', 'Power', 'Eraser', 'message', 'outbound',
        'traffti', 'traffic', 'virus', 'W0rm', 'Kid0', 'install.exe', 'Malware', 'detected', 'MPRESS', 'HEUR', 'contains',
        'Trojan', 'IphcuneOS', 'Malware', 'contains', 'Trojan', 'IphoneOS', 'Mekir', 'Accessing',
@@ -31,13 +32,20 @@ _bad = {'Block', 'blocked', 'nimocia', 'quarantena', 'Maggiori', 'Disinfezione',
 _badbad = {'Intel', 'lntel', 'Chipset', 'Utility', 'Backup', 'ChipUtil', 'SmartDefrag', 'DiskInfo', 'EditPad', 'TreeSizeFree', 'bkmaker', 'agent',
            'Crisis', 'Morkut', 'zrcs', 'hackingteam', 'hacking', 'CrystalDisklnfo', 'lntel(c)', 'Chipset', 'Utility', 'TreeSize', 'harddisk',
            'space manager',  'Backdoor', 'Trojan', 'Morcut', 'DaVinci', 'Da.Vinci', 'FinSpy', 'Mekir', 'Riskware', 'Infostealer',
-           'Fakeinst', 'Korablin', 'Dropper', 'Boychi', 'Injector', 'ZPack', 'DaVinci', 'Da Vinci'}
+           'Fakeinst', 'Korablin', 'Dropper', 'Boychi', 'Injector', 'ZPack', 'DaVinci', 'Da Vinci', 'Gotalon',
+           #9_6 - exes names
+           'bleachbit', 'BluetoothView', 'CPUStabTest', 'MzRAMBooster', 'RealTemp', 'ultradefrag',
+           #9_6 - detail name
+           'Free space',  'maintain', 'Booster', 'UltraDefrag', 'GUI interface'
+           }
 
 _ignore_list_av = {'Kaspersky', 'Internet', 'Security', '2013', 'COMODO', 'Norton', 'SMART', 'AVG', 'Bitdefender', 'avira',
                    'CMC'}
 _ignore_list = {'AntiVirus'}
+#add: 'Application'
 
-_white_white_list = {'First Computer Scan', 'High-performance'}
+_white_white_list = {'First Computer Scan', 'High-performance', 'Update', 'out of date', 'virus protection', 'please vote', 'which company'}
+
 
 class OcrDict():
 

@@ -1,7 +1,7 @@
 Installation
-	time: 2015-03-04 15:54:31.560780
-	installed: False
-	executed: True
+	time: 2015-03-06 12:28:46.895980
+	installed: 
+	executed: 
 	instance_name: 
 	info: 
 	uptime_first: 
@@ -29,7 +29,7 @@ Uninstall
 	uninstall: 
 	running: 
 	files_remained: 
-	packages_remained: False
+	packages_remained: 
 Result
 	test_name: all
 	result: False

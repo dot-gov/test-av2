@@ -1,5 +1,5 @@
 
-soldierlist: [adaware,iobit32,bitdef,bitdef15,comodo,fsecure,gdata,drweb,360cn5,avg,avg15,avg32,norman,avira,avira15,panda,panda15,avira15f,avg15f]
+soldierlist: [adaware,iobit32,bitdef,bitdef15,comodo,fsecure,gdata,drweb,360cn5,avg,avg15,avg32,norman,avira,avira15,panda,panda15,avira15f,avg15f,syscare]
 blacklist: [emsisoft,sophos,kis32,cmcav]
 
 crop_whitelist: []

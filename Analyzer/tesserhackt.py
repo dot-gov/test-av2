@@ -68,10 +68,10 @@ def processlist(prefix, filelist, ocrd, av=None):
         else:
             out_dir = "%spopup_thumbs/%s/" % (log_dir, av)
             if result in ['UNKNOWN', 'BAD', 'CRASH']:
-                out_dir += "OK/"
+                out_dir += "NOK/"
                 thumb_filename = save_thumbnail(file_input_full, out_dir)
             elif result in ['GOOD', "NO_TEXT"]:
-                out_dir += "NOK/"
+                out_dir += "OK/"
                 thumb_filename = save_thumbnail(file_input_full, out_dir)
 
         if len(filelist) == 1:
@@ -88,27 +88,39 @@ def processlist(prefix, filelist, ocrd, av=None):
 
 
 def parse_crop(crop_filename):
-    im = Image.open(crop_filename)
-    out_filename = crop_filename.replace(".png", ".jpg")
-    # from 72dpi to about 300dpi
-    im = im.resize((im.size[0]*4, im.size[1]*4), Image.ANTIALIAS)
+    try:
+        im = Image.open(crop_filename)
+        out_filename = crop_filename.replace(".png", ".jpg")
+        # from 72dpi to about 300dpi
+        im = im.resize((im.size[0]*4, im.size[1]*4), Image.ANTIALIAS)
 
-    im.save(out_filename, dpi=(300, 300))
-    # im1 = im.convert('1')
-    # im1.save("out1.jpg", dpi=(300, 300))
-    # imL = im.convert('L')
-    # imL.save("outL.jpg", dpi=(300, 300))
+        im.save(out_filename, dpi=(300, 300))
+        # im1 = im.convert('1')
+        # im1.save("out1.jpg", dpi=(300, 300))
+        # imL = im.convert('L')
+        # imL.save("outL.jpg", dpi=(300, 300))
 
-    text = exec_tesseract(out_filename)
+        text = exec_tesseract(out_filename)
+        print text
+        return text
+    except IOError:
+        print "Invalid image file. Returning void text."
+        return ""
 
-    return text
     # return is_text_ok(text)
 
 
 def exec_tesseract(out_filename):
-    proc = subprocess.Popen(["tesseract", out_filename, "stdout"], stdout=subprocess.PIPE)
-    comm = proc.communicate()
-    return str(comm[0])
+    if "avmaster" == socket.gethostname():
+        txt_out = out_filename.replace(".jpg", "")
+        proc = subprocess.Popen(["tesseract", out_filename, txt_out], stdout=subprocess.PIPE)
+        comm = proc.communicate()
+        f = open(txt_out+".txt", "r")
+        return f.read()
+    else:
+        proc = subprocess.Popen(["tesseract", out_filename, "stdout"], stdout=subprocess.PIPE)
+        comm = proc.communicate()
+        return str(comm[0])
 
 
 #if you want the thumb in another dir prlease provide a FULL out_dir name
@@ -117,21 +129,22 @@ def save_thumbnail(crop_filename, out_dir=None):
     if out_dir:
         if not os.path.exists(out_dir):
             os.makedirs(out_dir)
+    try:
+        im = Image.open(crop_filename)
+        if out_dir:
+            crop_filename = os.path.join(out_dir, os.path.basename(crop_filename))
 
-    im = Image.open(crop_filename)
+        out_filename = crop_filename.replace(".png", "_thumb.jpg")
+        i = 0
+        while os.path.exists(out_filename):
+            out_filename = crop_filename.replace(".png", "_thumb_%s.jpg" % i)
+            i += 1
 
-    if out_dir:
-        crop_filename = os.path.join(out_dir, os.path.basename(crop_filename))
-
-    out_filename = crop_filename.replace(".png", "_thumb.jpg")
-    i = 0
-    while os.path.exists(out_filename):
-        out_filename = crop_filename.replace(".png", "_thumb_%s.jpg" % i)
-        i += 1
-
-    im.save(out_filename, quality=80, optimize=True)
-    return out_filename
-
+        im.save(out_filename, quality=80, optimize=True)
+        return out_filename
+    except IOError:
+        print "Cannot save thumbnail. Probably original image is invalid."
+        return
 
 if __name__ == "__main__":
     main()

@@ -130,7 +130,7 @@ def execute(vm, protocol, inst_args):
 
     delete_startup_av_agent(vm_manager, vm, remote_name)
 
-    for i in range(1, 3):
+    for i in range(1, 4):
         logging.debug("I'll copy %s (try %s of 3)" % (filename, i))
         assert os.path.exists(filename)
         r = vm_manager.execute(vm, "copyFileToGuest", filename, remote_name)
@@ -161,7 +161,7 @@ def execute(vm, protocol, inst_args):
 
     remote_name = "C:\\AVTest\\AVAgent\\start.bat"
 
-    for i in range(1, 3):
+    for i in range(1, 4):
         logging.debug("I'll copy %s (try %s of 3)" % (filename, i))
         assert os.path.exists(filename)
         r = vm_manager.execute(vm, "copyFileToGuest", filename, remote_name)

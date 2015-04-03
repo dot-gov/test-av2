@@ -97,3 +97,48 @@ ELIF se una parola e' in whitelist (es:update) vengono marcati come GOOD e non v
 ELSE vengono marcati come NO_TEXT o UNKNOWN
 
 Se un errore e' noto ed ha dei crop, viene segnalato come noto e i crop non vengono analizzati.
+
+
+---------------------------------------------------
+TESSEREST
+---------------------------------------------------
+Tesserest e' il servizio web che processa le immagini usando tessethackt.
+Tesserest usa FLASK (http://flask.pocoo.org/docs/0.10/) che si installa (vado a memoria) con: $sudo pip install Flask
+
+L'applicazione flask (/Rite/Analyzer/tesserest.py) e' installata con wsgi in modo da avere un server sempre attivo e stabile.
+
+Installazione:
+sudo apt-get install libapache2-mod-wsgi
+
+Poi va creato un file in /var/www/tesserest/tesserest.wsgi che contiene:
+----------
+import sys
+sys.path.insert(0, '/home/avmonitor/Rite/Analyzer')
+----------
+
+I permessi del file e della cartella che contengono il file devono essere quelli con cui gira apache.
+
+La configurazione di apache deve contenere:
+in ports.conf:
+Listen 55002
+nel file dei default-sites (/etc/apache2/sites-available/000-default.conf) la seguente configurazione (da aggiungere ad eventuali altri VirtualHost):
+<VirtualHost *:55002>
+    ServerName 127.0.0.1
+
+    WSGIScriptAlias / /var/www/tesserest/tesserest.wsgi
+
+    <Directory /var/www/tesserest>
+        WSGIScriptReloading On
+        WSGIApplicationGroup %{GLOBAL}
+        Order deny,allow
+        Allow from all
+    </Directory>
+</VirtualHost>
+
+
+Apache va fatto ripartire con sudo apachectl restart
+
+Il servizio si puo' testare con un browser puntando a:
+http://172.20.20.192:55002/   (rite)
+o
+http://172.20.20.168:55002/   (puppet)

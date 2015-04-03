@@ -25,8 +25,8 @@ class MailSender(object):
 
     important_tests = ['VM_ELITE_FAST_SCOUTDEMO_SRV', 'VM_ELITE_FAST_SRV', 'VM_EXPLOIT_SRV', 'VM_SOLDIER_SRV', 'VM_STATIC_SRV']
 
-    # 'VM_ELITE_FAST_DEMO_SRV': ['sunday'],
-    enabled = {'VM_EXPLOIT_SRV': ['sunday'],
+    enabled = {'VM_ELITE_FAST_DEMO_SRV': ['sunday'],
+               'VM_EXPLOIT_SRV': ['sunday'],
                'VM_MELT_SRV_AIR': ['wednesday', 'saturday'],
                'VM_MELT_SRV_FIF': ['monday', 'thursday'],
                'VM_MELT_SRV_UTO': ['tuesday', 'friday'],

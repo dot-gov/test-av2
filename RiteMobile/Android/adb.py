@@ -292,7 +292,10 @@ def reboot(device=None):
 
 
 def get_deviceid(device=None):
-    cmd = "dumpsys iphonesubinfo"
+    execute("am start -n com.example.zad.report/.ReportActivity  -e imei get", device)
+
+    #cmd = "dumpsys iphonesubinfo"
+    cmd = "cat /data/data/com.example.zad.report/files/imei"
 
     comm = execute(cmd, device)
     lines = comm.strip()
