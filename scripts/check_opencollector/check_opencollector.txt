@@ -1,0 +1,152 @@
+#!/bin/bash
+
+rm -f positive.txt all.txt ottanta.txt full_check.txt res.format.xml
+
+# gli ip in blacklist e i collector noti
+cat blacklist.txt known_collectors.txt | sort -n | uniq > all.txt
+
+# tutti i vps noti, i linux evidenti e gli ip per i quali la porta 22 e' aperta.
+cat known_vps.txt linux.txt open22.txt | sort -n | uniq > ignores.txt
+
+# cancellazione di tutti i dns che riconducono ad un vps
+nmap -iL all.txt --excludefile ignores.txt -sL | egrep -v "linode|cloud-ips|balticservers.eu|secureserver.net" | ./extract_ip.sh | sort -n | uniq > valid.txt
+nmap -iL valid.txt --excludefile ignores.txt -A -oA nmap_full
+
+# tutte le porte 80 tra quelli validi
+nmap -iL valid.txt --excludefile ignores.txt -P0 -p 80 -sV -oA nmap_ottanta_P0
+
+# estrae tutti gli ip validi per i quali la porta 80 non sia aperta
+cat nmap_ottanta_P0.gnmap | grep 80 | grep -v "80/open" | cut -d" " -f2 | sort -n | uniq > eightyclosed_P0.txt
+cat nmap_ottanta.gnmap | grep 80 | grep -v "80/open" | cut -d" " -f2 | sort -n | uniq > eightyclosed.txt
+
+#wc eightyclosed_P0.txt 298
+#wc eightyclosed.txt 298
+
+# estrae quelli per cui la 80 e' aperta e non restituisce niente di significativo
+cat nmap_ottanta_P0.gnmap | grep 80 | grep open | egrep -v "tcpwrapped|IIS|Apache|nginx|ZyXEL" | cut -d" " -f2 | sort -n > eightyopen.txt
+
+# scan completo delle macchine per le quali e' chiusa la 80
+nmap -iL eightyclosed_P0.txt --excludefile eightyclosed.txt -A -oA nmap_no_ottanta_only_P0
+nmap -iL eightyclosed.txt --excludefile ignores.txt -A -oA nmap_no_ottanta
+
+nmap -iL eightyclosed.txt --excludefile ignores.txt -sL -n
+nmap -iL eightyclosed_P0.txt --excludefile eightyclosed.txt  -sL -n | ./extract_ip.sh > eightyclosed_only_P0.txt
+
+
+nmap -iL noport_ping.txt -oA noport_ping -P0 -p 1,21,53,80,135,139,443,445,3389,49154 -sS
+
+#grep open nmap_ottanta.gnmap | cut -d\  -f2 > ottanta.txt
+#
+for ip in $(cat eightyclosed.txt)
+do
+    curl -m 10 "http://$ip" > /dev/null
+    echo "$ip res:$?" >> eightyclosed.get.txt
+done
+
+
+rm full.eightyclosed_only_P0.xml
+for ip in $(cat eightyclosed_only_P0.txt)
+do
+    xmllint --xpath "//address[@addr=\"$ip\"]/.." nmap_full.xml |tidy -xml -i -   >> full.eightyclosed_only_P0.xml
+done
+
+    xmllint --xpath "//osmatch" full.eightyclosed_only_P0.xml
+
+
+#egrep "res:52|res:56" positive.txt | cut -f1 -d " "> full_check.txt
+
+#flags="-P0 -O -sV -sC --osscan-guess -p 139,80,22,1"
+
+#flags="-P0 -O -sV -sC --osscan-guess -p 139,80,22,1"
+#nmap -iL full_check.txt $flags -oA nmap_results
+
+#xmllint --xpath '//port[@portid="80"]/state[@state="open"]/../service[@product="nginx"]/../../../os/osmatch[contains(@name,"Windows")]/../../address[@addr]' nmap_results.xml > addreses.xml
+
+#grep -Fxvf known_vps.txt blacklist.txt known_collectors.txt | cut -d: -f2 | sort -n > all.txt
+# grep -Fxf known_vps.txt blacklist.txt known_collectors.txt | sort -n
+#for b in $all
+#do
+#    nmap $b $flags results/$b
+#    xmllint --xpath '//state[@state="open"]/../../port[@portid="80"]' nmap_results.xml
+#    xmllint --xpath '//port[@portid="80"]/state[@state="open"]' nmap_results.xml
+#    xmllint --xpath '//port[@portid="80"]/state[@state="open"]/../service[@product="nginx"]/../../../os/osmatch[contains(@name,"Windows")]' results.xml
+#done
+
+
+#xmllint --xpath '//port[@portid="80"]/state[@state="open"]/../../../os/osmatch[contains(@name,"Windows")]/../../address[@addr]' nmap_results.xml > final.xml
+#
+# xmllint --xpath '//port[@portid="80"]/state[@state="closed"]/../../' nmap_results.xml > final.xml
+#
+#xmllint --xpath '//os/osmatch[contains(@name,"Windows")]/../../address[@addr]' nmap_results.xml > final.xml
+#
+#
+#xmllint --xpath '//os/osmatch[contains(@name,"Linux")]/../../address[@addr]' nmap_results.xml > final.xml
+
+# togliere linode, cloud-ips, balticservers.eu, secureserver.net,
+# egrep -v "linode|cloud-ips|balticservers.eu|secureserver.net"
+
+#cat nmap_results.gnmap | egrep -v "linode|cloud-ips|balticservers.eu|secureserver.net" |  cut -f2 -d" " | ./extract_ip.sh  > dns_vps.txt
+#xmllint --xpath '//os/osmatch[contains(@name,"Linux")]/../../address[@addr]' nmap_results.xml | grep -o '[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}' > linux.txt
+#xmllint --xpath '//port[@portid="22"]/state[@state="open"]/../../../address[@addr]' nmap_results.xml | grep -o '[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}' > open22.txt
+#xmllint --xpath '//address[@addr="2.193.227.116"]/..' nmap_results.xml
+
+
+xmllint --xpath '//os/osmatch[contains(@name,"Linux")]/../../address[@addr]' nmap_no_ottanta_only_P0.xml
+xmllint --xpath "//osmatch[contains(@name,"Windows Server 2008")]/../../address[@addr]" nmap_no_ottanta_only_P0.xml
+
+
+xmllint --xpath '//extraports[@count="1000"]' nmap_no_ottanta_only_P0.xml
+
+rm full.eightyclosed.xml
+for ip in $(cat eightyclosed.txt)
+do
+    xmllint --xpath "//address[@addr=\"$ip\"]/.." nmap_full.xml |tidy -xml -i -   >> full.eightyclosed.xml
+done
+
+    xmllint --xpath "//osmatch" full.eightyclosed.xml
+
+nmap -iL valid.txt --excludefile ignores.txt -sL -r
+
+Non ci sono porte 80 aperte che rispondono come il collector.
+
+Pero’ c’è un server windows 2008 da verificare a mano: 91.229.76.120
+
+Questi 29 ip potrebbero essere collector ben configurati (no ping, ma RA all'invio del syn TCP):
+
+2.193.227.116
+2.193.229.110   ping
+2.194.15.3      ping
+5.229.226.28
+94.36.180.5
+95.49.169.231
+95.49.171.146
+95.49.174.60
+95.49.174.68
+95.49.174.69    ping
+95.49.175.48
+95.49.176.160   ping
+95.49.178.120
+95.49.179.158
+95.49.179.64
+95.49.182.210
+109.53.205.186  ping
+109.54.1.245    ping
+156.54.104.153  ping
+166.78.144.231  ping
+176.216.47.175  ping
+176.218.9.153
+176.55.188.147  ping
+176.58.117.109  ping
+176.91.125.74
+201.148.31.115  collector
+201.171.247.140 collector
+217.201.238.138 ping
+
+escluso questo:
+91.229.76.120  ping (135,139,445,49154 open)
+
+il terzo collector non risponde: 190.215.138.152
+
+hping3 91.229.76.120 -S -c 3 -1
+hping3 91.229.76.120 -p 445 -S -c 3
+nmap -iL eightyclosed.txt -sP -PS 8080
