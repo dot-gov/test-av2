@@ -98,6 +98,19 @@ class SummaryDataColl(object):
         print ("Debug: crop numbers= %s" % filenames)
         return filenames
 
+    def get_popup_results(self):
+        pop_results = []
+        for i in self.rows:
+            if i.parsed_result[0] in ['POPUP']:
+                print "POPUP debug: %s" % i.rite_result_log
+                #log example: [3]
+                log = eval(i.rite_result_log)
+                # if len(log) > 0:
+                #     for crop in log:
+                pop_results.extend(log)
+        print ("Debug: popup results= %s" % pop_results)
+        return pop_results
+
     def refine_crops_with_tesseract(self, ocrd=None):
         for i in self.rows:
             i.refine_crop_with_tesseract(ocrd)
@@ -136,14 +149,14 @@ class SummaryDataColl(object):
             saved_error = True
             saved_error_comment = manual_state_rows.get_manual_comment()
         #compare_current_to_manual is true if commands are equal
-        elif cur_err > 0 and self.compare_current_to_manual(manual_state_rows):
+        elif cur_err > 0 and self.compare_current_to_manual(manual_state_rows)[0]:
             message = "OK, but known errors occurred (known error comment is: %s). Actual errorlist and known errorlist are %s " \
                       "(previous errorlist is: %s)" % (manual_state_rows.get_manual_comment(), self.state_rows_to_string_short(),
                                                        previous_state_rows.state_rows_to_string_short())
             ok = False
             saved_error = True
             saved_error_comment = manual_state_rows.get_manual_comment()
-        elif cur_err > 0 and self.compare_current_to_manual(manual_state_rows):
+        elif cur_err > 0 and not self.compare_current_to_manual(manual_state_rows)[0]:
             x, differ_reason = self.compare_current_to_manual(manual_state_rows)
             message = "Anomaly! Actual errors differs from saved errors (reason: %s). Actual errorlist is: %s, known errorlist is: %s " \
                       "(previous errorlist is: %s)" %\
@@ -199,6 +212,7 @@ class SummaryDataColl(object):
 
             for x in range(cur_err):
                 #check if there are different command names (es: BUILD vs SCREENSHOT)
+                print 'comparing %s to %s' % (self.get_error_rows()[x].command, manual_state_rows.get_error_rows()[x].command)
                 if self.get_error_rows()[x].command != manual_state_rows.get_error_rows()[x].command:
                     return False, "Commands sequence is different"
                 #check if there are different command results (es FAILED vs NO SYNC)
@@ -209,7 +223,7 @@ class SummaryDataColl(object):
                                                                               manual_state_rows.get_error_rows()[x].parsed_result[0]))
                 #check if there are different error logs
                 #REGEXP VERSION
-                elif re.match(manual_state_rows.get_error_rows()[x].rite_result_log, self.get_error_rows()[x].rite_result_log):
+                elif not re.match(manual_state_rows.get_error_rows()[x].rite_result_log, self.get_error_rows()[x].rite_result_log):
                 #NON REGEXP VERSION (EXACT MATCH)
                 #elif manual_state_rows.get_error_rows()[x].rite_result_log == self.get_error_rows()[x].rite_result_log:
                     different_logs.append("Current:%s=%s(%s), Manual:%s=%s(%s)" % (self.get_error_rows()[x].command,

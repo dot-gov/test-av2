@@ -231,20 +231,20 @@ class DBReport(object):
             # exploit
         self.insert_summary_manual_error((u'VM_EXPLOIT_SRV', u'bitdef', u'BUILD_SRV', 31, u'\\[\\"\\+\\ SUCCESS\\ CHECK\\_STATIC\\:\\ \\[\\\'build\\/exploit\\_pdf\\\\\\\\\\\\\\\\example\\.exe\\\'\\]\\"\\,\\ \\\'\\+\\ SUCCESS\\ SCOUT\\ BUILD\\ \\(no\\ signature\\ detection\\)\\\'\\,\\ \\\'\\+\\ SUCCESS\\ SCOUT\\ EXECUTE\\\'\\,\\ \\\'\\+\\ WARN\\ did\\ not\\ drop\\ startup\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ FAILED\\ SCOUT\\ SYNC\\\'\\]', 'FAILED', 0, u''), "BITDEF EXPLOIT")
             # Static Android
-        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'bitdef', u'BUILD_SRV', 45, u'\\[\\"\\+\\ FAILED\\ CHECK\\_STATIC\\.\\ SIGNATURE\\ DETECTION\\:\\ \\[\\\'build\\/android\\\\\\\\\\\\\\\\install\\.default\\.apk\\\'\\]\\"\\,\\ \\"\\+\\ FAILED\\ SCOUT\\ BUILD\\.\\ SIGNATURE\\ DETECTION\\:\\ \\[\\\'build\\/android\\\\\\\\\\\\\\\\install\\.default\\.apk\\\'\\]\\"\\,\\ \\\'\\+\\ ERROR\\:\\ Signature\\ detection\\\'\\]', 'FAILED', 0, u''), "BITDEF Android static detection")
-        # old discontinued test
-        # self.insert_summary_manual_error((u'VM_STATIC_SRV', u'bitdef', u'CHECK_STATIC', 59, u"\\[\\[\\'AVAgent\\/assets\\/tmp\\/install\\.m\\.apk\\'\\]\\,\\ \\[\\]\\,\\ \\[\\'AVAgent\\/assets\\/tmp\\/installer\\.v2\\.apk\\'\\]\\]", 'FAILED', 0, u''), "BITDEF Android static detection")
+        # self.insert_summary_manual_error((u'VM_STATIC_SRV', u'bitdef', u'BUILD_SRV', 45, u'\\[\\"\\+\\ FAILED\\ CHECK\\_STATIC\\.\\ SIGNATURE\\ DETECTION\\:\\ \\[\\\'build\\/android\\\\\\\\\\\\\\\\install\\.default\\.apk\\\'\\]\\"\\,\\ \\"\\+\\ FAILED\\ SCOUT\\ BUILD\\.\\ SIGNATURE\\ DETECTION\\:\\ \\[\\\'build\\/android\\\\\\\\\\\\\\\\install\\.default\\.apk\\\'\\]\\"\\,\\ \\\'\\+\\ ERROR\\:\\ Signature\\ detection\\\'\\]', 'FAILED', 0, u''), "BITDEF Android static detection")
+        # # old discontinued test
+        # # self.insert_summary_manual_error((u'VM_STATIC_SRV', u'bitdef', u'CHECK_STATIC', 59, u"\\[\\[\\'AVAgent\\/assets\\/tmp\\/install\\.m\\.apk\\'\\]\\,\\ \\[\\]\\,\\ \\[\\'AVAgent\\/assets\\/tmp\\/installer\\.v2\\.apk\\'\\]\\]", 'FAILED', 0, u''), "BITDEF Android static detection")
 
         #bitdef 15
              # soldier CROP NB THIS MANUAL ERROR USES THE REGEXP (SO ANY IMAGE ID IN CROP WILL MATCH)
-        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'bitdef15', u'CROP', 28, u'\\[.*\\]', 'CROP', 0, u''), "BITDEFENDER produces a FP crop with Elite and Soldier. From time to time is better to check manually known crops.")
+        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'bitdef15', u'CROP', 28, u'\[.*\]', 'CROP', 0, u''), "BITDEFENDER produces a FP crop with Elite and Soldier. From time to time is better to check manually known crops.")
              # elite CROP
-        self.insert_summary_manual_error((u'VM_ELITE_FAST_SRV', u'bitdef15', u'CROP', 25, u'\\[.*\\]', 'CROP', 0, u''), "BITDEFENDER produces a FP crop with Elite and Soldier. From time to time is better to check manually known crops.")
+        self.insert_summary_manual_error((u'VM_ELITE_FAST_SRV', u'bitdef15', u'CROP', 25, u'\[.*\]', 'CROP', 0, u''), "BITDEFENDER produces a FP crop with Elite and Soldier. From time to time is better to check manually known crops.")
             # Static Android THIS MANUAL ERROR USES THE REGEXP (SO ANY IMAGE ID IN CROP WILL MATCH)
-        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'bitdef15', u'BUILD_SRV', 45, u'\\[\\"\\+\\ FAILED\\ CHECK\\_STATIC\\.\\ SIGNATURE\\ DETECTION\\:\\ \\[\\\'build\\/android\\\\\\\\\\\\\\\\install\\.default\\.apk\\\'\\]\\"\\,\\ \\"\\+\\ FAILED\\ SCOUT\\ BUILD\\.\\ SIGNATURE\\ DETECTION\\:\\ \\[\\\'build\\/android\\\\\\\\\\\\\\\\install\\.default\\.apk\\\'\\]\\"\\,\\ \\\'\\+\\ ERROR\\:\\ Signature\\ detection\\\'\\]', 'FAILED', 0, u''), "BITDEF 15 Android static detection")
-        # old discontinued test
-        # self.insert_summary_manual_error((u'VM_STATIC_SRV', u'bitdef15', u'CHECK_STATIC', 59, u"\\[\\[\\'AVAgent\\/assets\\/tmp\\/install\\.m\\.apk\\'\\]\\,\\ \\[\\]\\,\\ \\[\\'AVAgent\\/assets\\/tmp\\/installer\\.v2\\.apk\\'\\]\\]", 'FAILED', 0, u''), "BITDEF 15 Android static detection")
-        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'bitdef15', u'CROP', 70, u'\\[.*\\]', 'CROP', 0, u''), "BITDEF 15 Android static detection")
+        # self.insert_summary_manual_error((u'VM_STATIC_SRV', u'bitdef15', u'BUILD_SRV', 45, u'\\[\\"\\+\\ FAILED\\ CHECK\\_STATIC\\.\\ SIGNATURE\\ DETECTION\\:\\ \\[\\\'build\\/android\\\\\\\\\\\\\\\\install\\.default\\.apk\\\'\\]\\"\\,\\ \\"\\+\\ FAILED\\ SCOUT\\ BUILD\\.\\ SIGNATURE\\ DETECTION\\:\\ \\[\\\'build\\/android\\\\\\\\\\\\\\\\install\\.default\\.apk\\\'\\]\\"\\,\\ \\\'\\+\\ ERROR\\:\\ Signature\\ detection\\\'\\]', 'FAILED', 0, u''), "BITDEF 15 Android static detection")
+        # # old discontinued test
+        # # self.insert_summary_manual_error((u'VM_STATIC_SRV', u'bitdef15', u'CHECK_STATIC', 59, u"\\[\\[\\'AVAgent\\/assets\\/tmp\\/install\\.m\\.apk\\'\\]\\,\\ \\[\\]\\,\\ \\[\\'AVAgent\\/assets\\/tmp\\/installer\\.v2\\.apk\\'\\]\\]", 'FAILED', 0, u''), "BITDEF 15 Android static detection")
+        # self.insert_summary_manual_error((u'VM_STATIC_SRV', u'bitdef15', u'CROP', 70, u'\\[.*\\]', 'CROP', 0, u''), "BITDEF 15 Android static detection")
 
         #gdata
             # exploit
@@ -303,8 +303,13 @@ class DBReport(object):
         #avast
             #SOLDIER (BUT IS ELITE)
         self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'avast', u'CHECK_INFECTION', 31, u'VM\\ is\\ INFECTED', 'FAILED', 0, u''), "AVAST SOLDIER FAILS UNINSTALLATION (Avast is Elite)")
-            #(static ios)
-        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'avast', u'BUILD_SRV', 50, u'\\[\\"\\+\\ FAILED\\ CHECK\\_STATIC\\.\\ SIGNATURE\\ DETECTION\\:\\ \\[\\\'build\\/ios\\\\\\\\\\\\\\\\win\\/install\\.exe\\\'\\]\\"\\,\\ \\"\\+\\ FAILED\\ SCOUT\\ BUILD\\.\\ SIGNATURE\\ DETECTION\\:\\ \\[\\\'build\\/ios\\\\\\\\\\\\\\\\win\\/install\\.exe\\\'\\]\\"\\,\\ \\\'\\+\\ ERROR\\:\\ Signature\\ detection\\\'\\]', 'FAILED', 0, u''), "AVAST DETECTS IOS INSTALLER")
+            #(static ios and static exploit)
+
+            #OLD    # self.insert_summary_manual_error((u'VM_STATIC_SRV', u'avast', u'BUILD_SRV', 50, u'\\[\\"\\+\\ FAILED\\ CHECK\\_STATIC\\.\\ SIGNATURE\\ DETECTION\\:\\ \\[\\\'build\\/ios\\\\\\\\\\\\\\\\win\\/install\\.exe\\\'\\]\\"\\,\\ \\"\\+\\ FAILED\\ SCOUT\\ BUILD\\.\\ SIGNATURE\\ DETECTION\\:\\ \\[\\\'build\\/ios\\\\\\\\\\\\\\\\win\\/install\\.exe\\\'\\]\\"\\,\\ \\\'\\+\\ ERROR\\:\\ Signature\\ detection\\\'\\]', 'FAILED', 0, u''), "AVAST DETECTS IOS INSTALLER")
+
+        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'avast', u'BUILD_SRV', 49, u'\\[\\"\\+\\ FAILED\\ CHECK\\_STATIC\\.\\ SIGNATURE\\ DETECTION\\:\\ \\[\\\'build\\/ios\\\\\\\\\\\\\\\\win\\/install\\.exe\\.copy\\.bat\\\'\\,\\ \\\'build\\/ios\\\\\\\\\\\\\\\\win\\/install\\.exe\\.copy\\.dll\\\'\\,\\ \\\'build\\/ios\\\\\\\\\\\\\\\\win\\/install\\.exe\\\'\\,\\ \\\'build\\/ios\\\\\\\\\\\\\\\\win\\/install\\.exe\\.copy\\.com\\\'\\,\\ \\\'build\\/ios\\\\\\\\\\\\\\\\win\\/install\\.exe\\.copy\\.exe\\\'\\]\\"\\,\\ \\"\\+\\ FAILED\\ SCOUT\\ BUILD\\.\\ SIGNATURE\\ DETECTION\\:\\ \\[\\\'build\\/ios\\\\\\\\\\\\\\\\win\\/install\\.exe\\.copy\\.bat\\\'\\,\\ \\\'build\\/ios\\\\\\\\\\\\\\\\win\\/install\\.exe\\.copy\\.dll\\\'\\,\\ \\\'build\\/ios\\\\\\\\\\\\\\\\win\\/install\\.exe\\\'\\,\\ \\\'build\\/ios\\\\\\\\\\\\\\\\win\\/install\\.exe\\.copy\\.com\\\'\\,\\ \\\'build\\/ios\\\\\\\\\\\\\\\\win\\/install\\.exe\\.copy\\.exe\\\'\\]\\"\\]', 'FAILED', 0, u''), "--TESTME--")
+        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'avast', u'BUILD_SRV', 63, u'\\[\\"\\+\\ FAILED\\ CHECK\\_STATIC\\.\\ SIGNATURE\\ DETECTION\\:\\ \\[\\\'build\\/exploit\\\\\\\\\\\\\\\\example\\.exe\\.copy\\.bat\\\'\\,\\ \\\'build\\/exploit\\\\\\\\\\\\\\\\example\\.exe\\\'\\,\\ \\\'build\\/exploit\\\\\\\\\\\\\\\\example\\.exe\\.copy\\.com\\\'\\,\\ \\\'build\\/exploit\\\\\\\\\\\\\\\\example\\.exe\\.copy\\.dll\\\'\\,\\ \\\'build\\/exploit\\\\\\\\\\\\\\\\example\\.exe\\.copy\\.exe\\\'\\]\\"\\,\\ \\"\\+\\ FAILED\\ SCOUT\\ BUILD\\.\\ SIGNATURE\\ DETECTION\\:\\ \\[\\\'build\\/exploit\\\\\\\\\\\\\\\\example\\.exe\\.copy\\.bat\\\'\\,\\ \\\'build\\/exploit\\\\\\\\\\\\\\\\example\\.exe\\\'\\,\\ \\\'build\\/exploit\\\\\\\\\\\\\\\\example\\.exe\\.copy\\.com\\\'\\,\\ \\\'build\\/exploit\\\\\\\\\\\\\\\\example\\.exe\\.copy\\.dll\\\'\\,\\ \\\'build\\/exploit\\\\\\\\\\\\\\\\example\\.exe\\.copy\\.exe\\\'\\]\\"\\]', 'FAILED', 0, u''), "--TESTME--")
+        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'avast', u'POPUP', 65, u"^\\[.*\\]$", 'POPUP', 0, u''), "--TESTME--")
 
         #clamav (is Elite)
             #soldier

@@ -26,7 +26,6 @@ def on_init(protocol, args):
         if not args[-1] == server_l:
             args.append(server_l)
         return True
-    #learning mode
     else:
         logging.error("Wrong arguments. POPUP needs a **list** of 2 or 3 arguments, args = %s", args)
         return False
@@ -40,18 +39,19 @@ def on_answer(vm, success, answer):
     logging.debug("POPUP answer: %s|%s" % (success, answer))
 
     if success:
-        logging.debug("POPOP Passed, no bad images found!")
+        if not isinstance(answer, list):
+            logging.debug("POPUP Success. Answer: %s", answer)
 
     else:
         if not isinstance(answer, list):
-            logging.debug("Answer is not a list. Answer = %s", answer)
+            logging.debug("POPUP Failed. Answer: %s", answer)
 
         if len(answer) == 0:
-            logging.debug("Error occurred in POPOP, no bad images saved!")
+            logging.debug("Error occurred in POPUP, no bad images saved!")
         else:
             #images are already on the server!
             for result_item in answer:
-                logging.debug("SAVED IMAGE: %s (%s)" % (result_item[1], result_item[0]))
+                logging.debug("SAVED IMAGE: %s (%s, word: %s)" % (result_item[1], result_item[0], result_item[2]))
 
             # logging.warn("We have to PULL %s images" % len(answer))
             # dir = "%s/crop" % logger.logdir
@@ -110,9 +110,11 @@ def execute(vm, args):
             output = ["Started up popup server."]
             success = True
         except:
-            output = ["EXCEPTION in POPUP detection"]
+            output = ["EXCEPTION in POPUP startup"]
             logging.exception("problem in popup detection")
             success = False
+        # return on start popup
+        return success, output
     else:
         # stops the crop and windows server
         logging.debug("stop popup server")
@@ -153,17 +155,20 @@ def popup_loop():
         else:
             result_c, img_files = util_agent.crop_window(logging, config.basedir_crop, crop_num)
             if result_c:
-                print "POSTing images to Tesserest"
+                # print "POSTing images to Tesserest"
                 for img_file in img_files:
-                    print "POSTing: %s" % img_file
+                    if not os.path.exists(img_file):
+                        print "BIG ERROR! File: %s does not exists! Not posting to tesserest!" % img_file
+                        continue
+                    print "POSTing: %s to Tesserest" % img_file
                     result_srv = tesserest_caller.post_image(img_file, host=server, av=vm_global)
-                    resu, thumb_filename = tesserest_caller.parse_response(result_srv)
-                    logging.info("Popup result: %s, filename: %s" % (resu, thumb_filename))
+                    resu, thumb_filename, word = tesserest_caller.parse_response(result_srv, server)
+                    logging.info("Popup result: %s, filename: %s, found word: %s" % (resu, thumb_filename, word))
                     if not resu and "SERVER_ERROR" == thumb_filename:
                         server_error = True
                     if resu and resu not in ["NO_TEXT", "GOOD"]:
                         logging.info("This Popup needs to be reported!")
-                        results.append([resu, thumb_filename])
+                        results.append([resu, thumb_filename, word])
                     crop_num += 1
                 #since the call take some time I sleep less, but I sleep a little anyway not to kill the server
                 time.sleep(1)

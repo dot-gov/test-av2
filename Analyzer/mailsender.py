@@ -1,3 +1,5 @@
+import os
+
 __author__ = 'mlosito'
 
 import smtplib
@@ -64,7 +66,7 @@ class MailSender(object):
     results_to_receive = []
 
     # , "f.cornelli@hackingteam.com", "m.oliva@hackingteam.com"
-    def send_mail(self, mail_recipients=["m.losito@hackingteam.com", "f.cornelli@hackingteam.com", "m.oliva@hackingteam.com"], mail_server="mail.hackingteam.com"):
+    def send_mail(self, mail_recipients=["m.losito@hackingteam.com"], mail_server="mail.hackingteam.com"):
         # Create a text/plain message
 
         header_charset = 'ISO-8859-1'
@@ -105,7 +107,8 @@ class MailSender(object):
         s.sendmail(msg_root['From'], mail_recipients, msg_root.as_string())
         s.quit()
 
-    def add_result(self, vm, test, result_types, message, details=None, save_strings=None, saved_error_comment=None, crop_filenames=None):
+    def add_result(self, vm, test, result_types, message, details=None, save_strings=None, saved_error_comment=None, crop_filenames=None,
+                   popup_results=None):
         if not vm in self.all_results:
             self.all_results[vm] = {}
         if not test in self.all_results[vm]:
@@ -116,6 +119,7 @@ class MailSender(object):
         self.all_results[vm][test]['save_string'] = save_strings
         self.all_results[vm][test]['saved_error_comment'] = saved_error_comment
         self.all_results[vm][test]['crop_filenames'] = crop_filenames
+        self.all_results[vm][test]['popup_results'] = popup_results
 
     #we pass msg that is the "root" multipart. We have to attach to it the images.
     def generate_text(self, msg):
@@ -285,29 +289,49 @@ class MailSender(object):
                             mail_message += "</p></details>"
 
                         #in error details I dont's show crops
-                        elif self.all_results[vm][test]['crop_filenames']:
-                        #crops
-                        #here I re-analyze every crop, for 2 reasons: 1: i do not have to bring all the values to this level; 2 to check consistency
-                            for crop in self.all_results[vm][test]['crop_filenames']:
-                                result, word, thumb_filename = tesserhackt.process(av=vm, num=crop, ocrd=ocrd)
-                                #good case:
-                                if thumb_filename == "":
-                                    mail_message += '<p class="doubletab">%s - <b>%s</b> - got word: %s - [image omitted] </p><br>' % (str(crop), result, word)
-                                #not good:
-                                else:
-                                    mail_message += '<p class="doubletab">%s - <b>%s</b> - got word: %s - filename: %s </p><br>' % (str(crop), result, word, thumb_filename)
-                                    img_fp = open(thumb_filename, 'rb')
-                                    img_data = img_fp.read()
-                                    # Now create the MIME container for the image
-                                    cid = vm+"-"+str(crop)
-                                    img = MIMEImage(img_data)  # , 'jpeg'
+                        else:
+                            if self.all_results[vm][test]['crop_filenames']:
+                            #crops
+                            #here I re-analyze every crop, for 2 reasons: 1: i do not have to bring all the values to this level; 2 to check consistency
+                                for crop in self.all_results[vm][test]['crop_filenames']:
+                                    result, word, thumb_filename = tesserhackt.process(av=vm, num=crop, ocrd=ocrd)
+                                    #good case:
+                                    if thumb_filename == "":
+                                        mail_message += '<p class="doubletab">%s - <b>%s</b> - got word: %s - [image omitted] </p><br>' % (str(crop), result, word)
+                                    #not good:
+                                    else:
+                                        mail_message += '<p class="doubletab">%s - <b>%s</b> - got word: %s - filename: %s </p><br>' % (str(crop), result, word, thumb_filename)
+                                        img_fp = open(thumb_filename, 'rb')
+                                        img_data = img_fp.read()
+                                        # Now create the MIME container for the image
+                                        cid = vm+"-"+str(crop)
+                                        img = MIMEImage(img_data)  # , 'jpeg'
 
-                                    img.add_header('Content-Id', '<%s>' % cid)  # angle brackets are important
-                                    #not necessary
-                                    # img.add_header("Content-Disposition", "inline", filename=thumb_filename)  # David Hess recommended this edit
-                                    mime_msg.attach(img)
-                                    img_fp.close()
-                                    mail_message += '<img class="tab" src="cid:%s">' % cid
+                                        img.add_header('Content-Id', '<%s>' % cid)  # angle brackets are important
+                                        #not necessary
+                                        # img.add_header("Content-Disposition", "inline", filename=thumb_filename)  # David Hess recommended this edit
+                                        mime_msg.attach(img)
+                                        img_fp.close()
+                                        mail_message += '<img class="tab" src="cid:%s">' % cid
+                            elif self.all_results[vm][test]['popup_results']:
+                                for result_list in self.all_results[vm][test]['popup_results']:
+                                    result, thumb_filename, word = result_list
+                                    mail_message += '<p class="doubletab"><b>%s</b> - got word: %s - filename: %s </p><br>' % (result, word, thumb_filename)
+                                    if os.path.exists(thumb_filename):
+                                        img_fp = open(thumb_filename, 'rb')
+                                        img_data = img_fp.read()
+                                        # Now create the MIME container for the image
+                                        cid = vm+"-"+str(thumb_filename)
+                                        img = MIMEImage(img_data)  # , 'jpeg'
+
+                                        img.add_header('Content-Id', '<%s>' % cid)  # angle brackets are important
+                                        #not necessary
+                                        # img.add_header("Content-Disposition", "inline", filename=thumb_filename)  # David Hess recommended this edit
+                                        mime_msg.attach(img)
+                                        img_fp.close()
+                                        mail_message += '<img class="tab" src="cid:%s">' % cid
+                                    else:
+                                        mail_message += '<p class="doubletab"><b>ERROR: filename %s not found on server! IMAGE OMITTED!</b></p>' % thumb_filename
 
                 mail_message += "</p></details><hr>"
         mail_message += '</div>'

@@ -4,6 +4,7 @@ __author__ = 'mlosito'
 class ResultStates(object):
     FAILED = ["FAILED", 100]
     NO_SYNC = ["NO_SYNC", 70]
+    POPUP = ["POPUP", 60]
     CROP = ["CROP", 50]
     GOOD_CROP = ["GOOD_CROP", 1]
     NOT_APPLICABLE = ["NOT_APPLICABLE", 1]
@@ -15,6 +16,8 @@ class ResultStates(object):
             return self.FAILED
         if content in self.NO_SYNC:
             return self.NO_SYNC
+        if content in self.POPUP:
+            return self.POPUP
         if content in self.CROP:
             return self.CROP
         if content in self.GOOD_CROP:

@@ -1,3 +1,6 @@
+import random
+import traceback
+
 __author__ = 'mlosito'
 
 import socket
@@ -38,13 +41,14 @@ TaskListThumbnailWnd
 IEFrame (internet explorer)
 Alternate Owner (internet explorer)
 CiceroUIWndFrame (altro popup win)
+EdgeUiInputTopWndClass (windows 8)
 '''
 
 windows_ignore_windows = ['Shell_TrayWnd', 'Button', 'ConsoleWindowClass', 'Progman',
                    'CabinetWClass', 'CalcFrame', 'Notepad', 'Photo_Lightweight_Viewer', '#32770', 'tooltips_class32', 'NativeHWNDHost', 'NSISUACIPC',
                    'SysShadow', 'DV2ControlHost', 'Desktop User Picture', 'SysDragImage', 'NotifyIconOverflowWindow', 'ClockTooltipWindow',
                    'SysFader', '#32768', 'VANUITooltip', 'InternetExplorer_Hidden', 'TaskListOverlayWnd', 'TaskListThumbnailWnd', 'IEFrame',
-                   'Alternate Owner', 'CiceroUIWndFrame']
+                   'Alternate Owner', 'CiceroUIWndFrame', 'Explorer_Hidden', 'EdgeUiInputTopWndClass']
 
 #ok direct method WIN: Button, Cabinet,ConsoleWindowClass, progman
 #not important the method for windows because we ignore these windows
@@ -61,7 +65,7 @@ melt_ignore_windows = ['TssMainForm', 'ApolloRuntimeContentWindow', 'MyDialogCla
 #MISP_TRAYUI_CLASSNAME_STR (mcafee)
 #not important the method for av_ignore because we ignore these windows
 
-av_ignore_windows = ['securitycenter', 'ESET Client Frame', 'AVP.SandboxWindow', 'MISP_TRAYUI_CLASSNAME_STR']
+av_ignore_windows = ['securitycenter', 'ESET Client Frame', 'AVP.SandboxWindow', 'MISP_TRAYUI_CLASSNAME_STR', 'TPSUAConsoleForm']  #latest = Panda15
 av_update_ignore_windows = ['QWidget', 'CisWidget']  # malwarebytes, comodo
 
 #av-specific windows classnames which needs PRINTSCR (popups are IMPORTANT!)
@@ -197,7 +201,7 @@ def crop_window(logging, basedir_crop, crop_num, learning=False):
 
         found_windows = i_love_messing_whith_things.find_windows(top_level_only=True)
         if found_windows is not None and found_windows != []:
-            logging.debug("Learning windows. Taking screenshots...")
+            # logging.debug("Learning windows. Taking screenshots...")
             for win_id in found_windows:
                 try:
                     hw = i_love_messing_whith_things_Hw.HwndWrapper(win_id)
@@ -241,6 +245,7 @@ def crop_window(logging, basedir_crop, crop_num, learning=False):
                         time.sleep(1)
                         ctypes.windll.user32.keybd_event(44, 0, 0, 0)
                         tries = 0
+                        #until the rectangle is 0,0,0,0 i re-grab the screen
                         while hw.Rectangle().left == 0 and hw.Rectangle().top == 0 and hw.Rectangle().right == 0 and hw.Rectangle().bottom == 0:
                             logging.debug("I want to crop %s as: %s, %s, %s, %s (l, t, r, b)" % (win_class, hw.Rectangle().left, hw.Rectangle().top,
                                                                                                  hw.Rectangle().right, hw.Rectangle().bottom))
@@ -253,7 +258,14 @@ def crop_window(logging, basedir_crop, crop_num, learning=False):
                         logging.debug("I want to crop %s as: %s, %s, %s, %s (l, t, r, b)" % (win_class, hw.Rectangle().left, hw.Rectangle().top,
                                                                                                  hw.Rectangle().right, hw.Rectangle().bottom))
 
-                        pilimg = ImageGrab.grabclipboard()
+                        #until the image is null, I re-capture from clipboard (max 8 times or it blocks other windows)
+                        pilimg = None
+                        i = 0
+                        while pilimg is None or i > 8:
+                            pilimg = ImageGrab.grabclipboard()
+                            time.sleep(1)
+                            print "Checking if image is in clipboard"
+                            i += 1
 
                         box = (hw.Rectangle().left,
                                hw.Rectangle().top,
@@ -269,12 +281,15 @@ def crop_window(logging, basedir_crop, crop_num, learning=False):
                             cropped_pilimg.save(filename)
                             logging.debug("Saved with clipboard")
                         except (SystemError, AttributeError):
-                            if win_class not in classes:
+                            traceback.print_exc()
+                            try:
                                 logging.debug("Impossible to crop with clipboard, saving FULL")
-                                pilimg = ImageGrab.grabclipboard()
-                                pilimg.save(filename.replace(".png", "_FULLcrop_error.png"))
-                            else:
-                                logging.debug("Impossible to crop with clipboard, but already saved this window class, skipping")
+                                # pilimg = ImageGrab.grabclipboard()
+                                # time.sleep(2)
+                                pilimg.save(filename.replace(".png", "_FULLcrop_error%s.png" % random.randint(0, 99999)))
+                            except:
+                                traceback.print_exc()
+                                logging.debug("Impossible to save FULL")
 
             return True, filenames
         else:

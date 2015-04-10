@@ -63,16 +63,20 @@ def processlist(prefix, filelist, ocrd, av=None):
         # saves
         if not av:
             if result in ['UNKNOWN', 'BAD', 'CRASH', "NO_TEXT"]:
+                print "Saving thumbnail"
                 thumb_filename = save_thumbnail(file_input_full)
         #if called from tesserest we should save the image!
         else:
             out_dir = "%spopup_thumbs/%s/" % (log_dir, av)
+            print "Saving thumbnail to: %s" % out_dir
             if result in ['UNKNOWN', 'BAD', 'CRASH']:
                 out_dir += "NOK/"
                 thumb_filename = save_thumbnail(file_input_full, out_dir)
             elif result in ['GOOD', "NO_TEXT"]:
                 out_dir += "OK/"
                 thumb_filename = save_thumbnail(file_input_full, out_dir)
+
+        print "Thumbnail saved or saving skipped"
 
         if len(filelist) == 1:
             return result, word, thumb_filename
@@ -90,11 +94,16 @@ def processlist(prefix, filelist, ocrd, av=None):
 def parse_crop(crop_filename):
     try:
         im = Image.open(crop_filename)
-        out_filename = crop_filename.replace(".png", ".jpg")
+        #jpg and png are supported
+        if ".jpg" in crop_filename:
+            out_filename = crop_filename.replace(".jpg", "_up.jpg")
+        else:
+            out_filename = crop_filename.replace(".png", "_up.jpg")
         # from 72dpi to about 300dpi
         im = im.resize((im.size[0]*4, im.size[1]*4), Image.ANTIALIAS)
 
         im.save(out_filename, dpi=(300, 300))
+        print "Saved upscaled image"
         # im1 = im.convert('1')
         # im1.save("out1.jpg", dpi=(300, 300))
         # imL = im.convert('L')
@@ -113,13 +122,15 @@ def parse_crop(crop_filename):
 def exec_tesseract(out_filename):
     if "avmaster" == socket.gethostname():
         txt_out = out_filename.replace(".jpg", "")
-        proc = subprocess.Popen(["tesseract", out_filename, txt_out], stdout=subprocess.PIPE)
+        proc = subprocess.Popen(["tesseract", out_filename, txt_out, "nobatch", "ascii_ml"], stdout=subprocess.PIPE)
         comm = proc.communicate()
+        print "Tesseract execution completed."
         f = open(txt_out+".txt", "r")
         return f.read()
     else:
-        proc = subprocess.Popen(["tesseract", out_filename, "stdout"], stdout=subprocess.PIPE)
+        proc = subprocess.Popen(["tesseract", out_filename, "stdout", "ascii_ml"], stdout=subprocess.PIPE)
         comm = proc.communicate()
+        print "Tesseract execution completed."
         return str(comm[0])
 
 
@@ -130,21 +141,33 @@ def save_thumbnail(crop_filename, out_dir=None):
         if not os.path.exists(out_dir):
             os.makedirs(out_dir)
     try:
+        print "Opening image %s to create thumbnail" % crop_filename
         im = Image.open(crop_filename)
+        print "Opened image %s to create thumbnail" % crop_filename
         if out_dir:
             crop_filename = os.path.join(out_dir, os.path.basename(crop_filename))
 
-        out_filename = crop_filename.replace(".png", "_thumb.jpg")
+        #if the file is a jpg I rename it to png so thumbnail is saved correctly
+        #jpg and png are supported
+        if ".jpg" in crop_filename:
+            out_filename = crop_filename.replace(".jpg", "_thumb.jpg")
+        else:
+            out_filename = crop_filename.replace(".png", "_thumb.jpg")
+
         i = 0
         while os.path.exists(out_filename):
-            out_filename = crop_filename.replace(".png", "_thumb_%s.jpg" % i)
+            if ".jpg" in crop_filename:
+                out_filename = crop_filename.replace(".jpg", "_thumb_%s.jpg" % i)
+            else:
+                out_filename = crop_filename.replace(".png", "_thumb_%s.jpg" % i)
             i += 1
-
-        im.save(out_filename, quality=80, optimize=True)
+        print "I will save thumbnail %s" % out_filename
+        im.save(out_filename, quality=75)
+        print "Thumbnail saved!"
         return out_filename
     except IOError:
-        print "Cannot save thumbnail. Probably original image is invalid."
-        return
+        print "Cannot save thumbnail. Probably pil cannot convert image. Using original file."
+        return crop_filename
 
 if __name__ == "__main__":
     main()

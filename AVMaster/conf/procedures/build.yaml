@@ -137,9 +137,10 @@ VM_ELITE_FAST_SRV_POP:
     - POPUP: [ True, True ]
     - BUILD_SRV: [ scout, windows, silent, elite_fast ]
     - SLEEP: 30
+    - ON_ERROR: CONTINUE
     - POPUP: [ False, True ]
     - RELOG
-    - ON_ERROR: CONTINUE
+    #- ON_ERROR: CONTINUE
     - POPUP: [ True, True ]
     - BUILD_SRV: [ elite_fast, windows, silent, elite_fast ]
     - POPUP: [ False, True ]
@@ -184,14 +185,18 @@ VM_ELITE_FAST_SCOUTDEMO_SRV:
 
 VM_SOLDIER:
     - CALL: INIT_DISPATCH
+    #- POPUP: [ True, True ]
     - BUILD: [ scout, windows, silent ]
     - SLEEP: 30
+    #- POPUP: [ False, True ]
     - RELOG
 
     - ON_ERROR: CONTINUE
     - CROP: True
+    #- POPUP: [ True, True ]
     - BUILD: [ soldier_fast, windows, silent ]
     - CROP: False
+    #- POPUP: [ False, True ]
     - SCREENSHOT
     - CHECK_INFECTION
     #to be sure, we uninstall
@@ -217,6 +222,27 @@ VM_SOLDIER_SRV:
     - UNINSTALL
 
 
+VM_SOLDIER_SRV_POP:
+    - CALL: INIT_DISPATCH
+    #- POPUP: [ True, True ]
+    - BUILD_SRV: [ scout, windows, silent, soldier_fast ]
+    - ON_ERROR: CONTINUE
+    #- POPUP: [ False, True ]
+    - SLEEP: 30
+    - RELOG
+    #- POPUP: [ True, True ]
+    - CROP: True
+    - BUILD_SRV: [ soldier_fast, windows, silent, soldier_fast ]
+    #- POPUP: [ False, True ]
+    - CROP: False
+    - SCREENSHOT
+    #don't skip because I need to uninstall
+    - ON_ERROR: SKIP
+    - CHECK_INFECTION
+    #to be sure, we uninstall
+    - UNINSTALL
+
+
 VM_MELT:
     - CALL: INIT_DISPATCH
     - BUILD: [ scout, windows, melt ]
@@ -228,7 +254,9 @@ VM_MELT:
 
 VM_MELT_SRV:
     - CALL: INIT_DISPATCH
+    #- POPUP: [ True, True ]
     - BUILD_SRV: [ scout, windows, melt, melt ]
+    #- POPUP: [ False, True ]
     - SCREENSHOT
     - CHECK_INFECTION
     #to be sure, we uninstall
@@ -237,7 +265,9 @@ VM_MELT_SRV:
 VM_MELT_SRV_FIF:
     - ENABLE: [ monday, thursday ]
     - CALL: INIT_DISPATCH
+    #- POPUP: [ True, True ]
     - BUILD_SRV: [ scout, windows_melt_fif, melt, melt ]
+    #- POPUP: [ False, True ]
     - SCREENSHOT
     - CHECK_INFECTION
     #to be sure, we uninstall
@@ -246,7 +276,9 @@ VM_MELT_SRV_FIF:
 VM_MELT_SRV_UTO:
     - ENABLE: [ tuesday, friday ]
     - CALL: INIT_DISPATCH
+    #- POPUP: [ True, True ]
     - BUILD_SRV: [ scout, windows_melt_uto, melt, melt ]
+    #- POPUP: [ False, True ]
     - SCREENSHOT
     - CHECK_INFECTION
     #to be sure, we uninstall
@@ -255,7 +287,9 @@ VM_MELT_SRV_UTO:
 VM_MELT_SRV_AIR:
     - ENABLE: [ wednesday, saturday ]
     - CALL: INIT_DISPATCH
+    #- POPUP: [ True, True ]
     - BUILD_SRV: [ scout, windows_melt_air, melt, melt ]
+    #- POPUP: [ False, True ]
     - SCREENSHOT
     - CHECK_INFECTION
     #to be sure, we uninstall
@@ -264,7 +298,9 @@ VM_MELT_SRV_AIR:
 VM_MELT_SRV_VUZ:
     - ENABLE: [ sunday ]
     - CALL: INIT_DISPATCH
+    #- POPUP: [ True, True ]
     - BUILD_SRV: [ scout, windows_melt_vuz, melt, melt ]
+    #- POPUP: [ False, True ]
     - SCREENSHOT
     - CHECK_INFECTION
     #to be sure, we uninstall
@@ -337,11 +373,15 @@ VM_STATIC:
 VM_STATIC_SRV:
     - CALL: INIT_DISPATCH
     - CROP: True
+    #- POPUP: [ True, True ]
     - ON_ERROR: CONTINUE
     - CALL: BUILD_DESKTOP_SRV
+    - ON_ERROR: CONTINUE
     - CALL: BUILD_MOBILE_SRV
+    - ON_ERROR: CONTINUE
     - CALL: BUILD_EXPLOIT_SRV
     - CROP: False
+    #- POPUP: [ False, True ]
     - ON_ERROR: SKIP
 
 #######################################################################
@@ -597,6 +637,24 @@ SYSTEM_SOLDIER_SRV:
     - CALL: END_DISPATCH
 
 
+SYSTEM_SOLDIER_SRV_POP:
+    - VM_ALL
+    - ON_ERROR: SKIP
+    - SLEEP: [1, 600]
+    # CLEAN_EV no more useful - instances are deleted during run and factories are deleted daily
+    # init_dispatch needed for clean evidences (to be removed)
+    #- CALL: INIT_DISPATCH
+    #- CALL: VM_CLEAN_EVIDENCES_AND_CACHE
+    - CALL: SET_MAIL
+    - REPORT:
+        - VM_SOLDIER_SRV_POP: ['AV Invisibility', 'Soldier']
+    # moved in VM_procedures: screnshot and uninstall
+    #- SCREENSHOT
+    #- UNINSTALL
+    - CALL: VM_GET_LOG
+    - CALL: END_DISPATCH
+
+
 SYSTEM_EXPLOIT:
     - VM_ALL
     - ON_ERROR: SKIP
@@ -670,7 +728,6 @@ SYSTEM_DAILY:
 
 
 SYSTEM_DAILY_SRV:
-
     - VM_ALL
     - CALL: SET_MAIL
     - ON_ERROR: SKIP
@@ -795,11 +852,13 @@ SYSTEM_ANDROID_FAST:
 VM_PUSH_VIRUS:
     - ON_ERROR: CONTINUE
     - SLEEP: 300
+    #- POPUP: [ True, True ]
     - CROP: True
     - PUSH: [ AVAgent/assets/vira/conficker.dll, AVAgent/assets/vira/eicar.com ]
     - SLEEP: 90
     - CHECK_STATIC: [ AVAgent/assets/vira/conficker.dll, AVAgent/assets/vira/eicar.com ]
     - SLEEP: 30
+    #- POPUP: [ False, True ]
     - CROP: [ False, False ]
 
 SYSTEM_POSITIVE:
@@ -1008,7 +1067,7 @@ BUILD_DESKTOP:
     - BUILD: [ pull, windows, silent ]
     - BUILD: [ pull, osx, silent ]
     - BUILD: [ pull, linux, silent ]
-    - ON_ERROR: SKIP
+    #- ON_ERROR: SKIP
 
 BUILD_DESKTOP_SRV:
     - CALL: CHECK_STATIC_MODULES
@@ -1017,7 +1076,7 @@ BUILD_DESKTOP_SRV:
     - BUILD_SRV: [ pull, windows, silent, pull ]
     - BUILD_SRV: [ pull, osx, silent, pull ]
     - BUILD_SRV: [ pull, linux, silent, pull ]
-    - ON_ERROR: SKIP
+    #- ON_ERROR: SKIP
 
 BUILD_MOBILE:
     - ON_ERROR: CONTINUE
@@ -1025,7 +1084,7 @@ BUILD_MOBILE:
     - BUILD: [ pull, android, silent ]
     - BUILD: [ pull, ios, silent ]
     - BUILD: [ pull, winphone, silent ]
-    - ON_ERROR: SKIP
+    #- ON_ERROR: SKIP
 
 BUILD_MOBILE_SRV:
     - ON_ERROR: CONTINUE
@@ -1033,13 +1092,14 @@ BUILD_MOBILE_SRV:
     - BUILD_SRV: [ pull, android, silent, pull ]
     - BUILD_SRV: [ pull, ios, silent, pull ]
     - BUILD_SRV: [ pull, winphone, silent, pull ]
-    - ON_ERROR: SKIP
+    #- ON_ERROR: SKIP
 
 BUILD_EXPLOIT:
     - BUILD: [ pull, exploit, melt ]
     #- BUILD: [ pull, exploit_docx, melt ]
 
 BUILD_EXPLOIT_SRV:
+    - ON_ERROR: CONTINUE
     - BUILD_SRV: [ pull, exploit, melt, pull ]
     #- BUILD_SRV: [ pull, exploit_docx, melt, pull ]
 
@@ -1225,6 +1285,22 @@ UPDATE_REG:
     - STOP_VM: 300
     - REFRESH_SNAPSHOT
 
+
+INSTALL_POPUP_LIBS:
+    - VM_ALL
+    - ON_ERROR: SKIP
+    - SLEEP: [10, 600]
+    - CALL: INIT_DISPATCH
+    - INTERNET: True
+    - CALL: SET_MAIL
+    - SLEEP: 60
+    - EXECUTE_VM: [ /Python27/Scripts/pip.exe, ['install', 'pywinauto'], 90, True, True  ]
+    - SLEEP: 60
+    - EXECUTE_VM: [ /Python27/Scripts/easy_install.exe, ['pil'], 90, True, True  ]
+    - SLEEP: 600
+    - STOP_VM: 180
+    - REFRESH_SNAPSHOT
+    #remember to turn internet off after
 
 # ---------------------------
 #avagent updates
@@ -1483,6 +1559,10 @@ CLEAN_SAMPLES:
 SAVE_SAMPLES:
     - VM_ALL
     - BUILD_CACHE_CLEAN: True
+
+CLEAN_EVIDENCES_AND_CACHE:
+    - VM_ALL
+    - CALL: VM_CLEAN_EVIDENCES_AND_CACHE
 
 SYSTEM_STATIC_CHECK_MELT:
     - VM_ALL

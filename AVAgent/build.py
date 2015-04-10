@@ -41,8 +41,10 @@ MOUSEEVENTF_CLICK = MOUSEEVENTF_LEFTDOWN + MOUSEEVENTF_LEFTUP
 #names = ['8169Diag', 'CCleaner', 'Linkman', 'PCSwift', 'PerfTune', 'SystemOptimizer', 'agent']
 # names = ['ChipUtil', 'SmartDefrag', 'DiskInfo', 'EditPad', 'TreeSizeFree', 'bkmaker', 'agent']
 
+#9_6 beta
+#names = ['bleachbit', 'BluetoothView', 'CPUStabTest', 'MzRAMBooster', 'RealTemp', 'ultradefrag', 'agent']
 #9_6
-names = ['bleachbit', 'BluetoothView', 'CPUStabTest', 'MzRAMBooster', 'RealTemp', 'ultradefrag', 'agent']
+names = ['bleachbit', 'BluetoothView', 'dotNETInspector', 'MzRAMBooster', 'RealTemp', 'ultradefrag', 'agent']
 
 start_dirs = ['C:/Users/avtest/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Startup',
             'C:/Documents and Settings/avtest/Start Menu/Programs/Startup' ] #, 'C:/Users/avtest/Desktop']
@@ -98,6 +100,7 @@ def check_static(files, report=None):
                 except Exception, ex:
                     logging.exception("Exception copying file: %s" % src)
 
+    time.sleep(60)
     #check file existance after copy
     for to_check in files_to_check:
 
@@ -784,7 +787,7 @@ class AgentBuild:
         else:
             logging.debug("cannot find zip file: %s" % zipfilename)
             add_result("+ FAILED SCOUT BUILD. CANNOT FIND ZIP FILE %s TO UNZIP IT" % zipfilename)
-            raise RuntimeError("No file to unzip")
+            # raise RuntimeError("No file to unzip")
         # CHECK FOR DELETED FILES
         failed = check_static(exefilenames)
 
@@ -792,7 +795,7 @@ class AgentBuild:
             add_result("+ SUCCESS SCOUT BUILD (no signature detection)")
         else:
             add_result("+ FAILED SCOUT BUILD. SIGNATURE DETECTION: %s" % failed)
-            raise RuntimeError("Signature detection")
+            # raise RuntimeError("Signature detection")
 
         return exefilenames
 

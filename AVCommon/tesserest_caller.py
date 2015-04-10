@@ -10,7 +10,7 @@ import os
 
 
 #use just ip for host (default = Rit# e)
-def post_image(to_post_file_name, host="172.20.20.192", av=None):
+def post_image(to_post_file_name, host="10.0.20.1", av=None):
 
     dest = "http://%s:55002/" % host
 
@@ -49,8 +49,9 @@ def post_image(to_post_file_name, host="172.20.20.192", av=None):
     request.add_header('Content-length', len(body))
     request.add_data(body)
 
+    print "POST Content-length: %s" % len(body)
     #debug
-    print request.get_data()
+    #print request.get_data()
     try:
         resp = urllib2.urlopen(request).read()
     except URLError:
@@ -60,22 +61,26 @@ def post_image(to_post_file_name, host="172.20.20.192", av=None):
     return resp
 
 
-def parse_response(resp):
+def parse_response(resp, server):
     if resp.startswith("ERROR - Impossible to contact host:"):
-        return False, "SERVER_ERROR"
+        return False, "SERVER_ERROR", "Impossible to contact host: %s" % server
     resu = resp.splitlines()[0]
     resu = resu.replace("Result= ", "").strip()
 
     filename = resp.splitlines()[1]
     filename = filename.replace("Thumb= ", "").strip()
 
+    word = resp.splitlines()[2]
+    word = word.replace("Found= ", "").strip()
+
     if resu in ["NO_TEXT", "GOOD", "BAD", "CRASH", "UNKNOWN"]:
-        return resu, filename
+        return resu, filename, word
     else:
-        return False, None
+        return False, None, ''
 
 if __name__ == "__main__":
     resp = post_image("/Users/mlosito/Desktop/241.png", host="172.20.20.192", av="avira")
-    resu, thumb_filename = parse_response(resp)
+    resu, thumb_filename, word = parse_response(resp, "172.20.20.192")
     print resu
     print thumb_filename
+    print word
