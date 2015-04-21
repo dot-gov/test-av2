@@ -22,6 +22,8 @@ debug = False
 send_mail = True
 write_retests = True
 
+not_to_retest = ["UPD_AV", "UPD_REFRESH", "VM_PUSH_VIRUS"]
+
 
 def main():
 
@@ -173,10 +175,9 @@ def process_yaml(filenames, results_to_receive):
             print text
             print "####################   RESULTS END   ####################"
 
-            # if comparison_result['not_enabled']:
-            #     mailsender.rite_not_enabled_add(vm, test_name, message)
+            # also rite failed tests can have popups
             if not comparison_result['rite_ok'] and not comparison_result['saved_error']:
-                mailsender.add_result(vm, test_name, mailsender.ResultTypes.RITE_FAILS, message)
+                mailsender.add_result(vm, test_name, mailsender.ResultTypes.RITE_FAILS, message, popup_results=comparison_result['popup_results'])
             elif not comparison_result['rite_ok'] and comparison_result['saved_error']:
                 mailsender.add_result(vm, test_name, mailsender.ResultTypes.RITE_KNOWN_FAILS, message)
             elif not comparison_result['success'] and not comparison_result['saved_error']:
@@ -227,12 +228,14 @@ def process_yaml(filenames, results_to_receive):
 
     tests_to_analyze = "UPDATE_AV SYSTEM_POSITIVE SYSTEM_DAILY_SRV"
     for testname, machines in retests.items():
-        testname_system = testname.replace("VM", "SYSTEM")
-        retest = "./run.sh %s -m " % testname_system
-        for vm in machines:
-            retest += "%s," % vm
-        retestlist += "%s -c -p 40<br>" % retest[0:-1]
-        tests_to_analyze += " " + testname_system
+        #add to retest only some tests (es: i do not re-test and do not re-analyze UPD_AV)
+        if testname not in not_to_retest:
+            testname_system = testname.replace("VM", "SYSTEM")
+            retest = "./run.sh %s -m " % testname_system
+            for vm in machines:
+                retest += "%s," % vm
+            retestlist += "%s -c -p 44<br>" % retest[0:-1]
+            tests_to_analyze += " " + testname_system
 
     # command to re-run analysis.
     retestlist += "python ./Rite/Analyzer/analyzer.py %s" % tests_to_analyze

@@ -9,13 +9,13 @@ _good = {'performance', 'complete', 'Protection', 'enabled', 'LIVE', 'TECH', 'SU
          'Mobile', 'Family', 'Safety', 'Update', 'UPDATE', 'FAILED', 'top-rated', 'tablet', 'Maxumize', 'maximiza',
          'free', 'trial', 'shopping', 'banking', 'watching', 'videos', 'Gamirg', 'surfirg', 'Protectior', 'actually', 'Surf', 'without',
          'interruptions', 'speeds', 'performance', 'complete', '24171365', 'LIVE', 'TECH', 'SUPPORT', 'databases', 'ugdatg', 'update', 'updating',
-         'Windows', 'Enterprise', 'Build'}
+         'Windows', 'Enterprise', 'Build', 'Web Filtering', 'Protection is enabled'}
 
-_crash = {'stopped', 'working', 'solution', 'problem', 'time', 'online', 'solution', 'close'}
+_crash = {'stopped', 'working', 'solution', 'problem', 'online', 'solution', 'close'}
 
 _bad = {'Block', 'blocked', 'nimocia', 'quarantena', 'Maggiori', 'Disinfezione', 'eininazione', 'Attendi', 'prooesso', 'Hilaccia', 'rievata',
        'minaccia', 'devata', 'quarantena', 'Maggiori', 'deltagi', 'Virus', 'removed', 'infected',
-       'been', 'deleted', 'action', ' alert', 'THREAT', 'DELETED', 'default.apk', 'classes.dex', 'quarantena', 'Maggioi', 'maggiori',
+       'deleted', 'action', ' alert', 'THREAT', 'DELETED', 'default.apk', 'classes.dex', 'quarantena', 'Maggioi', 'maggiori',
        'Disinfezione', 'minaccia', 'rievata', 'eininazione.', 'Attendi', 'prooesso', 'Disinfezione', 'minaccia', 'rievata', 'rilevata',
        'eininazione', 'eliminazione', 'Attendi', 'termine', 'processo', 'prooesso', 'installdefaultapk', 'infected', 'handling', 'failed',
        'action', 'Request', 'Outbound', 'Traffc', 'large', 'amount', 'suspicious',
@@ -26,7 +26,7 @@ _bad = {'Block', 'blocked', 'nimocia', 'quarantena', 'Maggiori', 'Disinfezione',
        'Accessing', 'contains', 'Trojan', 'IOSinfector', 'Deleted', 'Virus', 'removed', 'Betas', 'Threat', 'Malicious',
        'found', 'Threat', 'variant', 'Win32', 'Boychi', 'cleaned', 'deleting', 'quarantined', 'vira', 'eliminazione',
        'MalwaelRisk',
-        ' Spy', 'worm ', 'Blackberry', 'Mekina'}
+        ' Spy', 'worm ', 'Blackberry', 'Mekina', 'Isolated', 'Run Virtually', 'Kido', ' Wrm ', 'Eicar'}
         # removed: 'program'  'detagi', 'dettagli', 'Details', ' PID'
 
 _badbad = {'Intel', 'lntel', 'Chipset', 'Utility', 'Backup', 'ChipUtil', 'SmartDefrag', 'DiskInfo', 'EditPad', 'TreeSizeFree', 'bkmaker', 'agent',

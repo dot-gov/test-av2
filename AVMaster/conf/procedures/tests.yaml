@@ -742,3 +742,6 @@ VM_MELT_SRV_UTO_TEST:
     - CHECK_INFECTION
     #to be sure, we uninstall
     - UNINSTALL
+
+TEST_STATISTIC:
+    - CHECK_STATISTIC_STATIC: [ AVAgent/assets/scouts/* , 3 ]

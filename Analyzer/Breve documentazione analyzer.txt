@@ -139,7 +139,7 @@ nel file dei default-sites (/etc/apache2/sites-available/000-default.conf) la se
 
 Apache va fatto ripartire con sudo apachectl restart
 
-Il servizio deve avere il permesso di scrittura nelle cartelle in cui vengono salvate files. In particolare  ~/logs/popup_thumbs/ deve essere scrivibile da www-data. Questa cartella va creata (il servizio non ha il permesso di crearla).
+Il servizio deve avere il permesso di scrittura nelle cartelle in cui vengono salvate files. In particolare  ~/logs/popup_thumbs/ deve essere scrivibile da www-data (es: owner avmonitor, group www-data e permessi 770). Questa cartella va creata (il servizio non ha il permesso di crearla).
 Il servizio non salva altri dati (a parte i files temporanei)
 
 Il servizio si puo' testare con un browser puntando a:

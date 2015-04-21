@@ -1,3 +1,6 @@
+import time
+import shutil
+
 __author__ = 'mlosito'
 
 from PIL import Image
@@ -46,6 +49,14 @@ def process(av="*", num="*", ocrd=None):
     #     return processlist(prefix, filelist, ocrd)
 
 
+def cleanup(d_dir):
+    for day in range(4, 10):
+        timedir = time.strftime("%y%m%d", time.localtime(time.time()(day*24*3600)))
+        del_dir = "%spopup_thumbs/%s/" % (d_dir, timedir)
+        shutil.rmtree(del_dir, ignore_errors=True)
+        print "Deleted olf diles in dir: %s" % del_dir
+
+
 def processlist(prefix, filelist, ocrd, av=None):
     result_list = []
     if ocrd is None:
@@ -67,7 +78,9 @@ def processlist(prefix, filelist, ocrd, av=None):
                 thumb_filename = save_thumbnail(file_input_full)
         #if called from tesserest we should save the image!
         else:
-            out_dir = "%spopup_thumbs/%s/" % (log_dir, av)
+            timestamp = time.strftime("%y%m%d", time.localtime(time.time()))
+            cleanup(log_dir)
+            out_dir = "%spopup_thumbs/%s/%s/" % (log_dir, timestamp, av)
             print "Saving thumbnail to: %s" % out_dir
             if result in ['UNKNOWN', 'BAD', 'CRASH']:
                 out_dir += "NOK/"

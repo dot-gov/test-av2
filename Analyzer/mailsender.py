@@ -66,7 +66,7 @@ class MailSender(object):
     results_to_receive = []
 
     # , "f.cornelli@hackingteam.com", "m.oliva@hackingteam.com"
-    def send_mail(self, mail_recipients=["m.losito@hackingteam.com"], mail_server="mail.hackingteam.com"):
+    def send_mail(self, mail_recipients=["m.losito@hackingteam.com", "f.cornelli@hackingteam.com", "m.oliva@hackingteam.com"], mail_server="mail.hackingteam.com"):
         # Create a text/plain message
 
         header_charset = 'ISO-8859-1'
@@ -96,9 +96,9 @@ class MailSender(object):
         # recipient = recipient.encode('ascii')
         msg_root['Subject'] = Header(unicode(subject), header_charset)
         msg_root['From'] = sender_name
-        #msg_root['To'] = ", ".join(mail_recipients)
+        msg_root['To'] = ", ".join(mail_recipients)
 
-        print "Mail enabled. Msg to: %s to be sent" % msg_root['To']
+        print "Mail enabled. Msg to: %s to be sent. Mail size: %s" % (msg_root['To'], len(msg_root.as_string()))
         # Send the message via our own SMTP server, but don't include the
         # envelope header.
         s = smtplib.SMTP(mail_server)
@@ -262,6 +262,7 @@ class MailSender(object):
                   </html>''' % str(self.yaml_analyzed)
 
     def get_result_type_section_html(self, result_type, ocrd, mime_msg, error_details=False):
+        attachment_number = 0
         mail_message = '<div class="cleancontainer">'
         for vm in sorted(self.all_results):
             #if it hase some results of this type I put the header and
@@ -312,9 +313,10 @@ class MailSender(object):
                                         # img.add_header("Content-Disposition", "inline", filename=thumb_filename)  # David Hess recommended this edit
                                         mime_msg.attach(img)
                                         img_fp.close()
+                                        attachment_number += 1
                                         mail_message += '<img class="tab" src="cid:%s">' % cid
                             elif self.all_results[vm][test]['popup_results']:
-                                for result_list in self.all_results[vm][test]['popup_results']:
+                                for result_list in self.all_results[vm][test]['popup_results'][0:11]:
                                     result, thumb_filename, word = result_list
                                     mail_message += '<p class="doubletab"><b>%s</b> - got word: %s - filename: %s </p><br>' % (result, word, thumb_filename)
                                     if os.path.exists(thumb_filename):
@@ -329,12 +331,15 @@ class MailSender(object):
                                         # img.add_header("Content-Disposition", "inline", filename=thumb_filename)  # David Hess recommended this edit
                                         mime_msg.attach(img)
                                         img_fp.close()
+                                        attachment_number += 1
                                         mail_message += '<img class="tab" src="cid:%s">' % cid
                                     else:
                                         mail_message += '<p class="doubletab"><b>ERROR: filename %s not found on server! IMAGE OMITTED!</b></p>' % thumb_filename
-
+                                if len(self.all_results[vm][test]['popup_results']) > 7:
+                                    mail_message += '<p class="doubletab"><b>TOO MANY POPUPS. %i IMAGES OMITTED!</b></p>' % (len(self.all_results[vm][test]['popup_results']) - 8)
                 mail_message += "</p></details><hr>"
         mail_message += '</div>'
+        print "Number of attachments: %s" % attachment_number
         return mail_message
 
     def get_html_body(self, mime_msg):

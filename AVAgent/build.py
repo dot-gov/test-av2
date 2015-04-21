@@ -119,7 +119,7 @@ def check_static(files, report=None):
             if os.path.exists(to_rename) and not os.path.exists(dst):
                 try:
                     os.rename(to_rename, dst)
-                    success.append(dst)
+                    #success.append(dst)
                     renamed.append(dst)
                 except Exception:
                     logging.exception("Exception renaming to file: %s" % dst)
@@ -674,6 +674,8 @@ class AgentBuild:
         factory_id, ident, exe = self.execute_pull()
 
         if type(exe) is list:
+            if len(exe) == 0:
+                return None
             exe = exe[0]
 
         logging.debug("execute_scout: %s" % exe)
@@ -788,6 +790,8 @@ class AgentBuild:
             logging.debug("cannot find zip file: %s" % zipfilename)
             add_result("+ FAILED SCOUT BUILD. CANNOT FIND ZIP FILE %s TO UNZIP IT" % zipfilename)
             # raise RuntimeError("No file to unzip")
+            #returns empty list
+            return []
         # CHECK FOR DELETED FILES
         failed = check_static(exefilenames)
 
@@ -796,6 +800,9 @@ class AgentBuild:
         else:
             add_result("+ FAILED SCOUT BUILD. SIGNATURE DETECTION: %s" % failed)
             # raise RuntimeError("Signature detection")
+            logging.debug("FAILED STATIC. Signature detection: %s" % failed)
+            #returns empty list
+            return []
 
         return exefilenames
 

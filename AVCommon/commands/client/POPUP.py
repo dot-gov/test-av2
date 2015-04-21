@@ -14,6 +14,7 @@ results = []
 vm_global = ""
 server = ""
 server_error = False
+vm_error = False
 
 learning_mode = False
 
@@ -77,7 +78,7 @@ def on_answer(vm, success, answer):
 # the second (optional) permits to disable saving of crop images (default = True, saves the files)
 def execute(vm, args):
     import PIL
-    global results, go_on, popup_thread, vm_global, server, learning_mode
+    global results, go_on, popup_thread, vm_global, server, learning_mode, vm_error
     vm_global = vm
     output = [""]
     success = True
@@ -128,7 +129,10 @@ def execute(vm, args):
     if success and len(results) == 0 and not server_error:
         return True, []
     else:
-        return False, results
+        if vm_error:
+            return False, "ERROR on VM. Probably libraries are not installed. Impossible to screenshot."
+        else:
+            return False, results
 
 
 def startup():
@@ -138,22 +142,22 @@ def startup():
 
 
 def popup_loop():
-    global go_on, results, vm_global, server_error
-    crop_num = 0
+    global go_on, results, vm_global, server_error, vm_error
     logging.debug("grab loop")
     if not os.path.exists("crop"):
         os.mkdir("crop")
 
-    while go_on is True:
+    image_hashes = []
 
+    while go_on is True:
+        timestamp = time.strftime("%y%m%d-%H%M%S", time.localtime(time.time()))
         #makes a crop with window detection
         if learning_mode:
-            util_agent.crop_window(logging, config.basedir_crop, crop_num, learning=True)
-            crop_num += 1
+            util_agent.crop_window(logging, config.basedir_crop, timestamp, learning=True, image_hashes=None)
             time.sleep(1)
             #in learning mode I do not post imagess to tesseract (too slow)
         else:
-            result_c, img_files = util_agent.crop_window(logging, config.basedir_crop, crop_num)
+            result_c, img_files = util_agent.crop_window(logging, config.basedir_crop, timestamp, image_hashes=image_hashes)
             if result_c:
                 # print "POSTing images to Tesserest"
                 for img_file in img_files:
@@ -169,11 +173,16 @@ def popup_loop():
                     if resu and resu not in ["NO_TEXT", "GOOD"]:
                         logging.info("This Popup needs to be reported!")
                         results.append([resu, thumb_filename, word])
-                    crop_num += 1
                 #since the call take some time I sleep less, but I sleep a little anyway not to kill the server
                 time.sleep(1)
             else:
-                print "Nothing detected, sleeping 2 sec."
-                time.sleep(2)
+                if img_files is None:
+                    print "Nothing detected, sleeping 2 sec."
+                    time.sleep(2)
+                else:
+                    #SERIOUS ERROR OCCURRED
+                    print "ERROR! Cannot use POPUP. Try to reinstall LIBS!"
+                    vm_error = True
+                    time.sleep(2)
 
     logging.debug("exiting grab_loop, found %s bad crops" % len(results))

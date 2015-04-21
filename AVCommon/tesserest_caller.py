@@ -80,6 +80,7 @@ def parse_response(resp, server):
 
 if __name__ == "__main__":
     resp = post_image("/Users/mlosito/Desktop/241.png", host="172.20.20.192", av="avira")
+    # print resp
     resu, thumb_filename, word = parse_response(resp, "172.20.20.192")
     print resu
     print thumb_filename

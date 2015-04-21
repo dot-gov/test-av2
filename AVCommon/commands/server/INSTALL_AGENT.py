@@ -99,7 +99,7 @@ def execute(vm, protocol, inst_args):
     #not more useful
     #DELETE_DIR.execute(vm, protocol, "/Users/avtest/Desktop/AVTest/")
 
-    PUSHZIP.execute(vm, protocol, ["timestamp.txt", "AVAgent/*.py", "AVAgent/*.yaml", "AVCommon/*.py", "AVCommon/*.yaml", "AVCommon/commands/client/*.py", "AVCommon/commands/meta/*.py", "AVCommon/commands/*.py", "AVAgent/assets/config*", "AVAgent/assets/keyinject.exe", "AVAgent/assets/exec_zip.exe", "AVAgent/assets/getusertime.exe", "AVAgent/assets/windows/*"])
+    zip_success, zip_reason = PUSHZIP.execute(vm, protocol, ["timestamp.txt", "AVAgent/*.py", "AVAgent/*.yaml", "AVCommon/*.py", "AVCommon/*.yaml", "AVCommon/commands/client/*.py", "AVCommon/commands/meta/*.py", "AVCommon/commands/*.py", "AVAgent/assets/config*", "AVAgent/assets/keyinject.exe", "AVAgent/assets/exec_zip.exe", "AVAgent/assets/getusertime.exe", "AVAgent/assets/windows/*"])
 
     cmd = "rmdir /s /q C:\\AVTest\\running \r\n" \
           "cd C:\\AVTest\\AVAgent\r\n" \
@@ -151,6 +151,8 @@ def execute(vm, protocol, inst_args):
 
     os.remove(filename)
 
+    #--------------------------------------------
+    # NB: WE ARE IGNORING START.BAT COPY ERRORS
     # --------------start.bat-----------------
 
     fd, filename = tempfile.mkstemp(".bat")
@@ -167,17 +169,17 @@ def execute(vm, protocol, inst_args):
         r = vm_manager.execute(vm, "copyFileToGuest", filename, remote_name)
         if r > 0:
             time.sleep(i * 5)
-            failed = True
-            reason += "Can't copy start.bat in AVAgent (try %s)" % i
+            # failed = True
+            # reason += "Can't copy start.bat in AVAgent (try %s)" % i
             logging.debug("Cannot copy %s" % filename)
         else:
-            failed = False
+            # failed = False
             break
 
     time.sleep(15)
 
-    if failed:
-        logging.debug("Cannot copy %s: ERROR!" % filename)
+    # if failed:
+    #     logging.debug("Cannot copy %s: ERROR!" % filename)
 
     os.remove(filename)
 
@@ -187,7 +189,7 @@ def execute(vm, protocol, inst_args):
     r = vm_manager.execute(vm, "deleteDirectoryInGuest", dirname)
     if r > 0:
         failed = True
-        reason += "Cannot delete running file"
+        reason += " - Cannot delete running file"
         logging.debug("Cannot delete %s" % dirname)
 
     # --------------delete logs-----------------
@@ -196,12 +198,11 @@ def execute(vm, protocol, inst_args):
     r = vm_manager.execute(vm, "deleteDirectoryInGuest", dirname)
     if r > 0:
         failed = True
-        reason += "Can't delete logs"
+        reason += " - Can't delete logs"
         logging.debug("Cannot delete %s" % dirname)
 
-    if failed:
-        return False, "Cant Install Agent on VM. Reason = %s" % reason
-
+    if failed or not zip_success:
+        return False, "Cannot Install Agent on VM. Reason = %s" % (reason + " - " + zip_reason)
     else:
         return True, "Agent installed on VM"
 
