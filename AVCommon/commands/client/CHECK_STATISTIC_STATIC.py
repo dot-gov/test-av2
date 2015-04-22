@@ -31,7 +31,15 @@ def on_init(protocol, args):
         #no files to check
         return False, "Empty files list. Check files definition."
 
-    args.append(files_to_push)
+    #if the only args is the directory, or the last argument is a number, then add the file list
+    # if files_to_push and args[-1] != files_to_push:
+    if len(args) == 3:
+        args.append(files_to_push)
+    if len(args) == 4:
+        print "File list already calculated"
+    if len(args) < 3:
+        print "Wrong args!"
+        return False
 
     #debug
     print "File list: files to push"
@@ -67,27 +75,31 @@ def execute(vm, args):
 def get_file_list(args):
     segment_size = segment_index = None  # this is to suppress warning
 
-    if len(args) not in range(1, 3):
-        return False, "No arguments given"
+    if len(args) == 0:
+        return []
 
     filelist = args[0]
 
     if len(args) == 1:
         segment_size = default_segment_size
-        # args.append(segment_size)
+        args.append(segment_size)
         segment_index = None
-        # args.append(segment_index)
+        args.append(segment_index)
 
     elif len(args) == 2:
         segment_size = args[1]
         segment_index = None
-        # args.append(segment_index)
+        args.append(segment_index)
 
     elif len(args) == 3:
         segment_size = args[1]
         segment_index = args[2]
 
-    logging.debug("Pushzipping files: %s" % filelist)
+    elif len(args) == 4:
+        logging.debug("Selected file segment: %s" % args[3])
+        return args[3]
+
+    # logging.debug("Pushzipping files: %s" % filelist)
 
     files = sorted(glob.glob(filelist))
 
