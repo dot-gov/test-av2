@@ -42,9 +42,9 @@ def on_init(protocol, args):
         return False
 
     #debug
-    print "File list: files to push"
-    for fil in files_to_push:
-        print fil
+    # print "File list: files to push"
+    # for fil in files_to_push:
+    #     print fil
 
     #zip
     success = utils.pushzip(protocol.vm, files_to_push)
@@ -133,6 +133,6 @@ def get_file_portion(files, segment_size, segment_index):
         stop = size
 
     print "start and stop: %s, %s " % (start, stop)
-    print files
+    # print files
     print files[start:stop]
     return files[start:stop]
