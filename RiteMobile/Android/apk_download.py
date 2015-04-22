@@ -5,6 +5,7 @@ import re
 
 from time import sleep
 # our files
+from RiteMobile.Android import adb
 
 from RiteMobile.Android.commands_device import CommandsDevice
 
@@ -13,6 +14,7 @@ from RiteMobile.Android.utils import superuserutils
 
 sys.path.append("/home/zad/work/devel/test-rite/")
 
+
 def main(args):
     commands_dev = CommandsDevice()
 
@@ -20,10 +22,11 @@ def main(args):
         print "Init!"
         commands_dev.init_device()
 
-    retrive_app_list(commands_dev,"/home/zad/work/devel/test-rite/list_links.txt","/Volumes/SHARE/QA/SVILUPPO/PlayStoreApps/", args.line)
+    retrive_app_list(commands_dev, "assets/list_links.txt", "/Volumes/SHARE/QA/SVILUPPO/PlayStoreApps/", args.line)
   #  print "Test Execution success:%s" % test_local_install(device, res, wait_root=False)
   #  print "Test Execution success:%s" % test_local_install(device, res, persistent=False)
   #  print "Test Execution success:%s" % test_local_install(device, res)
+
 
 def set_auto_rotate_enabled(state, device=None):
     s = 0
@@ -33,7 +36,7 @@ def set_auto_rotate_enabled(state, device=None):
     return device.execute_cmd(cmd)
 
 
-def retrive_app_list(device, fname,local_path,from_line=1):
+def retrive_app_list(device, fname, local_path, from_line=1):
     if not superuserutils.install_ddf_shell(device.device_serialno):
         exit()
 
@@ -151,12 +154,12 @@ def get_app(device, url, app_name,local_path):
     sleep(3)
     if device.install_by_gapp(url, app_name):
         print "app_name %s installed" % app_name
-        if device.get_app_apk(app_name, local_path) != -1:
+        if adb.get_app_apk(app_name, local_path, device.device_serialno) != -1:
             print "apk %s retrived" % app_name
         else:
             print "failed to retrive apk %s" % app_name
         if app_name.find("com.google") == -1:
-            device.uninstall(app_name)
+            device.uninstall_package(app_name)
         return
     print "app_name %s failed" % app_name
 

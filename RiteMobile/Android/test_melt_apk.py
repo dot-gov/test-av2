@@ -35,7 +35,7 @@ max_timeout_retries = 1
 #max number of app to process
 max_test_iterations = 9999
 
-filter_string = "com.amazon.kindle"  # "com.utorrent.client-2.20.apk"  # "com.bigduckgames.flow"  # example: "com.amazon.kindle"  #empty string gets all apks
+filter_string = ""   # "com.amazon.kindle"  # "com.utorrent.client-2.20.apk"  # "com.bigduckgames.flow"  # example: "com.amazon.kindle"  #empty string gets all apks
 # filter_string = ""  #gets all apks
 
 result_installation = []
@@ -43,105 +43,107 @@ result_installation = []
 uninstall = False
 
 # these are ok
-these_does_not_work_list = ['com.google.android.voicesearch-4.0.0.apk', 'Maps.apk', 'com.badoo.mobile-2.52.1.apk',
-                            'com.google.android.apps.maps-8.4.1.apk', 'com.roidapp.photogrid-4.792.apk', 'tunein.player-12.8.apk',
-                            'com.sgiggle.production-3.10.106185.apk', 'com.google.android.tts-3.2.12.1369973.arm.apk',
-                            'com.cleanmaster.mguard-5.8.6.apk', 'de.lotum.whatsinthefoto.us-4.2.apk', 'com.snapchat.android-5.0.38.2.apk']
+# these_does_not_work_list = ['com.google.android.voicesearch-4.0.0.apk', 'Maps.apk', 'com.badoo.mobile-2.52.1.apk',
+#                             'com.google.android.apps.maps-8.4.1.apk', 'com.roidapp.photogrid-4.792.apk', 'tunein.player-12.8.apk',
+#                             'com.sgiggle.production-3.10.106185.apk', 'com.google.android.tts-3.2.12.1369973.arm.apk',
+#                             'com.cleanmaster.mguard-5.8.6.apk', 'de.lotum.whatsinthefoto.us-4.2.apk', 'com.snapchat.android-5.0.38.2.apk']
+#
+# unknown = ['com.gameloft.android.ANMP.GloftDMHM-2.2.1f.apk', 'com.amazon.kindle-4.7.1.1.apk', 'com.touchtype.swiftkey-5.0.5.95.apk',
+#            'com.yahoo.mobile.client.android.mail-4.6.2.apk', 'com.bbm-2.4.0.11.apk', 'com.kiloo.subwaysurf-1.30.0.apk', 'com.evernote-6.0.2.apk',
+#            'eu.nordeus.topeleven.android-2.32.1.apk', 'jp.naver.SJLGPP-2.1.4.apk', 'com.ebay.mobile-2.7.0.142.apk',
+#            'com.outfit7.talkingangelafree-2.3.apk', 'com.venticake.retrica-2.2.3.apk', 'com.seventeenbullets.android.island-2.8.12.apk',
+#            'com.myfitnesspal.android-3.5.2.apk', 'com.sirma.mobile.bible.android-5.3.0.apk', 'com.etermax.preguntados.lite-1.9.1.apk',
+#            'logos.quiz.companies.game-16.2.apk', 'com.skype.raider-5.0.0.52727.apk', 'com.dragonplay.liveholdempro-6.29.apk',
+#            'com.utorrent.client-2.20.apk', 'com.viber.voip-5.0.2.12.apk', 'com.miniclip.plagueinc-1.9.1.apk', 'com.antivirus-4.1.2.apk',
+#            'com.rovio.angrybirdsstarwars.ads.iap-1.5.3.apk']
+#
+# these_works_list = ['com.sonyericsson.extras.liveware-5.7.11.130.apk', 'com.zeptolab.ctr.ads-2.4.4.apk', 'com.hotdog.tinybattle-2.2.3.apk',
+#                     'com.whatsapp-2.11.399.apk', 'com.estrongs.android.pop-3.2.1.2.apk', 'com.shazam.android-4.10.0-14102116-bf48e17.apk',
+#                     'mobi.mgeek.TunnyBrowser-11.2.6.apk', 'com.robtopx.geometryjumplite-1.81.apk', 'air.au.com.metro.DumbWaysToDie-1.6.apk',
+#                     'com.avast.android.mobilesecurity-3.0.7864.apk', 'com.outfit7.talkingnewsfree-2.1.apk', 'com.gau.go.launcherex-5.08.apk',
+#                     'com.sundaytoz.mobile.anipang2.google.kakao.service-1.0.35.apk', 'com.jb.gosms-6.0.apk',
+#                     'com.midasplayer.apps.papapearsaga-1.22.0.apk', 'com.omgpop.dstfree-2.333.302.apk', 'me.pou.app-1.4.61.apk',
+#                     'com.ea.games.simsfreeplay_row-5.8.0.apk', 'jp.naver.linecamera.android-8.6.3.apk', 'com.wooga.diamonddash-3.4.apk',
+#                     'com.soundcloud.android-14.10.01-27.apk', 'com.nordcurrent.Games101-1.3.30.apk',
+#                     'com.melodis.midomiMusicIdentifier.freemium-6.2.0.apk', 'com.cjenm.ModooMarbleKakao-1.9.24.apk',
+#                     'com.midasplayer.apps.bubblewitchsaga2-1.11.4.apk', 'com.aviary.android.feather-3.5.0.apk', 'com.king.petrescuesaga-1.30.4.apk',
+#                     'vStudio.Android.Camera360-5.4.5.apk', 'com.dianxinos.optimizer.duplay-2.1.2.apk',
+#                     'com.zynga.FarmVille2CountryEscape-2.1.127.apk', 'com.dataviz.docstogo-4.001.apk', 'com.linecorp.LGRGS-1.1.8.apk',
+#                     'com.mobilityware.solitaire-3.1.2.apk', 'com.bestcoolfungames.antsmasher-7.2.apk', 'com.accuweather.android-3.3.2.7.apk',
+#                     'com.ansangha.drdriving-1.38.apk', 'com.kiragames.unblockmefree-1.5.0.0.apk', 'com.sec.chaton-1.11.2.apk',
+#                     'es.socialpoint.DragonCity-2.11.apk', 'com.bsb.hike-3.3.5.apk', 'ch.smalltech.ledflashlight.free-1.68.apk',
+#                     'com.forshared-2.5.10.apk', 'com.leftover.CoinDozer-14.2.apk', 'com.linktomorrow.candypang-1.27.apk',
+#                     'com.google.android.youtube-5.10.3.5.apk', 'com.pinterest-3.5.1.apk', 'com.picsart.studio-4.6.12.apk',
+#                     'com.instagram.android-6.9.1.apk', 'net.mobilecraft.realbasketball-1.8.apk', 'com.amazon.mp3-4.1.1.apk', 'YouTube.apk',
+#                     'Hangouts.apk', 'com.outfit7.talkingben-3.1.apk', 'com.outfit7.talkingtom2free-4.6.apk', 'com.qihoo.security-2.1.0.apk',
+#                     'com.fdgentertainment.paperama-1.3.6.apk', 'com.king.candycrushsaga-1.39.4.apk', 'com.whatsapp.wallpaper-2.apk',
+#                     'com.threed.bowling-2.6.apk', 'com.blurb.checkout-1.0.apk', 'com.lookout-9.6.4-f3c9c32.apk',
+#                     'goldenshorestechnologies.brightestflashlight.free-2.4.2.apk', 'com.google.android.marvin.talkback-3.1.1_r68.apk',
+#                     'com.julian.fastracing-1.1.apk', 'com.dsi.ant.plugins.antplus-3.1.0.apk', 'com.melimots.WordSearch-1.14.apk',
+#                     'com.google.android.videos-2.0.21.apk', 'com.outfit7.talkingpierrefree-3.1.apk', 'Music2.apk',
+#                     'com.yahoo.mobile.client.android.im-1.8.8.apk', 'flipboard.app-1.9.6.apk', 'com.fdgentertainment.bananakong-1.8.apk',
+#                     'com.opera.mini.android-7.6.1.apk', 'Velvet.apk', 'com.linktomorrow.windrunner-3.82.apk',
+#                     'com.sec.android.fwupgrade-1.2.3717.apk', 'com.game.SkaterBoy-1.6.apk', 'com.fingersoft.hillclimb-1.18.0.apk',
+#                     'com.ogqcorp.bgh-3.6.4.apk', 'com.opera.browser-25.0.1619.84037.apk', 'com.linecorp.LGCOOKIE-2.0.5.apk',
+#                     'com.zeptolab.ctr2.f2p.google-1.1.7.apk', 'com.kfactormedia.mycalendarmobile-3.02.apk', 'net.mobigame.zombietsunami-1.6.46.apk',
+#                     'com.dhqsolutions.enjoyphoto-2.0.0.apk', 'com.google.zxing.client.android-4.7.0.apk', 'com.nekki.vector-1.1.0.apk',
+#                     'GoogleTTS.apk', 'com.google.android.street-1.8.1.2.apk', 'Street.apk', 'com.rechild.advancedtaskkiller-2.0.3B203.apk',
+#                     'LatinImeGoogle.apk', 'com.adobe.reader-11.7.0.apk', 'com.dsi.ant.service.socket-4.7.0.apk', 'com.sec.spp.push-1.2.9.1.apk',
+#                     'com.socialnmobile.dictapps.notepad.color.note-3.9.60.apk', 'com.dropbox.android-2.1.11.apk', 'com.easy.battery.saver-3.4.1.apk',
+#                     'com.sec.pcw-1.0.1943.apk', 'com.umonistudio.tile-2.9.5.apk', 'com.imangi.templerun-1.0.8.apk',
+#                     'com.google.android.apps.translate-3.0.15.apk', 'PlusOne.apk', 'com.estoty.game2048-6.22.apk', 'com.devexpert.weather-4.1.1.apk',
+#                     'com.natenai.glowhockey-1.2.16.apk', 'com.duolingo-2.9.0.apk', 'com.imdb.mobile-5.0.3.105030410.apk',
+#                     'com.NextFloor.DragonFlightKakao-2.6.2.apk', 'com.disney.WMWLite-1.9.1.apk', 'com.bigduckgames.flow-2.8.apk']
+#
+# to_test_list = ['Hangouts.apk', 'Maps.apk', 'YouTube.apk', 'air.au.com.metro.DumbWaysToDie-1.6.apk', 'ch.smalltech.ledflashlight.free-1.68.apk',
+#                 'com.accuweather.android-3.3.2.7.apk', 'com.amazon.kindle-4.7.1.1.apk', 'com.amazon.mp3-4.1.1.apk', 'com.ansangha.drdriving-1.38.apk',
+#                 'com.antivirus-4.1.2.apk', 'com.avast.android.mobilesecurity-3.0.7864.apk', 'com.aviary.android.feather-3.5.0.apk',
+#                 'com.badoo.mobile-2.52.1.apk', 'com.bbm-2.4.0.11.apk', 'com.bestcoolfungames.antsmasher-7.2.apk', 'com.bsb.hike-3.3.5.apk',
+#                 'com.cjenm.ModooMarbleKakao-1.9.24.apk', 'com.cleanmaster.mguard-5.8.6.apk', 'com.dataviz.docstogo-4.001.apk',
+#                 'com.dianxinos.optimizer.duplay-2.1.2.apk', 'com.dragonplay.liveholdempro-6.29.apk', 'com.ea.games.simsfreeplay_row-5.8.0.apk',
+#                 'com.ebay.mobile-2.7.0.142.apk', 'com.estrongs.android.pop-3.2.1.2.apk', 'com.etermax.preguntados.lite-1.9.1.apk',
+#                 'com.evernote-6.0.2.apk', 'com.forshared-2.5.10.apk', 'com.gameloft.android.ANMP.GloftDMHM-2.2.1f.apk',
+#                 'com.gau.go.launcherex-5.08.apk', 'com.google.android.apps.maps-8.4.1.apk', 'com.google.android.tts-3.2.12.1369973.arm.apk',
+#                 'com.google.android.voicesearch-4.0.0.apk', 'com.google.android.youtube-5.10.3.5.apk', 'com.hotdog.tinybattle-2.2.3.apk',
+#                 'com.instagram.android-6.9.1.apk', 'com.jb.gosms-6.0.apk', 'com.kiloo.subwaysurf-1.30.0.apk', 'com.king.petrescuesaga-1.30.4.apk',
+#                 'com.kiragames.unblockmefree-1.5.0.0.apk', 'com.leftover.CoinDozer-14.2.apk', 'com.linecorp.LGRGS-1.1.8.apk',
+#                 'com.linktomorrow.candypang-1.27.apk', 'com.melodis.midomiMusicIdentifier.freemium-6.2.0.apk',
+#                 'com.midasplayer.apps.bubblewitchsaga2-1.11.4.apk', 'com.midasplayer.apps.papapearsaga-1.22.0.apk',
+#                 'com.miniclip.plagueinc-1.9.1.apk', 'com.mobilityware.solitaire-3.1.2.apk', 'com.myfitnesspal.android-3.5.2.apk',
+#                 'com.nordcurrent.Games101-1.3.30.apk', 'com.omgpop.dstfree-2.333.302.apk', 'com.outfit7.talkingangelafree-2.3.apk',
+#                 'com.outfit7.talkingben-3.1.apk', 'com.outfit7.talkingnewsfree-2.1.apk', 'com.outfit7.talkingtom2free-4.6.apk',
+#                 'com.picsart.studio-4.6.12.apk', 'com.pinterest-3.5.1.apk', 'com.qihoo.security-2.1.0.apk', 'com.robtopx.geometryjumplite-1.81.apk',
+#                 'com.roidapp.photogrid-4.792.apk', 'com.rovio.angrybirdsstarwars.ads.iap-1.5.3.apk', 'com.sec.chaton-1.11.2.apk',
+#                 'com.seventeenbullets.android.island-2.8.12.apk', 'com.sgiggle.production-3.10.106185.apk',
+#                 'com.shazam.android-4.10.0-14102116-bf48e17.apk', 'com.sirma.mobile.bible.android-5.3.0.apk', 'com.skype.raider-5.0.0.52727.apk',
+#                 'com.snapchat.android-5.0.38.2.apk', 'com.sonyericsson.extras.liveware-5.7.11.130.apk', 'com.soundcloud.android-14.10.01-27.apk',
+#                 'com.sundaytoz.mobile.anipang2.google.kakao.service-1.0.35.apk', 'com.touchtype.swiftkey-5.0.5.95.apk',
+#                 'com.utorrent.client-2.20.apk', 'com.venticake.retrica-2.2.3.apk', 'com.viber.voip-5.0.2.12.apk', 'com.whatsapp-2.11.399.apk',
+#                 'com.wooga.diamonddash-3.4.apk', 'com.yahoo.mobile.client.android.mail-4.6.2.apk', 'com.zeptolab.ctr.ads-2.4.4.apk',
+#                 'com.zynga.FarmVille2CountryEscape-2.1.127.apk', 'de.lotum.whatsinthefoto.us-4.2.apk', 'es.socialpoint.DragonCity-2.11.apk',
+#                 'eu.nordeus.topeleven.android-2.32.1.apk', 'jp.naver.SJLGPP-2.1.4.apk', 'jp.naver.linecamera.android-8.6.3.apk',
+#                 'logos.quiz.companies.game-16.2.apk', 'me.pou.app-1.4.61.apk', 'mobi.mgeek.TunnyBrowser-11.2.6.apk',
+#                 'net.mobilecraft.realbasketball-1.8.apk', 'tunein.player-12.8.apk', 'vStudio.Android.Camera360-5.4.5.apk',
+#                 'com.fdgentertainment.paperama-1.3.6.apk', 'com.king.candycrushsaga-1.39.4.apk', 'com.whatsapp.wallpaper-2.apk',
+#                 'com.threed.bowling-2.6.apk', 'com.blurb.checkout-1.0.apk', 'com.lookout-9.6.4-f3c9c32.apk',
+#                 'goldenshorestechnologies.brightestflashlight.free-2.4.2.apk', 'com.google.android.marvin.talkback-3.1.1_r68.apk',
+#                 'com.julian.fastracing-1.1.apk', 'com.dsi.ant.plugins.antplus-3.1.0.apk', 'com.melimots.WordSearch-1.14.apk',
+#                 'com.google.android.videos-2.0.21.apk', 'com.outfit7.talkingpierrefree-3.1.apk', 'Music2.apk',
+#                 'com.yahoo.mobile.client.android.im-1.8.8.apk', 'flipboard.app-1.9.6.apk', 'com.fdgentertainment.bananakong-1.8.apk',
+#                 'com.opera.mini.android-7.6.1.apk', 'Velvet.apk', 'com.linktomorrow.windrunner-3.82.apk', 'com.sec.android.fwupgrade-1.2.3717.apk',
+#                 'com.game.SkaterBoy-1.6.apk', 'com.fingersoft.hillclimb-1.18.0.apk', 'com.ogqcorp.bgh-3.6.4.apk',
+#                 'com.opera.browser-25.0.1619.84037.apk', 'com.linecorp.LGCOOKIE-2.0.5.apk', 'com.zeptolab.ctr2.f2p.google-1.1.7.apk',
+#                 'com.kfactormedia.mycalendarmobile-3.02.apk', 'net.mobigame.zombietsunami-1.6.46.apk', 'com.dhqsolutions.enjoyphoto-2.0.0.apk',
+#                 'com.google.zxing.client.android-4.7.0.apk', 'com.nekki.vector-1.1.0.apk', 'GoogleTTS.apk', 'com.google.android.street-1.8.1.2.apk',
+#                 'Street.apk', 'com.rechild.advancedtaskkiller-2.0.3B203.apk', 'LatinImeGoogle.apk', 'com.adobe.reader-11.7.0.apk',
+#                 'com.dsi.ant.service.socket-4.7.0.apk', 'com.sec.spp.push-1.2.9.1.apk', 'com.socialnmobile.dictapps.notepad.color.note-3.9.60.apk',
+#                 'com.dropbox.android-2.1.11.apk', 'com.easy.battery.saver-3.4.1.apk', 'com.sec.pcw-1.0.1943.apk', 'com.umonistudio.tile-2.9.5.apk',
+#                 'com.imangi.templerun-1.0.8.apk', 'com.google.android.apps.translate-3.0.15.apk', 'PlusOne.apk', 'com.estoty.game2048-6.22.apk',
+#                 'com.devexpert.weather-4.1.1.apk', 'com.natenai.glowhockey-1.2.16.apk', 'com.duolingo-2.9.0.apk',
+#                 'com.imdb.mobile-5.0.3.105030410.apk', 'com.NextFloor.DragonFlightKakao-2.6.2.apk', 'com.disney.WMWLite-1.9.1.apk',
+#                 'com.bigduckgames.flow-2.8.apk']
 
-unknown = ['com.gameloft.android.ANMP.GloftDMHM-2.2.1f.apk', 'com.amazon.kindle-4.7.1.1.apk', 'com.touchtype.swiftkey-5.0.5.95.apk',
-           'com.yahoo.mobile.client.android.mail-4.6.2.apk', 'com.bbm-2.4.0.11.apk', 'com.kiloo.subwaysurf-1.30.0.apk', 'com.evernote-6.0.2.apk',
-           'eu.nordeus.topeleven.android-2.32.1.apk', 'jp.naver.SJLGPP-2.1.4.apk', 'com.ebay.mobile-2.7.0.142.apk',
-           'com.outfit7.talkingangelafree-2.3.apk', 'com.venticake.retrica-2.2.3.apk', 'com.seventeenbullets.android.island-2.8.12.apk',
-           'com.myfitnesspal.android-3.5.2.apk', 'com.sirma.mobile.bible.android-5.3.0.apk', 'com.etermax.preguntados.lite-1.9.1.apk',
-           'logos.quiz.companies.game-16.2.apk', 'com.skype.raider-5.0.0.52727.apk', 'com.dragonplay.liveholdempro-6.29.apk',
-           'com.utorrent.client-2.20.apk', 'com.viber.voip-5.0.2.12.apk', 'com.miniclip.plagueinc-1.9.1.apk', 'com.antivirus-4.1.2.apk',
-           'com.rovio.angrybirdsstarwars.ads.iap-1.5.3.apk']
-
-these_works_list = ['com.sonyericsson.extras.liveware-5.7.11.130.apk', 'com.zeptolab.ctr.ads-2.4.4.apk', 'com.hotdog.tinybattle-2.2.3.apk',
-                    'com.whatsapp-2.11.399.apk', 'com.estrongs.android.pop-3.2.1.2.apk', 'com.shazam.android-4.10.0-14102116-bf48e17.apk',
-                    'mobi.mgeek.TunnyBrowser-11.2.6.apk', 'com.robtopx.geometryjumplite-1.81.apk', 'air.au.com.metro.DumbWaysToDie-1.6.apk',
-                    'com.avast.android.mobilesecurity-3.0.7864.apk', 'com.outfit7.talkingnewsfree-2.1.apk', 'com.gau.go.launcherex-5.08.apk',
-                    'com.sundaytoz.mobile.anipang2.google.kakao.service-1.0.35.apk', 'com.jb.gosms-6.0.apk',
-                    'com.midasplayer.apps.papapearsaga-1.22.0.apk', 'com.omgpop.dstfree-2.333.302.apk', 'me.pou.app-1.4.61.apk',
-                    'com.ea.games.simsfreeplay_row-5.8.0.apk', 'jp.naver.linecamera.android-8.6.3.apk', 'com.wooga.diamonddash-3.4.apk',
-                    'com.soundcloud.android-14.10.01-27.apk', 'com.nordcurrent.Games101-1.3.30.apk',
-                    'com.melodis.midomiMusicIdentifier.freemium-6.2.0.apk', 'com.cjenm.ModooMarbleKakao-1.9.24.apk',
-                    'com.midasplayer.apps.bubblewitchsaga2-1.11.4.apk', 'com.aviary.android.feather-3.5.0.apk', 'com.king.petrescuesaga-1.30.4.apk',
-                    'vStudio.Android.Camera360-5.4.5.apk', 'com.dianxinos.optimizer.duplay-2.1.2.apk',
-                    'com.zynga.FarmVille2CountryEscape-2.1.127.apk', 'com.dataviz.docstogo-4.001.apk', 'com.linecorp.LGRGS-1.1.8.apk',
-                    'com.mobilityware.solitaire-3.1.2.apk', 'com.bestcoolfungames.antsmasher-7.2.apk', 'com.accuweather.android-3.3.2.7.apk',
-                    'com.ansangha.drdriving-1.38.apk', 'com.kiragames.unblockmefree-1.5.0.0.apk', 'com.sec.chaton-1.11.2.apk',
-                    'es.socialpoint.DragonCity-2.11.apk', 'com.bsb.hike-3.3.5.apk', 'ch.smalltech.ledflashlight.free-1.68.apk',
-                    'com.forshared-2.5.10.apk', 'com.leftover.CoinDozer-14.2.apk', 'com.linktomorrow.candypang-1.27.apk',
-                    'com.google.android.youtube-5.10.3.5.apk', 'com.pinterest-3.5.1.apk', 'com.picsart.studio-4.6.12.apk',
-                    'com.instagram.android-6.9.1.apk', 'net.mobilecraft.realbasketball-1.8.apk', 'com.amazon.mp3-4.1.1.apk', 'YouTube.apk',
-                    'Hangouts.apk', 'com.outfit7.talkingben-3.1.apk', 'com.outfit7.talkingtom2free-4.6.apk', 'com.qihoo.security-2.1.0.apk',
-                    'com.fdgentertainment.paperama-1.3.6.apk', 'com.king.candycrushsaga-1.39.4.apk', 'com.whatsapp.wallpaper-2.apk',
-                    'com.threed.bowling-2.6.apk', 'com.blurb.checkout-1.0.apk', 'com.lookout-9.6.4-f3c9c32.apk',
-                    'goldenshorestechnologies.brightestflashlight.free-2.4.2.apk', 'com.google.android.marvin.talkback-3.1.1_r68.apk',
-                    'com.julian.fastracing-1.1.apk', 'com.dsi.ant.plugins.antplus-3.1.0.apk', 'com.melimots.WordSearch-1.14.apk',
-                    'com.google.android.videos-2.0.21.apk', 'com.outfit7.talkingpierrefree-3.1.apk', 'Music2.apk',
-                    'com.yahoo.mobile.client.android.im-1.8.8.apk', 'flipboard.app-1.9.6.apk', 'com.fdgentertainment.bananakong-1.8.apk',
-                    'com.opera.mini.android-7.6.1.apk', 'Velvet.apk', 'com.linktomorrow.windrunner-3.82.apk',
-                    'com.sec.android.fwupgrade-1.2.3717.apk', 'com.game.SkaterBoy-1.6.apk', 'com.fingersoft.hillclimb-1.18.0.apk',
-                    'com.ogqcorp.bgh-3.6.4.apk', 'com.opera.browser-25.0.1619.84037.apk', 'com.linecorp.LGCOOKIE-2.0.5.apk',
-                    'com.zeptolab.ctr2.f2p.google-1.1.7.apk', 'com.kfactormedia.mycalendarmobile-3.02.apk', 'net.mobigame.zombietsunami-1.6.46.apk',
-                    'com.dhqsolutions.enjoyphoto-2.0.0.apk', 'com.google.zxing.client.android-4.7.0.apk', 'com.nekki.vector-1.1.0.apk',
-                    'GoogleTTS.apk', 'com.google.android.street-1.8.1.2.apk', 'Street.apk', 'com.rechild.advancedtaskkiller-2.0.3B203.apk',
-                    'LatinImeGoogle.apk', 'com.adobe.reader-11.7.0.apk', 'com.dsi.ant.service.socket-4.7.0.apk', 'com.sec.spp.push-1.2.9.1.apk',
-                    'com.socialnmobile.dictapps.notepad.color.note-3.9.60.apk', 'com.dropbox.android-2.1.11.apk', 'com.easy.battery.saver-3.4.1.apk',
-                    'com.sec.pcw-1.0.1943.apk', 'com.umonistudio.tile-2.9.5.apk', 'com.imangi.templerun-1.0.8.apk',
-                    'com.google.android.apps.translate-3.0.15.apk', 'PlusOne.apk', 'com.estoty.game2048-6.22.apk', 'com.devexpert.weather-4.1.1.apk',
-                    'com.natenai.glowhockey-1.2.16.apk', 'com.duolingo-2.9.0.apk', 'com.imdb.mobile-5.0.3.105030410.apk',
-                    'com.NextFloor.DragonFlightKakao-2.6.2.apk', 'com.disney.WMWLite-1.9.1.apk', 'com.bigduckgames.flow-2.8.apk']
-
-to_test_list = ['Hangouts.apk', 'Maps.apk', 'YouTube.apk', 'air.au.com.metro.DumbWaysToDie-1.6.apk', 'ch.smalltech.ledflashlight.free-1.68.apk',
-                'com.accuweather.android-3.3.2.7.apk', 'com.amazon.kindle-4.7.1.1.apk', 'com.amazon.mp3-4.1.1.apk', 'com.ansangha.drdriving-1.38.apk',
-                'com.antivirus-4.1.2.apk', 'com.avast.android.mobilesecurity-3.0.7864.apk', 'com.aviary.android.feather-3.5.0.apk',
-                'com.badoo.mobile-2.52.1.apk', 'com.bbm-2.4.0.11.apk', 'com.bestcoolfungames.antsmasher-7.2.apk', 'com.bsb.hike-3.3.5.apk',
-                'com.cjenm.ModooMarbleKakao-1.9.24.apk', 'com.cleanmaster.mguard-5.8.6.apk', 'com.dataviz.docstogo-4.001.apk',
-                'com.dianxinos.optimizer.duplay-2.1.2.apk', 'com.dragonplay.liveholdempro-6.29.apk', 'com.ea.games.simsfreeplay_row-5.8.0.apk',
-                'com.ebay.mobile-2.7.0.142.apk', 'com.estrongs.android.pop-3.2.1.2.apk', 'com.etermax.preguntados.lite-1.9.1.apk',
-                'com.evernote-6.0.2.apk', 'com.forshared-2.5.10.apk', 'com.gameloft.android.ANMP.GloftDMHM-2.2.1f.apk',
-                'com.gau.go.launcherex-5.08.apk', 'com.google.android.apps.maps-8.4.1.apk', 'com.google.android.tts-3.2.12.1369973.arm.apk',
-                'com.google.android.voicesearch-4.0.0.apk', 'com.google.android.youtube-5.10.3.5.apk', 'com.hotdog.tinybattle-2.2.3.apk',
-                'com.instagram.android-6.9.1.apk', 'com.jb.gosms-6.0.apk', 'com.kiloo.subwaysurf-1.30.0.apk', 'com.king.petrescuesaga-1.30.4.apk',
-                'com.kiragames.unblockmefree-1.5.0.0.apk', 'com.leftover.CoinDozer-14.2.apk', 'com.linecorp.LGRGS-1.1.8.apk',
-                'com.linktomorrow.candypang-1.27.apk', 'com.melodis.midomiMusicIdentifier.freemium-6.2.0.apk',
-                'com.midasplayer.apps.bubblewitchsaga2-1.11.4.apk', 'com.midasplayer.apps.papapearsaga-1.22.0.apk',
-                'com.miniclip.plagueinc-1.9.1.apk', 'com.mobilityware.solitaire-3.1.2.apk', 'com.myfitnesspal.android-3.5.2.apk',
-                'com.nordcurrent.Games101-1.3.30.apk', 'com.omgpop.dstfree-2.333.302.apk', 'com.outfit7.talkingangelafree-2.3.apk',
-                'com.outfit7.talkingben-3.1.apk', 'com.outfit7.talkingnewsfree-2.1.apk', 'com.outfit7.talkingtom2free-4.6.apk',
-                'com.picsart.studio-4.6.12.apk', 'com.pinterest-3.5.1.apk', 'com.qihoo.security-2.1.0.apk', 'com.robtopx.geometryjumplite-1.81.apk',
-                'com.roidapp.photogrid-4.792.apk', 'com.rovio.angrybirdsstarwars.ads.iap-1.5.3.apk', 'com.sec.chaton-1.11.2.apk',
-                'com.seventeenbullets.android.island-2.8.12.apk', 'com.sgiggle.production-3.10.106185.apk',
-                'com.shazam.android-4.10.0-14102116-bf48e17.apk', 'com.sirma.mobile.bible.android-5.3.0.apk', 'com.skype.raider-5.0.0.52727.apk',
-                'com.snapchat.android-5.0.38.2.apk', 'com.sonyericsson.extras.liveware-5.7.11.130.apk', 'com.soundcloud.android-14.10.01-27.apk',
-                'com.sundaytoz.mobile.anipang2.google.kakao.service-1.0.35.apk', 'com.touchtype.swiftkey-5.0.5.95.apk',
-                'com.utorrent.client-2.20.apk', 'com.venticake.retrica-2.2.3.apk', 'com.viber.voip-5.0.2.12.apk', 'com.whatsapp-2.11.399.apk',
-                'com.wooga.diamonddash-3.4.apk', 'com.yahoo.mobile.client.android.mail-4.6.2.apk', 'com.zeptolab.ctr.ads-2.4.4.apk',
-                'com.zynga.FarmVille2CountryEscape-2.1.127.apk', 'de.lotum.whatsinthefoto.us-4.2.apk', 'es.socialpoint.DragonCity-2.11.apk',
-                'eu.nordeus.topeleven.android-2.32.1.apk', 'jp.naver.SJLGPP-2.1.4.apk', 'jp.naver.linecamera.android-8.6.3.apk',
-                'logos.quiz.companies.game-16.2.apk', 'me.pou.app-1.4.61.apk', 'mobi.mgeek.TunnyBrowser-11.2.6.apk',
-                'net.mobilecraft.realbasketball-1.8.apk', 'tunein.player-12.8.apk', 'vStudio.Android.Camera360-5.4.5.apk',
-                'com.fdgentertainment.paperama-1.3.6.apk', 'com.king.candycrushsaga-1.39.4.apk', 'com.whatsapp.wallpaper-2.apk',
-                'com.threed.bowling-2.6.apk', 'com.blurb.checkout-1.0.apk', 'com.lookout-9.6.4-f3c9c32.apk',
-                'goldenshorestechnologies.brightestflashlight.free-2.4.2.apk', 'com.google.android.marvin.talkback-3.1.1_r68.apk',
-                'com.julian.fastracing-1.1.apk', 'com.dsi.ant.plugins.antplus-3.1.0.apk', 'com.melimots.WordSearch-1.14.apk',
-                'com.google.android.videos-2.0.21.apk', 'com.outfit7.talkingpierrefree-3.1.apk', 'Music2.apk',
-                'com.yahoo.mobile.client.android.im-1.8.8.apk', 'flipboard.app-1.9.6.apk', 'com.fdgentertainment.bananakong-1.8.apk',
-                'com.opera.mini.android-7.6.1.apk', 'Velvet.apk', 'com.linktomorrow.windrunner-3.82.apk', 'com.sec.android.fwupgrade-1.2.3717.apk',
-                'com.game.SkaterBoy-1.6.apk', 'com.fingersoft.hillclimb-1.18.0.apk', 'com.ogqcorp.bgh-3.6.4.apk',
-                'com.opera.browser-25.0.1619.84037.apk', 'com.linecorp.LGCOOKIE-2.0.5.apk', 'com.zeptolab.ctr2.f2p.google-1.1.7.apk',
-                'com.kfactormedia.mycalendarmobile-3.02.apk', 'net.mobigame.zombietsunami-1.6.46.apk', 'com.dhqsolutions.enjoyphoto-2.0.0.apk',
-                'com.google.zxing.client.android-4.7.0.apk', 'com.nekki.vector-1.1.0.apk', 'GoogleTTS.apk', 'com.google.android.street-1.8.1.2.apk',
-                'Street.apk', 'com.rechild.advancedtaskkiller-2.0.3B203.apk', 'LatinImeGoogle.apk', 'com.adobe.reader-11.7.0.apk',
-                'com.dsi.ant.service.socket-4.7.0.apk', 'com.sec.spp.push-1.2.9.1.apk', 'com.socialnmobile.dictapps.notepad.color.note-3.9.60.apk',
-                'com.dropbox.android-2.1.11.apk', 'com.easy.battery.saver-3.4.1.apk', 'com.sec.pcw-1.0.1943.apk', 'com.umonistudio.tile-2.9.5.apk',
-                'com.imangi.templerun-1.0.8.apk', 'com.google.android.apps.translate-3.0.15.apk', 'PlusOne.apk', 'com.estoty.game2048-6.22.apk',
-                'com.devexpert.weather-4.1.1.apk', 'com.natenai.glowhockey-1.2.16.apk', 'com.duolingo-2.9.0.apk',
-                'com.imdb.mobile-5.0.3.105030410.apk', 'com.NextFloor.DragonFlightKakao-2.6.2.apk', 'com.disney.WMWLite-1.9.1.apk',
-                'com.bigduckgames.flow-2.8.apk']
+to_test_list = ["com.instagram.android-1.apk"]
 
 
 def parse_args():
@@ -214,7 +216,7 @@ def main():
                             time.sleep(10)
                             repeat = 0
                             completed_test = False
-                            while repeat < max_timeout_retries and completed_test == False:
+                            while repeat < max_timeout_retries and completed_test is False:
                                 repeat += 1
                                 try:
 
@@ -262,12 +264,10 @@ def main():
             fileok.close()
             fileerror.close()
 
-
     sync_ok = ['melt_melted_air.au.com.metro.DumbWaysToDie-1.6.apk.zip', 'melt_melted_ch.smalltech.ledflashlight.free-1.68.apk.zip',
                'melt_melted_com.accuweather.android-3.3.2.7.apk.zip', 'melt_melted_com.adobe.reader-11.7.0.apk.zip',
                'melt_melted_com.ansangha.drdriving-1.38.apk.zip', 'melt_melted_com.avast.android.mobilesecurity-3.0.7864.apk.zip',
                'melt_melted_com.amazon.mp3-4.1.1.apk.zip']
-
 
     # THIST PART GETS ZIPS FROM "build_melt_dir", INSTALLS, RUNS AND CHECK SYNC OF THEM
     if "zip_run" in test_to_run:
