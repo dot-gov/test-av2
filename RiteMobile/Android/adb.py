@@ -86,11 +86,11 @@ busybox_filename = 'busybox-android'
 
 def call(cmd, device=None):
     if device:
-        #print "##DEBUG## calling %s for device %s" % (cmd,device)
+        print "##DEBUG## calling %s for device %s" % (cmd,device)
         proc = subprocess.call([adb_path,
                                 "-s", device] + cmd.split(), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     else:
-        #print "##DEBUG## calling %s" % cmd
+        print "##DEBUG## calling %s" % cmd
         proc = subprocess.call([adb_path] + cmd.split(), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     return proc != 0
@@ -430,57 +430,18 @@ def executeGui(apk, device=None):
 
 
 def execute(cmd = "", device=None, adb_cmd = "shell"):
-    #print "##DEBUG## calling '%s' for device %s" % (cmd, device)
+    print "##DEBUG## calling '%s' for device %s" % (cmd, device)
     if device:
         args = [adb_path, "-s", device, adb_cmd]
     else:
         args = [adb_path, adb_cmd]
 
+    print "##DEBUG## calling '%s" % (args + cmd.split())
     proc = subprocess.Popen(args + cmd.split(), stdout=subprocess.PIPE)
 
     comm = proc.communicate()
     ret = proc.returncode
-
     return str(comm[0])
-
-def install_by_gapp(url, app, device=None):
-    if check_remote_app_installed(app, 3, device) != 1:
-        open_url(url, device=device)
-        if check_remote_activity("com.android.vending/com.google.android.finsky.activities.MainActivity", timeout=60, device=device):
-            for i in range(10):
-                press_key_dpad_up(device=device)
-            for i in range(2):
-                press_key_dpad_down(device=device)
-            press_key_dpad_center(device=device)
-            for i in range(25):
-                if check_remote_activity("com.android.vending/com.google.android.finsky.activities.AppsPermissionsActivity", timeout=5, device=device):
-                    press_key_dpad_down(device=device)
-                else:
-                    break
-            press_key_dpad_center(device=device)
-            if isDownloading(device, 5):
-                timeout = 3360
-                time_checked = 0
-                while timeout>0:
-                    if not isDownloading(device, 5):
-                        if time_checked == 5:
-                            break
-                        else:
-                            time_checked += 1
-                    else:
-                        time_checked = 0
-                    timeout -= 5
-                old_pid = check_remote_app_installed(app, 60, device)
-                if old_pid == -1:
-                    res = "Failed to install %s \n" % app
-                    print res
-                    return False
-            else:
-                res = "Failed to install %s \n" % app
-                print res
-                return False
-    return True
-
 
 
 def executeSU(cmd, root=False, device=None):
@@ -494,7 +455,7 @@ def executeSU(cmd, root=False, device=None):
         comm = proc.communicate()
         return str(comm[0])
     else:
-        #print "##DEBUG## executing: %s withOUT dfi" % cmd
+        print "##DEBUG## executing: %s withOUT dfi" % cmd
         return execute(cmd, device)
 
 def kill_app(app, device=None):
