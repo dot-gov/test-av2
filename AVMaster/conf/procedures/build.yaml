@@ -419,7 +419,25 @@ VM_STAT_STAT_SRV:
     - ON_ERROR: CONTINUE
     - CALL: CHECK_STAT_STAT_SOLDIER
     - POPUP: [ False, True ]
+    #selfdel
+    - POPUP: [ True, True ]
+    - ON_ERROR: CONTINUE
+    - CALL: CHECK_STAT_STAT_SELFDEL
+    - POPUP: [ False, True ]
+    #pdf
+    - POPUP: [ True, True ]
+    - ON_ERROR: CONTINUE
+    - CALL: CHECK_STAT_STAT_EXPL_PDF
+    - POPUP: [ False, True ]
+    #txt
+    - POPUP: [ True, True ]
+    - ON_ERROR: CONTINUE
+    - CALL: CHECK_STAT_STAT_EXPL_TXT
+    - POPUP: [ False, True ]
+
     - ON_ERROR: SKIP
+
+
 
 #######################################################################
 #######################################################################
@@ -786,7 +804,6 @@ SYSTEM_DAILY_SRV:
     - BUILD_CACHE_CLEAN: False
     - REPORT:
         - VM_STATIC_SRV: ['AV Invisibility Static', 'Static check on builds']
-        - VM_STAT_STAT_SRV: [AV Invisibility Static, 'Statistic Static check']
         - VM_SOLDIER_SRV: ['AV Invisibility', 'Soldier']
         - VM_ELITE_FAST_SRV: ['AV Invisibility', 'Elite']
         - VM_ELITE_FAST_DEMO_SRV: ['AV Invisibility', 'Elite Demo']
@@ -797,6 +814,7 @@ SYSTEM_DAILY_SRV:
         - VM_MELT_SRV_UTO: ['AV Invisibility', 'Melt']
         - VM_MELT_SRV_VUZ: ['AV Invisibility', 'Melt']
         - VM_EXPLOIT_SRV: ['AV Invisibility', 'Exploit']
+        #- VM_STAT_STAT_SRV: [AV Invisibility Static, 'Statistic Static check']
     #qui salvo tutti i sample per la giornata!
     - BUILD_CACHE_CLEAN: True
     - CALL: VM_GET_LOG
@@ -1069,6 +1087,14 @@ CHECK_STAT_STAT_SCOUT:
 CHECK_STAT_STAT_SOLDIER:
     - CHECK_STATISTIC_STATIC: [ AVAgent/assets/600_Soldier/* , 30 ]
 
+CHECK_STAT_STAT_SELFDEL:
+    - CHECK_STATISTIC_STATIC: [ AVAgent/assets/300_Selfdel/* , 15 ]
+
+CHECK_STAT_STAT_EXPL_PDF:
+    - CHECK_STATISTIC_STATIC: [ AVAgent/assets/300_Expl_pdf/* , 15 ]
+
+CHECK_STAT_STAT_EXPL_TXT:
+    - CHECK_STATISTIC_STATIC: [ AVAgent/assets/300_Expl_txt/* , 15 ]
 
 CHECK_STATIC_MODULES_SCOUT_ICONS:
     - ENABLE: [ sunday ]

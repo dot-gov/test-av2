@@ -176,7 +176,8 @@ def check_static(files, report=None):
 
     if not failed:
         # failed is eual to []
-        add_result("+ SUCCESS CHECK_STATIC: %s" % success)
+        #does not add all checked files (it would be too verbose for a success!)
+        add_result("+ SUCCESS CHECK_STATIC: %s" % files)
     else:
         add_result("+ FAILED CHECK_STATIC. SIGNATURE DETECTION: %s" % failed)
     logging.debug("Failed: %s" % failed)

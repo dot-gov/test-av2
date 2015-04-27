@@ -745,3 +745,42 @@ VM_MELT_SRV_UTO_TEST:
 
 TEST_STATISTIC:
     - CHECK_STATISTIC_STATIC: [ AVAgent/assets/scouts/* , 3 ]
+
+#remember to use only 64 bit vm
+TEST_LOTUS_DLL:
+    - VM_ALL
+    - ON_ERROR: SKIP
+    - SLEEP: [1, 600]
+    - CALL: SET_MAIL
+    - CALL: INIT_DISPATCH
+    - ON_ERROR: CONTINUE
+    - POPUP: [ True, True ]
+    - PUSH:
+            - [ LotusSilent.exe ]
+            - assets
+            - c:/Users/avtest/
+    - SLEEP: 30
+    - EXECUTE_VM: [ /Users/avtest/LotusSilent.exe, [], 40, True, True  ]
+    - SLEEP: 30
+    - CHECK_EXISTANCE: [ /Users/avtest/AppData/Roaming/mm_so_backdoorish_much_wow.dll ]
+    - ON_ERROR: CONTINUE
+    - POPUP: [ False, True ]
+    - RELOG
+    - POPUP: [ True, True ]
+    - SLEEP: 30
+    - REPORT:
+        - TEST_REP_LOTUS_DLL
+    - POPUP: [ False, True ]
+    - SCREENSHOT
+    - CALL: VM_GET_LOG
+    - CALL: END_DISPATCH
+
+TEST_REP_LOTUS_DLL:
+    - CHECK_EXISTANCE: [ /Users/avtest/lotus_log.txt ]
+
+
+TEST_SHUTDOWN_AND_SNAP:
+    - STOP_VM: 300
+    - WAIT_SHUTDOWN
+    - REPORT:
+        - UPD_REFRESH

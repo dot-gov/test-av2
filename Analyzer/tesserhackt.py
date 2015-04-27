@@ -51,10 +51,10 @@ def process(av="*", num="*", ocrd=None):
 
 def cleanup(d_dir):
     for day in range(4, 10):
-        timedir = time.strftime("%y%m%d", time.localtime(time.time()(day*24*3600)))
+        timedir = time.strftime("%y%m%d", time.localtime(time.time()-(day*24*3600)))
         del_dir = "%spopup_thumbs/%s/" % (d_dir, timedir)
         shutil.rmtree(del_dir, ignore_errors=True)
-        print "Deleted olf diles in dir: %s" % del_dir
+        print "Deleted old diles in dir: %s" % del_dir
 
 
 def processlist(prefix, filelist, ocrd, av=None):

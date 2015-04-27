@@ -133,73 +133,6 @@ def trigger_python_mouse():
         ctypes.windll.user32.mouse_event(MOUSEEVENTF_CLICK, 0, 0, 0, 0)
 
 
-# def crop_window(logging, basedir_crop, crop_num):
-#     import ImageGrab
-#     filenames = []
-#     try:
-#         import pywinauto.findwindows as i_love_messing_whith_things
-#         import pywinauto.controls.HwndWrapper as i_love_messing_whith_things_Hw
-#         logging.debug("Searching popup window...")
-#         #TODO: discriminate over AVS
-#         # OLD: w = i_love_messing_whith_things.find_windows(class_name="bdPopupDlg")
-#
-#         found_windows = i_love_messing_whith_things.find_windows(top_level_only=True)
-#         if found_windows is not None and found_windows != []:
-#             logging.debug("Learning windows. Taking screenshots...")
-#
-#             for win_id in found_windows:
-#                 logging.debug("Popup window found. Taking screenshots...")
-#                 try:
-#                     hw = i_love_messing_whith_things_Hw.HwndWrapper(win_id)
-#                     win_class = hw.Class()
-#                 except i_love_messing_whith_things_Hw.InvalidWindowHandle:
-#                     continue
-#                 #ignore the ignored windows
-#                 if win_class not in windows_ignore_windows and win_class not in av_ignore_windows and win_class not in melt_ignore_windows:
-#
-#                 #some windows can be printed with direct method (for the others use printscr)
-#                     if win_class in av_direct:
-#                         #this was removed because anyway we save every 2 seconds...
-#                         for imnum in range(1, 3):
-#                             try:
-#                                 pilimg = hw.CaptureAsImage()
-#                                 print str(imnum)
-#                                 time.sleep(1)
-#                                 filename = "%s/%s_#%s.png" % (basedir_crop, crop_num, imnum)
-#                                 filename = filename.replace('/', '\\')
-#                                 filenames.append(filename)
-#                                 pilimg.save(filename)
-#
-#                             except i_love_messing_whith_things_Hw.InvalidWindowHandle:
-#                                 break
-#                     else:
-#                         # logging.debug("Screenshots saved.")
-#                         #press printscreen
-#                         ctypes.windll.user32.keybd_event(44, 0, 0, 0)
-#                         time.sleep(2)
-#                         pilimg = ImageGrab.grabclipboard()
-#                         box = (hw.Rectangle().left,
-#                                hw.Rectangle().top,
-#                                hw.Rectangle().right,
-#                                hw.Rectangle().bottom)
-#                         cropped_pilimg = pilimg.crop(box)
-#                         filename = "%s/%s_printscr.png" % (basedir_crop, crop_num)
-#                         filename = filename.replace('/', '\\')
-#                         filenames.append(filename)
-#                         try:
-#                             cropped_pilimg.save(filename)
-#                         except SystemError:
-#                             pilimg.save(filename.replace(".png", "_FULLcrop_error.png"))
-#
-#             return True, filenames
-#         else:
-#             return False, None
-#     except ImportError:
-#         import shutil as i_love_messing_whith_things
-#         import os as i_love_messing_whith_things_Hw
-# # if socket.gethostname() not in ["avmonitor", "rite"]:
-
-
 def crop_window(logging, basedir_crop, timestamp, learning=False, image_hashes=None):
     import ImageGrab
     import re
@@ -231,6 +164,9 @@ def crop_window(logging, basedir_crop, timestamp, learning=False, image_hashes=N
                             logging.debug("###IGNORING An invalid Window (UAC?)###")
                             continue
                 classes.add(win_class)
+                if learning:
+                    logging.debug("Learning, dumping all classes: Win class %s " % win_class)
+
                 if win_class not in windows_ignore_windows and win_class not in av_ignore_windows and win_class not in melt_ignore_windows and win_class not in av_update_ignore_windows:
                     logging.debug("Win class %s found" % win_class)
 
@@ -278,7 +214,7 @@ def crop_window(logging, basedir_crop, timestamp, learning=False, image_hashes=N
                             #until the image is null, I re-capture from clipboard (max 8 times or it blocks other windows)
                             pilimg = None
                             i = 0
-                            while pilimg is None or i > 8:
+                            while pilimg is None and i < 8:
                                 try:
                                     pilimg = ImageGrab.grabclipboard()
                                 except NameError:

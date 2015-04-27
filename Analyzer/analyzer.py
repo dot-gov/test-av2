@@ -224,7 +224,8 @@ def process_yaml(filenames, results_to_receive):
 
     #print retests
 
-    retestlist = ""
+    retestlist_important = ""
+    retestlist_less_important = ""
 
     tests_to_analyze = "UPDATE_AV SYSTEM_POSITIVE SYSTEM_DAILY_SRV"
     for testname, machines in retests.items():
@@ -234,8 +235,13 @@ def process_yaml(filenames, results_to_receive):
             retest = "./run.sh %s -m " % testname_system
             for vm in machines:
                 retest += "%s," % vm
-            retestlist += "%s -c -p 44<br>" % retest[0:-1]
+            if testname in mailsender.important_tests:
+                retestlist_important += "%s -c -p 44<br>" % retest[0:-1]
+            else:
+                retestlist_less_important += "%s -c -p 44<br>" % retest[0:-1]
             tests_to_analyze += " " + testname_system
+
+    retestlist = retestlist_important + retestlist_less_important
 
     # command to re-run analysis.
     retestlist += "python ./Rite/Analyzer/analyzer.py %s" % tests_to_analyze
@@ -272,6 +278,7 @@ def analyze(vm, comms):
 
     test_name = comms[0].test_name
     test_approximate_start_time = comms[0].timestamp
+    test_approximate_end_time = comms[-1].timestamp
 
     print "################### STARTING TEST ######################"
     print "# Analyzing %s commands for VM: %s #" % (len(comms), vm)

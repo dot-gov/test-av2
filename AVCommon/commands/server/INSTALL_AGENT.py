@@ -76,7 +76,11 @@ def execute(vm, protocol, inst_args):
 
     if os.path.exists("logs/%s/timestamp.txt" % vm):
         timestampremotefile = open("logs/%s/timestamp.txt" % vm, 'r')
-        timestampremoteint = float(timestampremotefile.read())
+        try:
+            timestampremoteint = float(timestampremotefile.read())
+        except:
+            #if cannot convert, set at 0 and push anyway
+            timestampremoteint = 0
         timestampremotefile.close()
         logging.debug("Last edit REMOTE time: %s" % timestampremoteint)
     else:

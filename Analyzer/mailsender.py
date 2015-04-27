@@ -25,7 +25,8 @@ class MailSender(object):
 
     invert_result_tests = ["VM_PUSH_VIRUS"]
 
-    important_tests = ['VM_ELITE_FAST_SCOUTDEMO_SRV', 'VM_ELITE_FAST_SRV', 'VM_EXPLOIT_SRV', 'VM_SOLDIER_SRV', 'VM_STATIC_SRV']
+    #important_tests = ['VM_ELITE_FAST_SCOUTDEMO_SRV', 'VM_ELITE_FAST_SRV', 'VM_EXPLOIT_SRV', 'VM_SOLDIER_SRV', 'VM_STATIC_SRV']
+    important_tests = ['VM_STATIC_SRV', 'VM_ELITE_FAST_SRV', 'VM_SOLDIER_SRV']
 
     enabled = {'VM_ELITE_FAST_DEMO_SRV': ['sunday'],
                'VM_EXPLOIT_SRV': ['sunday'],
