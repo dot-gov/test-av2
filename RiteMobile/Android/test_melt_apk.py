@@ -1,5 +1,7 @@
 import argparse
 import collections
+import glob
+from random import shuffle
 import traceback
 import os
 import time
@@ -16,14 +18,14 @@ logger.init()
 
 __author__ = 'zeno'
 
-apk_share_dir = "/Volumes/SHARE/QA/SVILUPPO/PlayStoreApps/"
+apk_share_dir = "/Users/mlosito/Sviluppo/PlayStoreApps/"  # "/Volumes/SHARE/QA/SVILUPPO/PlayStoreApps/"
 
 build_melt_dir = "build_melt/"
 
 # av_list = ["com.antivirus", "com.avast.android", "com.qihoo.security", "com.lookout"]
 av_list = []
 
-server = "castore"
+server = "polluce"
 
 # test_to_run = ["melt_server", "zip_run"]
 test_to_run = ["melt_server"]
@@ -143,7 +145,7 @@ uninstall = False
 #                 'com.imdb.mobile-5.0.3.105030410.apk', 'com.NextFloor.DragonFlightKakao-2.6.2.apk', 'com.disney.WMWLite-1.9.1.apk',
 #                 'com.bigduckgames.flow-2.8.apk']
 
-to_test_list = ["com.instagram.android-1.apk"]
+to_test_list = ["com.sec.spp.push-1.apk"]
 
 
 def parse_args():
@@ -197,9 +199,11 @@ def main():
             else:
                 return
             with commands_rcs as c:
-                for apk_file in os.listdir(apk_share_dir)[:max_test_iterations]:
+                unordered_list = os.listdir(apk_share_dir)[:max_test_iterations]
+                shuffle(unordered_list)
+                for apk_file in unordered_list:
                     # quelli da testare, ma che non sia gia' noto che funzionano o non che funzionano
-                    if apk_file.startswith(filter_string) and os.path.basename(apk_file) in to_test_list:
+                    if apk_file.endswith(".apk") and apk_file.startswith(filter_string) and not glob.glob(build_melt_dir+"melt_"+apk_file+".zip"):  # and os.path.basename(apk_file) in to_test_list:
                             # and os.path.basename(apk_file) not in these_works_list and os.path.basename(apk_file) not in these_does_not_work_list:
                         is_an_antivirus = False
                         installation_result = "UNKNOWN"
@@ -216,16 +220,16 @@ def main():
                             time.sleep(10)
                             repeat = 0
                             completed_test = False
-                            while repeat < max_timeout_retries and completed_test is False:
+                            while repeat <= max_timeout_retries and completed_test is False:
                                 repeat += 1
                                 try:
 
-                                    # ret = c.build_melt_apk(melt_file=os.path.join(apk_share_dir, apk_file), appname="melted_%s" % apk_file,
-                                    #       melt_dir=build_melt_dir, ruby_build_in_second_stage=True)
+                                    #ret = c.build_melt_apk(melt_file=os.path.join(apk_share_dir, apk_file), appname="melted_%s" % apk_file,
+                                          # melt_dir=build_melt_dir, ruby_build_in_second_stage=True)
                                     input_melt_file = os.path.join(apk_share_dir, apk_file)
                                     zipfilenamebackend = os.path.join(build_melt_dir, "melt_%s.zip" % apk_file)
 
-                                    ret = c.build_melt_apk_ruby(input_melt_file, zipfilenamebackend=zipfilenamebackend)
+                                    ret = c.build_melt_apk_ruby(input_melt_file, zipfilenamebackend=zipfilenamebackend, factory_id=commands_rcs.factory)
                                     if not ret:
                                         raise Exception("Build failed")
                                     installation_result = "Ok"
@@ -243,7 +247,7 @@ def main():
                                     completed_test = True
                                 except:
                                     time.sleep(10)
-                                    print "%s:\t [ RETRY! (have tried %s times of %s max) ]" % (apk_file, repeat, max_timeout_retries)
+                                    print "%s:\t [ RETRY! (have tried %s times of %s max) ]" % (apk_file, repeat, max_timeout_retries+1)
                                     installation_result = "RETRIES EXCEEDED"
                                     result_strings_error.append("%s:\t [ RETRIES EXCEEDED ]" % apk_file)
 

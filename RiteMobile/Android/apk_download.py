@@ -1,4 +1,5 @@
 import argparse
+import glob
 import sys
 import os
 import re
@@ -14,6 +15,10 @@ from RiteMobile.Android.utils import superuserutils
 
 sys.path.append("/home/zad/work/devel/test-rite/")
 
+retry = True
+# path = "/Volumes/SHARE/QA/SVILUPPO/PlayStoreApps/"
+path = "/Users/mlosito/Sviluppo/PlayStoreApps/"
+
 
 def main(args):
     commands_dev = CommandsDevice()
@@ -22,7 +27,7 @@ def main(args):
         print "Init!"
         commands_dev.init_device()
 
-    retrive_app_list(commands_dev, "assets/list_links.txt", "/Volumes/SHARE/QA/SVILUPPO/PlayStoreApps/", args.line)
+    retrive_app_list(commands_dev, "assets/list_links.txt", path, args.line)
   #  print "Test Execution success:%s" % test_local_install(device, res, wait_root=False)
   #  print "Test Execution success:%s" % test_local_install(device, res, persistent=False)
   #  print "Test Execution success:%s" % test_local_install(device, res)
@@ -52,9 +57,17 @@ def retrive_app_list(device, fname, local_path, from_line=1):
                 m = r.search(line)
                 if m:
                     app = m.group(1)
-                    market_url="market://details?id=" + app
+                    market_url = "market://details?id=" + app
                     print "ready to get app=%s %s" % (app,market_url)
-                    get_app(device, market_url, app, local_path)
+                    if retry:
+                        if glob.glob(path+app+"*"):
+                            print "----------------> SKIPPING ALREADY DOWNLOADED APP = %s" % app
+                        else:
+                            print "----------------> STARTING DOWNLOAD (not found in %s)" % (path+app+"*")
+                            get_app(device, market_url, app, local_path)
+                    else:
+                        get_app(device, market_url, app, local_path)
+
     set_auto_rotate_enabled(True, device)
 
 
