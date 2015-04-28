@@ -86,11 +86,11 @@ busybox_filename = 'busybox-android'
 
 def call(cmd, device=None):
     if device:
-        print "##DEBUG## calling %s for device %s" % (cmd,device)
+        #print "##DEBUG## calling %s for device %s" % (cmd,device)
         proc = subprocess.call([adb_path,
                                 "-s", device] + cmd.split(), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     else:
-        print "##DEBUG## calling %s" % cmd
+        #print "##DEBUG## calling %s" % cmd
         proc = subprocess.call([adb_path] + cmd.split(), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     return proc != 0
@@ -430,13 +430,13 @@ def executeGui(apk, device=None):
 
 
 def execute(cmd = "", device=None, adb_cmd = "shell"):
-    print "##DEBUG## calling '%s' for device %s" % (cmd, device)
+    #print "##DEBUG## calling '%s' for device %s" % (cmd, device)
     if device:
         args = [adb_path, "-s", device, adb_cmd]
     else:
         args = [adb_path, adb_cmd]
 
-    print "##DEBUG## calling '%s" % (args + cmd.split())
+    #print "##DEBUG## calling '%s" % (args + cmd.split())
     proc = subprocess.Popen(args + cmd.split(), stdout=subprocess.PIPE)
 
     comm = proc.communicate()
@@ -455,7 +455,7 @@ def executeSU(cmd, root=False, device=None):
         comm = proc.communicate()
         return str(comm[0])
     else:
-        print "##DEBUG## executing: %s withOUT dfi" % cmd
+        #print "##DEBUG## executing: %s withOUT dfi" % cmd
         return execute(cmd, device)
 
 def kill_app(app, device=None):
@@ -589,7 +589,7 @@ def get_remote_file(remote_source_filename, remote_source_path, local_destinatio
 #ML
 #deletes a single file
 def remove_file(filename, file_path, root=False, device=None):
-    print "##DEBUG##  Deleting a single file from device %s" % device
+    #print "##DEBUG##  Deleting a single file from device %s" % device
 
     toremove = file_path + "/" + filename
 
@@ -599,7 +599,7 @@ def remove_file(filename, file_path, root=False, device=None):
 
 
 def remove_directory(dir_path, root=False, device=None):
-    print "##DEBUG##  Deleting %s directory (rm -r) from device %s" % (dir_path, device)
+    #print "##DEBUG##  Deleting %s directory (rm -r) from device %s" % (dir_path, device)
 
     executeSU("rm -r" + " " + dir_path, root, device)
 
