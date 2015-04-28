@@ -204,40 +204,85 @@ class SummaryDataColl(object):
         man_err = manual_state_rows.get_error_rows_count()
 
         #checks if there are a different number of commands
-        if cur_err != man_err:
-            return False, "Different number of commands"
+        if cur_err > man_err:
+            return False, "Occurred more errors than known errors!"
         else:
+            different_commands = []
             different_results = []
             different_logs = []
 
+            known_skipped = 0
             for x in range(cur_err):
                 #check if there are different command names (es: BUILD vs SCREENSHOT)
-                print 'comparing %s to %s' % (self.get_error_rows()[x].command, manual_state_rows.get_error_rows()[x].command)
-                if self.get_error_rows()[x].command != manual_state_rows.get_error_rows()[x].command:
-                    return False, "Commands sequence is different"
-                #check if there are different command results (es FAILED vs NO SYNC)
-                elif self.get_error_rows()[x].parsed_result[1] != manual_state_rows.get_error_rows()[x].parsed_result[1]:
-                    different_results.append("Current:%s=%s, Manual:%s=%s" % (self.get_error_rows()[x].command,
-                                                                              self.get_error_rows()[x].parsed_result[0],
-                                                                              manual_state_rows.get_error_rows()[x].command,
-                                                                              manual_state_rows.get_error_rows()[x].parsed_result[0]))
-                #check if there are different error logs
-                #REGEXP VERSION
-                elif not re.match(manual_state_rows.get_error_rows()[x].rite_result_log, self.get_error_rows()[x].rite_result_log):
-                #NON REGEXP VERSION (EXACT MATCH)
-                #elif manual_state_rows.get_error_rows()[x].rite_result_log == self.get_error_rows()[x].rite_result_log:
-                    different_logs.append("Current:%s=%s(%s), Manual:%s=%s(%s)" % (self.get_error_rows()[x].command,
-                                                                                   self.get_error_rows()[x].parsed_result[0],
-                                                                                   self.get_error_rows()[x].rite_result_log,
-                                                                                   manual_state_rows.get_error_rows()[x].command,
-                                                                                   manual_state_rows.get_error_rows()[x].parsed_result[0],
-                                                                                   manual_state_rows.get_error_rows()[x].rite_result_log))
+                print 'comparing %s to %s' % (self.get_error_rows()[x].command, manual_state_rows.get_error_rows()[x+known_skipped].command)
+
+                #while the comparison fails but we can skip the command, then skip
+                while (not self.compare_single_current_to_manual(self.get_error_rows()[x], manual_state_rows.get_error_rows()[x+known_skipped]) and
+                manual_state_rows.get_error_rows()[x+known_skipped].manual_optional and len(manual_state_rows.get_error_rows()) - 1 > x + known_skipped):
+                    known_skipped += 1
+
+                #if i am here, or the command are equal or different and cannot skip anymore
+                #if are equal, I do nothing and go on
+                #if not equal, add errors!
+                if not self.compare_single_current_to_manual(self.get_error_rows()[x], manual_state_rows.get_error_rows()[x+known_skipped]):
+                    self.compare_single_current_to_manual_get_reason(self.get_error_rows()[x], manual_state_rows.get_error_rows()[x+known_skipped],
+                                                                     different_commands, different_results, different_logs)
+
+
             if len(different_results) > 0:
+                return False, "Command sequence is different: %s" % different_commands
+            elif len(different_results) > 0:
                 return False, "Commands results are different: %s" % different_results
             elif len(different_logs) > 0:
                 return False, "Commands logs patterns didn't match: %s" % different_logs
             else:
-                return True, "Same execution results and logs"
+                return True, "Same execution results and logs (%s known optional errors skipped)" % + known_skipped
+
+    def compare_single_current_to_manual(self, curr_row, manual_row):
+        if curr_row.command != manual_row.command:
+            return False
+
+        #check if there are different command results (es FAILED vs NO SYNC)
+        elif curr_row.parsed_result[1] != manual_row.parsed_result[1]:
+            return False
+            # different_results.append("Current:%s=%s, Manual:%s=%s" % (curr_row.command,
+            #                                                           curr_row.parsed_result[0],
+            #                                                           manual_row.command,
+            #                                                           manual_row.parsed_result[0]))
+
+        #check if there are different error logs
+        #REGEXP VERSION
+        elif not re.match(manual_row.rite_result_log, curr_row.rite_result_log):
+            return False
+            # different_logs.append("Current:%s=%s(%s), Manual:%s=%s(%s)" % (curr_row.command,
+            #                                                                curr_row.parsed_result[0],
+            #                                                                curr_row.rite_result_log,
+            #                                                                manual_row.command,
+            #                                                                manual_row.parsed_result[0],
+            #                                                                manual_row.rite_result_log))
+        else:
+            return True
+
+    def compare_single_current_to_manual_get_reason(self, curr_row, manual_row, different_commands, different_results, different_logs):
+        if curr_row.command != manual_row.command:
+            different_commands.append("Current:%s, Manual:%s" % (curr_row.command, manual_row.command))
+
+        #check if there are different command results (es FAILED vs NO SYNC)
+        elif curr_row.parsed_result[1] != manual_row.parsed_result[1]:
+            different_results.append("Current:%s=%s, Manual:%s=%s" % (curr_row.command,
+                                                                      curr_row.parsed_result[0],
+                                                                      manual_row.command,
+                                                                      manual_row.parsed_result[0]))
+
+        #check if there are different error logs
+        #REGEXP VERSION
+        elif not re.match(manual_row.rite_result_log, curr_row.rite_result_log):
+            different_logs.append("Current:%s=%s(%s), Manual:%s=%s(%s)" % (curr_row.command,
+                                                                           curr_row.parsed_result[0],
+                                                                           curr_row.rite_result_log,
+                                                                           manual_row.command,
+                                                                           manual_row.parsed_result[0],
+                                                                           manual_row.rite_result_log))
 
     def get_manual_save_string(self):
         string_out = ""

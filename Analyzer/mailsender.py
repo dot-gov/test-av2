@@ -67,7 +67,7 @@ class MailSender(object):
     results_to_receive = []
 
     # , "f.cornelli@hackingteam.com", "m.oliva@hackingteam.com"
-    def send_mail(self, mail_recipients=["m.losito@hackingteam.com", "f.cornelli@hackingteam.com", "m.oliva@hackingteam.com"], mail_server="mail.hackingteam.com"):
+    def send_mail(self, mail_recipients=["m.losito@hackingteam.com"], mail_server="mail.hackingteam.com"):
         # Create a text/plain message
 
         header_charset = 'ISO-8859-1'
@@ -109,7 +109,7 @@ class MailSender(object):
         s.quit()
 
     def add_result(self, vm, test, result_types, message, details=None, save_strings=None, saved_error_comment=None, crop_filenames=None,
-                   popup_results=None):
+                   popup_results=None, time=0):
         if not vm in self.all_results:
             self.all_results[vm] = {}
         if not test in self.all_results[vm]:
@@ -121,6 +121,7 @@ class MailSender(object):
         self.all_results[vm][test]['saved_error_comment'] = saved_error_comment
         self.all_results[vm][test]['crop_filenames'] = crop_filenames
         self.all_results[vm][test]['popup_results'] = popup_results
+        self.all_results[vm][test]['time'] = time
 
     #we pass msg that is the "root" multipart. We have to attach to it the images.
     def generate_text(self, msg):
@@ -277,7 +278,7 @@ class MailSender(object):
                 mail_message += '<details close><summary style="display:inline">Analyzed VM: %s</summary><p><br>' % self.decorate_vm(vm)
                 for test in self.all_results[vm]:
                     if self.all_results[vm][test]['result_type'] == result_type:
-                        mail_message += '<p class="tab">Test: %s</p><br>' % self.decorate_test(test, vm)
+                        mail_message += '<p class="tab">Test: %s, Execution time in minutes: %s</p><br>' % (self.decorate_test(test, vm), self.all_results[vm][test]['time'])
                         mail_message += '<p class="doubletab">%s</p><br>' % self.all_results[vm][test]['message']  # before here was used cgi.escape(
                         if self.all_results[vm][test]['saved_error_comment']:
                             mail_message += '<p class="doubletab" style="color: red;">Comment: %s</p><br>' % cgi.escape(self.all_results[vm][test]['saved_error_comment'])

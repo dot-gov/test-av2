@@ -1,3 +1,5 @@
+import math
+
 __author__ = 'mlosito'
 import os
 import glob
@@ -173,19 +175,22 @@ def process_yaml(filenames, results_to_receive):
 
             print "####################     RESULTS     ####################"
             print text
+            print "EXECUTION TIME: %s" % comparison_result['time']
             print "####################   RESULTS END   ####################"
 
             # also rite failed tests can have popups
             if not comparison_result['rite_ok'] and not comparison_result['saved_error']:
-                mailsender.add_result(vm, test_name, mailsender.ResultTypes.RITE_FAILS, message, popup_results=comparison_result['popup_results'])
+                mailsender.add_result(vm, test_name, mailsender.ResultTypes.RITE_FAILS, message, popup_results=comparison_result['popup_results'],
+                                      time=comparison_result['time'])
             elif not comparison_result['rite_ok'] and comparison_result['saved_error']:
-                mailsender.add_result(vm, test_name, mailsender.ResultTypes.RITE_KNOWN_FAILS, message)
+                mailsender.add_result(vm, test_name, mailsender.ResultTypes.RITE_KNOWN_FAILS, message, time=comparison_result['time'])
             elif not comparison_result['success'] and not comparison_result['saved_error']:
                 if test_name not in mailsender.invert_result_tests:
                     mailsender.add_result(vm, test_name, mailsender.ResultTypes.NEW_ERRORS, message,
                                           details=comparison_result['rows_obj'].get_causes(),
                                           save_strings=comparison_result['rows_obj'].get_manual_save_string(),
-                                          crop_filenames=comparison_result['crop_filenames'], popup_results=comparison_result['popup_results'])
+                                          crop_filenames=comparison_result['crop_filenames'], popup_results=comparison_result['popup_results'],
+                                          time=comparison_result['time'])
                     #adds retest
                     if test_name not in retests:
                         retests[test_name] = set()
@@ -193,24 +198,26 @@ def process_yaml(filenames, results_to_receive):
                 #invert
                 else:
                     mailsender.add_result(vm, test_name, mailsender.ResultTypes.OK, message,
-                                          crop_filenames=comparison_result['crop_filenames'], popup_results=comparison_result['popup_results'])
+                                          crop_filenames=comparison_result['crop_filenames'], popup_results=comparison_result['popup_results'],
+                                          time=comparison_result['time'])
                 # mailsender.crop_filenames_add(vm, test_name, comparison_result['crop_filenames'])
             elif not comparison_result['success'] and comparison_result['saved_error']:
                 mailsender.add_result(vm, test_name, mailsender.ResultTypes.KNOWN_ERRORS, message,
-                                      saved_error_comment=comparison_result['saved_error_comment'])
+                                      saved_error_comment=comparison_result['saved_error_comment'], time=comparison_result['time'])
             #case in wich we saved an error but the test passed
             elif comparison_result['success'] and comparison_result['saved_error']:
                 mailsender.add_result(vm, test_name, mailsender.ResultTypes.KNOWN_ERRORS_BUT_PASSED, message,
-                                      comparison_result['saved_error_comment'])
+                                      comparison_result['saved_error_comment'], time=comparison_result['time'])
             # ok
             else:
                 if test_name not in mailsender.invert_result_tests:
-                    mailsender.add_result(vm, test_name, mailsender.ResultTypes.OK, message)
+                    mailsender.add_result(vm, test_name, mailsender.ResultTypes.OK, message, time=comparison_result['time'])
                 else:
                     mailsender.add_result(vm, test_name, mailsender.ResultTypes.NEW_ERRORS, message,
                                           details=comparison_result['rows_obj'].get_causes(),
                                           save_strings=comparison_result['rows_obj'].get_manual_save_string(),
-                                          crop_filenames=comparison_result['crop_filenames'], popup_results=comparison_result['popup_results'])
+                                          crop_filenames=comparison_result['crop_filenames'], popup_results=comparison_result['popup_results'],
+                                          time=comparison_result['time'])
                     #NB does not sets retest for inverted results
 
             #try to print yesterday's data
@@ -307,7 +314,7 @@ def analyze(vm, comms):
         for i in comms:
             #this was commented because the tables are growing too big and this historic data is not so important
             # db.insert_result(i)
-            summ_data = SummaryData(test_approximate_start_time, test_name, vm, i.command, prg, 0, "", i.rite_result_log, i.parsed_result,
+            summ_data = SummaryData(test_approximate_start_time, test_approximate_end_time, test_name, vm, i.command, prg, False, False, "", i.rite_result_log, i.parsed_result,
                                     i.rite_failed, i.rite_fail_log)
 
             #refine crops with tesseract
@@ -354,6 +361,7 @@ def analyze(vm, comms):
         test_comparison_result['saved_error'] = saved_error
         test_comparison_result['crop_filenames'] = None
         test_comparison_result['popup_results'] = None
+        test_comparison_result['time'] = int(math.ceil((int(test_approximate_end_time) - int(test_approximate_start_time)) / 60))
 
         #if there are anomalies, then it IGNORES the states ad returns
         #else if the failure state is ok, it compares the results

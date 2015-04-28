@@ -784,3 +784,25 @@ TEST_SHUTDOWN_AND_SNAP:
     - WAIT_SHUTDOWN
     - REPORT:
         - UPD_REFRESH
+
+
+SYSTEM_SOLDIER_NEW_STAT:
+    - VM_ALL
+    - ON_ERROR: SKIP
+    - SLEEP: [1, 600]
+    - CALL: SET_MAIL
+    - REPORT:
+        - VM_SOLDIER_NEW_STAT
+    - CALL: END_DISPATCH
+
+VM_SOLDIER_NEW_STAT:
+    - CALL: INIT_DISPATCH
+    #scout
+    - POPUP: [ True, True ]
+    - ON_ERROR: CONTINUE
+    - CALL: CHECK_SOLDIER_NEW_STAT
+    - POPUP: [ False, True ]
+
+
+CHECK_SOLDIER_NEW_STAT:
+    - CHECK_STATISTIC_STATIC: [ AVAgent/assets/900_New_Soldier/* , 30 , 0 ]
