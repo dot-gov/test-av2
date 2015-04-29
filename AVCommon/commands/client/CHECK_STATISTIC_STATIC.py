@@ -83,12 +83,12 @@ def get_file_list(args):
     if len(args) == 1:
         segment_size = default_segment_size
         args.append(segment_size)
-        segment_index = None
+        segment_index = -1
         args.append(segment_index)
 
     elif len(args) == 2:
         segment_size = args[1]
-        segment_index = None
+        segment_index = -1
         args.append(segment_index)
 
     elif len(args) == 3:
@@ -121,7 +121,7 @@ def get_file_portion(files, segment_size, segment_index):
     # segment_index = time.localtime().tm_yday % segment_size
 
     #uses day if not specified
-    if not segment_index:
+    if segment_index == -1:
         segment_index = time.localtime().tm_yday
     #if segment index is > segment_number, uses the remainder
     selected_segment_index = segment_index % segment_number
