@@ -1,7 +1,11 @@
 __author__ = 'mlosito'
+import re
+import sys
 
 from resultstates import ResultStates
 from resultdata import ResultData
+sys.path.append("./Rite/")
+import dbreport
 
 
 class SummaryData(ResultData):
@@ -18,3 +22,36 @@ class SummaryData(ResultData):
         self.manual = manual
         self.manual_optional = manual_optional
         self.manual_comment = manual_comment
+
+    def get_error_type(self):
+        if self.parsed_result == ResultStates.PASSED:
+            return None
+        elif self.manual:
+            # I know the specific manual error saved, so I use this comment
+            for k, v in dbreport.DBReport.error_types.viewitems():
+                if v[0] == self.rite_result_log and v[1] == self.command:
+                    return k
+        else:
+            # I try to guess a possible manual error
+            for k, v in dbreport.DBReport.error_types.viewitems():
+                if v[1] == self.command and re.match(v[0], self.rite_result_log):
+                    return k
+
+            return "New type: %s" % re.escape(self.rite_result_log)
+
+    def get_error_description(self):
+        if self.parsed_result == ResultStates.PASSED:
+            return ""
+        elif self.manual:
+            # I know the specific manual error saved, so I use this comment
+            for k, v in dbreport.DBReport.error_types.viewitems():
+                if v[0] == self.rite_result_log and v[1] == self.command:
+                    return v[2]
+        else:
+            # I try to guess a possible manual error
+            for k, v in dbreport.DBReport.error_types.viewitems():
+                if v[1] == self.command and re.match(v[0], self.rite_result_log):
+                    return v[2]
+
+            return "This is a new unknown error. Details: %s" % self.rite_result_log
+

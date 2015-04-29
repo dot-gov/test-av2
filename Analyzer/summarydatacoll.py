@@ -61,6 +61,21 @@ class SummaryDataColl(object):
     def get_manual_comment(self):
         return self.rows[0].manual_comment
 
+    def get_error_descriptions(self):
+        if len(self.rows) == 0:
+            return "Nothing was executed - 0 rows"
+        output = "<br><ol class='doubletab'>"
+        for row in self.rows:
+            if row.rite_failed:
+                output += "<li>"+row.command+"=RITE FAILED! - "+row.rite_fail_log+"</li><br>"
+            elif row.parsed_result[0].strip() not in ['PASSED', 'NONE', 'GOOD_CROP']:
+                output += "<li>"+row.command+"="+row.parsed_result[0]+" - "+row.get_error_description()+"</li><br>"
+        output += "</ol>"
+        if output == "<br><ol></ol>":
+            return "All ok - 0 error rows<br>"
+        return output
+
+    #old
     def state_rows_to_string_short(self):
         return self.state_rows_to_string_full(full=False)
 
@@ -131,43 +146,43 @@ class SummaryDataColl(object):
         good_crop_curr_num = self.get_good_crops_rows_count()
 
         if cur_err == 0 and prev_err == 0 and man_err == 0:
-            message = "All OK! Actual state is: PASSED, previous state was: PASSED, (known state is: PASSED)"
+            message = "<b>All OK! Actual state is: PASSED, previous state was: PASSED, (known state is: PASSED)</b>"
 
         elif cur_err == 0 and prev_err > 0 and man_err == 0:
-            message = "All Ok! Actual state is PASSED, we recovered from previous errorlist: %s" % previous_state_rows.state_rows_to_string_short()
+            message = "<b>All Ok! Actual state is PASSED, we recovered from previous errorlist:</b> %s" % previous_state_rows.get_error_descriptions()
 
         elif cur_err > 0 and prev_err == 0 and man_err == 0:
-            message = "New error! Actual errorlist is: %s, previous state was: PASSED, (known state is: PASSED)" % self.state_rows_to_string_short()
+            message = "<b>New error! Actual errorlist is:</b> %s <b>previous state was: PASSED <br> (known state is: PASSED)</b>" % self.get_error_descriptions()
             ok = False
         elif cur_err > 0 and prev_err > 0 and man_err == 0:
-            message = "New recurrent error! Actual errorlist is: %s, previous errorlist is: %s:, (known state is: PASSED)" % (
-                self.state_rows_to_string_short(), previous_state_rows.state_rows_to_string_short())
+            message = "<b>New recurrent error! Actual errorlist is:</b>%s <b>previous errorlist is:</b> %s<b>(known state is: PASSED)</b>" % (
+                self.get_error_descriptions(), previous_state_rows.get_error_descriptions())
             ok = False
         elif cur_err == 0 and man_err > 0:
-            message = "Anomaly! Actual state is PASSED, known errorlist is: %s" % manual_state_rows.state_rows_to_string_short()
+            message = "<b>Anomaly! Actual state is PASSED, known errorlist is:</b> %s" % manual_state_rows.get_error_descriptions()
             ok = True
             saved_error = True
             saved_error_comment = manual_state_rows.get_manual_comment()
         #compare_current_to_manual is true if commands are equal
         elif cur_err > 0 and self.compare_current_to_manual(manual_state_rows)[0]:
-            message = "OK, but known errors occurred (known error comment is: %s). Actual errorlist and known errorlist are %s " \
-                      "(previous errorlist is: %s)" % (manual_state_rows.get_manual_comment(), self.state_rows_to_string_short(),
-                                                       previous_state_rows.state_rows_to_string_short())
+            message = "<b>OK, but known errors occurred (known error comment is: %s).Actual errorlist is:</b> %s <b>known errorlist is:</b> %s " \
+                      "<b>previous errorlist is:</b> %s" % (manual_state_rows.get_manual_comment(), self.get_error_descriptions(),  manual_state_rows.get_error_descriptions(),
+                                                       previous_state_rows.get_error_descriptions())
             ok = False
             saved_error = True
             saved_error_comment = manual_state_rows.get_manual_comment()
         elif cur_err > 0 and not self.compare_current_to_manual(manual_state_rows)[0]:
             x, differ_reason = self.compare_current_to_manual(manual_state_rows)
-            message = "Anomaly! Actual errors differs from saved errors (reason: %s). Actual errorlist is: %s, known errorlist is: %s " \
-                      "(previous errorlist is: %s)" %\
-                      (differ_reason, self.state_rows_to_string_short(), manual_state_rows.state_rows_to_string_short(),
-                       previous_state_rows.state_rows_to_string_short())
+            message = "<b>Anomaly! Actual errors differs from saved errors (reason: </b> %s <b>).<br>Actual errorlist is:</b> %s <b>known errorlist is:</b> %s " \
+                      "<b>previous errorlist is:</b> %s" %\
+                      (differ_reason, self.get_error_descriptions(), manual_state_rows.get_error_descriptions(),
+                       previous_state_rows.get_error_descriptions())
             ok = False
         else:
-            message = "Sorry, the analyzer does not know this kind of error :,-( Actual errorlist is: %s," \
-                      "known errorlist is: %s (previous errorlist is: %s)" % (self.state_rows_to_string_short(),
-                                                                              manual_state_rows.state_rows_to_string_short(),
-                                                                              previous_state_rows.state_rows_to_string_short())
+            message = "<b>Sorry, the analyzer does not know this kind of error :,-( Actual errorlist is:</b> %s" \
+                      "<b>known errorlist is:</b> %s <b>previous errorlist is:</b> %s" % (self.get_error_descriptions(),
+                                                                              manual_state_rows.get_error_descriptions(),
+                                                                              previous_state_rows.get_error_descriptions())
             ok = False
 
         if good_crop_curr_num > 0:
@@ -181,18 +196,18 @@ class SummaryDataColl(object):
         #if current run failed
         if self.is_rite_failed():
             if manual_state_rows.is_rite_failed():
-                message = "All OK! Actual state is: RITE_FAILED, known state is: RITE_FAILED (known fail comment is: %s)" \
-                          "(previous_state was failed: %s)" % (manual_state_rows.get_manual_comment(), previous_state_rows.is_rite_failed())
+                message = "<b>All OK! Actual state is: RITE_FAILED, known state is: RITE_FAILED (known fail comment is: %s)</b>" \
+                          "<b>(previous_state was failed: %s)</b>" % (manual_state_rows.get_manual_comment(), previous_state_rows.is_rite_failed())
                 ok = False
                 saved_error = True
             else:
-                message = "New RITE Failure! Actual state is: RITE_FAILED, known state is: RITE_NOT_FAILED (previous_state was " \
-                          "failed: %s)" % previous_state_rows.is_rite_failed()
+                message = "<b>New RITE Failure! Actual state is: RITE_FAILED, known state is: RITE_NOT_FAILED (previous_state was " \
+                          "failed: %s)</b>" % previous_state_rows.is_rite_failed()
                 ok = False
         #in case saved state is failed and current is not
         elif manual_state_rows.is_rite_failed():
-            message = "Anomaly! Actual state is RITE NOT FAILED, but known state is RITE_FAILED (known fail comment is: %s) " \
-                      "(previous_state was failed: %s)" % (manual_state_rows.get_manual_comment(), previous_state_rows.is_rite_failed())
+            message = "<b>Anomaly! Actual state is RITE NOT FAILED, but known state is RITE_FAILED (known fail comment is: %s)</b> " \
+                      "<b>(previous_state was failed: %s)</b>" % (manual_state_rows.get_manual_comment(), previous_state_rows.is_rite_failed())
             ok = False
 
         # print "Fail analysis:", message
@@ -205,7 +220,7 @@ class SummaryDataColl(object):
 
         #checks if there are a different number of commands
         if cur_err > man_err:
-            return False, "Occurred more errors than known errors!"
+            return False, "<b>Occurred more errors than known errors!</b>"
         else:
             different_commands = []
             different_results = []
@@ -287,8 +302,9 @@ class SummaryDataColl(object):
     def get_manual_save_string(self):
         string_out = ""
         for summ in self.get_error_rows():
-            tup = summ.test_name, summ.vm, summ.command, summ.prg, re.escape(summ.rite_result_log), summ.parsed_result[0], summ.rite_failed, summ.rite_fail_log
-            string_out += "self.insert_summary_manual_error(" + repr(tup) + ", \"--INSERT-COMMENT-HERE--\")\n"
+            #before re.escape(summ.rite_result_log) was used instead of error_type
+            tup = summ.test_name, summ.vm, summ.command, summ.prg, "DBReport.error_types['%s'][0]" % summ.get_error_type(), summ.parsed_result[0], summ.rite_failed, summ.rite_fail_log
+            string_out += "self.insert_summary_manual_error(" + repr(tup) + ", False, \"--INSERT-COMMENT-HERE--\")<br>"
 
         return string_out
 

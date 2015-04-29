@@ -117,9 +117,12 @@ def process_yaml(filenames, results_to_receive):
         #TODO qui bisognerebbe mandare un'email di avviso (volendo con yaml allegato)
         return
 
+    known_error_reports = None
+
     print "Recreating database..."
     with DBReport() as db:
         db.recreate_database(debug)
+        known_error_reports = db.known_errors_report
 
     total_vms = len(commands_results)
     print "Number of VM to analyze: ", total_vms
@@ -135,6 +138,7 @@ def process_yaml(filenames, results_to_receive):
     mailsender = MailSender()
 
     mailsender.yaml_analyzed = filenames
+    mailsender.known_error_reports = known_error_reports
     mailsender.results_to_receive = results_to_receive
 
     for vm, v in commands_results.items():

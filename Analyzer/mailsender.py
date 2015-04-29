@@ -1,4 +1,5 @@
 import os
+from Analyzer import dbreport
 
 __author__ = 'mlosito'
 
@@ -62,6 +63,7 @@ class MailSender(object):
 
     #for footer
     yaml_analyzed = []
+    known_error_reports = None
 
     # (ordered) list of the results every test should return
     results_to_receive = []
@@ -168,7 +170,7 @@ class MailSender(object):
                         box-shadow: 3px 3px 2px #888888;
                         padding: 4px;
 
-                        max-width: 500px;
+                        max-width: 600px;
                         }
             div.cleancontainer {
                         border: 1px solid #707070;
@@ -190,7 +192,8 @@ class MailSender(object):
                           text-align: center;
                           padding: 4px;}
             p.tab    {padding-left:3em}
-            p.doubletab    {padding-left:6em}
+            div.doubletab    {padding-left:6em}
+            ol.doubletab   {padding-left:2em}
             img.tab  {padding-left:9em}
             .percentbar {   background: red;
                             border:1px solid #000000;
@@ -272,24 +275,30 @@ class MailSender(object):
             for test in self.all_results[vm]:
                 # print test
                 # print result_type
-                if self.all_results[vm][test]['result_type'] == result_type:
+                #checks if there is a test of this result type to add the vm
+                #but if the test is disabled today, I should not add it to KNOWN BUT PASSED (otherwise we fill that section of garbage)
+                if self.all_results[vm][test]['result_type'] == result_type and not (result_type == self.ResultTypes.KNOWN_ERRORS_BUT_PASSED and self.disabled_today(test)):
                     found = True
+
             if found:
                 mail_message += '<details close><summary style="display:inline">Analyzed VM: %s</summary><p><br>' % self.decorate_vm(vm)
                 for test in self.all_results[vm]:
                     if self.all_results[vm][test]['result_type'] == result_type:
+                        #if the test is disabled today, I should not add it to KNOWN BUT PASSED (otherwise we fill that section of garbage)
+                        if result_type == self.ResultTypes.KNOWN_ERRORS_BUT_PASSED and self.disabled_today(test):
+                            continue
                         mail_message += '<p class="tab">Test: %s, Execution time in minutes: %s</p><br>' % (self.decorate_test(test, vm), self.all_results[vm][test]['time'])
-                        mail_message += '<p class="doubletab">%s</p><br>' % self.all_results[vm][test]['message']  # before here was used cgi.escape(
+                        mail_message += '<div class="doubletab">%s</div><br>' % self.all_results[vm][test]['message']  # before here was used cgi.escape(
                         if self.all_results[vm][test]['saved_error_comment']:
-                            mail_message += '<p class="doubletab" style="color: red;">Comment: %s</p><br>' % cgi.escape(self.all_results[vm][test]['saved_error_comment'])
+                            mail_message += '<div class="doubletab" style="color: red;">Comment: %s</div><br>' % cgi.escape(self.all_results[vm][test]['saved_error_comment'])
                         #details for errors
                         if error_details:
-                            mail_message += '<details close><summary class="bold">ERROR LOG</summary><p class="doubletab">'
+                            mail_message += '<details close><summary class="bold">ERROR LOG</summary><div class="doubletab">'
                             mail_message += self.all_results[vm][test]['details']
-                            mail_message += "</p></details>"
-                            mail_message += '<details close><summary class="bold">HELPER FOR MANUAL</summary><p class="doubletab">'
+                            mail_message += "</div></details>"
+                            mail_message += '<details close><summary class="bold">HELPER FOR MANUAL</summary><div class="doubletab">'
                             mail_message += self.all_results[vm][test]['save_string']
-                            mail_message += "</p></details>"
+                            mail_message += "</div></details>"
 
                         #in error details I dont's show crops
                         else:
@@ -300,10 +309,10 @@ class MailSender(object):
                                     result, word, thumb_filename = tesserhackt.process(av=vm, num=crop, ocrd=ocrd)
                                     #good case:
                                     if thumb_filename == "":
-                                        mail_message += '<p class="doubletab">%s - <b>%s</b> - got word: %s - [image omitted] </p><br>' % (str(crop), result, word)
+                                        mail_message += '<div class="doubletab">%s - <b>%s</b> - got word: %s - [image omitted] </div><br>' % (str(crop), result, word)
                                     #not good:
                                     else:
-                                        mail_message += '<p class="doubletab">%s - <b>%s</b> - got word: %s - filename: %s </p><br>' % (str(crop), result, word, thumb_filename)
+                                        mail_message += '<div class="doubletab">%s - <b>%s</b> - got word: %s - filename: %s </div><br>' % (str(crop), result, word, thumb_filename)
                                         img_fp = open(thumb_filename, 'rb')
                                         img_data = img_fp.read()
                                         # Now create the MIME container for the image
@@ -320,7 +329,7 @@ class MailSender(object):
                             elif self.all_results[vm][test]['popup_results']:
                                 for result_list in self.all_results[vm][test]['popup_results'][0:11]:
                                     result, thumb_filename, word = result_list
-                                    mail_message += '<p class="doubletab"><b>%s</b> - got word: %s - filename: %s </p><br>' % (result, word, thumb_filename)
+                                    mail_message += '<div class="doubletab"><b>%s</b> - got word: %s - filename: %s </div><br>' % (result, word, thumb_filename)
                                     if os.path.exists(thumb_filename):
                                         img_fp = open(thumb_filename, 'rb')
                                         img_data = img_fp.read()
@@ -336,9 +345,9 @@ class MailSender(object):
                                         attachment_number += 1
                                         mail_message += '<img class="tab" src="cid:%s">' % cid
                                     else:
-                                        mail_message += '<p class="doubletab"><b>ERROR: filename %s not found on server! IMAGE OMITTED!</b></p>' % thumb_filename
+                                        mail_message += '<div class="doubletab"><b>ERROR: filename %s not found on server! IMAGE OMITTED!</b></div>' % thumb_filename
                                 if len(self.all_results[vm][test]['popup_results']) > 7:
-                                    mail_message += '<p class="doubletab"><b>TOO MANY POPUPS. %i IMAGES OMITTED!</b></p>' % (len(self.all_results[vm][test]['popup_results']) - 8)
+                                    mail_message += '<div class="doubletab"><b>TOO MANY POPUPS. %i IMAGES OMITTED!</b></div>' % (len(self.all_results[vm][test]['popup_results']) - 8)
                 mail_message += "</p></details><hr>"
         mail_message += '</div>'
         print "Number of attachments: %s" % attachment_number
@@ -369,6 +378,22 @@ class MailSender(object):
         mail_message += '<br><a id="errorsdetails"><div class="boldback" style="background-color:red">ERROR DETAILS - log of every operation and python code to acknowledge the error (crops are not shown here)</div></a><br>'
         mail_message += self.get_result_type_section_html(self.ResultTypes.NEW_ERRORS, ocrd, mime_msg, error_details=True)
 
+        mail_message += '<br><a id="errorsdetails"><div class="boldback" style="background-color:blue">KNOWN ERRORS FRIENDLY REPORT - All the errors we known about</div></a><br>'
+        mail_message += self.get_known_errors_report()
+
+        return mail_message
+
+    def get_known_errors_report(self):
+        mail_message = '<div class="cleancontainer">'
+        for vm in self.known_error_reports:
+            mail_message += '<details close><summary style="display:inline">Analyzed VM: %s</summary><p><br>' % self.decorate_vm(vm)
+            for test in self.known_error_reports[vm]:
+                mail_message += '<p class="tab"><b>Test: ' + test + '</b> - Comment: ' + self.known_error_reports[vm][test][0][3] + '</p>'
+                for res in self.known_error_reports[vm][test]:
+                    vm, test, type_comment, manual_comment, manual_optional = res
+                    mail_message += '<div class="doubletab">ERROR: %s - Occurs only some times: %s<br>' % (type_comment, manual_optional) + '</div>' #"%s - %s - %s - %s - manual_optional= %s <br>" %
+            mail_message += '</details><hr>'
+        mail_message += '</div>'
         return mail_message
 
     def generate_stats(self):
@@ -452,7 +477,7 @@ class MailSender(object):
             table_text += '<tr>'
             table_text += '<td class="av">%s</td>' % self.decorate_vm(vm)
             for test in self.results_to_receive:
-                table_text += self.decorate_result(self.expected_table[vm][test], vm, test)
+                table_text += self.decorate_result(self.expected_table[vm][test], vm, test, self.all_results[vm][test]['time'])
             table_text += '</tr>'
         table_text += "</table>"
 
@@ -549,11 +574,12 @@ class MailSender(object):
 
         return decorated_test
 
-    def decorate_result(self, result, vm, test):
-
+    def decorate_result(self, result, vm, test, time):
+        time_string = "[" + str(time) + "]"  # .zfill(3)
         #function to create a link
+
         def create_link(text, vm, test, css_class):
-            return '<td class="%s"><a href="#res_%s_%s">%s</td>' % (css_class, vm, test, text)
+            return '<td class="%s"><a href="#res_%s_%s">%s<sup>%s</sup></td>' % (css_class, vm, test, text, time_string)
 
         if result == self.ResultTypes.RITE_FAILS:
             return create_link("RF", vm, test, "darkred")
