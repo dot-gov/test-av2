@@ -44,7 +44,7 @@ _ignore_list_av = {'Kaspersky', 'Internet', 'Security', '2013', 'COMODO', 'Norto
 _ignore_list = {'AntiVirus'}
 #add: 'Application'
 
-_white_white_list = {'First Computer Scan', 'High-performance', 'Update', 'out of date', 'virus protection', 'please vote', 'which company'}
+_white_white_list = {'First Computer Scan', 'High-performance', 'Update', 'out of date', 'virus protection', 'please vote', 'which company', 'out-of-date', 'definitions'}
 
 
 class OcrDict():

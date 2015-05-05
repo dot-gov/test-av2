@@ -86,6 +86,11 @@ def check_static(files, report=None):
                 except Exception, ex:
                     logging.exception("Exception copying file: %s to %s" % (src, dst))
 
+    #opens agents directory
+    dirop = (config.basedir_av + "/" + os.path.dirname(files[0])).replace("/", "\\")
+    cmd = 'cmd.exe /C start %s' % dirop
+    logging.debug("Opening directory: %s" % dirop)
+    subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
 
     #copy everything to .copy.exe, .copy.bat, .copy.com, .copy.dll
     for src in files:

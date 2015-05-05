@@ -1,4 +1,5 @@
 import os
+import yaml
 from Analyzer import dbreport
 
 __author__ = 'mlosito'
@@ -53,6 +54,7 @@ class MailSender(object):
     #stats
     total_tests_num = 0
     sanity_percentage = 0
+    rite_errors_percentage = 0
     rite_fails_percentage = 0
     not_run_percentage = 0
     #stats dicts
@@ -68,8 +70,10 @@ class MailSender(object):
     # (ordered) list of the results every test should return
     results_to_receive = []
 
+    default_yaml = None
+
     # , "f.cornelli@hackingteam.com", "m.oliva@hackingteam.com"
-    def send_mail(self, mail_recipients=["m.losito@hackingteam.com"], mail_server="mail.hackingteam.com"):
+    def send_mail(self, mail_recipients=["m.losito@hackingteam.com", "f.cornelli@hackingteam.com", "m.oliva@hackingteam.com"], mail_server="mail.hackingteam.com"):
         # Create a text/plain message
 
         header_charset = 'ISO-8859-1'
@@ -89,7 +93,7 @@ class MailSender(object):
         msg.attach(htmlpart)
 
         hostname = socket.gethostname()
-        subject = 'ANALYZER_REPORT@%s - Sanity=%s%%' % (hostname, self.sanity_percentage)
+        subject = 'ANALYZER_REPORT@%s - Sanity=%s%% - Errors=%s%% - Fails=%s%%' % (hostname, self.sanity_percentage, self.rite_errors_percentage, self.rite_fails_percentage)
 
         # for recipient in mail_recipients:
         #     # Make sure email addresses do not contain non-ASCII characters
@@ -127,6 +131,8 @@ class MailSender(object):
 
     #we pass msg that is the "root" multipart. We have to attach to it the images.
     def generate_text(self, msg):
+
+        self.load_default_yaml('Rite/AVAgent/default.yaml')
 
         #css styles
         mail_message = self.get_html_header()
@@ -405,7 +411,7 @@ class MailSender(object):
         stat_text += '<div class="testcontainer">'
         #if sanity is a number, displays percentage bar
         if not self.sanity_percentage == "Unknown":
-            stat_text += "Global Sanity: %s%% (Not run: %s%% - Rite fails: %s%%)" % (self.sanity_percentage, self.not_run_percentage, self.rite_fails_percentage)
+            stat_text += "Global Sanity: %s%% - New Errors:%s%% (Rite fails: %s%% - Not run: %s%%)" % (self.sanity_percentage, self.rite_errors_percentage, self.rite_fails_percentage, self.not_run_percentage)
             stat_text += '''
                 <div class="percentbar">
                     <div style="width:%spx;"></div>
@@ -481,7 +487,7 @@ class MailSender(object):
             table_text += '</tr>'
         table_text += "</table>"
 
-        table_text += '<div style="margin-left:auto;margin-right:auto;">RF=Rite new Fails, RK=Rite Known fails, NE=New Error, KE=Known Error, KP=Known error but Passed, OK=OK, NT=Not enabled Today, ??=WTF:) </div>'
+        table_text += '<div style="margin-left:auto;margin-right:auto;">RF=Rite new Fails, RK=Rite Known fails, NE=New Error, KE=Known Error, KP=Known error but Passed, OK=OK, NT=Not enabled Today</div>'
         table_text += '<div style="margin-left:auto;margin-right:auto;">Temporarily deactivated vms: %s</div>' % VM_ALL.vm_deactivated_temp
 
         table_text += "</div>"
@@ -542,6 +548,7 @@ class MailSender(object):
                                               self.stats_by_result_type[self.ResultTypes.RITE_KNOWN_FAILS] +
                                               self.stats_by_result_type[self.ResultTypes.KNOWN_ERRORS_BUT_PASSED])*100.0) /
                                             (self.total_tests_num*100.0))*100, 2)
+            self.rite_errors_percentage = round(((self.stats_by_result_type[self.ResultTypes.NEW_ERRORS]*100.0)/(self.total_tests_num*100.0))*100, 2)
             self.rite_fails_percentage = round(((self.stats_by_result_type[self.ResultTypes.RITE_FAILS]*100.0)/(self.total_tests_num*100.0))*100, 2)
             self.not_run_percentage = round(((self.stats_by_result_type[self.ResultTypes.NOT_RUN]*100.0)/(self.total_tests_num*100.0))*100, 2)
         else:
@@ -610,10 +617,15 @@ class MailSender(object):
             return '<td class="white">??</td>'
 
     def decorate_vm(self, vm):
+        vm_txt = vm
+        if vm in self.default_yaml['soldierlist']:
+            vm_txt += "<sub>[soldierlist]</sub>"
+        if vm in self.default_yaml['blacklist']:
+            vm_txt += "<sub>[blacklist]</sub>"
         if vm in VM_ALL.vm_first_rite:
-            return '<div style="color: red;font-weight: bold; display:inline;">%s</div>' % vm
+            return '<div style="color: red;font-weight: bold; display:inline;">%s</div>' % vm_txt
         else:
-            return vm
+            return vm_txt
 
     def disabled_today(self, test):
         week = ['monday',
@@ -632,3 +644,7 @@ class MailSender(object):
                 return True
 
         return False
+
+    def load_default_yaml(self, def_file):
+        stream = file(def_file, 'r')
+        self.default_yaml = y = yaml.load(stream)

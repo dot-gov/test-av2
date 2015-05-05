@@ -434,6 +434,11 @@ VM_STAT_STAT_SRV:
     - ON_ERROR: CONTINUE
     - CALL: CHECK_STAT_STAT_EXPL_TXT
     - POPUP: [ False, True ]
+    #TNI
+    - POPUP: [ True, True ]
+    - ON_ERROR: CONTINUE
+    - CALL: CHECK_STAT_STAT_TNI
+    - POPUP: [ False, True ]
 
     - ON_ERROR: SKIP
 
@@ -927,6 +932,15 @@ VM_PUSH_VIRUS:
     - POPUP: [ False, True ]
     #- CROP: [ False, False ]
 
+VM_PUSH_VIRUS_STAT:
+    - ON_ERROR: CONTINUE
+    - SLEEP: 300
+    - POPUP: [ True, True ]
+    - CHECK_STATISTIC_STATIC: [ AVAgent/assets/vira/* , 2 , 0 ]
+    - SLEEP: 60
+    - POPUP: [ False, True ]
+
+
 SYSTEM_POSITIVE:
     - VM_ALL
     - ON_ERROR: SKIP
@@ -935,6 +949,18 @@ SYSTEM_POSITIVE:
     - CALL: SET_MAIL
     - REPORT:
         - VM_PUSH_VIRUS: ['AVM Update', 'Positive static check', INVERT]
+    - UNINSTALL
+    - CALL: END_DISPATCH
+
+
+SYSTEM_POSITIVE_STAT:
+    - VM_ALL
+    - ON_ERROR: SKIP
+    - SLEEP: [10, 600]
+    - CALL: INIT_DISPATCH
+    - CALL: SET_MAIL
+    - REPORT:
+        - VM_PUSH_VIRUS_STAT: ['AVM Update', 'Positive static check', INVERT]
     - UNINSTALL
     - CALL: END_DISPATCH
 
@@ -1095,6 +1121,9 @@ CHECK_STAT_STAT_EXPL_PDF:
 
 CHECK_STAT_STAT_EXPL_TXT:
     - CHECK_STATISTIC_STATIC: [ AVAgent/assets/300_Expl_txt/* , 15 ]
+
+CHECK_STAT_STAT_TNI:
+    - CHECK_STATISTIC_STATIC: [ AVAgent/assets/100_TNI/* , 5 ]
 
 CHECK_STATIC_MODULES_SCOUT_ICONS:
     - ENABLE: [ sunday ]

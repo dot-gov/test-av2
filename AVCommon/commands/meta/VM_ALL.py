@@ -7,13 +7,13 @@ from AVCommon import command
 
 
 #vm_first = "avast,avast32,avg,avg32,avira,kis,kis14,kis32,mcafee,norton,panda,comodo,eset,msessential".split(',')
-vm_first_rite = "eset7,avast,avg,avg15,panda15,avg32,avira,avira15,kis15,kis14,kis32,mcafee,bitdef15,norton,comodo,eset,msessential,panda,norton15,avira15f,avg15f,defender,comodo7".split(',')
+vm_first_rite = "eset7,avast,avg,avg15,panda15,avg32,avira,avira15,kis15,kis14,kis32,mcafee,bitdef15,norton,comodo,eset,msessential,panda,norton15,avira15f,avg15f,defender,comodo7,mbytes".split(',')
 #disattivato DEFINITIVAMENTE kis (kis e' un kis 2013 che ormai non si usa piu')
 
 #disattivato TEMPORANEAMENTE avast32, mbytes
-vm_deactivated_temp = "avast32,mbytes"
+vm_deactivated_temp = "avast32,ahnlab"
 
-vm_second_rite = "fortinet,drweb,cmcav,adaware,fprot,bitdef,fsecure,gdata,vba32,risint,syscare,trendm15,zoneal,clamav,360ts,norman,ahnlab,spybot,zoneal7".split(',')
+vm_second_rite = "fortinet,drweb,cmcav,adaware,fprot,bitdef,fsecure,gdata,vba32,risint,syscare,trendm15,zoneal,clamav,360ts,norman,spybot,zoneal7".split(',')
 #disattivati DEFINITIVAMENTE trendm (abbiamo trendm15) e 360cn5 (abbiamo 360ts), iobit32,
 
 

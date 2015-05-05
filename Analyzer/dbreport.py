@@ -212,7 +212,7 @@ class DBReport(object):
                    '193': [u"\\[\\'\\+\\ SUCCESS\\ UPGRADED\\ SYNC\\'\\,\\ \\'\\+\\ ERROR\\:\\ \\[Error\\ 193\\]\\ \\%1\\ is\\ not\\ a\\ valid\\ Win32\\ application\\'\\]", u'BUILD_SRV', "Mysterious error ([Error 193] %1 is not a valid Win32 application) in which the scout is called but cannot execute AFTER soldier upgrade"],
                    #statics
                    'android_apk_static': [u'\\[\\"\\+\\ FAILED\\ CHECK\\_STATIC\\.\\ SIGNATURE\\ DETECTION\\:\\ \\[\\\'build\\/android\\\\\\\\\\\\\\\\install\\.default\\.apk.*\\]', u'BUILD_SRV', "Android apk is detected (static)"],
-                   'blackberry': [u'\\[\\"\\+\\ ERROR\\:\\ \\[Errno\\ 13\\]\\ Permission\\ denied\\:\\ \\\'build\\/blackberry\\\\\\\\\\\\\\\\install\\.bat\\\'\\"\\]', u'BUILD_SRV', "Blackberry static detection (Permission denied)"],
+                   'blackberry': [u'\\[\\"\\+\\ ERROR\\:\\ \\[Errno\\ 13\\]\\ Permission\\ denied\\:\\ \\\'build\\/blackberry.*\\]', u'BUILD_SRV', "Blackberry static detection (Permission denied)"],
                    'blackberry_static': [u'\\[\\"\\+\\ FAILED\\ CHECK\\_STATIC\\.\\ SIGNATURE\\ DETECTION\\:\\ \\[\\\'build\\/blackberry.*', u'BUILD_SRV', "Blackberry static detection (Failed static check)"],
                    'ios': [u'\\[\\"\\+\\ ERROR\\:\\ \\[Errno\\ 13\\]\\ Permission\\ denied\\:\\ \\\'build\\/ios.*\\]', u'BUILD_SRV', "iOS static detection (Permission Denied)"],
                    'ios_static': [u'\\[\\"\\+\\ FAILED\\ CHECK\\_STATIC\\.\\ SIGNATURE\\ DETECTION\\:\\ \\[\\\'build\\/ios.*', u'BUILD_SRV', "iOS static detection (Failed Static check)"],
@@ -223,7 +223,7 @@ class DBReport(object):
                    'air_perm_denied': [u'\\[\\"\\+\\ ERROR\\:\\ \\[Errno\\ 13\\]\\ Permission\\ denied\\:\\ \\\'build\\/windows\\_melt\\_air\\\\\\\\\\\\\\\\exp\\_rite\\.exe\\\'\\"\\]', u'BUILD_SRV', "Static detection of Melt with Adobe Air"],
                    'air_signature': [u'\\[\\"\\+\\ FAILED\\ CHECK\\_STATIC\\.\\ SIGNATURE\\ DETECTION\\:\\ \\[\\\'build\\/windows\\_melt\\_air\\\\\\\\\\\\\\\\agent\\.exe\\\'\\]\\"\\,\\ \\"\\+\\ FAILED\\ SCOUT\\ BUILD\\.\\ SIGNATURE\\ DETECTION\\:\\ \\[\\\'build\\/windows\\_melt\\_air\\\\\\\\\\\\\\\\agent\\.exe\\\'\\]\\"\\]', u'BUILD_SRV', "Static detection of Melt with Adobe Air"],
                    'air_signature_zip': [u"\\[\\'\\+\\ FAILED\\ SCOUT\\ BUILD\\.\\ CANNOT\\ FIND\\ ZIP\\ FILE\\ C\\:\\\\\\\\AVTest\\\\\\\\AVAgent\\\\\\\\build\\_windows\\_melt\\_air\\_scout\\_melt\\_melt\\.zip\\ TO\\ UNZIP\\ IT\\'\\]", u'BUILD_SRV', "Static detection of Melt with Adobe Air (zip file)"],
-                   'air_no_sync': [u'\\[\\"\\+\\ SUCCESS\\ CHECK\\_STATIC\\:\\ \\[.*\\]\\"\\,\\ \\\'\\+\\ SUCCESS\\ SCOUT\\ BUILD\\ \\(no\\ signature\\ detection\\)\\\'\\,\\ \\\'\\+\\ SUCCESS\\ SCOUT\\ EXECUTE\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ FAILED\\ SCOUT\\ SYNC\\\'\\]', u'BUILD_SRV', "Melt with Adobe Air fails to sync"],
+                   'air_no_sync': [u'\\[\\"\\+\\ SUCCESS\\ CHECK\\_STATIC\\:\\ \\[\\\'build\\/windows\\_melt\\_air.*\\]\\"\\,\\ \\\'\\+\\ SUCCESS\\ SCOUT\\ BUILD\\ \\(no\\ signature\\ detection\\)\\\'\\,\\ \\\'\\+\\ SUCCESS\\ SCOUT\\ EXECUTE\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ FAILED\\ SCOUT\\ SYNC\\\'\\]', u'BUILD_SRV', "Melt with Adobe Air fails to sync"],
                    'fif_no_sync': [u'\\[\\"\\+\\ SUCCESS\\ CHECK\\_STATIC\\:\\ \\[\\\'build\\/windows\\_melt\\_fif\\\\\\\\\\\\\\\\exp\\_rite\\.exe\\\'\\]\\"\\,\\ \\\'\\+\\ SUCCESS\\ SCOUT\\ BUILD\\ \\(no\\ signature\\ detection\\)\\\'\\,\\ \\\'\\+\\ SUCCESS\\ SCOUT\\ EXECUTE\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ FAILED\\ SCOUT\\ SYNC\\\'\\]', u'BUILD_SRV', "Melt with Firefox fails to sync"],
                    'uto_no_sync': [u'\\[\\"\\+\\ SUCCESS\\ CHECK\\_STATIC\\:\\ \\[\\\'build\\/windows\\_melt\\_uto\\\\\\\\\\\\\\\\exp\\_rite\\.exe\\\'\\]\\"\\,\\ \\\'\\+\\ SUCCESS\\ SCOUT\\ BUILD\\ \\(no\\ signature\\ detection\\)\\\'\\,\\ \\\'\\+\\ SUCCESS\\ SCOUT\\ EXECUTE\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ FAILED\\ SCOUT\\ SYNC\\\'\\]', u'BUILD_SRV', "Melt with uTorrent fails to sync"],
                    'vuz_no_sync': [u'\\[\\"\\+\\ SUCCESS\\ CHECK\\_STATIC\\:\\ \\[\\\'build\\/windows\\_melt\\_vuz\\\\\\\\\\\\\\\\exp\\_rite\\.exe\\\'\\]\\"\\,\\ \\\'\\+\\ SUCCESS\\ SCOUT\\ BUILD\\ \\(no\\ signature\\ detection\\)\\\'\\,\\ \\\'\\+\\ SUCCESS\\ SCOUT\\ EXECUTE\\\'\\,\\ \\\'\\+\\ WARN\\ did\\ not\\ drop\\ startup\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ FAILED\\ SCOUT\\ SYNC\\\'\\]', u'BUILD_SRV', "Melt with Vuze fails to sync"],
@@ -237,57 +237,57 @@ class DBReport(object):
     def apply_known_errors(self):
         self.conn.execute('DELETE FROM SUMMARY WHERE manual <> 0')
 
-
         #kis 15
             # STATIC
-        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'kis15', u'BUILD_SRV', 38, DBReport.error_types['blackberry_static'][0], 'FAILED', 0, u''), False, "KIS15 STATIC IOS + BB")
-        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'kis15', u'BUILD_SRV', 48, DBReport.error_types['ios_static'][0], 'FAILED', 0, u''), False, "KIS15 STATIC IOS + BB")
+        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'kis15', u'BUILD_SRV', 38, 'FAILED', 0, u''), 'blackberry_static', False, "KIS15 STATIC IOS + BB")
+        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'kis15', u'BUILD_SRV', 48, 'FAILED', 0, u''), 'ios_static', False, "KIS15 STATIC IOS + BB")
             #exploit
-        self.insert_summary_manual_error((u'VM_EXPLOIT_SRV', u'kis15', u'POPUP', 41, DBReport.error_types['popup'][0], 'POPUP', 0, u''), False, "KIS15 exploit selfdel")
+        self.insert_summary_manual_error((u'VM_EXPLOIT_SRV', u'kis15', u'POPUP', 41, 'POPUP', 0, u''), 'popup', False, "KIS15 exploit selfdel")
 
         #kis 14
             #Static (regexp static)
-        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'kis14', u'BUILD_SRV', 38, DBReport.error_types['blackberry_static'][0], 'FAILED', 0, u''), False, "KIS14 STATIC IOS + BB")
-        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'kis14', u'BUILD_SRV', 48, DBReport.error_types['ios_static'][0], 'FAILED', 0, u''), False, "KIS14 STATIC IOS + BB")
+        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'kis14', u'BUILD_SRV', 37, 'FAILED', 0, u''), 'blackberry', True, "KIS14 STATIC IOS + BB")
+        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'kis14', u'BUILD_SRV', 38, 'FAILED', 0, u''), 'blackberry_static', True, "KIS14 STATIC IOS + BB")
+        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'kis14', u'BUILD_SRV', 48, 'FAILED', 0, u''), 'ios_static', False, "KIS14 STATIC IOS + BB")
             #Exploit
-        self.insert_summary_manual_error((u'VM_EXPLOIT_SRV', u'kis14', u'CHECK_INFECTION', 26, DBReport.error_types['infected'][0], 'FAILED', 0, u''), False, "KIS 14 EXPLOIT")
+        self.insert_summary_manual_error((u'VM_EXPLOIT_SRV', u'kis14', u'CHECK_INFECTION', 26, 'FAILED', 0, u''), 'infected', False, "KIS 14 EXPLOIT")
 
         #eset soldier (is elite)
-        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'eset', u'BUILD_SRV', 26, u"\\[.*\\]", 'FAILED', 0, u''), False, "ESET Soldier (is an elite)")
-        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'eset', u'CHECK_INFECTION', 30, DBReport.error_types['infected'][0], 'FAILED', 0, u''), False, "ESET Soldier (is an elite)")
+        #self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'eset', u'BUILD_SRV', 26, u"\\[.*\\]", 'FAILED', 0, u''), False, "ESET Soldier (is an elite)")
+        #self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'eset', u'CHECK_INFECTION', 30, 'FAILED', 0, u''), 'infected', False, "ESET Soldier (is an elite)")
 
         #eset7 soldier (popup regexp)
-        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'eset7', u'BUILD_SRV', 27, DBReport.error_types['193'][0], 'FAILED', 0, u''),  False, "ESET 7 Soldier (is an elite)")
-        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'eset7', u'POPUP', 28, DBReport.error_types['popup'][0], 'POPUP', 0, u''), False, "ESET 7 Soldier (is an elite)")
-        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'eset7', u'CHECK_INFECTION', 31, DBReport.error_types['infected'][0], 'FAILED', 0, u''),  False, "ESET 7 Soldier (is an elite)")
+        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'eset7', u'BUILD_SRV', 27, 'FAILED', 0, u''), '193', False, "ESET 7 Soldier (is an elite)")
+        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'eset7', u'POPUP', 28, 'POPUP', 0, u''), 'popup', False, "ESET 7 Soldier (is an elite)")
+        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'eset7', u'CHECK_INFECTION', 31, 'FAILED', 0, u''), 'infected', False, "ESET 7 Soldier (is an elite)")
 
         #fsecure exploit
-        self.insert_summary_manual_error((u'VM_EXPLOIT_SRV', u'fsecure', u'BUILD_SRV', 21,  DBReport.error_types['exploit_pdf_run'][0], 'FAILED', 0, u''), False, "FSECURE EXPLOIT")
+        self.insert_summary_manual_error((u'VM_EXPLOIT_SRV', u'fsecure', u'BUILD_SRV', 21,  'FAILED', 0, u''), 'exploit_pdf_run', False, "FSECURE EXPLOIT")
 
         #adaware exploit
-        self.insert_summary_manual_error((u'VM_EXPLOIT_SRV', u'adaware', u'BUILD_SRV', 31,  DBReport.error_types['exploit_pdf_run'][0], 'FAILED', 0, u''), False, "ADAWARE EXPLOIT")
+        self.insert_summary_manual_error((u'VM_EXPLOIT_SRV', u'adaware', u'BUILD_SRV', 31,  'FAILED', 0, u''), 'exploit_pdf_run', False, "ADAWARE EXPLOIT")
 
         #bitdef
             # exploit
-        self.insert_summary_manual_error((u'VM_EXPLOIT_SRV', u'bitdef', u'BUILD_SRV', 31,  DBReport.error_types['exploit_pdf_run'][0], 'FAILED', 0, u''), False, "BITDEF EXPLOIT")
+        self.insert_summary_manual_error((u'VM_EXPLOIT_SRV', u'bitdef', u'BUILD_SRV', 31, 'FAILED', 0, u''), 'exploit_pdf_run', False, "BITDEF EXPLOIT")
 
         #bitdef 15
             # exploit pdf
-        self.insert_summary_manual_error((u'VM_EXPLOIT_SRV', u'bitdef15', u'BUILD_SRV', 35,  DBReport.error_types['exploit_pdf_run'][0], 'FAILED', 0, u''), False, "BITDEF15 EXPLOIT PDF")
+        self.insert_summary_manual_error((u'VM_EXPLOIT_SRV', u'bitdef15', u'BUILD_SRV', 35, 'FAILED', 0, u''), 'exploit_pdf_run', False, "BITDEF15 EXPLOIT PDF")
 
         #gdata
             # exploit
-        self.insert_summary_manual_error((u'VM_EXPLOIT_SRV', u'gdata', u'BUILD_SRV', 31,  DBReport.error_types['exploit_pdf_run'][0], 'FAILED', 0, u''), False, "GDATA EXPLOIT")
+        self.insert_summary_manual_error((u'VM_EXPLOIT_SRV', u'gdata', u'BUILD_SRV', 31, 'FAILED', 0, u''), 'exploit_pdf_run', False, "GDATA EXPLOIT")
             #melt UTO
 
         #RISING
         #not checked
-        self.insert_summary_manual_error((u'VM_EXPLOIT_SRV', u'risint', u'BUILD_SRV', 21, DBReport.error_types['exploit_pdf_run'][0], 'FAILED', 0, u''), False, "RISING (fails mostly every test)")
-        self.insert_summary_manual_error((u'VM_ELITE_FAST_SCOUTDEMO_SRV', u'risint', u'BUILD_SRV', 129, DBReport.error_types['trigger'][0], 'FAILED', 0, u''),  False, "RISING (fails mostly every test)")
-        self.insert_summary_manual_error((u'VM_MELT_SRV_AIR', u'risint', u'BUILD_SRV', 15,  DBReport.error_types['air_signature'][0], 'FAILED', 0, u''), False, "RISING (fails mostly every test)")
-        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'risint', u'BUILD_SRV', 134, DBReport.error_types['trigger'][0], 'FAILED', 0, u''), False, "RISING (fails mostly every test)")
-        self.insert_summary_manual_error((u'VM_ELITE_FAST_SRV', u'risint', u'BUILD_SRV', 26, DBReport.error_types['no_instance_id'][0], 'FAILED', 0, u''), False, "RISING (fails mostly every test)")
-        self.insert_summary_manual_error((u'VM_ELITE_FAST_SRV', u'risint', u'CHECK_INFECTION', 29, DBReport.error_types['infected'][0], 'FAILED', 0, u''), False, "RISING (fails mostly every test)")
+        self.insert_summary_manual_error((u'VM_EXPLOIT_SRV', u'risint', u'BUILD_SRV', 21, 'FAILED', 0, u''), 'exploit_pdf_run', False, "RISING (fails mostly every test)")
+        self.insert_summary_manual_error((u'VM_ELITE_FAST_SCOUTDEMO_SRV', u'risint', u'BUILD_SRV', 129, 'FAILED', 0, u''), 'trigger', False, "RISING (fails mostly every test)")
+        self.insert_summary_manual_error((u'VM_MELT_SRV_AIR', u'risint', u'BUILD_SRV', 15, 'FAILED', 0, u''), 'air_signature', False, "RISING (fails mostly every test)")
+        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'risint', u'BUILD_SRV', 134, 'FAILED', 0, u''), 'trigger', False, "RISING (fails mostly every test)")
+        self.insert_summary_manual_error((u'VM_ELITE_FAST_SRV', u'risint', u'BUILD_SRV', 26, 'FAILED', 0, u''), 'no_instance_id', False, "RISING (fails mostly every test)")
+        self.insert_summary_manual_error((u'VM_ELITE_FAST_SRV', u'risint', u'CHECK_INFECTION', 29, 'FAILED', 0, u''), 'infected', False, "RISING (fails mostly every test)")
 
 
 
@@ -295,95 +295,96 @@ class DBReport(object):
 
         #CMCAV
             #elite
-        self.insert_summary_manual_error((u'VM_ELITE_FAST_SRV', u'cmcav', u'CHECK_INFECTION', 30, DBReport.error_types['infected'][0], 'FAILED', 0, u''), False, "CMCAV (blacklisted av)")
+        self.insert_summary_manual_error((u'VM_ELITE_FAST_SRV', u'cmcav', u'CHECK_INFECTION', 30, 'FAILED', 0, u''), 'infected', False, "CMCAV (blacklisted av)")
             #MELT
-        self.insert_summary_manual_error((u'VM_MELT_SRV_FIF', u'cmcav', u'CHECK_INFECTION', 20, DBReport.error_types['infected'][0], 'FAILED', 0, u''), False, "CMCAV MELT (blacklisted av, the scout exits)")
-        self.insert_summary_manual_error((u'VM_MELT_SRV_FIF', u'cmcav', u'CHECK_INFECTION', 20, DBReport.error_types['infected'][0], 'FAILED', 0, u''), False, "CMCAV MELT (blacklisted av, the scout exits)")
+        self.insert_summary_manual_error((u'VM_MELT_SRV_FIF', u'cmcav', u'CHECK_INFECTION', 20, 'FAILED', 0, u''), 'infected', False, "CMCAV MELT (blacklisted av, the scout exits)")
+        self.insert_summary_manual_error((u'VM_MELT_SRV_UTO', u'cmcav', u'BUILD_SRV', 26, 'FAILED', 0, u''), 'uto_no_sync', False, "CMCAV MELT (blacklisted av, the scout exits)")
             #exploit
-        self.insert_summary_manual_error((u'VM_EXPLOIT_SRV', u'cmcav', u'CHECK_INFECTION', 25, DBReport.error_types['infected'][0], 'FAILED', 0, u''), False, "CMCAV EXPLOIT (blacklisted av, the scout exits)")
+        self.insert_summary_manual_error((u'VM_EXPLOIT_SRV', u'cmcav', u'CHECK_INFECTION', 25, 'FAILED', 0, u''), 'infected', False, "CMCAV EXPLOIT (blacklisted av, the scout exits)")
             #elite scoutdemo (uses regexp for STATIC)
+        self.insert_summary_manual_error((u'VM_ELITE_FAST_SCOUTDEMO_SRV', u'cmcav', u'BUILD_SRV', 23, 'FAILED', 0, u''), 'elite_demo_no_sync', False, "CMCAV Elite ScoutDemo (blacklisted av, the scout exits)")
         #.* self.insert_summary_manual_error((u'VM_ELITE_FAST_SCOUTDEMO_SRV', u'cmcav', u'BUILD_SRV', 12, u'\\[\\"\\+\\ FAILED\\ CHECK\\_STATIC\\.\\ SIGNATURE\\ DETECTION\\:\\ \\[.*\\]\\"\\,\\ \\"\\+\\ FAILED\\ SCOUT\\ BUILD\\.\\ SIGNATURE\\ DETECTION\\:\\ \\[.*\\]\\"\\]', 'FAILED', 0, u''), False, "CMCAV Elite ScoutDemo (blacklisted av, the scout exits)")
             #soldier
-        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'cmcav', u'BUILD_SRV', 26, DBReport.error_types['no_instance_id'][0], 'FAILED', 0, u''), False, "CMCAV SOLDIER (blacklisted av, the scout exits)")
-        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'cmcav', u'CHECK_INFECTION', 30, DBReport.error_types['infected'][0], 'FAILED', 0, u''), False, "CMCAV SOLDIER (blacklisted av, the scout exits)")
+        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'cmcav', u'BUILD_SRV', 26, 'FAILED', 0, u''),  'no_instance_id', False, "CMCAV SOLDIER (blacklisted av, the scout exits)")
+        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'cmcav', u'CHECK_INFECTION', 30,  'FAILED', 0, u''), 'infected', False, "CMCAV SOLDIER (blacklisted av, the scout exits)")
 
 
         #norton soldier (is elite)
-        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'norton', u'BUILD_SRV', 26, DBReport.error_types['failed_soldier_upgrade'][0], 'FAILED', 0, u''), False, "NORTON SOLDIER (Norton is Elite)")
-        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'norton', u'CHECK_INFECTION', 30, DBReport.error_types['infected'][0], 'FAILED', 0, u''), False, "NORTON SOLDIER (Norton is Elite)")
+        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'norton', u'BUILD_SRV', 26, 'FAILED', 0, u''), 'failed_soldier_upgrade', False, "NORTON SOLDIER (Norton is Elite)")
+        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'norton', u'CHECK_INFECTION', 30, 'FAILED', 0, u''), 'infected', False, "NORTON SOLDIER (Norton is Elite)")
             #UTO
         #norton 15
             # soldier (is elite) NB crop regexp
-        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'norton15', u'BUILD_SRV', 31, DBReport.error_types['failed_soldier_upgrade'][0], 'FAILED', 0, u''), False, "NORTON SOLDIER 15 (Norton is Elite)")
-        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'norton15', u'CHECK_INFECTION', 35, DBReport.error_types['infected'][0], 'FAILED', 0, u''), False, "NORTON SOLDIER 15 (Norton is Elite)")
+        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'norton15', u'BUILD_SRV', 31, 'FAILED', 0, u''), 'failed_soldier_upgrade', False, "NORTON SOLDIER 15 (Norton is Elite)")
+        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'norton15', u'CHECK_INFECTION', 35, 'FAILED', 0, u''), 'infected', False, "NORTON SOLDIER 15 (Norton is Elite)")
 
         #comodo
             #soldier
 
-        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'comodo', u'BUILD_SRV', 35, DBReport.error_types['no_soldier_upgrade'][0], 'FAILED', 0, u''), False, "COMODO (fails mostly every test due to sandbox and firewall)")
-        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'comodo', u'CHECK_INFECTION', 39, DBReport.error_types['infected'][0], 'FAILED', 0, u''), False, "COMODO (fails mostly every test due to sandbox and firewall)")
+        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'comodo', u'BUILD_SRV', 35, 'FAILED', 0, u''), 'no_soldier_upgrade', False, "COMODO (fails mostly every test due to sandbox and firewall)")
+        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'comodo', u'CHECK_INFECTION', 39, 'FAILED', 0, u''), 'infected', False, "COMODO (fails mostly every test due to sandbox and firewall)")
             #elite (popup regexp)
-        self.insert_summary_manual_error((u'VM_ELITE_FAST_SRV', u'comodo', u'POPUP', 27, DBReport.error_types['popup'][0], 'POPUP', 0, u''), False, "COMODO (fails mostly every test due to sandbox and firewall)")
-        self.insert_summary_manual_error((u'VM_ELITE_FAST_SRV', u'comodo', u'CHECK_INFECTION', 29, DBReport.error_types['infected'][0], 'FAILED', 0, u''), False, "COMODO (fails mostly every test due to sandbox and firewall)")
+        self.insert_summary_manual_error((u'VM_ELITE_FAST_SRV', u'comodo', u'POPUP', 27, 'POPUP', 0, u''), 'popup', False, "COMODO (fails mostly every test due to sandbox and firewall)")
+        self.insert_summary_manual_error((u'VM_ELITE_FAST_SRV', u'comodo', u'CHECK_INFECTION', 29, 'FAILED', 0, u''), 'infected', False, "COMODO (fails mostly every test due to sandbox and firewall)")
 
             #elite demo
-        self.insert_summary_manual_error((u'VM_ELITE_FAST_SCOUTDEMO_SRV', u'comodo', u'CHECK_INFECTION', 24, DBReport.error_types['infected'][0], 'FAILED', 0, u''), False, "COMODO (fails mostly every test due to sandbox and firewall)")
+        self.insert_summary_manual_error((u'VM_ELITE_FAST_SCOUTDEMO_SRV', u'comodo', u'CHECK_INFECTION', 24, 'FAILED', 0, u''), 'infected', False, "COMODO (fails mostly every test due to sandbox and firewall)")
 
 
         #comodo7
             #elitedemo
-        self.insert_summary_manual_error((u'VM_ELITE_FAST_SCOUTDEMO_SRV', u'comodo7', u'CHECK_INFECTION', 24, DBReport.error_types['infected'][0], 'FAILED', 0, u''), False, "COMODO7 elitedemo (fails mostly every test due to sandbox and firewall)")
+        self.insert_summary_manual_error((u'VM_ELITE_FAST_SCOUTDEMO_SRV', u'comodo7', u'CHECK_INFECTION', 24, 'FAILED', 0, u''), 'infected', False, "COMODO7 elitedemo (fails mostly every test due to sandbox and firewall)")
             #soldier
         #.*  self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'comodo7', u'BUILD_SRV', 27, u"\\[.*\\]", 'FAILED', 0, u''), False, "COMODO7 soldier (fails mostly every test due to sandbox and firewall)")
         # self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'comodo7', u'CHECK_INFECTION', 31, DBReport.error_types['infected'][0], 'FAILED', 0, u''), False, "COMODO7 soldier (fails mostly every test due to sandbox and firewall)")
 
-        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'comodo7', u'BUILD_SRV', 36, DBReport.error_types['no_soldier_upgrade'][0] , 'FAILED', 0, u''), False, "COMODO7 soldier (fails mostly every test due to sandbox and firewall)")
-        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'comodo7', u'CHECK_INFECTION', 40, DBReport.error_types['infected'][0], 'FAILED', 0, u''), False, "COMODO7 soldier (fails mostly every test due to sandbox and firewall)")
+        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'comodo7', u'BUILD_SRV', 36, 'FAILED', 0, u''), 'no_soldier_upgrade', False, "COMODO7 soldier (fails mostly every test due to sandbox and firewall)")
+        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'comodo7', u'CHECK_INFECTION', 40, 'FAILED', 0, u''), 'infected', False, "COMODO7 soldier (fails mostly every test due to sandbox and firewall)")
 
 
             #elite
-        self.insert_summary_manual_error((u'VM_ELITE_FAST_SRV', u'comodo7', u'CHECK_INFECTION', 29, DBReport.error_types['infected'][0], 'FAILED', 0, u''), False, "COMODO elite (fails mostly every test due to sandbox and firewall)")
+        self.insert_summary_manual_error((u'VM_ELITE_FAST_SRV', u'comodo7', u'CHECK_INFECTION', 29, 'FAILED', 0, u''), 'infected', False, "COMODO elite (fails mostly every test due to sandbox and firewall)")
 
         #avast
             #SOLDIER (BUT IS ELITE)
-        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'avast', u'CHECK_INFECTION', 31, DBReport.error_types['infected'][0], 'FAILED', 0, u''), False, "AVAST SOLDIER FAILS UNINSTALLATION (Avast is Elite)")
+        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'avast', u'CHECK_INFECTION', 31, 'FAILED', 0, u''), 'infected', False, "AVAST SOLDIER FAILS UNINSTALLATION (Avast is Elite)")
             #(static ios and static exploit)
-        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'avast', u'BUILD_SRV', 49, DBReport.error_types['ios_static'][0], 'FAILED', 0, u''), False, "--TESTME--")
-        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'avast', u'BUILD_SRV', 63, DBReport.error_types['exploit_pdf'][0], 'FAILED', 0, u''), True, "--TESTME--")
-        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'avast', u'POPUP', 65, DBReport.error_types['popup'][0], 'POPUP', 0, u''), False, "--TESTME--")
+        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'avast', u'BUILD_SRV', 49, 'FAILED', 0, u''), 'ios_static', False, "--TESTME--")
+        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'avast', u'BUILD_SRV', 63, 'FAILED', 0, u''), 'exploit_pdf', True, "--TESTME--")
+        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'avast', u'POPUP', 65, 'POPUP', 0, u''), 'popup', False, "--TESTME--")
 
         #kis 32 (blacklisted the scout exits)
             # static bb + ios
-        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'kis32', u'BUILD_SRV', 37, DBReport.error_types['blackberry'][0], 'FAILED', 0, u''),  False, "KIS 32 STATIC BB+IOS")
-        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'kis32', u'BUILD_SRV', 47, DBReport.error_types['ios_static'][0], 'FAILED', 0, u''), False, "KIS 32 STATIC BB+IOS")
-        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'kis32', u'POPUP', 63, DBReport.error_types['popup'][0], 'POPUP', 0, u''), False, "KIS 32 STATIC BB+IOS")
+        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'kis32', u'BUILD_SRV', 37, 'FAILED', 0, u''), 'blackberry',  False, "KIS 32 STATIC BB+IOS")
+        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'kis32', u'BUILD_SRV', 47, 'FAILED', 0, u''), 'ios_static', False, "KIS 32 STATIC BB+IOS")
+        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'kis32', u'POPUP', 63, 'POPUP', 0, u''), 'popup', False, "KIS 32 STATIC BB+IOS")
 
             #soldier
-        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'kis32', u'BUILD_SRV', 25, DBReport.error_types['scout_no_sync'][0], 'FAILED', 0, u''), False, "KIS 32 SOLDIER (IS BLACKLISTED)")
-        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'kis32', u'BUILD_SRV', 34, DBReport.error_types['no_instance_id'][0], 'FAILED', 0, u''), False, "KIS 32 SOLDIER (IS BLACKLISTED)")
+        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'kis32', u'BUILD_SRV', 25, 'FAILED', 0, u''), 'scout_no_sync', False, "KIS 32 SOLDIER (IS BLACKLISTED)")
+        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'kis32', u'BUILD_SRV', 34, 'FAILED', 0, u''), 'no_instance_id', False, "KIS 32 SOLDIER (IS BLACKLISTED)")
 
             #elite
         # self.insert_summary_manual_error((u'VM_ELITE_FAST_SRV', u'kis32', u'BUILD_SRV', 25, DBReport.error_types['scout_no_sync'][0], 'FAILED', 0, u''), False, "KIS 32 ELITE (IS BLACKLISTED)")
         # self.insert_summary_manual_error((u'VM_ELITE_FAST_SRV', u'kis32', u'POPUP', 28, DBReport.error_types['popup'][0], 'POPUP', 0, u''), False, "KIS 32 ELITE (IS BLACKLISTED)")
         # self.insert_summary_manual_error((u'VM_ELITE_FAST_SRV', u'kis32', u'BUILD_SRV', 34, DBReport.error_types['no_instance_id'][0], 'FAILED', 0, u''), False, "KIS 32 ELITE (IS BLACKLISTED)")
 
-        self.insert_summary_manual_error((u'VM_ELITE_FAST_SRV', u'kis32', u'BUILD_SRV', 25, DBReport.error_types['scout_no_sync'][0], 'FAILED', 0, u''), False, "KIS 32 ELITE (IS BLACKLISTED)")
-        self.insert_summary_manual_error((u'VM_ELITE_FAST_SRV', u'kis32', u'POPUP', 28, DBReport.error_types['popup'][0], 'POPUP', 0, u''), True, "KIS 32 ELITE (IS BLACKLISTED)")
-        self.insert_summary_manual_error((u'VM_ELITE_FAST_SRV', u'kis32', u'BUILD_SRV', 34, DBReport.error_types['no_instance_id'][0], 'FAILED', 0, u''), False, "KIS 32 ELITE (IS BLACKLISTED)")
+        self.insert_summary_manual_error((u'VM_ELITE_FAST_SRV', u'kis32', u'BUILD_SRV', 25, 'FAILED', 0, u''), 'scout_no_sync', False, "KIS 32 ELITE (IS BLACKLISTED)")
+        self.insert_summary_manual_error((u'VM_ELITE_FAST_SRV', u'kis32', u'POPUP', 28, 'POPUP', 0, u''), 'popup', True, "KIS 32 ELITE (IS BLACKLISTED)")
+        self.insert_summary_manual_error((u'VM_ELITE_FAST_SRV', u'kis32', u'BUILD_SRV', 34, 'FAILED', 0, u''), 'no_instance_id', False, "KIS 32 ELITE (IS BLACKLISTED)")
 
 
 
             #elite demo
-        self.insert_summary_manual_error((u'VM_ELITE_FAST_SCOUTDEMO_SRV', u'kis32', u'BUILD_SRV', 23, DBReport.error_types['elite_demo_no_sync'][0], 'FAILED', 0, u''), False, "KIS 32 ELITE DEMO (IS BLACKLISTED)")
+        self.insert_summary_manual_error((u'VM_ELITE_FAST_SCOUTDEMO_SRV', u'kis32', u'BUILD_SRV', 23, 'FAILED', 0, u''), 'elite_demo_no_sync', False, "KIS 32 ELITE DEMO (IS BLACKLISTED)")
             #exploit
-        self.insert_summary_manual_error((u'VM_EXPLOIT_SRV', u'kis32', u'BUILD_SRV', 30, DBReport.error_types['exploit_pdf_run'][0], 'FAILED', 0, u''), False, "KIS 32 EXPLOIT (IS BLACKLISTED)")
+        self.insert_summary_manual_error((u'VM_EXPLOIT_SRV', u'kis32', u'BUILD_SRV', 30, 'FAILED', 0, u''), 'exploit_pdf_run', False, "KIS 32 EXPLOIT (IS BLACKLISTED)")
             #melt FIF, AIR, UTO, VUZ
-        self.insert_summary_manual_error((u'VM_MELT_SRV_FIF', u'kis32', u'BUILD_SRV', 27, DBReport.error_types['fif_no_sync'][0], 'FAILED', 0, u''), False, "KIS 32 MELT (IS BLACKLISTED)")
-        self.insert_summary_manual_error((u'VM_MELT_SRV_FIF', u'kis32', u'POPUP', 28, DBReport.error_types['popup'][0], 'POPUP', 0, u''), False, "KIS 32 MELT (IS BLACKLISTED)")
-        self.insert_summary_manual_error((u'VM_MELT_SRV_AIR', u'kis32', u'BUILD_SRV', 14, DBReport.error_types['air_signature_zip'][0], 'FAILED', 0, u''), False, "KIS 32 MELT (IS BLACKLISTED)")
-        self.insert_summary_manual_error((u'VM_MELT_SRV_UTO', u'kis32', u'BUILD_SRV', 26, DBReport.error_types['uto_no_sync'][0], 'FAILED', 0, u''), False, "KIS 32 MELT (IS BLACKLISTED)")
-        self.insert_summary_manual_error((u'VM_MELT_SRV_UTO', u'kis32', u'CHECK_INFECTION', 29,DBReport.error_types['infected'][0], 'FAILED', 0, u''), False, "KIS 32 MELT (IS BLACKLISTED)")
-        self.insert_summary_manual_error((u'VM_MELT_SRV_VUZ', u'kis32', u'BUILD_SRV', 25, DBReport.error_types['vuz_no_sync'][0], 'FAILED', 0, u''), False, "KIS 32 MELT (IS BLACKLISTED)")
+        self.insert_summary_manual_error((u'VM_MELT_SRV_FIF', u'kis32', u'BUILD_SRV', 27, 'FAILED', 0, u''), 'fif_no_sync', False, "KIS 32 MELT (IS BLACKLISTED)")
+        self.insert_summary_manual_error((u'VM_MELT_SRV_FIF', u'kis32', u'POPUP', 28, 'POPUP', 0, u''), 'popup', False, "KIS 32 MELT (IS BLACKLISTED)")
+        self.insert_summary_manual_error((u'VM_MELT_SRV_AIR', u'kis32', u'BUILD_SRV', 14, 'FAILED', 0, u''), 'air_signature_zip', False, "KIS 32 MELT (IS BLACKLISTED)")
+        self.insert_summary_manual_error((u'VM_MELT_SRV_UTO', u'kis32', u'BUILD_SRV', 26, 'FAILED', 0, u''), 'uto_no_sync', False, "KIS 32 MELT (IS BLACKLISTED)")
+        self.insert_summary_manual_error((u'VM_MELT_SRV_UTO', u'kis32', u'CHECK_INFECTION', 29, 'FAILED', 0, u''), 'infected', False, "KIS 32 MELT (IS BLACKLISTED)")
+        self.insert_summary_manual_error((u'VM_MELT_SRV_VUZ', u'kis32', u'BUILD_SRV', 25, 'FAILED', 0, u''), 'vuz_no_sync', False, "KIS 32 MELT (IS BLACKLISTED)")
 
         # #syscare failes due to mouse emulation
         #     #soldier
@@ -395,70 +396,76 @@ class DBReport(object):
         #     #exploit
         # self.insert_summary_manual_error((u'VM_EXPLOIT_SRV', u'syscare', u'CHECK_INFECTION', 38, u'VM\\ is\\ INFECTED', 'FAILED', 0, u''), False, "SYSCARE TESTS FAILS DUE TO MOUSE EMULATION")
 
-        #mbytes exploit
-        self.insert_summary_manual_error((u'VM_EXPLOIT_SRV', u'mbytes', u'CHECK_INFECTION', 25, DBReport.error_types['infected'][0], 'FAILED', 0, u''), False, "MBYTES DETECTS EXPLOIT DURING UNINSTALL (or uninstall fails in some way)")
+        #mbytes
+            # exploit
+        self.insert_summary_manual_error((u'VM_EXPLOIT_SRV', u'mbytes', u'CHECK_INFECTION', 25, 'FAILED', 0, u''), 'infected', False, "MBYTES DETECTS EXPLOIT DURING UNINSTALL (or uninstall fails in some way)")
+            #melt UTO
+        #occurred just once
+        #self.insert_summary_manual_error((u'VM_MELT_SRV_UTO', u'mbytes', u'BUILD_SRV', 27, 'FAILED', 0, u''), New type: \[\"\+\ SUCCESS\ CHECK\_STATIC\:\ \[\'build\/windows\_melt\_uto\\\\\\\\exp\_rite\.exe\'\]\"\,\ \'\+\ SUCCESS\ SCOUT\ BUILD\ \(no\ signature\ detection\)\'\,\ \'\+\ SUCCESS\ SCOUT\ EXECUTE\'\,\ \'\+\ WARN\ did\ not\ drop\ startup\'\,\ \'\+\ NO\ SCOUT\ SYNC\'\,\ \'\+\ NO\ SCOUT\ SYNC\'\,\ \'\+\ NO\ SCOUT\ SYNC\'\,\ \'\+\ NO\ SCOUT\ SYNC\'\,\ \'\+\ NO\ SCOUT\ SYNC\'\,\ \'\+\ NO\ SCOUT\ SYNC\'\,\ \'\+\ NO\ SCOUT\ SYNC\'\,\ \'\+\ NO\ SCOUT\ SYNC\'\,\ \'\+\ NO\ SCOUT\ SYNC\'\,\ \'\+\ FAILED\ SCOUT\ SYNC\'\], False, "--INSERT-COMMENT-HERE--")
 
         #avast32
             # soldier uninstall
-        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'avast32', u'CHECK_INFECTION', 31, DBReport.error_types['infected'][0], 'FAILED', 0, u''), False, "AVAST32 FAILS SOLDIER UNINSTALLATION, BUT IS ELITE ")
+        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'avast32', u'CHECK_INFECTION', 31, 'FAILED', 0, u''), 'infected', False, "AVAST32 FAILS SOLDIER UNINSTALLATION, BUT IS ELITE ")
 
         #avg
             # melt air (uses regexp for static check)
-        self.insert_summary_manual_error((u'VM_MELT_SRV_AIR', u'avg', u'BUILD_SRV', 26, DBReport.error_types['air_no_sync'][0], 'FAILED', 0, u''), False, "AVG MELT AIR")
-        self.insert_summary_manual_error((u'VM_MELT_SRV_AIR', u'avg', u'CHECK_INFECTION', 29, DBReport.error_types['infected'][0], 'FAILED', 0, u''), False, "AVG MELT AIR")
+        self.insert_summary_manual_error((u'VM_MELT_SRV_AIR', u'avg', u'BUILD_SRV', 26, 'FAILED', 0, u''), 'air_no_sync', False, "AVG MELT AIR")
+        self.insert_summary_manual_error((u'VM_MELT_SRV_AIR', u'avg', u'CHECK_INFECTION', 29, 'FAILED', 0, u''), 'infected', False, "AVG MELT AIR")
             #melt fif
-        self.insert_summary_manual_error((u'VM_MELT_SRV_FIF', u'avg', u'BUILD_SRV', 26, DBReport.error_types['fif_no_sync'][0], 'FAILED', 0, u''), False, "AVG MELT Firefox")
-        self.insert_summary_manual_error((u'VM_MELT_SRV_FIF', u'avg', u'CHECK_INFECTION', 29, DBReport.error_types['infected'][0], 'FAILED', 0, u''), False, "AVG MELT Firefox")
+        self.insert_summary_manual_error((u'VM_MELT_SRV_FIF', u'avg', u'BUILD_SRV', 26, 'FAILED', 0, u''), 'fif_no_sync', False, "AVG MELT Firefox")
+        self.insert_summary_manual_error((u'VM_MELT_SRV_FIF', u'avg', u'CHECK_INFECTION', 29, 'FAILED', 0, u''), 'infected', False, "AVG MELT Firefox")
             #melt uto
-        self.insert_summary_manual_error((u'VM_MELT_SRV_UTO', u'avg', u'BUILD_SRV', 26, DBReport.error_types['uto_no_sync'][0], 'FAILED', 0, u''), False, "AVG MELT uTorrent")
-        self.insert_summary_manual_error((u'VM_MELT_SRV_UTO', u'avg', u'CHECK_INFECTION', 29, DBReport.error_types['infected'][0], 'FAILED', 0, u''), False, "AVG MELT uTorrent")
+        self.insert_summary_manual_error((u'VM_MELT_SRV_UTO', u'avg', u'BUILD_SRV', 26, 'FAILED', 0, u''), 'uto_no_sync', False, "AVG MELT uTorrent")
+        self.insert_summary_manual_error((u'VM_MELT_SRV_UTO', u'avg', u'CHECK_INFECTION', 29, 'FAILED', 0, u''), 'infected', False, "AVG MELT uTorrent")
 
         #avira15 melt air
-        self.insert_summary_manual_error((u'VM_MELT_SRV_AIR', u'avira15', u'BUILD_SRV', 15, DBReport.error_types['air_signature'][0], 'FAILED', 0, u''), False, "AVIRA 2015 MELT AIR")
-        self.insert_summary_manual_error((u'VM_MELT_SRV_AIR', u'avira15', u'POPUP', 16, DBReport.error_types['popup'][0], 'POPUP', 0, u''), False, "AVIRA 2015 MELT AIR")
+        self.insert_summary_manual_error((u'VM_MELT_SRV_AIR', u'avira15', u'BUILD_SRV', 15, 'FAILED', 0, u''), 'air_signature', False, "AVIRA 2015 MELT AIR")
+        self.insert_summary_manual_error((u'VM_MELT_SRV_AIR', u'avira15', u'POPUP', 16, 'POPUP', 0, u''), 'popup', False, "AVIRA 2015 MELT AIR")
 
         #avira15f full melt air
-        self.insert_summary_manual_error((u'VM_MELT_SRV_AIR', u'avira15f', u'BUILD_SRV', 12, DBReport.error_types['air_perm_denied'][0], 'FAILED', 0, u''), False, "AVIRA 2015 full MELT AIR")
+        self.insert_summary_manual_error((u'VM_MELT_SRV_AIR', u'avira15f', u'BUILD_SRV', 12, 'FAILED', 0, u''), 'air_perm_denied', False, "AVIRA 2015 full MELT AIR")
 
         #avira melt air (uses regexp for POPUP)
-        self.insert_summary_manual_error((u'VM_MELT_SRV_AIR', u'avira', u'BUILD_SRV', 14, DBReport.error_types['air_perm_denied'][0], 'FAILED', 0, u''), False, "AVIRA MELT AIR")
-        self.insert_summary_manual_error((u'VM_MELT_SRV_AIR', u'avira', u'POPUP', 15, DBReport.error_types['popup'][0], 'POPUP', 0, u''), False, "AVIRA MELT AIR")
+        self.insert_summary_manual_error((u'VM_MELT_SRV_AIR', u'avira', u'BUILD_SRV', 14, 'FAILED', 0, u''), 'air_perm_denied', False, "AVIRA MELT AIR")
+        self.insert_summary_manual_error((u'VM_MELT_SRV_AIR', u'avira', u'POPUP', 15, 'POPUP', 0, u''), 'popup', False, "AVIRA MELT AIR")
 
         #360ts static ios
-        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'360ts', u'BUILD_SRV', 49, DBReport.error_types['ios_static'][0], 'FAILED', 0, u''), False, "360 Total Security static ios")
+        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'360ts', u'BUILD_SRV', 49, 'FAILED', 0, u''), 'ios_static', False, "360 Total Security static ios")
 
         #zoneal static ios+bb (regexp)
-        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'zoneal', u'BUILD_SRV', 37, DBReport.error_types['blackberry'][0], 'FAILED', 0, u''), False, "zoneal static BB + IOS")
-        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'zoneal', u'BUILD_SRV', 46, DBReport.error_types['ios'][0], 'FAILED', 0, u''), False, "zoneal static BB + IOS")
-        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'zoneal', u'POPUP', 62, DBReport.error_types['popup'][0], 'POPUP', 0, u''), False, "zoneal static BB + IOS")
+        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'zoneal', u'BUILD_SRV', 37, 'FAILED', 0, u''), 'blackberry', False, "zoneal static BB + IOS")
+        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'zoneal', u'BUILD_SRV', 46, 'FAILED', 0, u''), 'ios', False, "zoneal static BB + IOS")
+        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'zoneal', u'POPUP', 62, 'POPUP', 0, u''), 'popup', False, "zoneal static BB + IOS")
 
-        #zoneal7 static bb (regexp)
-        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'zoneal7', u'BUILD_SRV', 37, DBReport.error_types['blackberry'][0], 'FAILED', 0, u''), False, "zoneal7 static BB")
-        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'zoneal7', u'BUILD_SRV', 38, DBReport.error_types['ios'][0], 'FAILED', 0, u''), False, "zoneal7 static BB")
+        #zoneal7 static bb+ios)
+        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'zoneal7', u'BUILD_SRV', 37, 'FAILED', 0, u''), 'blackberry', False, "zoneal7 static BB + IOS")
+        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'zoneal7', u'BUILD_SRV', 38, 'FAILED', 0, u''), 'ios', True, "zoneal7 static BB + IOS")
+        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'zoneal7', u'BUILD_SRV', 47, 'FAILED', 0, u''), 'ios_static', True, "zoneal7 static BB + IOS")
 
         #Norman Exploit
-        self.insert_summary_manual_error((u'VM_EXPLOIT_SRV', u'norman', u'BUILD_SRV', 35, DBReport.error_types['exploit_pdf_run'][0], 'FAILED', 0, u''), False, "Norman Exploit PDF")
+        self.insert_summary_manual_error((u'VM_EXPLOIT_SRV', u'norman', u'BUILD_SRV', 35, 'FAILED', 0, u''), 'exploit_pdf_run', False, "Norman Exploit PDF")
 
         ######ANDROID APK
         #norman
-        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'norman', u'BUILD_SRV', 44, DBReport.error_types['android_apk_static'][0], 'FAILED', 0, u''), False, "Norman Static Android APK")
-        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'norman', u'POPUP', 65, DBReport.error_types['popup'][0], 'POPUP', 0, u''), False, "Norman Static Android APK")
+        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'norman', u'BUILD_SRV', 44, 'FAILED', 0, u''), 'android_apk_static', False, "Norman Static Android APK")
+        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'norman', u'POPUP', 65, 'POPUP', 0, u''), 'popup', False, "Norman Static Android APK")
         #fsecure
-        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'fsecure', u'BUILD_SRV', 44, DBReport.error_types['android_apk_static'][0], 'FAILED', 0, u''), False, "Fsecure Static Android APK")
+        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'fsecure', u'BUILD_SRV', 44, 'FAILED', 0, u''), 'android_apk_static', False, "Fsecure Static Android APK")
         #drweb
-        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'drweb', u'BUILD_SRV', 44, DBReport.error_types['android_apk_static'][0], 'FAILED', 0, u''), False, "DrWeb Static Android APK")
+        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'drweb', u'BUILD_SRV', 44, 'FAILED', 0, u''), 'android_apk_static', False, "DrWeb Static Android APK")
         #bitdef15
-        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'bitdef15', u'BUILD_SRV', 44, DBReport.error_types['android_apk_static'][0], 'FAILED', 0, u''), False, "bitdef15 Static Android APK")
+        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'bitdef15', u'BUILD_SRV', 44, 'FAILED', 0, u''), 'android_apk_static', False, "bitdef15 Static Android APK")
         #bitdef
-        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'bitdef', u'BUILD_SRV', 44, DBReport.error_types['android_apk_static'][0], 'FAILED', 0, u''), False,  "bitdef Static Android APK")
+        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'bitdef', u'BUILD_SRV', 44, 'FAILED', 0, u''), 'android_apk_static', False,  "bitdef Static Android APK")
         #adaware
-        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'adaware', u'BUILD_SRV', 44, DBReport.error_types['android_apk_static'][0], 'FAILED', 0, u''), False, "Adaware Static Android APK")
-        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'adaware', u'POPUP', 65, DBReport.error_types['popup'][0], 'POPUP', 0, u''), False, "Adaware Static Android APK")
+        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'adaware', u'BUILD_SRV', 44, 'FAILED', 0, u''), 'android_apk_static', False, "Adaware Static Android APK")
+        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'adaware', u'POPUP', 65, 'POPUP', 0, u''), 'popup', False, "Adaware Static Android APK")
 
 
 
-    def insert_summary_manual_error(self, txt_tuple, manual_optional, manual_comment):
-        test, vm, command, prg, log, result_state, rite_failed, rite_fail_log = txt_tuple
+    def insert_summary_manual_error(self, txt_tuple, error_type, manual_optional, manual_comment):
+        test, vm, command, prg, result_state, rite_failed, rite_fail_log = txt_tuple
+        log = DBReport.error_types[error_type][0]
         #start_timestamp and end_timestamp are 0
         # SYNTAX: self.insert_summary(SummaryData(0, u'VM_MELT_SRV_UTO', u'trendm', u'REPORT_KIND_INIT', 0, True, "TestTrendm",     u'VM_MELT_SRV_UTO', ResultStates.PASSED, False, u''))
         self.insert_summary(SummaryData(0, 0, test, vm, command, prg, True, manual_optional, manual_comment, log, ResultStates().get_state_from_content(result_state), rite_failed, rite_fail_log))

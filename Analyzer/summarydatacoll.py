@@ -165,9 +165,7 @@ class SummaryDataColl(object):
             saved_error_comment = manual_state_rows.get_manual_comment()
         #compare_current_to_manual is true if commands are equal
         elif cur_err > 0 and self.compare_current_to_manual(manual_state_rows)[0]:
-            message = "<b>OK, but known errors occurred (known error comment is: %s).Actual errorlist is:</b> %s <b>known errorlist is:</b> %s " \
-                      "<b>previous errorlist is:</b> %s" % (manual_state_rows.get_manual_comment(), self.get_error_descriptions(),  manual_state_rows.get_error_descriptions(),
-                                                       previous_state_rows.get_error_descriptions())
+            message = "<b>OK, but known errors occurred (known error comment is: %s).Actual errorlist is:</b> %s <b>known errorlist is:</b> %s <b>previous errorlist is:</b> %s" % (manual_state_rows.get_manual_comment(), self.get_error_descriptions(),  self.get_error_descriptions(), previous_state_rows.get_error_descriptions())
             ok = False
             saved_error = True
             saved_error_comment = manual_state_rows.get_manual_comment()
@@ -303,8 +301,9 @@ class SummaryDataColl(object):
         string_out = ""
         for summ in self.get_error_rows():
             #before re.escape(summ.rite_result_log) was used instead of error_type
-            tup = summ.test_name, summ.vm, summ.command, summ.prg, "DBReport.error_types['%s'][0]" % summ.get_error_type(), summ.parsed_result[0], summ.rite_failed, summ.rite_fail_log
-            string_out += "self.insert_summary_manual_error(" + repr(tup) + ", False, \"--INSERT-COMMENT-HERE--\")<br>"
+            #"DBReport.error_types['%s'][0]" % summ.get_error_type(),
+            tup = summ.test_name, summ.vm, summ.command, summ.prg, summ.parsed_result[0], summ.rite_failed, summ.rite_fail_log
+            string_out += "self.insert_summary_manual_error(" + repr(tup) + ", " + summ.get_error_type() + ", False, \"--INSERT-COMMENT-HERE--\")<br>"
 
         return string_out
 

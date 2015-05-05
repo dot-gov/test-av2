@@ -42,15 +42,20 @@ def get_status(vm):
     try:
         if config.verbose:
             logging.debug("%s, list_processes: %s" % (vm, [ (p["name"],p["owner"]) for p in processes] ))
-
+        vmtools_number = 0
         for process in processes:
             if process["owner"].endswith("avtest"):
                 user_logged = True
                 if process["name"] == "vmtoolsd.exe":
                     # owner=WIN7-NOAV\avtest, cmd=VMwareTray.exe
-                    vm_tools = True
-            if process["name"] == "wuauclt.exe" or process["name"] == "TrustedInstaller.exe":
-                install = True
+                    vmtools_number += 1
+            if process["owner"].endswith("SYSTEM") and process["name"] == "vmtoolsd.exe":
+                vmtools_number += 1
+            #removed on 05/05/2015 because the win update is no more
+            # if process["name"] == "wuauclt.exe" or process["name"] == "TrustedInstaller.exe":
+            #     install = True
+        if vmtools_number >= 2:
+            vm_tools = True
         # explorer, vmware solo se logged in
     except:
         logging.exception("error")
@@ -116,6 +121,14 @@ def execute(vm, protocol, args):
                     logging.debug("%s, executing ipconfig, time: %s/%s" % (vm, i, max_tries))
                     started = vm_manager.execute(vm, "executeCmd", "c:\\windows\\system32\\ipconfig.exe") == 0
                     logging.debug("%s, executed ipconfig, ret: %s" % (vm, started))
+
+                    logging.debug("IP Checking and renewing if necessary")
+
+                    arg = ["/C", 'c:\\windows\\system32\\ipconfig.exe | findstr IP | findstr /l ":\ 10.0. :\ 10.1." || c:\\windows\\system32\\ipconfig.exe /renew']
+                    reg = ("c:\\windows\\system32\\cmd.exe", arg, 40, True, True)
+                    vm_manager.execute(vm, "executeCmd", *reg)
+
+                    logging.debug("IP Checking completed")
 
                 if started and not check_avagent:
                     return True, "Started VM"
