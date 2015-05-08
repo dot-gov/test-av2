@@ -1,5 +1,4 @@
 import os
-import shutil
 from time import sleep
 import time
 import socket
@@ -394,7 +393,7 @@ class AgentBuild:
             ret = info['upgradable'] is False
 
             if ret:
-                add_result("+ SUCCESS UPGRADED SYNC")
+                add_result("+ SUCCESS UPGRADED SYNC (upgrade command received)")
             else:
                 add_result("+ NOT YET UPGRADED SYNC: %s" % info['level'])
 
@@ -565,8 +564,7 @@ class AgentBuild:
                 if upgraded:
                     break
                 else:
-                    # This for me is error...string.upper() will never equal a lowercase string
-                    if got_level.upper() == "soldier":
+                    if got_level.upper() == "SOLDIER":
                         self.terminate_every_agent()
                         executed = self.execute_agent_startup()
                 for i in range(10):
@@ -579,7 +577,7 @@ class AgentBuild:
 
         logging.debug("Upgraded: %s" % upgraded)
         if upgraded:
-            logging.debug("The vm upgraded to the desired level, now we check that execution is inibithed.")
+            logging.debug("The upgrade command was received, now the soldier should sync.")
             #if got_level != level:
             #    add_result("+ FAILED LEVEL: %s" % level)
             sleep(60)
@@ -657,8 +655,13 @@ class AgentBuild:
                 logging.debug("check if file exists: %s" % filename)
                 if os.path.exists(filename):
                     logging.debug("try to execute: %s" % filename)
-                    subprocess.Popen([filename])
-                    executed = True
+                    try:
+                        subprocess.Popen([filename])
+                        executed = True
+                    except WindowsError:
+                        logging.debug("%s is not a windows application. This is a detetion." % filename)
+                        add_result("+ FAILED EXECUTION - the executable '%s' is not recognized by windows." % filename)
+                        executed = False
                     break
 
         if not executed:

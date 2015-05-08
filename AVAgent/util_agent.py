@@ -80,7 +80,8 @@ av_update_ignore_windows = ['QWidget', 'CisWidget']  # malwarebytes, comodo
 #av-specific windows classnames which needs PRINTSCR (popups are IMPORTANT!)
 av_printscr = ['bdPopupDlg', '_GDATA_SHADOW_CLASS_0000000001250000_', 'SymHTMLDialog', 'asw_av_popup_wndclass', 'WebViewHost', 'QTool'] #bitdefender, gdata, norton, avast, trendm, iobit
 #av-specific windows classnames which can use DIRECT method (popups are IMPORTANT!)
-av_direct = ['ESET Alert Window', '72CDF557B87B4B008B9B8402F129FF3E', 'AVP.Product_Notification', '3740880777704d7c89ABC19816EF3832', 'CisMainWizard', 'ESET Layer Window', 'ESET Desktop Window'] #eset, adaware, kis, mcafee, comodo
+av_direct = ['72CDF557B87B4B008B9B8402F129FF3E', 'AVP.Product_Notification', '3740880777704d7c89ABC19816EF3832', 'CisMainWizard', 'ESET Layer Window', 'ESET Desktop Window'] # adaware, kis, mcafee, comodo
+#rimosso: 'ESET Alert Window' (eset)
 # '' HwndWrapperDefaultDomainWpf76134ef4002e440389298af68adebca9
 #QTool (norman)
 
