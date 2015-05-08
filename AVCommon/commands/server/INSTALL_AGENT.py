@@ -134,8 +134,8 @@ def execute(vm, protocol, inst_args):
 
     delete_startup_av_agent(vm_manager, vm, remote_name)
 
-    for i in range(1, 4):
-        logging.debug("I'll copy %s (try %s of 3)" % (filename, i))
+    for i in range(1, 6):
+        logging.debug("I'll copy %s (try %s of 5)" % (filename, i))
         assert os.path.exists(filename)
         r = vm_manager.execute(vm, "copyFileToGuest", filename, remote_name)
         if r > 0:
@@ -157,6 +157,8 @@ def execute(vm, protocol, inst_args):
 
     #--------------------------------------------
     # NB: WE ARE IGNORING START.BAT COPY ERRORS
+    # BECAUSE WE CHECK AFTERWARDS IF THE FILE
+    # IS PRESENT
     # --------------start.bat-----------------
 
     fd, filename = tempfile.mkstemp(".bat")
@@ -167,8 +169,8 @@ def execute(vm, protocol, inst_args):
 
     remote_name = "C:\\AVTest\\AVAgent\\start.bat"
 
-    for i in range(1, 4):
-        logging.debug("I'll copy %s (try %s of 3)" % (filename, i))
+    for i in range(1, 9):
+        logging.debug("I'll copy %s - start.bat to %s (try %s of 8)" % (filename, i, vm))
         assert os.path.exists(filename)
         r = vm_manager.execute(vm, "copyFileToGuest", filename, remote_name)
         if r > 0:
@@ -181,6 +183,17 @@ def execute(vm, protocol, inst_args):
             break
 
     time.sleep(15)
+
+    #check if start.bat exists on guest
+    d = "C:/AVTest/AVAgent/"
+    out = vm_manager.execute(vm, "listDirectoryInGuest", d)
+    logging.debug("listDirectoryInGuest: %s" % out)
+
+    if not "start.bat" in out:
+        failed = True
+        reason += "start.bat not present in in AVAgent"
+    else:
+        logging.info("%s, found start.bat in %s" % (vm, d))
 
     # if failed:
     #     logging.debug("Cannot copy %s: ERROR!" % filename)
