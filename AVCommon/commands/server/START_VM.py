@@ -129,6 +129,10 @@ def execute(vm, protocol, args):
                     vm_manager.execute(vm, "executeCmd", *reg)
 
                     logging.debug("IP Checking completed")
+                else:
+                    #no vm tools, wait and re-check
+                    sleep(20)
+                    continue
 
                 if started and not check_avagent:
                     return True, "Started VM"
