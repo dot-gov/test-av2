@@ -173,14 +173,15 @@ def process_yaml(filenames, results_to_receive):
             #CREATING EMAIL AND PRINTING RESULTS
             text = "* Analyzed VM: %s (%s of %s) - Test: %s\n" % (vm, vm_count, total_vms, test_name)
             #text += "VM passed test?: %s\n" % ok
-            text += "* Analyzer Message: %s" % message
+            if debug:
+                text += "* Analyzer Message: %s" % message
             #text += "Known Error: %s\n" % saved_error
             #text += "* Errorlist: %s\n" % errors_list
-
             print "####################     RESULTS     ####################"
             print text
-            print "EXECUTION TIME: %s" % comparison_result['time']
-            print "####################   RESULTS END   ####################"
+            if debug:
+                print "EXECUTION TIME: %s" % comparison_result['time']
+            # print "#######################################################"
 
             # also rite failed tests can have popups
             if not comparison_result['rite_ok'] and not comparison_result['saved_error']:
@@ -279,7 +280,7 @@ def process_yaml(filenames, results_to_receive):
 
 def analyze(vm, comms):
 
-    print "Analyzing..."
+    #print "Analyzing..."
     if not len(comms):
         return
     # DEBUG
@@ -294,7 +295,7 @@ def analyze(vm, comms):
     print "################### STARTING TEST ######################"
     print "# Analyzing %s commands for VM: %s #" % (len(comms), vm)
     print "# Test: %s #" % test_name
-    print "################### STARTING TEST ######################"
+    #print "########################################################"
     with DBReport() as db:
         #eventual error message
         message = None

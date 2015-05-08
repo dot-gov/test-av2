@@ -303,7 +303,7 @@ class SummaryDataColl(object):
             #before re.escape(summ.rite_result_log) was used instead of error_type
             #"DBReport.error_types['%s'][0]" % summ.get_error_type(),
             tup = summ.test_name, summ.vm, summ.command, summ.prg, summ.parsed_result[0], summ.rite_failed, summ.rite_fail_log
-            string_out += "self.insert_summary_manual_error(" + repr(tup) + ", " + summ.get_error_type() + ", False, \"--INSERT-COMMENT-HERE--\")<br>"
+            string_out += "self.insert_summary_manual_error(" + repr(tup) + ", \'" + summ.get_error_type() + "\', False, \"--INSERT-COMMENT-HERE--\")<br>"
 
         return string_out
 
