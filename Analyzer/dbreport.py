@@ -221,17 +221,23 @@ class DBReport(object):
                    'exploit_pdf_run': [u'\\[\\"\\+\\ SUCCESS\\ CHECK\\_STATIC\\:\\ \\[\\\'build\\/exploit\\_pdf.*\\]', u'BUILD_SRV', "Exploit Pdf passes static check but is detected"],
                    #melt
                    'air_perm_denied': [u'\\[\\"\\+\\ ERROR\\:\\ \\[Errno\\ 13\\]\\ Permission\\ denied\\:\\ \\\'build\\/windows\\_melt\\_air\\\\\\\\\\\\\\\\exp\\_rite\\.exe\\\'\\"\\]', u'BUILD_SRV', "Static detection of Melt with Adobe Air"],
-                   'air_signature': [u'\\[\\"\\+\\ FAILED\\ CHECK\\_STATIC\\.\\ SIGNATURE\\ DETECTION\\:\\ \\[\\\'build\\/windows\\_melt\\_air\\\\\\\\\\\\\\\\agent\\.exe\\\'\\]\\"\\,\\ \\"\\+\\ FAILED\\ SCOUT\\ BUILD\\.\\ SIGNATURE\\ DETECTION\\:\\ \\[\\\'build\\/windows\\_melt\\_air\\\\\\\\\\\\\\\\agent\\.exe\\\'\\]\\"\\]', u'BUILD_SRV', "Static detection of Melt with Adobe Air"],
+                   'air_signature': [u'\\[\\"\\+\\ FAILED\\ CHECK\\_STATIC\\.\\ SIGNATURE\\ DETECTION\\:\\ \\[\\\'build\\/windows\\_melt\\_air\\\\\\\\\\\\\\\\agent\\.exe\\\'\\]\\"\\,\\ \\"\\+\\ FAILED\\ SCOUT\\ BUILD\\.\\ SIGNATURE\\ DETECTION\\:\\ \\[\\\'build\\/windows\\_melt\\_air.*', u'BUILD_SRV', "Static detection of Melt with Adobe Air"],
                    'air_signature_zip': [u"\\[\\'\\+\\ FAILED\\ SCOUT\\ BUILD\\.\\ CANNOT\\ FIND\\ ZIP\\ FILE\\ C\\:\\\\\\\\AVTest\\\\\\\\AVAgent\\\\\\\\build\\_windows\\_melt\\_air\\_scout\\_melt\\_melt\\.zip\\ TO\\ UNZIP\\ IT\\'\\]", u'BUILD_SRV', "Static detection of Melt with Adobe Air (zip file)"],
-                   'air_no_sync': [u'\\[\\"\\+\\ SUCCESS\\ CHECK\\_STATIC\\:\\ \\[\\\'build\\/windows\\_melt\\_air.*\\]\\"\\,\\ \\\'\\+\\ SUCCESS\\ SCOUT\\ BUILD\\ \\(no\\ signature\\ detection\\)\\\'\\,\\ \\\'\\+\\ SUCCESS\\ SCOUT\\ EXECUTE\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ FAILED\\ SCOUT\\ SYNC\\\'\\]', u'BUILD_SRV', "Melt with Adobe Air fails to sync"],
+                   'air_no_sync': [u'\\[\\"\\+\\ SUCCESS\\ CHECK\\_STATIC\\:\\ \\[\\\'build\\/windows\\_melt\\_air.*FAILED\\ SCOUT\\ SYNC\\\'\\]', u'BUILD_SRV', "Melt with Adobe Air fails to sync"],
+
                    'fif_no_sync': [u'\\[\\"\\+\\ SUCCESS\\ CHECK\\_STATIC\\:\\ \\[\\\'build\\/windows\\_melt\\_fif\\\\\\\\\\\\\\\\exp\\_rite\\.exe\\\'\\]\\"\\,\\ \\\'\\+\\ SUCCESS\\ SCOUT\\ BUILD\\ \\(no\\ signature\\ detection\\)\\\'\\,\\ \\\'\\+\\ SUCCESS\\ SCOUT\\ EXECUTE\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ FAILED\\ SCOUT\\ SYNC\\\'\\]', u'BUILD_SRV', "Melt with Firefox fails to sync"],
+
                    'uto_no_sync': [u'\\[\\"\\+\\ SUCCESS\\ CHECK\\_STATIC\\:\\ \\[\\\'build\\/windows\\_melt\\_uto\\\\\\\\\\\\\\\\exp\\_rite\\.exe\\\'\\]\\"\\,\\ \\\'\\+\\ SUCCESS\\ SCOUT\\ BUILD\\ \\(no\\ signature\\ detection\\)\\\'\\,\\ \\\'\\+\\ SUCCESS\\ SCOUT\\ EXECUTE\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ FAILED\\ SCOUT\\ SYNC\\\'\\]', u'BUILD_SRV', "Melt with uTorrent fails to sync"],
+
                    'vuz_no_sync': [u'\\[\\"\\+\\ SUCCESS\\ CHECK\\_STATIC\\:\\ \\[\\\'build\\/windows\\_melt\\_vuz\\\\\\\\\\\\\\\\exp\\_rite\\.exe\\\'\\]\\"\\,\\ \\\'\\+\\ SUCCESS\\ SCOUT\\ BUILD\\ \\(no\\ signature\\ detection\\)\\\'\\,\\ \\\'\\+\\ SUCCESS\\ SCOUT\\ EXECUTE\\\'\\,\\ \\\'\\+\\ WARN\\ did\\ not\\ drop\\ startup\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ FAILED\\ SCOUT\\ SYNC\\\'\\]', u'BUILD_SRV', "Melt with Vuze fails to sync"],
+
                    #soldier, elite, scout
                    'scout_no_sync': [u'\\[\\"\\+\\ SUCCESS\\ CHECK\\_STATIC\\:\\ \\[\\\'build\\/windows\\\\\\\\\\\\\\\\agent\\.exe.*SUCCESS\\ SCOUT.*FAILED\\ SCOUT\\ SYNC\\\'\\]', u'BUILD_SRV', "Windows agent no sync"],
                    'elite_demo_no_sync': [u'\\[\\"\\+\\ SUCCESS\\ CHECK\\_STATIC\\:\\ \\[\\\'build\\/windows\\_demo\\\\\\\\\\\\\\\\agent\\.exe\\\'\\]\\"\\,\\ \\\'\\+\\ SUCCESS\\ SCOUT\\ BUILD\\ \\(no\\ signature\\ detection\\)\\\'\\,\\ \\\'\\+\\ SUCCESS\\ SCOUT\\ EXECUTE\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ NO\\ SCOUT\\ SYNC\\\'\\,\\ \\\'\\+\\ FAILED\\ SCOUT\\ SYNC\\\'\\]', u'BUILD_SRV', "Elite Scout Demo fails to sync"],
                    'no_soldier_upgrade': [u"\\[\\'\\+\\ NOT\\ YET\\ UPGRADED\\ SYNC\\:\\ scout\\'\\,\\ \\'\\+\\ NOT\\ YET\\ UPGRADED\\ SYNC\\:\\ scout\\'\\,\\ \\'\\+\\ NOT\\ YET\\ UPGRADED\\ SYNC\\:\\ scout\\'\\,\\ \\'\\+\\ NOT\\ YET\\ UPGRADED\\ SYNC\\:\\ scout\\'\\,\\ \\'\\+\\ NOT\\ YET\\ UPGRADED\\ SYNC\\:\\ scout\\'\\,\\ \\'\\+\\ NOT\\ YET\\ UPGRADED\\ SYNC\\:\\ scout\\'\\,\\ \\'\\+\\ NOT\\ YET\\ UPGRADED\\ SYNC\\:\\ scout\\'\\,\\ \\'\\+\\ NOT\\ YET\\ UPGRADED\\ SYNC\\:\\ scout\\'\\,\\ \\'\\+\\ NOT\\ YET\\ UPGRADED\\ SYNC\\:\\ scout\\'\\,\\ \\'\\+\\ FAILED\\ SOLDIER\\ INSTALL\\'\\]", u'BUILD_SRV', "Impossibile to upgrade to soldier"],
                    'failed_soldier_upgrade': [u"\\[\\'\\+\\ SUCCESS\\ UPGRADED\\ SYNC\\'\\,\\ \\'\\+\\ FAILED\\ UPGRADE\\ SOLDIER\\'\\]", u'BUILD_SRV', "Impossibile to upgrade to soldier"],
+                   'failed_soldier_static': ["\[\'\+\ FAILED\ SCOUT\ BUILD\.\ CANNOT\ FIND\ ZIP\ FILE\ C\:\\\\AVTest\\\\AVAgent\\\\build\_windows\_scout\_silent\_soldier\_fast\.zip\ TO\ UNZIP\ IT\'\]", u'BUILD_SRV', "Impossibile to unzip soldier agent"],
+
                    }
 
     def apply_known_errors(self):
@@ -305,8 +311,10 @@ class DBReport(object):
         self.insert_summary_manual_error((u'VM_ELITE_FAST_SCOUTDEMO_SRV', u'cmcav', u'BUILD_SRV', 23, 'FAILED', 0, u''), 'elite_demo_no_sync', False, "CMCAV Elite ScoutDemo (blacklisted av, the scout exits)")
         #.* self.insert_summary_manual_error((u'VM_ELITE_FAST_SCOUTDEMO_SRV', u'cmcav', u'BUILD_SRV', 12, u'\\[\\"\\+\\ FAILED\\ CHECK\\_STATIC\\.\\ SIGNATURE\\ DETECTION\\:\\ \\[.*\\]\\"\\,\\ \\"\\+\\ FAILED\\ SCOUT\\ BUILD\\.\\ SIGNATURE\\ DETECTION\\:\\ \\[.*\\]\\"\\]', 'FAILED', 0, u''), False, "CMCAV Elite ScoutDemo (blacklisted av, the scout exits)")
             #soldier
+        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'cmcav', u'BUILD_SRV', 13, 'FAILED', 0, u''), 'failed_soldier_static', True, "CMCAV SOLDIER (blacklisted av, the scout exits)")
+        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'cmcav', u'BUILD_SRV', 25, 'FAILED', 0, u''), 'scout_no_sync', True, "CMCAV SOLDIER (blacklisted av, the scout exits)")
         self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'cmcav', u'BUILD_SRV', 26, 'FAILED', 0, u''),  'no_instance_id', False, "CMCAV SOLDIER (blacklisted av, the scout exits)")
-        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'cmcav', u'CHECK_INFECTION', 30,  'FAILED', 0, u''), 'infected', False, "CMCAV SOLDIER (blacklisted av, the scout exits)")
+        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'cmcav', u'CHECK_INFECTION', 30,  'FAILED', 0, u''), 'infected', True, "CMCAV SOLDIER (blacklisted av, the scout exits)")
 
 
         #norton soldier (is elite)
@@ -381,7 +389,12 @@ class DBReport(object):
             #melt FIF, AIR, UTO, VUZ
         self.insert_summary_manual_error((u'VM_MELT_SRV_FIF', u'kis32', u'BUILD_SRV', 27, 'FAILED', 0, u''), 'fif_no_sync', False, "KIS 32 MELT (IS BLACKLISTED)")
         self.insert_summary_manual_error((u'VM_MELT_SRV_FIF', u'kis32', u'POPUP', 28, 'POPUP', 0, u''), 'popup', False, "KIS 32 MELT (IS BLACKLISTED)")
-        self.insert_summary_manual_error((u'VM_MELT_SRV_AIR', u'kis32', u'BUILD_SRV', 14, 'FAILED', 0, u''), 'air_signature_zip', False, "KIS 32 MELT (IS BLACKLISTED)")
+
+        self.insert_summary_manual_error((u'VM_MELT_SRV_AIR', u'kis32', u'BUILD_SRV', 14, 'FAILED', 0, u''), 'air_signature_zip', True, "KIS 32 MELT (IS BLACKLISTED)")
+        self.insert_summary_manual_error((u'VM_MELT_SRV_AIR', u'kis32', u'BUILD_SRV', 26, 'FAILED', 0, u''), 'air_no_sync', True, "KIS 32 MELT (IS BLACKLISTED)")
+        self.insert_summary_manual_error((u'VM_MELT_SRV_AIR', u'kis32', u'POPUP', 27, 'POPUP', 0, u''), 'popup', True, "KIS 32 MELT (IS BLACKLISTED)")
+        self.insert_summary_manual_error((u'VM_MELT_SRV_AIR', u'kis32', u'CHECK_INFECTION', 29, 'FAILED', 0, u''), 'infected', True, "KIS 32 MELT (IS BLACKLISTED)")
+
         self.insert_summary_manual_error((u'VM_MELT_SRV_UTO', u'kis32', u'BUILD_SRV', 26, 'FAILED', 0, u''), 'uto_no_sync', False, "KIS 32 MELT (IS BLACKLISTED)")
         self.insert_summary_manual_error((u'VM_MELT_SRV_UTO', u'kis32', u'CHECK_INFECTION', 29, 'FAILED', 0, u''), 'infected', False, "KIS 32 MELT (IS BLACKLISTED)")
         self.insert_summary_manual_error((u'VM_MELT_SRV_VUZ', u'kis32', u'BUILD_SRV', 25, 'FAILED', 0, u''), 'vuz_no_sync', False, "KIS 32 MELT (IS BLACKLISTED)")
@@ -419,7 +432,8 @@ class DBReport(object):
         self.insert_summary_manual_error((u'VM_MELT_SRV_UTO', u'avg', u'CHECK_INFECTION', 29, 'FAILED', 0, u''), 'infected', False, "AVG MELT uTorrent")
 
         #avira15 melt air
-        self.insert_summary_manual_error((u'VM_MELT_SRV_AIR', u'avira15', u'BUILD_SRV', 15, 'FAILED', 0, u''), 'air_signature', False, "AVIRA 2015 MELT AIR")
+        self.insert_summary_manual_error((u'VM_MELT_SRV_AIR', u'avira15', u'BUILD_SRV', 15, 'FAILED', 0, u''), 'air_signature', True, "AVIRA 2015 MELT AIR")
+        self.insert_summary_manual_error((u'VM_MELT_SRV_AIR', u'avira15', u'BUILD_SRV', 27, 'FAILED', 0, u''), 'air_no_sync', True, "AVIRA 2015 MELT AIR")
         self.insert_summary_manual_error((u'VM_MELT_SRV_AIR', u'avira15', u'POPUP', 16, 'POPUP', 0, u''), 'popup', False, "AVIRA 2015 MELT AIR")
 
         #avira15f full melt air
@@ -434,7 +448,8 @@ class DBReport(object):
 
         #zoneal static ios+bb (regexp)
         self.insert_summary_manual_error((u'VM_STATIC_SRV', u'zoneal', u'BUILD_SRV', 37, 'FAILED', 0, u''), 'blackberry', False, "zoneal static BB + IOS")
-        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'zoneal', u'BUILD_SRV', 46, 'FAILED', 0, u''), 'ios', False, "zoneal static BB + IOS")
+        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'zoneal', u'BUILD_SRV', 46, 'FAILED', 0, u''), 'ios', True, "zoneal static BB + IOS")
+        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'zoneal', u'BUILD_SRV', 47, 'FAILED', 0, u''), 'ios_static', True, "zoneal static BB + IOS")
         self.insert_summary_manual_error((u'VM_STATIC_SRV', u'zoneal', u'POPUP', 62, 'POPUP', 0, u''), 'popup', False, "zoneal static BB + IOS")
 
         #zoneal7 static bb+ios)
@@ -457,6 +472,7 @@ class DBReport(object):
         self.insert_summary_manual_error((u'VM_STATIC_SRV', u'bitdef15', u'BUILD_SRV', 44, 'FAILED', 0, u''), 'android_apk_static', False, "bitdef15 Static Android APK")
         #bitdef
         self.insert_summary_manual_error((u'VM_STATIC_SRV', u'bitdef', u'BUILD_SRV', 44, 'FAILED', 0, u''), 'android_apk_static', False,  "bitdef Static Android APK")
+        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'bitdef', u'POPUP', 65, 'POPUP', 0, u''), 'popup', False, "bitdef Static Android APK")
         #adaware
         self.insert_summary_manual_error((u'VM_STATIC_SRV', u'adaware', u'BUILD_SRV', 44, 'FAILED', 0, u''), 'android_apk_static', False, "Adaware Static Android APK")
         self.insert_summary_manual_error((u'VM_STATIC_SRV', u'adaware', u'POPUP', 65, 'POPUP', 0, u''), 'popup', False, "Adaware Static Android APK")

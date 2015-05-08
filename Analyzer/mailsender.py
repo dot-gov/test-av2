@@ -1,4 +1,5 @@
 import os
+import subprocess
 import yaml
 from Analyzer import dbreport
 
@@ -60,6 +61,7 @@ class MailSender(object):
     #stats dicts
     stats_by_test = {}
     stats_by_result_type = {}
+    stats_by_vm = {}
     #stat vm/test matrix (which is an av-indexed dictionary)
     expected_table = {}
 
@@ -93,7 +95,7 @@ class MailSender(object):
         msg.attach(htmlpart)
 
         hostname = socket.gethostname()
-        subject = 'ANALYZER_REPORT@%s - Sanity=%s%% - Errors=%s%% - Fails=%s%%' % (hostname, self.sanity_percentage, self.rite_errors_percentage, self.rite_fails_percentage)
+        subject = 'RiteAnalyzer - Sanity=%s%% - Errors=%s%% - Fails=%s%%+%s%%' % (self.sanity_percentage, self.rite_errors_percentage, self.rite_fails_percentage, self.not_run_percentage)
 
         # for recipient in mail_recipients:
         #     # Make sure email addresses do not contain non-ASCII characters
@@ -136,7 +138,7 @@ class MailSender(object):
 
         #css styles
         mail_message = self.get_html_header()
-        mail_message += self.generate_stats()
+        mail_message += self.generate_stats(msg)
 
         mail_message += self.get_html_retests()
 
@@ -160,7 +162,8 @@ class MailSender(object):
         <html>
         <head>
         <style>
-            div.title   {font-weight: bold;
+            div.title   {
+                        /*font-weight: bold;*/
                         background-color: lightgray;
                         text-align: center;
                         padding: 8px;
@@ -201,6 +204,16 @@ class MailSender(object):
             div.doubletab    {padding-left:6em}
             ol.doubletab   {padding-left:2em}
             img.tab  {padding-left:9em}
+            img.logo  {
+                       width: 25%;
+                       display: block;
+                       margin-left: auto;
+                       margin-right: auto;
+                      }
+            img.icon {
+                        height: 16px;
+                        width: 16px;
+                      }
             .percentbar {   background: red;
                             border:1px solid #000000;
                             height:10px; width:200px;
@@ -356,10 +369,15 @@ class MailSender(object):
                                     mail_message += '<div class="doubletab"><b>TOO MANY POPUPS. %i IMAGES OMITTED!</b></div>' % (len(self.all_results[vm][test]['popup_results']) - 8)
                 mail_message += "</p></details><hr>"
         mail_message += '</div>'
-        print "Number of attachments: %s" % attachment_number
+        if result_type == self.ResultTypes.NEW_ERRORS and attachment_number == 0 and not error_details:
+            print "WARNING: NEW ERRORS HAVE NO ATTACHMENTS. CHECK popup_thumbs dir and permissions!"
+        else:
+            print "Number of attachments in section %s: %s" % (result_type, attachment_number)
         return mail_message
 
     def get_html_body(self, mime_msg):
+
+        self.attach_images(mime_msg)
 
         ocrd = OcrDict()
 
@@ -402,13 +420,16 @@ class MailSender(object):
         mail_message += '</div>'
         return mail_message
 
-    def generate_stats(self):
+    def generate_stats(self, mime_msg):
 
         self.calculate_stats()
 
+        self.attach_image('logo', mime_msg)
+
         stat_text = '<div class="title">'
-        stat_text += '<div style="font-size: 140%;background-color: #b0b0b0;padding: 5px;">Analyzer Report RITE</div>'
-        stat_text += '<div class="testcontainer">'
+        # stat_text += '<img class="logo" src="cid:logo">'
+        stat_text += '<div style="font-size: 200%; font-weight: lighter; background-color: white;padding: 5px; font-family: calibri"><img class="logo" src="cid:logo"><b>]</b>Rite<b>Analyzer</b>[</div>'
+        stat_text += '<div class="testcontainer" style="font-weight: bold;">'
         #if sanity is a number, displays percentage bar
         if not self.sanity_percentage == "Unknown":
             stat_text += "Global Sanity: %s%% - New Errors:%s%% (Rite fails: %s%% - Not run: %s%%)" % (self.sanity_percentage, self.rite_errors_percentage, self.rite_fails_percentage, self.not_run_percentage)
@@ -487,8 +508,25 @@ class MailSender(object):
             table_text += '</tr>'
         table_text += "</table>"
 
-        table_text += '<div style="margin-left:auto;margin-right:auto;">RF=Rite new Fails, RK=Rite Known fails, NE=New Error, KE=Known Error, KP=Known error but Passed, OK=OK, NT=Not enabled Today</div>'
-        table_text += '<div style="margin-left:auto;margin-right:auto;">Temporarily deactivated vms: %s</div>' % VM_ALL.vm_deactivated_temp
+        # calculate occupied space on /
+        df = subprocess.Popen(["sh", "-c", "df", "/"], stdout=subprocess.PIPE)
+        output = df.communicate()[0]
+        device, size, used, available, percent, mountpoint = output.split("\n")[1].split()
+
+        percent_available = (float(available)/(float(used)+float(available)) * 100)
+
+        table_text += '<div style="margin-left:auto;margin-right:auto;">RF=Rite new Fails, RK=Rite Known fails, NE=New Error, KE=Known Error, KP=Known error but Passed, OK=OK, NT=Not enabled Today</div><hr>'
+        table_text += '<div style="margin-left:auto;margin-right:auto;">Temporarily deactivated vms: <b>%s</b><br><hr>' % VM_ALL.vm_deactivated_temp
+        table_text += '<img class="icon" src="cid:ok">= Silent ok<br>'
+        table_text += '<img class="icon" src="cid:error">= Silent new error<br>'
+        table_text += '<img class="icon" src="cid:fix">= VM to fix (only Elite or Soldier test is evaluated)<br>'
+        table_text += '<img class="icon" src="cid:soldier">= In SoldierList (Soldier test is evaluated)<br>'
+        table_text += '<img class="icon" src="cid:blacklist">= In Blacklist (no test is evaluated)<br>'
+        table_text += '<img class="icon" src="cid:save">= Saved error or fail (for Elite or Soldier)<br><hr>'
+        table_text += 'Available space on Rite mountpoint "%s" is: %.2f%%<br>' % (mountpoint, percent_available)
+        if percent_available < 10:
+            table_text += '<b>WARNING LOW DISK FREE ON RITE!</b><br>'
+        table_text += '</div>'
 
         table_text += "</div>"
         return table_text
@@ -539,6 +577,14 @@ class MailSender(object):
                 else:
                     self.stats_by_result_type[self.all_results[vm][test]['result_type']] += 1
 
+                #calculating silent invisibility for av
+
+                if test == 'VM_SOLDIER_SRV' and vm in self.default_yaml['soldierlist']:
+                    self.stats_by_vm[vm] = self.all_results[vm][test]['result_type']
+                elif test == 'VM_ELITE_FAST_SRV' and vm not in self.default_yaml['blacklist'] and vm not in self.default_yaml['soldierlist']:
+                    self.stats_by_vm[vm] = self.all_results[vm][test]['result_type']
+
+
         #calculate sanity  - test success percentage, higher is better
         # self.stats_by_result_type[self.ResultTypes.RITE_FAILS]
         if self.total_tests_num > 0:
@@ -586,7 +632,12 @@ class MailSender(object):
         #function to create a link
 
         def create_link(text, vm, test, css_class):
-            return '<td class="%s"><a href="#res_%s_%s">%s<sup>%s</sup></td>' % (css_class, vm, test, text, time_string)
+            border = ''
+            if test == 'VM_SOLDIER_SRV' and vm in self.default_yaml['soldierlist']:
+                border = 'style="border: 2px solid black;"'
+            elif test == 'VM_ELITE_FAST_SRV' and vm not in self.default_yaml['blacklist'] and vm not in self.default_yaml['soldierlist']:
+                border = 'style="border: 2px solid black;"'
+            return '<td class="%s" %s><a href="#res_%s_%s">%s<sup>%s</sup></td>' % (css_class, border, vm, test, text, time_string)
 
         if result == self.ResultTypes.RITE_FAILS:
             return create_link("RF", vm, test, "darkred")
@@ -619,9 +670,26 @@ class MailSender(object):
     def decorate_vm(self, vm):
         vm_txt = vm
         if vm in self.default_yaml['soldierlist']:
-            vm_txt += "<sub>[soldierlist]</sub>"
+            #vm_txt += '<sub style="color: red;">[soldier]</sub>'
+            vm_txt += '<img class="icon" src="cid:soldier">'
         if vm in self.default_yaml['blacklist']:
-            vm_txt += "<sub>[blacklist]</sub>"
+            #vm_txt += '<sub style="color: black;">[blacklist]</sub>'
+            vm_txt += '<img class="icon" src="cid:blacklist">'
+
+        if vm in self.stats_by_vm:
+            #errors
+            if self.stats_by_vm[vm] == self.ResultTypes.NEW_ERRORS:
+                vm_txt += '<img class="icon" src="cid:error">'
+            #ok
+            elif self.stats_by_vm[vm] in [self.ResultTypes.OK, self.ResultTypes.KNOWN_ERRORS, self.ResultTypes.KNOWN_ERRORS_BUT_PASSED, self.ResultTypes.RITE_KNOWN_FAILS]:
+                vm_txt += '<img class="icon" src="cid:ok">'
+            # vm to fix
+            elif self.stats_by_vm[vm] in [self.ResultTypes.RITE_FAILS, self.ResultTypes.NOT_RUN]:
+                vm_txt += '<img class="icon" src="cid:fix">'
+            #if saved error
+            if self.stats_by_vm[vm] in [self.ResultTypes.KNOWN_ERRORS, self.ResultTypes.KNOWN_ERRORS_BUT_PASSED, self.ResultTypes.RITE_KNOWN_FAILS]:
+                vm_txt += '<img class="icon" src="cid:save">'
+
         if vm in VM_ALL.vm_first_rite:
             return '<div style="color: red;font-weight: bold; display:inline;">%s</div>' % vm_txt
         else:
@@ -648,3 +716,27 @@ class MailSender(object):
     def load_default_yaml(self, def_file):
         stream = file(def_file, 'r')
         self.default_yaml = y = yaml.load(stream)
+
+    def attach_images(self, mime_msg):
+        self.attach_image('logo', mime_msg)
+        self.attach_image('soldier', mime_msg)
+        self.attach_image('blacklist', mime_msg)
+        self.attach_image('ok', mime_msg)
+        self.attach_image('error', mime_msg)
+        self.attach_image('fix', mime_msg)
+        self.attach_image('save', mime_msg)
+
+    def attach_image(self, name, mime_msg):
+            cid = name
+            # if name not in self.attached_images:
+            img_fp = open('./Rite/Analyzer/img/%s.png' % name, 'rb')
+            img_data = img_fp.read()
+            # Now create the MIME container for the image
+            img = MIMEImage(img_data)
+
+            img.add_header('Content-Id', '<%s>' % name)  # angle brackets are important
+            mime_msg.attach(img)
+            img_fp.close()
+                # self.attached_images.append(name)
+
+            return cid
