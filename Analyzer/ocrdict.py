@@ -9,24 +9,24 @@ _good = {'performance', 'complete', 'Protection', 'enabled', 'LIVE', 'TECH', 'SU
          'Mobile', 'Family', 'Safety', 'Update', 'UPDATE', 'FAILED', 'top-rated', 'tablet', 'Maxumize', 'maximiza',
          'free', 'trial', 'shopping', 'banking', 'watching', 'videos', 'Gamirg', 'surfirg', 'Protectior', 'actually', 'Surf', 'without',
          'interruptions', 'speeds', 'performance', 'complete', '24171365', 'LIVE', 'TECH', 'SUPPORT', 'databases', 'ugdatg', 'update', 'updating',
-         'Windows', 'Enterprise', 'Build', 'Web Filtering', 'Protection is enabled'}
+         'Windows', 'Enterprise', 'Build', 'Web Filtering'}
 
 _crash = {'stopped', 'working', 'solution', 'problem', 'online', 'solution', 'close'}
 
 _bad = {'Block', 'blocked', 'nimocia', 'quarantena', 'Maggiori', 'Disinfezione', 'eininazione', 'Attendi', 'prooesso', 'Hilaccia', 'rievata',
        'minaccia', 'devata', 'quarantena', 'Maggiori', 'deltagi', 'Virus', 'removed', 'infected',
-       'deleted', 'action', ' alert', 'THREAT', 'DELETED', 'default.apk', 'classes.dex', 'quarantena', 'Maggioi', 'maggiori',
+       'deleted', ' action', ' alert', 'THREAT', 'DELETED', 'default.apk', 'classes.dex', 'quarantena', 'Maggioi', 'maggiori',
        'Disinfezione', 'minaccia', 'rievata', 'eininazione.', 'Attendi', 'prooesso', 'Disinfezione', 'minaccia', 'rievata', 'rilevata',
        'eininazione', 'eliminazione', 'Attendi', 'termine', 'processo', 'prooesso', 'installdefaultapk', 'infected', 'handling', 'failed',
-       'action', 'Request', 'Outbound', 'Traffc', 'large', 'amount', 'suspicious',
+       'Request', 'Outbound', 'Traffc', 'large', 'amount', 'suspicious',
        'outbound', 'traffc', 'infected', 'something', 'Power', 'Eraser', 'detect', 'remove', 'Power', 'Eraser', 'message', 'outbound',
        'traffti', 'traffic', 'virus', 'W0rm', 'Kid0', 'install.exe', 'Malware', 'detected', 'MPRESS', ' HEUR', 'contains',
        'Trojan', 'IphcuneOS', 'Malware', 'contains', 'Trojan', 'IphoneOS', 'Mekir', 'Accessing',
        'contains', 'Trojan', 'Malware', 'Accessing', 'contains', 'Trojan', 'IOSinfect0r', 'detection',
        'Accessing', 'contains', 'Trojan', 'IOSinfector', 'Deleted', 'Virus', 'removed', 'Betas', 'Threat', 'Malicious',
-       'found', 'Threat', 'variant', 'Win32', 'Boychi', 'cleaned', 'deleting', 'quarantined', 'vira', 'eliminazione',
+       ' found', 'Threat', 'variant', 'Win32', 'Boychi', 'cleaned', 'deleting', 'quarantined', 'vira', 'eliminazione',
        'MalwaelRisk',
-        ' Spy', 'worm ', 'Blackberry', 'Mekina', 'Isolated', 'Run Virtually', 'Kido', ' Wrm ', 'Eicar'}
+        ' Spy', 'worm ', 'Blackberry', 'Mekina', 'Isolated', 'Run Virtually', 'Kido', ' Wrm ', 'Eicar', 'Susp', 'agent'}
         # removed: 'program'  'detagi', 'dettagli', 'Details', ' PID'
 
 _badbad = {'Intel', 'lntel', 'Chipset', 'Utility', 'Backup', 'ChipUtil', 'SmartDefrag', 'DiskInfo', 'EditPad', 'TreeSizeFree', 'bkmaker', 'agent',
@@ -36,7 +36,9 @@ _badbad = {'Intel', 'lntel', 'Chipset', 'Utility', 'Backup', 'ChipUtil', 'SmartD
            #9_6 - exes names
            'bleachbit', 'BluetoothView', 'CPUStabTest', 'MzRAMBooster', 'RealTemp', 'ultradefrag',
            #9_6 - detail name
-           'Free space',  'maintain', 'Booster', 'UltraDefrag', 'GUI interface'
+           'Free space',  'maintain', 'Booster', 'UltraDefrag', 'GUI interface',
+           'Kazy', 'Boychi', 'BBInfector', 'IOSinfector'
+           '.tmp', '.bat'
            }
 
 _ignore_list_av = {'Kaspersky', 'Internet', 'Security', '2013', 'COMODO', 'Norton', 'SMART', 'AVG', 'Bitdefender', 'avira',
@@ -44,7 +46,10 @@ _ignore_list_av = {'Kaspersky', 'Internet', 'Security', '2013', 'COMODO', 'Norto
 _ignore_list = {'AntiVirus'}
 #add: 'Application'
 
-_white_white_list = {'First Computer Scan', 'High-performance', 'Update', 'out of date', 'virus protection', 'please vote', 'which company', 'out-of-date', 'definitions'}
+_white_white_list = {'First Computer Scan', 'High-performance', 'Update', 'out of date', 'virus protection', 'please vote', 'which company',
+                     'out-of-date', 'definitions', 'Protection is enabled', 'Nessuna connessione a Internet', "accedere all'account",
+                     'devi essere connesso', 'Protection is', 'currently performing', 'computer is idle', 'tasks while your', 'your smartphone',
+                     'the cloud for free'}
 
 
 class OcrDict():

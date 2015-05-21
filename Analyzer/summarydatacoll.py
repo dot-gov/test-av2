@@ -224,23 +224,44 @@ class SummaryDataColl(object):
             different_results = []
             different_logs = []
 
+            # known_skipped = 0
+            # for x in range(cur_err):
+            #     #check if there are different command names (es: BUILD vs SCREENSHOT)
+            #     print 'comparing %s to %s' % (self.get_error_rows()[x].command, manual_state_rows.get_error_rows()[x+known_skipped].command)
+            #
+            #     #while the comparison fails but we can skip the command, then skip
+            #     while (not self.compare_single_current_to_manual(self.get_error_rows()[x], manual_state_rows.get_error_rows()[x+known_skipped]) and
+            #     manual_state_rows.get_error_rows()[x+known_skipped].manual_optional and len(manual_state_rows.get_error_rows()) - 1 > x + known_skipped):
+            #         known_skipped += 1
+            #
+            #     #if i am here, or the command are equal or different and cannot skip anymore
+            #     #if are equal, I do nothing and go on
+            #     #if not equal, add errors!
+            #     if not self.compare_single_current_to_manual(self.get_error_rows()[x], manual_state_rows.get_error_rows()[x+known_skipped]):
+            #         self.compare_single_current_to_manual_get_reason(self.get_error_rows()[x], manual_state_rows.get_error_rows()[x+known_skipped],
+            #                                                          different_commands, different_results, different_logs)
             known_skipped = 0
             for x in range(cur_err):
+
+                print("%s, %s" % (x, x+known_skipped))
+                if x + known_skipped >= man_err:
+                        #we skipped and the manual errors overflowned
+                        self.compare_single_current_to_manual_get_reason(self.get_error_rows()[x], None, different_commands, different_results, different_logs)
+                        continue
                 #check if there are different command names (es: BUILD vs SCREENSHOT)
-                print 'comparing %s to %s' % (self.get_error_rows()[x].command, manual_state_rows.get_error_rows()[x+known_skipped].command)
+                print 'comparing %s(%s of %s) to %s(%s of %s)' % (self.get_error_rows()[x].command, x, len(self.get_error_rows()), manual_state_rows.get_error_rows()[x+known_skipped].command, x+known_skipped, len(manual_state_rows.get_error_rows()))
 
                 #while the comparison fails but we can skip the command, then skip
                 while (not self.compare_single_current_to_manual(self.get_error_rows()[x], manual_state_rows.get_error_rows()[x+known_skipped]) and
                 manual_state_rows.get_error_rows()[x+known_skipped].manual_optional and len(manual_state_rows.get_error_rows()) - 1 > x + known_skipped):
                     known_skipped += 1
-
+                    print("ks = %s" % known_skipped)
                 #if i am here, or the command are equal or different and cannot skip anymore
                 #if are equal, I do nothing and go on
                 #if not equal, add errors!
                 if not self.compare_single_current_to_manual(self.get_error_rows()[x], manual_state_rows.get_error_rows()[x+known_skipped]):
                     self.compare_single_current_to_manual_get_reason(self.get_error_rows()[x], manual_state_rows.get_error_rows()[x+known_skipped],
                                                                      different_commands, different_results, different_logs)
-
 
             if len(different_results) > 0:
                 return False, "Command sequence is different: %s" % different_commands
@@ -277,7 +298,9 @@ class SummaryDataColl(object):
             return True
 
     def compare_single_current_to_manual_get_reason(self, curr_row, manual_row, different_commands, different_results, different_logs):
-        if curr_row.command != manual_row.command:
+        if not manual_row:
+            different_commands.append("Current:%s not present in Manual" % curr_row.command)
+        elif curr_row.command != manual_row.command:
             different_commands.append("Current:%s, Manual:%s" % (curr_row.command, manual_row.command))
 
         #check if there are different command results (es FAILED vs NO SYNC)
@@ -303,7 +326,7 @@ class SummaryDataColl(object):
             #before re.escape(summ.rite_result_log) was used instead of error_type
             #"DBReport.error_types['%s'][0]" % summ.get_error_type(),
             tup = summ.test_name, summ.vm, summ.command, summ.prg, summ.parsed_result[0], summ.rite_failed, summ.rite_fail_log
-            string_out += "self.insert_summary_manual_error(" + repr(tup) + ", \'" + summ.get_error_type() + "\', False, \"--INSERT-COMMENT-HERE--\")<br>"
+            string_out += "self.insert_summary_manual_error(" + repr(tup) + ", \'" + str(summ.get_error_type()) + "\', False, \"--INSERT-COMMENT-HERE--\")<br>"
 
         return string_out
 

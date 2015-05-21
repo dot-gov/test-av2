@@ -186,7 +186,8 @@ def process_yaml(filenames, results_to_receive):
             # also rite failed tests can have popups
             if not comparison_result['rite_ok'] and not comparison_result['saved_error']:
                 mailsender.add_result(vm, test_name, mailsender.ResultTypes.RITE_FAILS, message, popup_results=comparison_result['popup_results'],
-                                      time=comparison_result['time'])
+                                      time=comparison_result['time'], details=comparison_result['rows_obj'].get_causes(),
+                                      save_strings=comparison_result['rows_obj'].get_manual_save_string())
             elif not comparison_result['rite_ok'] and comparison_result['saved_error']:
                 mailsender.add_result(vm, test_name, mailsender.ResultTypes.RITE_KNOWN_FAILS, message, time=comparison_result['time'])
             elif not comparison_result['success'] and not comparison_result['saved_error']:
@@ -209,6 +210,13 @@ def process_yaml(filenames, results_to_receive):
             elif not comparison_result['success'] and comparison_result['saved_error']:
                 mailsender.add_result(vm, test_name, mailsender.ResultTypes.KNOWN_ERRORS, message,
                                       saved_error_comment=comparison_result['saved_error_comment'], time=comparison_result['time'])
+                #tries to remove retest (because it can be a retest and have to be updated)
+                if test_name in retests:
+                    if vm in retests[test_name]:
+                        retests[test_name].remove(vm)
+                    # if in this retests[test_name] remains no vm, deletes the test from retests
+                    if not len(retests[test_name]):
+                        del retests[test_name]
             #case in wich we saved an error but the test passed
             elif comparison_result['success'] and comparison_result['saved_error']:
                 mailsender.add_result(vm, test_name, mailsender.ResultTypes.KNOWN_ERRORS_BUT_PASSED, message,
@@ -217,6 +225,13 @@ def process_yaml(filenames, results_to_receive):
             else:
                 if test_name not in mailsender.invert_result_tests:
                     mailsender.add_result(vm, test_name, mailsender.ResultTypes.OK, message, time=comparison_result['time'])
+                    #tries to remove retest (because it can be a retest and have to be updated)
+                    if test_name in retests:
+                        if vm in retests[test_name]:
+                            retests[test_name].remove(vm)
+                        # if in this retests[test_name] remains no vm, deletes the test from retests
+                        if not len(retests[test_name]):
+                            del retests[test_name]
                 else:
                     mailsender.add_result(vm, test_name, mailsender.ResultTypes.NEW_ERRORS, message,
                                           details=comparison_result['rows_obj'].get_causes(),

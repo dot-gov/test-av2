@@ -205,11 +205,11 @@ class DBReport(object):
                                         ))
         return SummaryDataColl(summarys)
 
-    error_types = {'popup': [u"\\[.*\\]", u'POPUP', "Popup(s) detected"],
+    error_types = {'None': [u".*", u'REPORT_KIND_INIT', "Meta error for Rite Fails"],
+                   'popup': [u"\\[.*\\]", u'POPUP', "Popup(s) detected"],
                    'infected': [u'VM\\ is\\ INFECTED', u'CHECK_INFECTION', "Vm is infected after instance close. Usual if the agent can\'t sync"],
                    'no_instance_id': [u"\\[\\'\\+\\ FAILED\\ NO\\ INSTANCE\\_ID\\'\\]", u'BUILD_SRV', "Agent cannot sync"],
                    'trigger': [u"\\[\\'TRIGGER\\ FAILED.*", u'BUILD_SRV', u'BUILD_SRV', "Rite cannot trigger sync with mouse emulation"],
-                   '193': [u"\\[\\'\\+\\ SUCCESS\\ UPGRADED\\ SYNC\\'\\,\\ \\'\\+\\ ERROR\\:\\ \\[Error\\ 193\\]\\ \\%1\\ is\\ not\\ a\\ valid\\ Win32\\ application\\'\\]", u'BUILD_SRV', "Mysterious error ([Error 193] %1 is not a valid Win32 application) in which the scout is called but cannot execute AFTER soldier upgrade"],
                    #statics
                    'android_apk_static': [u'\\[\\"\\+\\ FAILED\\ CHECK\\_STATIC\\.\\ SIGNATURE\\ DETECTION\\:\\ \\[\\\'build\\/android\\\\\\\\\\\\\\\\install\\.default\\.apk.*\\]', u'BUILD_SRV', "Android apk is detected (static)"],
                    'blackberry': [u'\\[\\"\\+\\ ERROR\\:\\ \\[Errno\\ 13\\]\\ Permission\\ denied\\:\\ \\\'build\\/blackberry.*\\]', u'BUILD_SRV', "Blackberry static detection (Permission denied)"],
@@ -238,6 +238,8 @@ class DBReport(object):
                    'failed_soldier_upgrade': [u"\\[\\'\\+\\ SUCCESS\\ UPGRADED\\ SYNC\\'\\,\\ \\'\\+\\ FAILED\\ UPGRADE\\ SOLDIER\\'\\]", u'BUILD_SRV', "Impossibile to upgrade to soldier"],
                    'failed_soldier_static': ["\[\'\+\ FAILED\ SCOUT\ BUILD\.\ CANNOT\ FIND\ ZIP\ FILE\ C\:\\\\AVTest\\\\AVAgent\\\\build\_windows\_scout\_silent\_soldier\_fast\.zip\ TO\ UNZIP\ IT\'\]", u'BUILD_SRV', "Impossibile to unzip soldier agent"],
 
+                   'soldier_upgrade_0_bytes_exe': ["\[\'\+\ SUCCESS\ UPGRADED\ SYNC\ \(upgrade\ command\ received\)\'\,\ \"\+\ FAILED\ EXECUTION\ \-\ the\ executable\ \'.*\'\ is\ not\ recognized\ by\ windows\.\"\,\ \'\+\ FAILED\ EXECUTE\ SOLDIER\'\]", u'BUILD_SRV', "Soldier upgrade was detected and resulting exe file is currupted."],
+                   #'193': [u"\\[\\'\\+\\ SUCCESS\\ UPGRADED\\ SYNC\\'\\,\\ \\'\\+\\ ERROR\\:\\ \\[Error\\ 193\\]\\ \\%1\\ is\\ not\\ a\\ valid\\ Win32\\ application\\'\\]", u'BUILD_SRV', "Mysterious error ([Error 193] %1 is not a valid Win32 application) in which the scout is called but cannot execute AFTER soldier upgrade"],
                    }
 
     def apply_known_errors(self):
@@ -258,12 +260,12 @@ class DBReport(object):
             #Exploit
         self.insert_summary_manual_error((u'VM_EXPLOIT_SRV', u'kis14', u'CHECK_INFECTION', 26, 'FAILED', 0, u''), 'infected', False, "KIS 14 EXPLOIT")
 
-        #eset soldier (is elite)
-        #self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'eset', u'BUILD_SRV', 26, u"\\[.*\\]", 'FAILED', 0, u''), False, "ESET Soldier (is an elite)")
-        #self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'eset', u'CHECK_INFECTION', 30, 'FAILED', 0, u''), 'infected', False, "ESET Soldier (is an elite)")
+        #set soldier (is elite)
+        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'eset', u'BUILD_SRV', 29, 'FAILED', 0, u''), 'soldier_upgrade_0_bytes_exe', False, "ESET Soldier (is an elite)")
+        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'eset', u'CHECK_INFECTION', 33, 'FAILED', 0, u''), 'infected', False, "ESET Soldier (is an elite)")
 
         #eset7 soldier (popup regexp)
-        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'eset7', u'BUILD_SRV', 27, 'FAILED', 0, u''), '193', False, "ESET 7 Soldier (is an elite)")
+        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'eset7', u'BUILD_SRV', 27, 'FAILED', 0, u''), 'soldier_upgrade_0_bytes_exe', False, "ESET 7 Soldier (is an elite)")
         self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'eset7', u'POPUP', 28, 'POPUP', 0, u''), 'popup', False, "ESET 7 Soldier (is an elite)")
         self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'eset7', u'CHECK_INFECTION', 31, 'FAILED', 0, u''), 'infected', False, "ESET 7 Soldier (is an elite)")
 
@@ -294,10 +296,6 @@ class DBReport(object):
         self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'risint', u'BUILD_SRV', 134, 'FAILED', 0, u''), 'trigger', False, "RISING (fails mostly every test)")
         self.insert_summary_manual_error((u'VM_ELITE_FAST_SRV', u'risint', u'BUILD_SRV', 26, 'FAILED', 0, u''), 'no_instance_id', False, "RISING (fails mostly every test)")
         self.insert_summary_manual_error((u'VM_ELITE_FAST_SRV', u'risint', u'CHECK_INFECTION', 29, 'FAILED', 0, u''), 'infected', False, "RISING (fails mostly every test)")
-
-
-
-
 
         #CMCAV
             #elite
@@ -357,9 +355,9 @@ class DBReport(object):
             #SOLDIER (BUT IS ELITE)
         self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'avast', u'CHECK_INFECTION', 31, 'FAILED', 0, u''), 'infected', False, "AVAST SOLDIER FAILS UNINSTALLATION (Avast is Elite)")
             #(static ios and static exploit)
-        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'avast', u'BUILD_SRV', 49, 'FAILED', 0, u''), 'ios_static', False, "--TESTME--")
-        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'avast', u'BUILD_SRV', 63, 'FAILED', 0, u''), 'exploit_pdf', True, "--TESTME--")
-        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'avast', u'POPUP', 65, 'POPUP', 0, u''), 'popup', False, "--TESTME--")
+        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'avast', u'BUILD_SRV', 49, 'FAILED', 0, u''), 'ios_static', False, "AVAST IOS + EXPLOIT_PDF STATIC")
+        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'avast', u'BUILD_SRV', 63, 'FAILED', 0, u''), 'exploit_pdf', True, "AVAST IOS + EXPLOIT_PDF STATIC")
+        self.insert_summary_manual_error((u'VM_STATIC_SRV', u'avast', u'POPUP', 65, 'POPUP', 0, u''), 'popup', False, "AVAST IOS + EXPLOIT_PDF STATIC")
 
         #kis 32 (blacklisted the scout exits)
             # static bb + ios
@@ -477,7 +475,9 @@ class DBReport(object):
         self.insert_summary_manual_error((u'VM_STATIC_SRV', u'adaware', u'BUILD_SRV', 44, 'FAILED', 0, u''), 'android_apk_static', False, "Adaware Static Android APK")
         self.insert_summary_manual_error((u'VM_STATIC_SRV', u'adaware', u'POPUP', 65, 'POPUP', 0, u''), 'popup', False, "Adaware Static Android APK")
 
-
+        #kis14 failed: "No Report"
+        self.insert_summary_manual_error((u'VM_ELITE_FAST_SRV', u'kis14', u'REPORT_KIND_INIT', 0, 'PASSED', 1, u'No Report'), 'None', False, "Kis14 at uninstall deletes python.")
+        #self.insert_summary_manual_error((u'VM_STATIC_SRV', u'adaware', u'POPUP', 65, 'POPUP', True, "No Report"), 'popup', False, "Uninstalls python")
 
     def insert_summary_manual_error(self, txt_tuple, error_type, manual_optional, manual_comment):
         test, vm, command, prg, result_state, rite_failed, rite_fail_log = txt_tuple

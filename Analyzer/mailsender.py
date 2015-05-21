@@ -1,3 +1,4 @@
+from ConfigParser import ConfigParser
 import os
 import subprocess
 import yaml
@@ -62,6 +63,7 @@ class MailSender(object):
     stats_by_test = {}
     stats_by_result_type = {}
     stats_by_vm = {}
+    times_by_vm = {}
     #stat vm/test matrix (which is an av-indexed dictionary)
     expected_table = {}
 
@@ -73,6 +75,7 @@ class MailSender(object):
     results_to_receive = []
 
     default_yaml = None
+    vms_cfg = None
 
     # , "f.cornelli@hackingteam.com", "m.oliva@hackingteam.com"
     def send_mail(self, mail_recipients=["m.losito@hackingteam.com", "f.cornelli@hackingteam.com", "m.oliva@hackingteam.com"], mail_server="mail.hackingteam.com"):
@@ -135,6 +138,7 @@ class MailSender(object):
     def generate_text(self, msg):
 
         self.load_default_yaml('Rite/AVAgent/default.yaml')
+        self.load_vms_cfg('Rite/AVMaster/conf/vms-rite.cfg')
 
         #css styles
         mail_message = self.get_html_header()
@@ -179,7 +183,7 @@ class MailSender(object):
                         box-shadow: 3px 3px 2px #888888;
                         padding: 4px;
 
-                        max-width: 600px;
+                        max-width: 680px;
                         }
             div.cleancontainer {
                         border: 1px solid #707070;
@@ -307,9 +311,9 @@ class MailSender(object):
                         if result_type == self.ResultTypes.KNOWN_ERRORS_BUT_PASSED and self.disabled_today(test):
                             continue
                         mail_message += '<p class="tab">Test: %s, Execution time in minutes: %s</p><br>' % (self.decorate_test(test, vm), self.all_results[vm][test]['time'])
-                        mail_message += '<div class="doubletab">%s</div><br>' % self.all_results[vm][test]['message']  # before here was used cgi.escape(
                         if self.all_results[vm][test]['saved_error_comment']:
                             mail_message += '<div class="doubletab" style="color: red;">Comment: %s</div><br>' % cgi.escape(self.all_results[vm][test]['saved_error_comment'])
+                        mail_message += '<div class="doubletab">%s</div><br>' % self.all_results[vm][test]['message']  # before here was used cgi.escape(
                         #details for errors
                         if error_details:
                             mail_message += '<details close><summary class="bold">ERROR LOG</summary><div class="doubletab">'
@@ -320,7 +324,7 @@ class MailSender(object):
                             mail_message += "</div></details>"
 
                         #in error details I dont's show crops
-                        else:
+                        if result_type != self.ResultTypes.NEW_ERRORS or not error_details:
                             if self.all_results[vm][test]['crop_filenames']:
                             #crops
                             #here I re-analyze every crop, for 2 reasons: 1: i do not have to bring all the values to this level; 2 to check consistency
@@ -382,7 +386,7 @@ class MailSender(object):
         ocrd = OcrDict()
 
         mail_message = '<br><a id="rite_fails"><div class="boldback" style="background-color:darkred">RITE NEW FAILS - these are the tests in which the test system (rite) failed</div></a><br>'
-        mail_message += self.get_result_type_section_html(self.ResultTypes.RITE_FAILS, ocrd, mime_msg)
+        mail_message += self.get_result_type_section_html(self.ResultTypes.RITE_FAILS, ocrd, mime_msg, error_details=True)
 
         mail_message += '<br><a id="rite_known_fails"><div class="boldback" style="background-color:green">RITE KNOWN FAILS - these are the tests in which the test system (rite) failed but we previously aknowledged that</div></a><br>'
         mail_message += self.get_result_type_section_html(self.ResultTypes.RITE_KNOWN_FAILS, ocrd, mime_msg)
@@ -412,7 +416,7 @@ class MailSender(object):
         for vm in self.known_error_reports:
             mail_message += '<details close><summary style="display:inline">Analyzed VM: %s</summary><p><br>' % self.decorate_vm(vm)
             for test in self.known_error_reports[vm]:
-                mail_message += '<p class="tab"><b>Test: ' + test + '</b> - Comment: ' + self.known_error_reports[vm][test][0][3] + '</p>'
+                mail_message += '<p class="tab"><b>Test: ' + test + '</b> - Comment: <b>' + self.known_error_reports[vm][test][0][3] + '</b></p>'
                 for res in self.known_error_reports[vm][test]:
                     vm, test, type_comment, manual_comment, manual_optional = res
                     mail_message += '<div class="doubletab">ERROR: %s - Occurs only some times: %s<br>' % (type_comment, manual_optional) + '</div>' #"%s - %s - %s - %s - manual_optional= %s <br>" %
@@ -454,7 +458,7 @@ class MailSender(object):
         #not implemented
         #stat_text += '<a href="#not_enabled">Not Enabled: %s<br></a>' % self.not_enabled_num
         stat_text += "TOTAL: %s<br>" % self.total_tests_num
-        stat_text += '<p style="font-weight: normal;">Always remember that th "Known Errors" are very very important because they are the problems we known we have. Every known error have a comment.</p><br>'
+        stat_text += '<p style="font-weight: normal;">Always remember that the "Known Errors" are very very important because they are the problems we known we have. Every known error have a comment.</p>'
         stat_text += '</div>'
         stat_text += '<br><a id="retests"><div class="boldback" style="color: black; font-size: 125%;">Stats by test</div></a><br>'
         stat_text += '<div class="testcontainer">'
@@ -502,7 +506,7 @@ class MailSender(object):
                 table_text += '<th><span title="%s">%s</span></th>' % (test, test_title)
         for vm in sorted(self.expected_table):
             table_text += '<tr>'
-            table_text += '<td class="av">%s</td>' % self.decorate_vm(vm)
+            table_text += '<td class="av">%s</td>' % self.decorate_vm(vm, icons=True)
             for test in self.results_to_receive:
                 table_text += self.decorate_result(self.expected_table[vm][test], vm, test, self.all_results[vm][test]['time'])
             table_text += '</tr>'
@@ -515,17 +519,17 @@ class MailSender(object):
 
         percent_available = (float(available)/(float(used)+float(available)) * 100)
 
-        table_text += '<div style="margin-left:auto;margin-right:auto;">RF=Rite new Fails, RK=Rite Known fails, NE=New Error, KE=Known Error, KP=Known error but Passed, OK=OK, NT=Not enabled Today</div><hr>'
+        table_text += '<div style="margin-left:auto;margin-right:auto;">RF=Rite new Fails, RK=Rite Known fails, NE=New Error, KE=Known Error, KP=Known error but Passed, OK=OK, NT=Not enabled Today, NR=Not run, probably caused by previous error(s)</div><hr>'
         table_text += '<div style="margin-left:auto;margin-right:auto;">Temporarily deactivated vms: <b>%s</b><br><hr>' % VM_ALL.vm_deactivated_temp
-        table_text += '<img class="icon" src="cid:ok">= Silent ok<br>'
-        table_text += '<img class="icon" src="cid:error">= Silent new error<br>'
+        table_text += '<img class="icon" src="cid:ok">= Silent ok (Elite or Soldier is evaluated, depending on soldierlist)<br>'
+        table_text += '<img class="icon" src="cid:error">= Silent new error (Elite or Soldier is evaluated, depending on soldierlist)<br>'
         table_text += '<img class="icon" src="cid:fix">= VM to fix (only Elite or Soldier test is evaluated)<br>'
         table_text += '<img class="icon" src="cid:soldier">= In SoldierList (Soldier test is evaluated)<br>'
-        table_text += '<img class="icon" src="cid:blacklist">= In Blacklist (no test is evaluated)<br>'
-        table_text += '<img class="icon" src="cid:save">= Saved error or fail (for Elite or Soldier)<br><hr>'
-        table_text += 'Available space on Rite mountpoint "%s" is: %.2f%%<br>' % (mountpoint, percent_available)
+        table_text += '<img class="icon" src="cid:blacklist">= In Blacklist (No test is evaluated)<br>'
+        table_text += '<img class="icon" src="cid:save">= Saved error or saved fail (for Elite or Soldier)<br><hr>'
+        table_text += 'Available space on Rite mountpoint "%s" is: %.2f%%' % (mountpoint, percent_available)
         if percent_available < 10:
-            table_text += '<b>WARNING LOW DISK FREE ON RITE!</b><br>'
+            table_text += '<b> WARNING LOW DISK FREE ON RITE!</b><br>'
         table_text += '</div>'
 
         table_text += "</div>"
@@ -549,6 +553,7 @@ class MailSender(object):
         self.stats_by_result_type[self.ResultTypes.NOT_RUN] = 0
 
         for vm in self.all_results:
+            self.times_by_vm[vm] = 0
             for test in self.all_results[vm]:
                 #adds to total
                 self.total_tests_num += 1
@@ -571,22 +576,20 @@ class MailSender(object):
                 else:
                     self.stats_by_test[test]['total'] += 1
 
-                #adds stats by result_type
+                # adds stats by result_type
                 if not self.all_results[vm][test]['result_type'] in self.stats_by_result_type:
                     self.stats_by_result_type[self.all_results[vm][test]['result_type']] = 1
                 else:
                     self.stats_by_result_type[self.all_results[vm][test]['result_type']] += 1
 
                 #calculating silent invisibility for av
-
                 if test == 'VM_SOLDIER_SRV' and vm in self.default_yaml['soldierlist']:
                     self.stats_by_vm[vm] = self.all_results[vm][test]['result_type']
                 elif test == 'VM_ELITE_FAST_SRV' and vm not in self.default_yaml['blacklist'] and vm not in self.default_yaml['soldierlist']:
                     self.stats_by_vm[vm] = self.all_results[vm][test]['result_type']
 
+                self.times_by_vm[vm] += self.all_results[vm][test]['time']
 
-        #calculate sanity  - test success percentage, higher is better
-        # self.stats_by_result_type[self.ResultTypes.RITE_FAILS]
         if self.total_tests_num > 0:
 
             self.sanity_percentage = round((((self.stats_by_result_type[self.ResultTypes.OK] +
@@ -634,9 +637,9 @@ class MailSender(object):
         def create_link(text, vm, test, css_class):
             border = ''
             if test == 'VM_SOLDIER_SRV' and vm in self.default_yaml['soldierlist']:
-                border = 'style="border: 2px solid black;"'
+                border = 'style="border: 3px solid black;"'
             elif test == 'VM_ELITE_FAST_SRV' and vm not in self.default_yaml['blacklist'] and vm not in self.default_yaml['soldierlist']:
-                border = 'style="border: 2px solid black;"'
+                border = 'style="border: 3px solid black;"'
             return '<td class="%s" %s><a href="#res_%s_%s">%s<sup>%s</sup></td>' % (css_class, border, vm, test, text, time_string)
 
         if result == self.ResultTypes.RITE_FAILS:
@@ -667,16 +670,21 @@ class MailSender(object):
         else:
             return '<td class="white">??</td>'
 
-    def decorate_vm(self, vm):
+    #icons are showed only in header where icons=True
+    def decorate_vm(self, vm, icons=False):
         vm_txt = vm
+        #adds level icon
         if vm in self.default_yaml['soldierlist']:
             #vm_txt += '<sub style="color: red;">[soldier]</sub>'
             vm_txt += '<img class="icon" src="cid:soldier">'
         if vm in self.default_yaml['blacklist']:
             #vm_txt += '<sub style="color: black;">[blacklist]</sub>'
             vm_txt += '<img class="icon" src="cid:blacklist">'
+        #adds virtual machine name
+        vm_txt += "<sup>" + self.get_vm_name(vm) + "</sup>"
 
-        if vm in self.stats_by_vm:
+        #adds result icon(s)
+        if vm in self.stats_by_vm and icons:
             #errors
             if self.stats_by_vm[vm] == self.ResultTypes.NEW_ERRORS:
                 vm_txt += '<img class="icon" src="cid:error">'
@@ -689,6 +697,11 @@ class MailSender(object):
             #if saved error
             if self.stats_by_vm[vm] in [self.ResultTypes.KNOWN_ERRORS, self.ResultTypes.KNOWN_ERRORS_BUT_PASSED, self.ResultTypes.RITE_KNOWN_FAILS]:
                 vm_txt += '<img class="icon" src="cid:save">'
+
+        #writes total time for vm (only in header)
+        if icons:
+            if self.times_by_vm[vm]:
+                vm_txt += "[" + str(self.times_by_vm[vm]) + "]"
 
         if vm in VM_ALL.vm_first_rite:
             return '<div style="color: red;font-weight: bold; display:inline;">%s</div>' % vm_txt
@@ -716,6 +729,21 @@ class MailSender(object):
     def load_default_yaml(self, def_file):
         stream = file(def_file, 'r')
         self.default_yaml = y = yaml.load(stream)
+
+    def load_vms_cfg(self, def_file):
+        # stream = file(def_file, 'r')
+        # self.vms_yaml = y = yaml.load(stream)
+        #
+        self.vms_cfg = ConfigParser()
+        self.vms_cfg.read(def_file)
+
+    def get_vm_name(self, vm):
+        path = self.vms_cfg.get("vms", vm)
+        path = path.replace(".vmx", "")
+        #example: [VMFuzz] Win7-Zoneal/Win7-Zoneal.vmx
+        vm_name = path.split("/")[1]
+        storage_name = (path.split("]")[0]).split("[")[1]
+        return vm_name + "(" + storage_name + ")"
 
     def attach_images(self, mime_msg):
         self.attach_image('logo', mime_msg)
