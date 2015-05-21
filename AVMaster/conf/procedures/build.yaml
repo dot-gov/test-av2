@@ -203,6 +203,28 @@ VM_SOLDIER:
     #- RELOG
 
 
+VM_SOLDIER_ACHILLE:
+    - CALL: INIT_DISPATCH
+    - SET:
+        backend: 172.20.20.119
+        frontend: 172.20.20.119
+    - POPUP: [ True, True ]
+    - BUILD: [ scout, windows, silent ]
+    - SLEEP: 30
+    - ON_ERROR: CONTINUE
+    - POPUP: [ False, True ]
+    - RELOG
+
+    - POPUP: [ True, True ]
+    - BUILD: [ soldier_fast, windows, silent ]
+    - POPUP: [ False, True ]
+    - SCREENSHOT
+    - ON_ERROR: SKIP
+    - CHECK_INFECTION
+    #to be sure, we uninstall
+    - UNINSTALL
+
+
 VM_SOLDIER_SRV:
     - CALL: INIT_DISPATCH
     #new for Popup
@@ -689,6 +711,25 @@ SYSTEM_SOLDIER:
     - CALL: END_DISPATCH
 
 
+SYSTEM_SOLDIER_ACHILLE:
+    - VM_ALL
+    - ON_ERROR: SKIP
+    - SLEEP: [1, 600]
+    # CLEAN_EV no more useful - instances are deleted during run and factories are deleted daily
+    # init_dispatch needed for clean evidences (to be removed)
+    #- CALL: INIT_DISPATCH
+    #- CALL: VM_CLEAN_EVIDENCES_AND_CACHE
+    - CALL: SET_MAIL
+    - REPORT:
+        - VM_SOLDIER_ACHILLE: ['AV Invisibility', 'Soldier']
+    # moved in VM_procedures: screnshot and uninstall
+    #- SCREENSHOT
+    #- UNINSTALL
+    - CALL: VM_GET_LOG
+    - CALL: END_DISPATCH
+
+
+
 SYSTEM_SOLDIER_SRV:
     - VM_ALL
     - ON_ERROR: SKIP
@@ -932,9 +973,21 @@ VM_PUSH_VIRUS:
     - POPUP: [ False, True ]
     #- CROP: [ False, False ]
 
+VM_PUSH_VIRUS_SCAN:
+    - ON_ERROR: CONTINUE
+    - SLEEP: 60
+    - POPUP: [ True, True ]
+    #- CROP: True
+    - PUSH: [ AVAgent/assets/vira/conficker.dll, AVAgent/assets/vira/eicar.com ]
+    - SLEEP: 90
+    - CHECK_STATIC_SCAN: [ AVAgent/assets/vira/conficker.dll, AVAgent/assets/vira/eicar.com ]
+    - SLEEP: 30
+    - POPUP: [ False, True ]
+    #- CROP: [ False, False ]
+
 VM_PUSH_VIRUS_STAT:
     - ON_ERROR: CONTINUE
-    - SLEEP: 300
+    - SLEEP: 60
     - POPUP: [ True, True ]
     - CHECK_STATISTIC_STATIC: [ AVAgent/assets/vira/* , 2 , 0 ]
     - SLEEP: 60
@@ -952,6 +1005,16 @@ SYSTEM_POSITIVE:
     - UNINSTALL
     - CALL: END_DISPATCH
 
+SYSTEM_POSITIVE_SCAN:
+    - VM_ALL
+    - ON_ERROR: SKIP
+    - SLEEP: [10, 600]
+    - CALL: INIT_DISPATCH
+    - CALL: SET_MAIL
+    - REPORT:
+        - VM_PUSH_VIRUS_SCAN: ['AVM Update', 'Positive static check', INVERT]
+    - UNINSTALL
+    - CALL: END_DISPATCH
 
 SYSTEM_POSITIVE_STAT:
     - VM_ALL
@@ -1440,6 +1503,24 @@ UPD_AGENT:
     - WAIT_SHUTDOWN
     - START_VM: AV_AGENT
     - UNINSTALL
+
+
+UPDATE_AV_F:
+    - VM_ALL
+    - ON_ERROR: STOP
+    - CALL: SET_MAIL
+    - REPORT:
+        - UPD_AV_F: ['AVM Update', 'Update AV']
+        - UPD_REFRESH
+    - CALL: END_DISPATCH
+
+#indirectly called by update.sh
+UPD_AV_F:
+    - CALL: UPD_AGENT
+    - SLEEP: 10
+    - STOP_VM: 300
+    - WAIT_SHUTDOWN
+
 
 #indirectly called by update.sh
 UPD_REFRESH:

@@ -573,7 +573,7 @@ TEST_PUSHZIP_NORETRY:
     - PUSHZIP: [ AVAgent/assets/config* ]
 
 TEST_PUSHZIP_RETRY:
-    - PUSHZIP: [ 3, AVAgent/assets/config*, AVAgent/assets/keyinject.exe, AVAgent/assets/windows/* ]
+    - PUSHZIP: [ 1, sync.bat, AVAgent/assets/config*, AVAgent/assets/keyinject.exe ]
 
 TEST_TRIGGER:
     - TRIGGER
@@ -587,6 +587,22 @@ TEST_UPDATE_CODE_ML_PUPPET:
 TEST_UPDATE_CODE_ML_PUPPET_SNAP:
     - VM_ALL
     - SLEEP: [3, 240]
+    - INSTALL_AGENT: 10.1.20.1
+    - SLEEP: 60
+    - STOP_VM: 300
+    - WAIT_SHUTDOWN
+    - REFRESH_SNAPSHOT
+
+TEST_UPDATE_CODE_ML_PUPPET_SNAP_START:
+    - VM_ALL
+    - CALL: SET_MAIL
+    - ON_ERROR: SKIP
+    - SLEEP: [3, 240]
+    #init is needed by clean_evidences (just here)
+    - CALL: INIT_DISPATCH
+    - CALL: VM_CLEAN_EVIDENCES_AND_CACHE
+    #qui cancello tutti i sample per la giornata!
+    - BUILD_CACHE_CLEAN: False
     - INSTALL_AGENT: 10.1.20.1
     - SLEEP: 60
     - STOP_VM: 300
@@ -805,4 +821,4 @@ VM_SOLDIER_NEW_STAT:
 
 
 CHECK_SOLDIER_NEW_STAT:
-    - CHECK_STATISTIC_STATIC: [ AVAgent/assets/900_New_Soldier/* , 30 , 0 ]
+    - CHECK_STATISTIC_STATIC: [ AVAgent/assets/900_New_Soldier/* , 30 , 2 ]

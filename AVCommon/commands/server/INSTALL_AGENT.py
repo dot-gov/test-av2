@@ -59,8 +59,9 @@ def execute(vm, protocol, inst_args):
     matches = []
     for root, dirnames, filenames in os.walk('./'):
         for filename in filenames:
-            if re.match('.*\.py|.*\.yaml|.*\.exe|.*\.json', filename):  # fnmatch.filter(filenames, '*.c') or filename in fnmatch.filter(filenames, '*.c') or filename in fnmatch.filter(filenames, '*.c'):
-                matches.append(os.path.join(root, filename))
+            if re.match('.*\.py$|.*\.yaml|.*\.exe|.*\.json', filename):  # fnmatch.filter(filenames, '*.c') or filename in fnmatch.filter(filenames, '*.c') or filename in fnmatch.filter(filenames, '*.c'):
+                if "./logs/" not in filename:
+                    matches.append(os.path.join(root, filename))
 
     matches.sort(key=lambda fil: os.stat(fil).st_mtime)
 
@@ -103,7 +104,8 @@ def execute(vm, protocol, inst_args):
     #not more useful
     #DELETE_DIR.execute(vm, protocol, "/Users/avtest/Desktop/AVTest/")
 
-    zip_success, zip_reason = PUSHZIP.execute(vm, protocol, ["timestamp.txt", "AVAgent/*.py", "AVAgent/*.yaml", "AVCommon/*.py", "AVCommon/*.yaml", "AVCommon/commands/client/*.py", "AVCommon/commands/meta/*.py", "AVCommon/commands/*.py", "AVAgent/assets/config*", "AVAgent/assets/keyinject.exe", "AVAgent/assets/exec_zip.exe", "AVAgent/assets/getusertime.exe", "AVAgent/assets/windows/*"])
+    #retries 1 times after first time
+    zip_success, zip_reason = PUSHZIP.execute(vm, protocol, [1, "timestamp.txt", "AVAgent/*.py", "AVAgent/*.yaml", "AVCommon/*.py", "AVCommon/*.yaml", "AVCommon/commands/client/*.py", "AVCommon/commands/meta/*.py", "AVCommon/commands/*.py", "AVCommon/conf/av/*.yaml", "AVCommon/conf/*.yaml", "AVAgent/assets/config*", "AVAgent/assets/keyinject.exe", "AVAgent/assets/exec_zip.exe", "AVAgent/assets/getusertime.exe", "AVAgent/assets/windows/*"])
 
     cmd = "rmdir /s /q C:\\AVTest\\running \r\n" \
           "cd C:\\AVTest\\AVAgent\r\n" \
@@ -169,8 +171,8 @@ def execute(vm, protocol, inst_args):
 
     remote_name = "C:\\AVTest\\AVAgent\\start.bat"
 
-    for i in range(1, 9):
-        logging.debug("I'll copy %s - start.bat to %s (try %s of 8)" % (filename, i, vm))
+    for i in range(1, 5):
+        logging.debug("I'll copy %s - start.bat to %s (try %s of 4)" % (filename, vm, i))
         assert os.path.exists(filename)
         r = vm_manager.execute(vm, "copyFileToGuest", filename, remote_name)
         if r > 0:

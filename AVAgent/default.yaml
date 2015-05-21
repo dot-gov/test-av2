@@ -4,6 +4,11 @@ blacklist: [emsisoft,sophos,kis32,cmcav]
 
 crop_whitelist: []
 
+#Achille
+#backend: 172.20.20.119
+#frontend: 172.20.20.119
+
+#Minotauro
 backend: 192.168.100.201
 frontend: 192.168.100.204
 

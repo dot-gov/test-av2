@@ -16,6 +16,7 @@ def on_answer(vm, success, answer):
     pass
 
 
+#using wildcards and directories is discouraged. Probably screws up the test COMPLETELY
 def execute(vm, args):
     logging.debug("Checking files: %s" % args)
     files = [ glob.glob(f) for f in args ]

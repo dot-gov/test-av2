@@ -98,6 +98,8 @@ def pushzip(vm, args):
     zf.close()
     #zip file is ready
 
+    file_number = len(all_src)
+
     #just to be sure we wait the zipfile creation
     for ret in range(0, 10):
         if os.path.exists(zfname):
@@ -129,7 +131,7 @@ def pushzip(vm, args):
         ret = vm_manager.execute(vm, "executeCmd", *unzipargs)
         logging.debug("ret: %s" % ret)
         #sleep(3 * tr)
-        sleep(5 * tr)
+        sleep(5 * tr + file_number)
 
         #if there are retries I check the existance of files and if are all present, I terminate the iteration
         if retry > 1:
@@ -140,6 +142,7 @@ def pushzip(vm, args):
             to_check_files = get_remote_filenames(all_src)
             for file_to_check in to_check_files:
                 if file_to_check not in found_files:
+                    logging.debug("NOT FOUND: %s" % file_to_check)
                     failed = True
             if not failed:
                 return True, "Files copied on VM"
@@ -159,7 +162,9 @@ def pushzip(vm, args):
 def get_remote_filenames(all_src):
     remote_files = []
     for file_to_convert in all_src:
-        remote_file = config.basedir_av + "\\" + file_to_convert
+        if not file_to_convert.startswith("\\") and not file_to_convert.startswith("/"):
+            file_to_convert = "\\" + file_to_convert
+        remote_file = config.basedir_av + file_to_convert
         remote_files.append(remote_file.replace("/", "\\"))
     return remote_files
 
@@ -168,7 +173,12 @@ def get_all_dirs(all_src):
     all_dir = set()
     for file_to_check in all_src:
         dir_to_check = ntpath.dirname(file_to_check.replace("/", "\\"))  # rimuovi tutto quello che c'e' dopo l'ultima /
-        dir_remota = config.basedir_av + "\\" + dir_to_check
+        # print "all_dirs_to_check -> " + dir_to_check
+        if dir_to_check == "":
+            dir_remota = config.basedir_av
+        else:
+            dir_remota = config.basedir_av + "\\" + dir_to_check
+        # print "all_dirs_to_list -> " + dir_remota.replace("/", "\\")
         all_dir.add(dir_remota.replace("/", "\\"))
     return all_dir
 

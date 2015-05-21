@@ -1,0 +1,21 @@
+# ESET Win7
+name: 'Eset'
+#if in First:
+important: True
+#Level is elite, soldier, scout, exit (exit is for blacklisted agents that terminates nd deletes scout)
+level: elite
+iso_level: elite
+os: Win7
+vm_path: '[VMFuzz] Win7-ESET/Win7-ESET.vmx'
+#documentation
+full: True
+license_expiry_date:
+bits: 64
+cloud: True
+firewall: Disabled
+#update
+update_cmd:
+last_updated_date:
+#run lo scan cmd puo' contenere un placeholder per la cartella oppure no. <*FOLDER*>
+scan_cmd: '"C:\Program Files (x86)\Norton Internet Security\Engine\21.6.0.32\NAVW32" <*FOLDER*>'
+hot_word_report:

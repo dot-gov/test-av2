@@ -5,20 +5,17 @@ import socket
 import urllib2
 
 import os.path
-import re
 import traceback
 import subprocess
 import Queue
 import threading
-import argparse
 import itertools
-import random
-from ConfigParser import ConfigParser
 
 import ctypes
 import shutil
 import glob
 from AVAgent import util_agent
+from AVCommon.av import AV, UndefinedAV
 
 from AVCommon.logger import logging
 from AVCommon import process
@@ -38,8 +35,7 @@ MOUSEEVENTF_CLICK = MOUSEEVENTF_LEFTDOWN + MOUSEEVENTF_LEFTUP
 #names = ['BTHSAmpPalService','CyCpIo','CyHidWin','iSCTsysTray','quickset','agent']
 #names = ['btplayerctrl', 'HydraDM', 'iFrmewrk', 'Toaster', 'rusb3mon', 'SynTPEnh', 'agent']
 #names = ['8169Diag', 'CCleaner', 'Linkman', 'PCSwift', 'PerfTune', 'SystemOptimizer', 'agent']
-# names = ['ChipUtil', 'SmartDefrag', 'DiskInfo', 'EditPad', 'TreeSizeFree', 'bkmaker', 'agent']
-
+#names = ['ChipUtil', 'SmartDefrag', 'DiskInfo', 'EditPad', 'TreeSizeFree', 'bkmaker', 'agent']
 #9_6 beta
 #names = ['bleachbit', 'BluetoothView', 'CPUStabTest', 'MzRAMBooster', 'RealTemp', 'ultradefrag', 'agent']
 #9_6
@@ -53,7 +49,130 @@ def unzip(filename, fdir):
     return utils.unzip(filename, fdir, logging.debug)
 
 
-def check_static(files, report=None):
+def add_agent_exe(files, files_to_check):
+    # for retrocompatibility, we add an agent.exe if it is not present. This is not added to the current list of files
+    agent_exe_found = False
+    for src in files:
+        if src.endswith("\\agent.exe"):
+            agent_exe_found = True
+    if not agent_exe_found:
+        for src in files:
+            if os.path.exists(src) and str(src).endswith(".exe"):
+                dst = os.path.join(os.path.dirname(src), "agent.exe")
+                files_to_check.add(dst)
+                logging.debug("Creating one agent.exe - Copying %s to %s" % (src, dst))
+                try:
+                    shutil.copy(src, dst)
+                    break
+                except Exception, ex:
+                    logging.exception("Exception copying file: %s to %s" % (src, dst))
+
+
+def open_dir_with_explorer(files):
+    # opens agents directory
+    dirop = (config.basedir_av + "/" + os.path.dirname(files[0])).replace("/", "\\")
+    cmd = 'cmd.exe /C start %s' % dirop
+    logging.debug("Opening directory: %s" % dirop)
+    subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+    return dirop
+
+
+def copy_files_extension(copy_extensions, files, files_to_check):
+    # copy everything to .copy.exe, .copy.bat, .copy.com, .copy.dll
+    for src in files:
+        # logging.debug("DBG: check_static: %s" % src)
+        for ext in copy_extensions:
+            dst = "%s.copy.%s" % (src, ext)
+            files_to_check.add(dst)
+            if os.path.exists(src) and not os.path.exists(dst):
+                logging.debug("Copying %s to %s" % (src, dst))
+                try:
+                    shutil.copy(src, dst)
+                except Exception, ex:
+                    logging.exception("Exception copying file: %s" % src)
+
+
+def launch_static_scan(scan_dir, vm):
+    try:
+        antivirus = AV(vm)
+        if antivirus.scan_cmd:
+            cmd = antivirus.scan_cmd_replaced(scan_dir)
+            logging.debug("Starting AV scan on directory: %s" % scan_dir)
+            subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+            sleep(90)
+        return True
+    except UndefinedAV:
+        return False
+
+
+#check static copies all the files in various manners supposing the files are already there.
+#it continues to the end, because it need to ensure all detected files are reported
+#but if all the files were detected by av it could be terminated to
+def check_static_scan(files, vm, report=None):
+    global report_send
+    if report:
+        report_send = report
+
+    success = []
+    failed = []
+    copy_extensions = ['exe']  # , 'bat', 'com', 'dll']
+
+    files_to_check = set()
+    files_to_check.update(files)
+
+    # for retrocompatibility, we add an agent.exe if it is not present. This is not added to the current list of files
+    add_agent_exe(files, files_to_check)
+
+    #opens explorer on this directory
+    dirop = open_dir_with_explorer(files)
+
+    #copy files from x.abc to x.abc.copy.exe
+    copy_files_extension(copy_extensions, files, files_to_check)
+
+    #launches av scan if configured in av yaml
+    ret = launch_static_scan(dirop, vm)
+    if not ret:
+        failed = True
+
+    sleep(60)
+    #check file existance
+    for to_check in files_to_check:
+        if not os.path.exists(to_check):
+            failed.append(to_check)
+            logging.error("Not existent file (copy): %s" % to_check)
+        else:
+            success.append(to_check)
+            logging.debug("Succesful static check of %s" % to_check)
+
+    #in check_static there are other checks which proved not very effective and are not used in check_static_scan:
+        # move files
+        # read files
+
+    #remove all. The files_to_check contains some files that exists no more (were renamed)
+    #leave all originally extracted files (and agent.exe that sometimes is used)
+    to_leave = ['agent.exe']
+    for leave_me in files:
+        to_leave.append(os.path.basename(leave_me))
+    for rem_file in files_to_check:
+        try:
+            #leave all originally extracted files
+            if os.path.basename(rem_file) not in to_leave:
+                os.remove(rem_file)
+                logging.debug("Removed %s" % rem_file)
+        except Exception:
+            pass
+
+    if not failed:
+        # failed is equal to []
+        #does not add all checked files (it would be too verbose for a success!)
+        add_result("+ SUCCESS CHECK_STATIC: %s" % files)
+    else:
+        add_result("+ FAILED CHECK_STATIC. SIGNATURE DETECTION: %s" % failed)
+    logging.debug("Failed: %s" % failed)
+    return failed
+
+
+def check_static(files, report=None, scan=False, vm=None):
 
     global report_send
     if report:
@@ -103,6 +222,16 @@ def check_static(files, report=None):
                     shutil.copy(src, dst)
                 except Exception, ex:
                     logging.exception("Exception copying file: %s" % src)
+    sleep(30)
+    logging.debug("INITIATING SCAN!!!")
+    logging.debug("INITIATING SCAN!!!")
+    logging.debug("INITIATING SCAN!!!")
+    logging.debug("INITIATING SCAN!!!")
+    if scan:
+        logging.debug("1")
+        ret = launch_static_scan(dirop, vm)
+        if not ret:
+            failed = True
 
     time.sleep(60)
     #check file existance after copy
@@ -171,7 +300,7 @@ def check_static(files, report=None):
         f = open(src)
         all = f.read()
         for key in rcs_words:
-            allow_list = allowed.get(key,[])
+            allow_list = allowed.get(key, [])
             if key in allow_list:
                 continue
             if key in all or key.lower() in all or key.upper() in all:
@@ -577,7 +706,7 @@ class AgentBuild:
 
         logging.debug("Upgraded: %s" % upgraded)
         if upgraded:
-            logging.debug("The upgrade command was received, now the soldier should sync.")
+            logging.debug("The upgrade command was received, now the agent should sync.")
             #if got_level != level:
             #    add_result("+ FAILED LEVEL: %s" % level)
             sleep(60)
@@ -621,7 +750,8 @@ class AgentBuild:
             output = self._list_processes()
             logging.debug(output)
             add_result("+ FAILED %s INSTALL" % level.upper())
-
+        #added because kis detects the elite after some time.
+        sleep(300)
         logging.debug("- Uninstalling and closing instance: %s" % instance_id)
         self.uninstall(instance_id)
 
