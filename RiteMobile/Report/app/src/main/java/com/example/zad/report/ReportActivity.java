@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -32,6 +33,7 @@ public class ReportActivity extends Activity {
 	public String getImei() {
 		final TelephonyManager telephonyManager;
 
+
 		try {
 			telephonyManager = (TelephonyManager) this.getApplicationContext().getSystemService(Context.TELEPHONY_SERVICE);
 		} catch (Exception ex) {
@@ -40,7 +42,7 @@ public class ReportActivity extends Activity {
 		}
 
 		String imei = telephonyManager.getDeviceId();
-
+		Log.d("LOG" ,"test:" + imei);
 		if (imei == null || imei.length() == 0) {
 			imei = Settings.Secure.getString(this.getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
 			if (imei == null || imei.length() == 0) {
