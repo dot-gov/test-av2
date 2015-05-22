@@ -464,6 +464,9 @@ def test_device(command_dev, args, results):
         printl( "check su")
         results["su"] = command_dev.info_root()
         tried = 0
+        #todo: check supersu prompt:
+        # foreground activity eu.chainfire.supersu/.PromptActivity
+
         if not args.quick_uninstall:
             # check for root for 6 minutes at least
             while True:
@@ -569,7 +572,7 @@ def parse_args():
     parser.add_argument('-n', '--number', required=False, type=int,
                         help="number of time to run the test")
     parser.add_argument('-r', '--reboot', required=False, action='store_true',
-                        help="Install fastnet")
+                        help="execute a reboot")
     parser.add_argument('-q', '--quick_uninstall', required=False, action='store_true',
                         help="unistall without waiting the root")
     parser.add_argument('-l', '--log', required=False, action='store_true',
@@ -662,10 +665,11 @@ def main():
         signal.signal(signum,handler)
 
     command_dev = CommandsDevice(args.device)
+    command_dev.install_report()
 
     set_status(command_dev, "Test Start")
 
-    exit(0)
+    #exit(0)
     print """ prerequisiti specifici TEST :
                     skype presente
     """
