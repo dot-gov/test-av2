@@ -735,21 +735,21 @@ class CommandsDevice:
 
     def install_by_gapp(self, url, app, device=None):
         if self.check_remote_app_installed(app, 10) != 1:
-            self.open_url(url, device=device)
+            adb.open_url(url, device=device)
             time.sleep(5);
             for i in range(10):
-                self.press_key_dpad_up(device=device)
+                self.press_key_dpad_up()
             for i in range(2):
-                self.press_key_dpad_down(device=device)
-            self.press_key_dpad_center(device=device)
+                self.press_key_dpad_down()
+            self.press_key_dpad_center()
             for i in range(25):
-                self.press_key_dpad_down(device=device)
-            self.press_key_dpad_center(device=device)
-            if self.isDownloading(device, 5):
+                self.press_key_dpad_down()
+            self.press_key_dpad_center()
+            if self.isDownloading(5):
                 timeout = 360
                 while timeout > 0:
-                    if not self.isDownloading(device, 1):
-                        break;
+                    if not self.isDownloading(1):
+                        break
                     timeout -= 1
                 old_pid = self.check_remote_app_installed(app, 10)
                 if old_pid == -1:

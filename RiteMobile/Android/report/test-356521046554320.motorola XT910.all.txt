@@ -1,0 +1,45 @@
+Installation
+	time: 2015-03-05 15:56:23.552720
+	installed: False
+	executed: True
+	instance_name: 
+	info: 
+	uptime_first: 
+	uptime_last: 
+	error: 
+	exception: 
+Device
+	device: motorola XT910
+	id: 356521046554320
+	release: 2.3.6
+	build_date: 2013-05-01T09:11:19
+Root
+	root: 
+	root_first: 
+	su: 
+	selinux: 
+	format_resist: 
+Evidences
+	evidences_first: 
+	evidences_last: 
+Expected
+	call_supported: 
+	expected: 
+Uninstall
+	uninstall: 
+	running: 
+	files_remained: 
+	packages_remained: False
+Result
+	test_name: all
+	result: False
+	result_info: 
+
+		persistence: False
+'have_root'
+		photo: False
+'evidence_types_last'
+		audio: False
+'evidence_programs_last'
+		chat: False
+'have_root'

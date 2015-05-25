@@ -15,7 +15,8 @@ def execute(vm, protocol, args):
     assert vm, "null vm"
     mq = protocol.mq
 
-    timeout = 9  #9 = 90 sec; 30 = 300 sec
+    #2 minuti e mezzo. Qualche volta windows e' assai lento (per gli update o se viene spento senza preavviso)
+    timeout = 15  #9 = 90 sec; 30 = 300 sec
     if args:
         timeout = args / 10
 

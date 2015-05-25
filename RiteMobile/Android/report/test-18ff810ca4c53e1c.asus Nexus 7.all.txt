@@ -1,0 +1,76 @@
+Installation
+	time: 2015-03-05 14:22:12.067312
+	installed: False
+	executed: True
+	instance_name: new (6) asus Nexus 7
+	info: 
+	uptime_first: up time: 01:58:44, idle time: 05:55:19, sleep time: 00:23:19
+
+	uptime_last: up time: 00:04:42, idle time: 00:10:49, sleep time: 00:00:00
+
+	error: 
+	exception: {}
+Device
+	device: asus Nexus 7
+	id: 18ff810ca4c53e1c
+	release: 4.4.4
+	build_date: 2013-05-01T09:11:19
+Root
+	root: Root
+	root_first: True
+	su: /system/bin/sh: su: not found
+
+	selinux: 
+	format_resist: Yes
+Evidences
+	evidences_first: 
+		addressbook: 10
+			gmail
+			skype
+		application: 1
+		camera: 5
+		chat: 15
+			skype
+		device: 3
+		message: 1
+		password: 4
+
+	evidences_last: 
+		addressbook: 10
+			gmail
+			skype
+		application: 16
+		camera: 11
+		chat: 15
+			skype
+		device: 5
+		message: 1
+		mic: 1
+		password: 4
+		screenshot: 1
+
+Expected
+	call_supported: False
+	expected: []
+Uninstall
+	uninstall: True
+	running: False
+	files_remained: 
+	packages_remained: 
+Result
+	test_name: all
+	result: False
+	result_info: 
+
+		persistence: True
+
+		photo: False
+
+		audio: False
+			FAILED: call
+
+		chat: False
+			FAILED: google
+			FAILED: facebook
+			FAILED: facebook
+

@@ -168,7 +168,7 @@ def main(argv):
         elif operation == '22':
             print "testvarcli= " + comm_dev.get_client('testvarcli')
         elif operation == '23':
-            comm_dev.set_client({'testvarcli': 'testvaluecli'})
+            comm_dev.set_clyient({'testvarcli': 'testvaluecli'})
         elif operation == '24':
             comm_dev.install('wifi_enabler', )
         elif operation == '25':

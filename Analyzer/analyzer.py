@@ -1,3 +1,5 @@
+import math
+
 __author__ = 'mlosito'
 import os
 import glob
@@ -21,6 +23,8 @@ import sys
 debug = False
 send_mail = True
 write_retests = True
+
+not_to_retest = ["UPD_AV", "UPD_REFRESH", "VM_PUSH_VIRUS"]
 
 
 def main():
@@ -113,9 +117,12 @@ def process_yaml(filenames, results_to_receive):
         #TODO qui bisognerebbe mandare un'email di avviso (volendo con yaml allegato)
         return
 
+    known_error_reports = None
+
     print "Recreating database..."
     with DBReport() as db:
         db.recreate_database(debug)
+        known_error_reports = db.known_errors_report
 
     total_vms = len(commands_results)
     print "Number of VM to analyze: ", total_vms
@@ -131,6 +138,7 @@ def process_yaml(filenames, results_to_receive):
     mailsender = MailSender()
 
     mailsender.yaml_analyzed = filenames
+    mailsender.known_error_reports = known_error_reports
     mailsender.results_to_receive = results_to_receive
 
     for vm, v in commands_results.items():
@@ -165,26 +173,30 @@ def process_yaml(filenames, results_to_receive):
             #CREATING EMAIL AND PRINTING RESULTS
             text = "* Analyzed VM: %s (%s of %s) - Test: %s\n" % (vm, vm_count, total_vms, test_name)
             #text += "VM passed test?: %s\n" % ok
-            text += "* Analyzer Message: %s" % message
+            if debug:
+                text += "* Analyzer Message: %s" % message
             #text += "Known Error: %s\n" % saved_error
             #text += "* Errorlist: %s\n" % errors_list
-
             print "####################     RESULTS     ####################"
             print text
-            print "####################   RESULTS END   ####################"
+            if debug:
+                print "EXECUTION TIME: %s" % comparison_result['time']
+            # print "#######################################################"
 
-            # if comparison_result['not_enabled']:
-            #     mailsender.rite_not_enabled_add(vm, test_name, message)
+            # also rite failed tests can have popups
             if not comparison_result['rite_ok'] and not comparison_result['saved_error']:
-                mailsender.add_result(vm, test_name, mailsender.ResultTypes.RITE_FAILS, message)
+                mailsender.add_result(vm, test_name, mailsender.ResultTypes.RITE_FAILS, message, popup_results=comparison_result['popup_results'],
+                                      time=comparison_result['time'], details=comparison_result['rows_obj'].get_causes(),
+                                      save_strings=comparison_result['rows_obj'].get_manual_save_string())
             elif not comparison_result['rite_ok'] and comparison_result['saved_error']:
-                mailsender.add_result(vm, test_name, mailsender.ResultTypes.RITE_KNOWN_FAILS, message)
+                mailsender.add_result(vm, test_name, mailsender.ResultTypes.RITE_KNOWN_FAILS, message, time=comparison_result['time'])
             elif not comparison_result['success'] and not comparison_result['saved_error']:
                 if test_name not in mailsender.invert_result_tests:
                     mailsender.add_result(vm, test_name, mailsender.ResultTypes.NEW_ERRORS, message,
                                           details=comparison_result['rows_obj'].get_causes(),
                                           save_strings=comparison_result['rows_obj'].get_manual_save_string(),
-                                          crop_filenames=comparison_result['crop_filenames'])
+                                          crop_filenames=comparison_result['crop_filenames'], popup_results=comparison_result['popup_results'],
+                                          time=comparison_result['time'])
                     #adds retest
                     if test_name not in retests:
                         retests[test_name] = set()
@@ -192,23 +204,40 @@ def process_yaml(filenames, results_to_receive):
                 #invert
                 else:
                     mailsender.add_result(vm, test_name, mailsender.ResultTypes.OK, message,
-                                          crop_filenames=comparison_result['crop_filenames'])
+                                          crop_filenames=comparison_result['crop_filenames'], popup_results=comparison_result['popup_results'],
+                                          time=comparison_result['time'])
                 # mailsender.crop_filenames_add(vm, test_name, comparison_result['crop_filenames'])
             elif not comparison_result['success'] and comparison_result['saved_error']:
                 mailsender.add_result(vm, test_name, mailsender.ResultTypes.KNOWN_ERRORS, message,
-                                      saved_error_comment=comparison_result['saved_error_comment'])
+                                      saved_error_comment=comparison_result['saved_error_comment'], time=comparison_result['time'])
+                #tries to remove retest (because it can be a retest and have to be updated)
+                if test_name in retests:
+                    if vm in retests[test_name]:
+                        retests[test_name].remove(vm)
+                    # if in this retests[test_name] remains no vm, deletes the test from retests
+                    if not len(retests[test_name]):
+                        del retests[test_name]
             #case in wich we saved an error but the test passed
             elif comparison_result['success'] and comparison_result['saved_error']:
-                mailsender.add_result(vm, test_name, mailsender.ResultTypes.KNOWN_ERRORS_BUT_PASSED, message, comparison_result['saved_error_comment'])
+                mailsender.add_result(vm, test_name, mailsender.ResultTypes.KNOWN_ERRORS_BUT_PASSED, message,
+                                      comparison_result['saved_error_comment'], time=comparison_result['time'])
             # ok
             else:
                 if test_name not in mailsender.invert_result_tests:
-                    mailsender.add_result(vm, test_name, mailsender.ResultTypes.OK, message)
+                    mailsender.add_result(vm, test_name, mailsender.ResultTypes.OK, message, time=comparison_result['time'])
+                    #tries to remove retest (because it can be a retest and have to be updated)
+                    if test_name in retests:
+                        if vm in retests[test_name]:
+                            retests[test_name].remove(vm)
+                        # if in this retests[test_name] remains no vm, deletes the test from retests
+                        if not len(retests[test_name]):
+                            del retests[test_name]
                 else:
                     mailsender.add_result(vm, test_name, mailsender.ResultTypes.NEW_ERRORS, message,
                                           details=comparison_result['rows_obj'].get_causes(),
                                           save_strings=comparison_result['rows_obj'].get_manual_save_string(),
-                                          crop_filenames=comparison_result['crop_filenames'])
+                                          crop_filenames=comparison_result['crop_filenames'], popup_results=comparison_result['popup_results'],
+                                          time=comparison_result['time'])
                     #NB does not sets retest for inverted results
 
             #try to print yesterday's data
@@ -222,16 +251,24 @@ def process_yaml(filenames, results_to_receive):
 
     #print retests
 
-    retestlist = ""
+    retestlist_important = ""
+    retestlist_less_important = ""
 
     tests_to_analyze = "UPDATE_AV SYSTEM_POSITIVE SYSTEM_DAILY_SRV"
     for testname, machines in retests.items():
-        testname_system = testname.replace("VM", "SYSTEM")
-        retest = "./run.sh %s -m " % testname_system
-        for vm in machines:
-            retest += "%s," % vm
-        retestlist += "%s -c -p 40<br>" % retest[0:-1]
-        tests_to_analyze += " " + testname_system
+        #add to retest only some tests (es: i do not re-test and do not re-analyze UPD_AV)
+        if testname not in not_to_retest:
+            testname_system = testname.replace("VM", "SYSTEM")
+            retest = "./run.sh %s -m " % testname_system
+            for vm in machines:
+                retest += "%s," % vm
+            if testname in mailsender.important_tests:
+                retestlist_important += "%s -c -p 44<br>" % retest[0:-1]
+            else:
+                retestlist_less_important += "%s -c -p 44<br>" % retest[0:-1]
+            tests_to_analyze += " " + testname_system
+
+    retestlist = retestlist_important + retestlist_less_important
 
     # command to re-run analysis.
     retestlist += "python ./Rite/Analyzer/analyzer.py %s" % tests_to_analyze
@@ -258,7 +295,7 @@ def process_yaml(filenames, results_to_receive):
 
 def analyze(vm, comms):
 
-    print "Analyzing..."
+    #print "Analyzing..."
     if not len(comms):
         return
     # DEBUG
@@ -268,11 +305,12 @@ def analyze(vm, comms):
 
     test_name = comms[0].test_name
     test_approximate_start_time = comms[0].timestamp
+    test_approximate_end_time = comms[-1].timestamp
 
     print "################### STARTING TEST ######################"
     print "# Analyzing %s commands for VM: %s #" % (len(comms), vm)
     print "# Test: %s #" % test_name
-    print "################### STARTING TEST ######################"
+    #print "########################################################"
     with DBReport() as db:
         #eventual error message
         message = None
@@ -296,7 +334,7 @@ def analyze(vm, comms):
         for i in comms:
             #this was commented because the tables are growing too big and this historic data is not so important
             # db.insert_result(i)
-            summ_data = SummaryData(test_approximate_start_time, test_name, vm, i.command, prg, 0, "", i.rite_result_log, i.parsed_result,
+            summ_data = SummaryData(test_approximate_start_time, test_approximate_end_time, test_name, vm, i.command, prg, False, False, "", i.rite_result_log, i.parsed_result,
                                     i.rite_failed, i.rite_fail_log)
 
             #refine crops with tesseract
@@ -342,6 +380,9 @@ def analyze(vm, comms):
         test_comparison_result['message'] = message
         test_comparison_result['saved_error'] = saved_error
         test_comparison_result['crop_filenames'] = None
+        test_comparison_result['popup_results'] = None
+        test_comparison_result['time'] = int(math.ceil((int(test_approximate_end_time) - int(test_approximate_start_time)) / 60))
+
         #if there are anomalies, then it IGNORES the states ad returns
         #else if the failure state is ok, it compares the results
         if rite_ok:
@@ -352,6 +393,7 @@ def analyze(vm, comms):
             test_comparison_result['saved_error_comment'] = saved_error_comment
             if not ok:
                 test_comparison_result['crop_filenames'] = current_state_rows.get_crop_filenames()
+                test_comparison_result['popup_results'] = current_state_rows.get_popup_results()
 
         #     return True, ok, message, saved_error, current_state_rows.state_rows_to_string_short(), comms, current_state_rows
         # else:

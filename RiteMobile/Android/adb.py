@@ -292,7 +292,10 @@ def reboot(device=None):
 
 
 def get_deviceid(device=None):
-    cmd = "dumpsys iphonesubinfo"
+    execute("am start -n com.example.zad.report/.ReportActivity  -e imei get", device)
+
+    #cmd = "dumpsys iphonesubinfo"
+    cmd = "cat /data/data/com.example.zad.report/files/imei"
 
     comm = execute(cmd, device)
     lines = comm.strip()
@@ -433,51 +436,12 @@ def execute(cmd = "", device=None, adb_cmd = "shell"):
     else:
         args = [adb_path, adb_cmd]
 
+    #print "##DEBUG## calling '%s" % (args + cmd.split())
     proc = subprocess.Popen(args + cmd.split(), stdout=subprocess.PIPE)
 
     comm = proc.communicate()
     ret = proc.returncode
-
     return str(comm[0])
-
-def install_by_gapp(url, app, device=None):
-    if check_remote_app_installed(app, 3, device) != 1:
-        open_url(url, device=device)
-        if check_remote_activity("com.android.vending/com.google.android.finsky.activities.MainActivity", timeout=60, device=device):
-            for i in range(10):
-                press_key_dpad_up(device=device)
-            for i in range(2):
-                press_key_dpad_down(device=device)
-            press_key_dpad_center(device=device)
-            for i in range(25):
-                if check_remote_activity("com.android.vending/com.google.android.finsky.activities.AppsPermissionsActivity", timeout=5, device=device):
-                    press_key_dpad_down(device=device)
-                else:
-                    break
-            press_key_dpad_center(device=device)
-            if isDownloading(device, 5):
-                timeout = 3360
-                time_checked = 0
-                while timeout>0:
-                    if not isDownloading(device, 5):
-                        if time_checked == 5:
-                            break
-                        else:
-                            time_checked += 1
-                    else:
-                        time_checked = 0
-                    timeout -= 5
-                old_pid = check_remote_app_installed(app, 60, device)
-                if old_pid == -1:
-                    res = "Failed to install %s \n" % app
-                    print res
-                    return False
-            else:
-                res = "Failed to install %s \n" % app
-                print res
-                return False
-    return True
-
 
 
 def executeSU(cmd, root=False, device=None):
@@ -625,7 +589,7 @@ def get_remote_file(remote_source_filename, remote_source_path, local_destinatio
 #ML
 #deletes a single file
 def remove_file(filename, file_path, root=False, device=None):
-    print "##DEBUG##  Deleting a single file from device %s" % device
+    #print "##DEBUG##  Deleting a single file from device %s" % device
 
     toremove = file_path + "/" + filename
 
@@ -635,7 +599,7 @@ def remove_file(filename, file_path, root=False, device=None):
 
 
 def remove_directory(dir_path, root=False, device=None):
-    print "##DEBUG##  Deleting %s directory (rm -r) from device %s" % (dir_path, device)
+    #print "##DEBUG##  Deleting %s directory (rm -r) from device %s" % (dir_path, device)
 
     executeSU("rm -r" + " " + dir_path, root, device)
 

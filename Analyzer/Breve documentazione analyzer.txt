@@ -57,6 +57,7 @@ self.insert_summary_manual_error((u'VM_STATIC_SRV', u'avg15', u'CROP', 77, u'\\[
 
 Notare che il quinto elemento della tupla ha l'escaping di una regexp. Nel caso si voglia un match esatto, basta lasciare il testo cosi' com'e'. In questo caso pero' come in tutti i crop, non vanno considerati i numeri dei file di crop e quindi la riga andra' modificata cosi':
 self.insert_summary_manual_error((u'VM_STATIC_SRV', u'avg15', u'CROP', 77, u'\\[.*\\]', 'CROP', 0, u''), "--INSERT-COMMENT-HERE--")
+Ancora meglio e' usare una regexp del tipo: "^\\[.*\\]$" che verifica il match dell'inizio e della fine (cioe' non ci sarebbe un erroneo match con: '[abc]def' o 'xyz[abc]').
 
 Inoltre e' importante inserire il commento:
 
@@ -97,3 +98,93 @@ ELIF se una parola e' in whitelist (es:update) vengono marcati come GOOD e non v
 ELSE vengono marcati come NO_TEXT o UNKNOWN
 
 Se un errore e' noto ed ha dei crop, viene segnalato come noto e i crop non vengono analizzati.
+
+
+---------------------------------------------------
+TESSEREST
+---------------------------------------------------
+Tesserest e' il servizio web che processa le immagini usando tessethackt.
+Tesserest usa FLASK (http://flask.pocoo.org/docs/0.10/) che si installa (vado a memoria) con: $sudo pip install Flask
+
+L'applicazione flask (/Rite/Analyzer/tesserest.py) e' installata con wsgi in modo da avere un server sempre attivo e stabile.
+
+Installazione:
+sudo apt-get install libapache2-mod-wsgi
+
+Poi va creato un file in /var/www/tesserest/tesserest.wsgi che contiene:
+----------
+import sys
+sys.path.insert(0, '/home/avmonitor/Rite/Analyzer')
+----------
+
+I permessi del file e della cartella che contengono il file devono essere quelli con cui gira apache.
+
+La configurazione di apache deve contenere:
+in ports.conf:
+Listen 55002
+nel file dei default-sites (/etc/apache2/sites-available/000-default.conf) la seguente configurazione (da aggiungere ad eventuali altri VirtualHost):
+<VirtualHost *:55002>
+    ServerName 127.0.0.1
+
+    WSGIScriptAlias / /var/www/tesserest/tesserest.wsgi
+
+    <Directory /var/www/tesserest>
+        WSGIScriptReloading On
+        WSGIApplicationGroup %{GLOBAL}
+        Order deny,allow
+        Allow from all
+    </Directory>
+</VirtualHost>
+
+
+Apache va fatto ripartire con sudo apachectl restart
+
+Il servizio deve avere il permesso di scrittura nelle cartelle in cui vengono salvate files. In particolare  ~/logs/popup_thumbs/ deve essere scrivibile da www-data (es: owner avmonitor, group www-data e permessi 770). Questa cartella va creata (il servizio non ha il permesso di crearla).
+$ mkdir popup_thumbs
+$ sudo chown avmonitor:www-data popup_thumbs/
+$ chmod 770 popup_thumbs/
+
+Check:
+$ ls -la | grep popup
+Risultato: drwxrwx---  2 avmonitor www-data  4096 May  6 11:30 popup_thumbs
+
+Il servizio non salva altri dati (a parte i files temporanei)
+
+Il servizio si puo' testare con un browser puntando a:
+http://172.20.20.192:55002/   (rite)
+o
+http://172.20.20.168:55002/   (puppet)
+
+
+---------------------------------------------------
+POPUP
+---------------------------------------------------
+
+***** NB: *****
+Per usare il comando popup, e' necesario installare due librerie aggiuntive sulle vm, con il comando INSTALL_POPUP_LIBS (probabilmente andra' inserito nei comandi di installazione). Le librerie sono installate su tutte le vm di Rite.
+
+Popup sostituito al Crop nelle procedure:
+Elite
+Soldier
+Static
+Positive Push virus
+
+Nuove fasi di rilevamento popup inseriti:
+Popup durante la fase scout (Elite)
+Popup durante la fase scout (Soldier)
+Popup con il Melt (le finestre degli installer sono in whitelist. Potrebbe mancare qualche finestra)
+
+Popup probabilmente inseribili (dopo avere mappato le finestre):
+Funzionali
+Elite Demo
+Executable document
+
+Durante i test e' possibile:
+* de-minimizzare la shell con il test per verificarne l'avanzamento
+* usare il menu avvio
+* usare explorer
+* usare altre applicazioni di Windows (calc, internet explorer, image viewer)
+senza che venga scatenato il Popup.
+Questo e' sperimentale, nel senso che e' stato testato bene solo su windows 7.
+
+Se si vuole scatenare il popup volontariamente si puo' usare Paint. Se si vuole scatenare un popup con un testo specifico si puo' usare il la funzione testo di paint ed inserire un testo apposito (Es: "virus detected").

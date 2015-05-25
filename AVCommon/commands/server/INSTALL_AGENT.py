@@ -59,8 +59,9 @@ def execute(vm, protocol, inst_args):
     matches = []
     for root, dirnames, filenames in os.walk('./'):
         for filename in filenames:
-            if re.match('.*\.py|.*\.yaml|.*\.exe|.*\.json', filename):  # fnmatch.filter(filenames, '*.c') or filename in fnmatch.filter(filenames, '*.c') or filename in fnmatch.filter(filenames, '*.c'):
-                matches.append(os.path.join(root, filename))
+            if re.match('.*\.py$|.*\.yaml|.*\.exe|.*\.json', filename):  # fnmatch.filter(filenames, '*.c') or filename in fnmatch.filter(filenames, '*.c') or filename in fnmatch.filter(filenames, '*.c'):
+                if "./logs/" not in filename:
+                    matches.append(os.path.join(root, filename))
 
     matches.sort(key=lambda fil: os.stat(fil).st_mtime)
 
@@ -76,7 +77,11 @@ def execute(vm, protocol, inst_args):
 
     if os.path.exists("logs/%s/timestamp.txt" % vm):
         timestampremotefile = open("logs/%s/timestamp.txt" % vm, 'r')
-        timestampremoteint = float(timestampremotefile.read())
+        try:
+            timestampremoteint = float(timestampremotefile.read())
+        except:
+            #if cannot convert, set at 0 and push anyway
+            timestampremoteint = 0
         timestampremotefile.close()
         logging.debug("Last edit REMOTE time: %s" % timestampremoteint)
     else:
@@ -99,7 +104,8 @@ def execute(vm, protocol, inst_args):
     #not more useful
     #DELETE_DIR.execute(vm, protocol, "/Users/avtest/Desktop/AVTest/")
 
-    PUSHZIP.execute(vm, protocol, ["timestamp.txt", "AVAgent/*.py", "AVAgent/*.yaml", "AVCommon/*.py", "AVCommon/*.yaml", "AVCommon/commands/client/*.py", "AVCommon/commands/meta/*.py", "AVCommon/commands/*.py", "AVAgent/assets/config*", "AVAgent/assets/keyinject.exe", "AVAgent/assets/exec_zip.exe", "AVAgent/assets/getusertime.exe", "AVAgent/assets/windows/*"])
+    #retries 1 times after first time
+    zip_success, zip_reason = PUSHZIP.execute(vm, protocol, [1, "timestamp.txt", "AVAgent/*.py", "AVAgent/*.yaml", "AVCommon/*.py", "AVCommon/*.yaml", "AVCommon/commands/client/*.py", "AVCommon/commands/meta/*.py", "AVCommon/commands/*.py", "AVCommon/conf/av/*.yaml", "AVCommon/conf/*.yaml", "AVAgent/assets/config*", "AVAgent/assets/keyinject.exe", "AVAgent/assets/exec_zip.exe", "AVAgent/assets/getusertime.exe", "AVAgent/assets/windows/*"])
 
     cmd = "rmdir /s /q C:\\AVTest\\running \r\n" \
           "cd C:\\AVTest\\AVAgent\r\n" \
@@ -130,8 +136,8 @@ def execute(vm, protocol, inst_args):
 
     delete_startup_av_agent(vm_manager, vm, remote_name)
 
-    for i in range(1, 3):
-        logging.debug("I'll copy %s (try %s of 3)" % (filename, i))
+    for i in range(1, 6):
+        logging.debug("I'll copy %s (try %s of 5)" % (filename, i))
         assert os.path.exists(filename)
         r = vm_manager.execute(vm, "copyFileToGuest", filename, remote_name)
         if r > 0:
@@ -151,6 +157,10 @@ def execute(vm, protocol, inst_args):
 
     os.remove(filename)
 
+    #--------------------------------------------
+    # NB: WE ARE IGNORING START.BAT COPY ERRORS
+    # BECAUSE WE CHECK AFTERWARDS IF THE FILE
+    # IS PRESENT
     # --------------start.bat-----------------
 
     fd, filename = tempfile.mkstemp(".bat")
@@ -161,23 +171,34 @@ def execute(vm, protocol, inst_args):
 
     remote_name = "C:\\AVTest\\AVAgent\\start.bat"
 
-    for i in range(1, 3):
-        logging.debug("I'll copy %s (try %s of 3)" % (filename, i))
+    for i in range(1, 5):
+        logging.debug("I'll copy %s - start.bat to %s (try %s of 4)" % (filename, vm, i))
         assert os.path.exists(filename)
         r = vm_manager.execute(vm, "copyFileToGuest", filename, remote_name)
         if r > 0:
             time.sleep(i * 5)
-            failed = True
-            reason += "Can't copy start.bat in AVAgent (try %s)" % i
+            # failed = True
+            # reason += "Can't copy start.bat in AVAgent (try %s)" % i
             logging.debug("Cannot copy %s" % filename)
         else:
-            failed = False
+            # failed = False
             break
 
     time.sleep(15)
 
-    if failed:
-        logging.debug("Cannot copy %s: ERROR!" % filename)
+    #check if start.bat exists on guest
+    d = "C:/AVTest/AVAgent/"
+    out = vm_manager.execute(vm, "listDirectoryInGuest", d)
+    logging.debug("listDirectoryInGuest: %s" % out)
+
+    if not "start.bat" in out:
+        failed = True
+        reason += "start.bat not present in in AVAgent"
+    else:
+        logging.info("%s, found start.bat in %s" % (vm, d))
+
+    # if failed:
+    #     logging.debug("Cannot copy %s: ERROR!" % filename)
 
     os.remove(filename)
 
@@ -187,7 +208,7 @@ def execute(vm, protocol, inst_args):
     r = vm_manager.execute(vm, "deleteDirectoryInGuest", dirname)
     if r > 0:
         failed = True
-        reason += "Cannot delete running file"
+        reason += " - Cannot delete running file"
         logging.debug("Cannot delete %s" % dirname)
 
     # --------------delete logs-----------------
@@ -196,12 +217,11 @@ def execute(vm, protocol, inst_args):
     r = vm_manager.execute(vm, "deleteDirectoryInGuest", dirname)
     if r > 0:
         failed = True
-        reason += "Can't delete logs"
+        reason += " - Can't delete logs"
         logging.debug("Cannot delete %s" % dirname)
 
-    if failed:
-        return False, "Cant Install Agent on VM. Reason = %s" % reason
-
+    if failed or not zip_success:
+        return False, "Cannot Install Agent on VM. Reason = %s" % (reason + " - " + zip_reason)
     else:
         return True, "Agent installed on VM"
 

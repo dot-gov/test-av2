@@ -1,31 +1,28 @@
 import os
-import shutil
 from time import sleep
 import time
 import socket
 import urllib2
 
 import os.path
-import re
 import traceback
 import subprocess
 import Queue
 import threading
-import argparse
 import itertools
-import random
-from ConfigParser import ConfigParser
 
 import ctypes
 import shutil
 import glob
 from AVAgent import util_agent
+from AVCommon.av import AV, UndefinedAV
 
 from AVCommon.logger import logging
 from AVCommon import process
 from AVCommon import helper
 from AVCommon import build_common
 from AVCommon import utils
+from AVCommon import config
 
 MOUSEEVENTF_MOVE = 0x0001  # mouse move
 MOUSEEVENTF_ABSOLUTE = 0x8000  # absolute move
@@ -38,7 +35,11 @@ MOUSEEVENTF_CLICK = MOUSEEVENTF_LEFTDOWN + MOUSEEVENTF_LEFTUP
 #names = ['BTHSAmpPalService','CyCpIo','CyHidWin','iSCTsysTray','quickset','agent']
 #names = ['btplayerctrl', 'HydraDM', 'iFrmewrk', 'Toaster', 'rusb3mon', 'SynTPEnh', 'agent']
 #names = ['8169Diag', 'CCleaner', 'Linkman', 'PCSwift', 'PerfTune', 'SystemOptimizer', 'agent']
-names = ['ChipUtil', 'SmartDefrag', 'DiskInfo', 'EditPad', 'TreeSizeFree', 'bkmaker', 'agent']
+#names = ['ChipUtil', 'SmartDefrag', 'DiskInfo', 'EditPad', 'TreeSizeFree', 'bkmaker', 'agent']
+#9_6 beta
+#names = ['bleachbit', 'BluetoothView', 'CPUStabTest', 'MzRAMBooster', 'RealTemp', 'ultradefrag', 'agent']
+#9_6
+names = ['bleachbit', 'BluetoothView', 'dotNETInspector', 'MzRAMBooster', 'RealTemp', 'ultradefrag', 'agent']
 
 start_dirs = ['C:/Users/avtest/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Startup',
             'C:/Documents and Settings/avtest/Start Menu/Programs/Startup' ] #, 'C:/Users/avtest/Desktop']
@@ -48,7 +49,130 @@ def unzip(filename, fdir):
     return utils.unzip(filename, fdir, logging.debug)
 
 
-def check_static(files, report = None):
+def add_agent_exe(files, files_to_check):
+    # for retrocompatibility, we add an agent.exe if it is not present. This is not added to the current list of files
+    agent_exe_found = False
+    for src in files:
+        if src.endswith("\\agent.exe"):
+            agent_exe_found = True
+    if not agent_exe_found:
+        for src in files:
+            if os.path.exists(src) and str(src).endswith(".exe"):
+                dst = os.path.join(os.path.dirname(src), "agent.exe")
+                files_to_check.add(dst)
+                logging.debug("Creating one agent.exe - Copying %s to %s" % (src, dst))
+                try:
+                    shutil.copy(src, dst)
+                    break
+                except Exception, ex:
+                    logging.exception("Exception copying file: %s to %s" % (src, dst))
+
+
+def open_dir_with_explorer(files):
+    # opens agents directory
+    dirop = (config.basedir_av + "/" + os.path.dirname(files[0])).replace("/", "\\")
+    cmd = 'cmd.exe /C start %s' % dirop
+    logging.debug("Opening directory: %s" % dirop)
+    subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+    return dirop
+
+
+def copy_files_extension(copy_extensions, files, files_to_check):
+    # copy everything to .copy.exe, .copy.bat, .copy.com, .copy.dll
+    for src in files:
+        # logging.debug("DBG: check_static: %s" % src)
+        for ext in copy_extensions:
+            dst = "%s.copy.%s" % (src, ext)
+            files_to_check.add(dst)
+            if os.path.exists(src) and not os.path.exists(dst):
+                logging.debug("Copying %s to %s" % (src, dst))
+                try:
+                    shutil.copy(src, dst)
+                except Exception, ex:
+                    logging.exception("Exception copying file: %s" % src)
+
+
+def launch_static_scan(scan_dir, vm):
+    try:
+        antivirus = AV(vm)
+        if antivirus.scan_cmd:
+            cmd = antivirus.scan_cmd_replaced(scan_dir)
+            logging.debug("Starting AV scan on directory: %s" % scan_dir)
+            subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+            sleep(90)
+        return True
+    except UndefinedAV:
+        return False
+
+
+#check static copies all the files in various manners supposing the files are already there.
+#it continues to the end, because it need to ensure all detected files are reported
+#but if all the files were detected by av it could be terminated to
+def check_static_scan(files, vm, report=None):
+    global report_send
+    if report:
+        report_send = report
+
+    success = []
+    failed = []
+    copy_extensions = ['exe']  # , 'bat', 'com', 'dll']
+
+    files_to_check = set()
+    files_to_check.update(files)
+
+    # for retrocompatibility, we add an agent.exe if it is not present. This is not added to the current list of files
+    add_agent_exe(files, files_to_check)
+
+    #opens explorer on this directory
+    dirop = open_dir_with_explorer(files)
+
+    #copy files from x.abc to x.abc.copy.exe
+    copy_files_extension(copy_extensions, files, files_to_check)
+
+    #launches av scan if configured in av yaml
+    ret = launch_static_scan(dirop, vm)
+    if not ret:
+        failed = True
+
+    sleep(60)
+    #check file existance
+    for to_check in files_to_check:
+        if not os.path.exists(to_check):
+            failed.append(to_check)
+            logging.error("Not existent file (copy): %s" % to_check)
+        else:
+            success.append(to_check)
+            logging.debug("Succesful static check of %s" % to_check)
+
+    #in check_static there are other checks which proved not very effective and are not used in check_static_scan:
+        # move files
+        # read files
+
+    #remove all. The files_to_check contains some files that exists no more (were renamed)
+    #leave all originally extracted files (and agent.exe that sometimes is used)
+    to_leave = ['agent.exe']
+    for leave_me in files:
+        to_leave.append(os.path.basename(leave_me))
+    for rem_file in files_to_check:
+        try:
+            #leave all originally extracted files
+            if os.path.basename(rem_file) not in to_leave:
+                os.remove(rem_file)
+                logging.debug("Removed %s" % rem_file)
+        except Exception:
+            pass
+
+    if not failed:
+        # failed is equal to []
+        #does not add all checked files (it would be too verbose for a success!)
+        add_result("+ SUCCESS CHECK_STATIC: %s" % files)
+    else:
+        add_result("+ FAILED CHECK_STATIC. SIGNATURE DETECTION: %s" % failed)
+    logging.debug("Failed: %s" % failed)
+    return failed
+
+
+def check_static(files, report=None, scan=False, vm=None):
 
     global report_send
     if report:
@@ -58,40 +182,117 @@ def check_static(files, report = None):
                  'zeno', 'guido', 'chiodo', 'naga', 'alor']
     success = []
     failed = []
-    # for retrocompatibility, we add an agent.exe. This is not added to the current list of files
+    copy_extensions = ['exe', 'bat', 'com', 'dll']
+
+    files_to_check = set()
+    files_to_check.update(files)
+
+    # for retrocompatibility, we add an agent.exe if it is not present. This is not added to the current list of files
+    agent_exe_found = False
     for src in files:
-        if os.path.exists(src) and str(src).endswith(".exe") and "agent.exe" not in files:
-            dst = os.path.join(os.path.dirname(src), "agent.exe")
-            logging.debug("Copying %s to %s" % (src, dst))
-            try:
-                shutil.copy(src, dst)
-            except Exception, ex:
-                logging.exception("Exception copying file: %s to %s" % (src, dst))
+        if src.endswith("\\agent.exe"):
+            agent_exe_found = True
+    if not agent_exe_found:
+        for src in files:
+            if os.path.exists(src) and str(src).endswith(".exe"):
+                dst = os.path.join(os.path.dirname(src), "agent.exe")
+                files_to_check.add(dst)
+                logging.debug("Copying %s to %s" % (src, dst))
+                try:
+                    shutil.copy(src, dst)
+                    break
+                except Exception, ex:
+                    logging.exception("Exception copying file: %s to %s" % (src, dst))
+
+    #opens agents directory
+    dirop = (config.basedir_av + "/" + os.path.dirname(files[0])).replace("/", "\\")
+    cmd = 'cmd.exe /C start %s' % dirop
+    logging.debug("Opening directory: %s" % dirop)
+    subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+
+    #copy everything to .copy.exe, .copy.bat, .copy.com, .copy.dll
     for src in files:
         logging.debug("DBG: check_static: %s" % src)
-        dst = "%s.copy.exe" % src
+        for ext in copy_extensions:
+            dst = "%s.copy.%s" % (src, ext)
+            files_to_check.add(dst)
+            if os.path.exists(src) and not os.path.exists(dst):
+                logging.debug("Copying %s to %s" % (src, dst))
+                try:
+                    shutil.copy(src, dst)
+                except Exception, ex:
+                    logging.exception("Exception copying file: %s" % src)
+    sleep(30)
+    logging.debug("INITIATING SCAN!!!")
+    logging.debug("INITIATING SCAN!!!")
+    logging.debug("INITIATING SCAN!!!")
+    logging.debug("INITIATING SCAN!!!")
+    if scan:
+        logging.debug("1")
+        ret = launch_static_scan(dirop, vm)
+        if not ret:
+            failed = True
 
-        if os.path.exists(src):
-            logging.debug("Copying %s to %s" % (src, dst))
-            try:
-                shutil.copy(src, dst)
-            except Exception, ex:
-                logging.exception("Exception file: %s" % src)
+    time.sleep(60)
+    #check file existance after copy
+    for to_check in files_to_check:
 
-    time.sleep(15)
-    for src in files:
-        dst = "%s.copy.exe" % src
-        if not os.path.exists(src):
-            failed.append(src)
-            logging.error("Not existent file: %s" % src)
+        if not os.path.exists(to_check):
+            failed.append(to_check)
+            logging.error("Not existent file (copy): %s" % to_check)
         else:
-            if os.path.exists(dst) and os.path.exists(src):
-                success.append(src)
-                logging.debug("succesful copy %s to %s" % (src, dst))
-            else:
-                logging.error("cannot copy")
-                failed.append(src)
+            success.append(to_check)
+            logging.debug("Succesful static check of %s" % to_check)
 
+    #renames all the 'copy' files to 'move'
+    renamed = []
+    for to_rename in success:
+        if 'copy' in to_rename:
+            dst = to_rename.replace('copy', 'move')
+            if os.path.exists(to_rename) and not os.path.exists(dst):
+                try:
+                    os.rename(to_rename, dst)
+                    #success.append(dst)
+                    renamed.append(dst)
+                except Exception:
+                    logging.exception("Exception renaming to file: %s" % dst)
+                    failed.append(dst)
+    time.sleep(60)
+    #check rename
+    for to_check in renamed:
+        if not os.path.exists(to_check):
+            failed.append(to_check)
+            logging.error("Not existent file (rename): %s" % to_check)
+        else:
+            success.append(to_check)
+            logging.debug("Succesful static check of %s" % to_check)
+
+    #read files
+    if not failed:
+        logging.debug("Trying to read files.")
+        for f in files:
+            to_read = (config.basedir_av + "/" + f).replace("/", "\\")
+            cmd = 'cmd.exe /C type %s > nul' % to_read
+            logging.debug("Reading file: %s" % to_read)
+            subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+    #no check, this should trigger some popup
+
+    #remove all. The files_to_check contains some files that exists no more (were renamed)
+    files_to_check.update(renamed)
+    #leave all originally extracted files (and agent.exe that sometimes is used)
+    to_leave = ['agent.exe']
+    for leave_me in files:
+        to_leave.append(os.path.basename(leave_me))
+    for rem_file in files_to_check:
+        try:
+            #leave all originally extracted files
+            if os.path.basename(rem_file) not in to_leave:
+                os.remove(rem_file)
+                logging.debug("Removed %s" % rem_file)
+        except Exception:
+            pass
+
+    #old stuff that continue to be in place and working
     allowed = { 'rcs': ['AVAgent/assets/check/mac_core', 'AVAgent/assets/check/mac_osax'] }
     for src in files:
         if not os.path.exists(src):
@@ -99,7 +300,7 @@ def check_static(files, report = None):
         f = open(src)
         all = f.read()
         for key in rcs_words:
-            allow_list = allowed.get(key,[])
+            allow_list = allowed.get(key, [])
             if key in allow_list:
                 continue
             if key in all or key.lower() in all or key.upper() in all:
@@ -107,9 +308,12 @@ def check_static(files, report = None):
                 add_result("+ WARNING: %s in %s" % (key, src))
 
     if not failed:
-        add_result("+ SUCCESS CHECK_STATIC: %s" % success)
+        # failed is eual to []
+        #does not add all checked files (it would be too verbose for a success!)
+        add_result("+ SUCCESS CHECK_STATIC: %s" % files)
     else:
         add_result("+ FAILED CHECK_STATIC. SIGNATURE DETECTION: %s" % failed)
+    logging.debug("Failed: %s" % failed)
     return failed
 
 
@@ -318,7 +522,7 @@ class AgentBuild:
             ret = info['upgradable'] is False
 
             if ret:
-                add_result("+ SUCCESS UPGRADED SYNC")
+                add_result("+ SUCCESS UPGRADED SYNC (upgrade command received)")
             else:
                 add_result("+ NOT YET UPGRADED SYNC: %s" % info['level'])
 
@@ -489,8 +693,7 @@ class AgentBuild:
                 if upgraded:
                     break
                 else:
-                    # This for me is error...string.upper() will never equal a lowercase string
-                    if got_level.upper() == "soldier":
+                    if got_level.upper() == "SOLDIER":
                         self.terminate_every_agent()
                         executed = self.execute_agent_startup()
                 for i in range(10):
@@ -503,7 +706,7 @@ class AgentBuild:
 
         logging.debug("Upgraded: %s" % upgraded)
         if upgraded:
-            logging.debug("The vm upgraded to the desired level, now we check that execution is inibithed.")
+            logging.debug("The upgrade command was received, now the agent should sync.")
             #if got_level != level:
             #    add_result("+ FAILED LEVEL: %s" % level)
             sleep(60)
@@ -547,7 +750,8 @@ class AgentBuild:
             output = self._list_processes()
             logging.debug(output)
             add_result("+ FAILED %s INSTALL" % level.upper())
-
+        #added because kis detects the elite after some time.
+        sleep(300)
         logging.debug("- Uninstalling and closing instance: %s" % instance_id)
         self.uninstall(instance_id)
 
@@ -581,8 +785,13 @@ class AgentBuild:
                 logging.debug("check if file exists: %s" % filename)
                 if os.path.exists(filename):
                     logging.debug("try to execute: %s" % filename)
-                    subprocess.Popen([filename])
-                    executed = True
+                    try:
+                        subprocess.Popen([filename])
+                        executed = True
+                    except WindowsError:
+                        logging.debug("%s is not a windows application. This is a detetion." % filename)
+                        add_result("+ FAILED EXECUTION - the executable '%s' is not recognized by windows." % filename)
+                        executed = False
                     break
 
         if not executed:
@@ -593,19 +802,22 @@ class AgentBuild:
         return executed
 
     def execute_scout(self):
-        """ build and execute the  """
-        factory_id, ident, exe = self.execute_pull()
-
-        if type(exe) is list:
-            exe = exe[0]
-
-        logging.debug("execute_scout: %s" % exe)
-
         #if is an elite demo but AV is SOLDIER, I need to exit, 'cause it will fail anyway!
+        # (I need to exit BEFORE the static check (execute_pull)
         if self.final_action and self.final_action == "elite_fast_demo" and \
                 (self.hostname in self.blacklist or self.hostname in self.soldierlist):
             add_result("+ SUCCESS ELITEDEMO on AV in Soldierlist or Blacklist - not executed and marked as passed")
             return None
+
+        """ build and execute the  """
+        factory_id, ident, exe = self.execute_pull()
+
+        if type(exe) is list:
+            if len(exe) == 0:
+                return None
+            exe = exe[0]
+
+        logging.debug("execute_scout: %s" % exe)
 
         self._execute_build(exe)
         if self.kind == "melt":  # and not exploit
@@ -716,7 +928,9 @@ class AgentBuild:
         else:
             logging.debug("cannot find zip file: %s" % zipfilename)
             add_result("+ FAILED SCOUT BUILD. CANNOT FIND ZIP FILE %s TO UNZIP IT" % zipfilename)
-            raise RuntimeError("No file to unzip")
+            # raise RuntimeError("No file to unzip")
+            #returns empty list
+            return []
         # CHECK FOR DELETED FILES
         failed = check_static(exefilenames)
 
@@ -724,7 +938,10 @@ class AgentBuild:
             add_result("+ SUCCESS SCOUT BUILD (no signature detection)")
         else:
             add_result("+ FAILED SCOUT BUILD. SIGNATURE DETECTION: %s" % failed)
-            raise RuntimeError("Signature detection")
+            # raise RuntimeError("Signature detection")
+            logging.debug("FAILED STATIC. Signature detection: %s" % failed)
+            #returns empty list
+            return []
 
         return exefilenames
 

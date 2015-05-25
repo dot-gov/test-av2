@@ -115,14 +115,38 @@ VM_ELITE_FAST:
 
 VM_ELITE_FAST_SRV:
     - CALL: INIT_DISPATCH
+    #new for Popup
+    - ON_ERROR: CONTINUE
+    - POPUP: [ True, True ]
     - BUILD_SRV: [ scout, windows, silent, elite_fast ]
     - SLEEP: 30
-    - RELOG
-
     - ON_ERROR: CONTINUE
-    - CROP: True
+    - POPUP: [ False, True ]
+    - RELOG
+    #- CROP: True
+    - POPUP: [ True, True ]
     - BUILD_SRV: [ elite_fast, windows, silent, elite_fast ]
-    - CROP: False
+    #- CROP: False
+    - POPUP: [ False, True ]
+    - SCREENSHOT
+    #CHECKING IF UNINSTALLATION SUCCEDEED
+    - CHECK_INFECTION
+    #to be sure, we uninstall
+    - UNINSTALL
+    #- RELOG
+
+VM_ELITE_FAST_SRV_POP:
+    - CALL: INIT_DISPATCH
+    - POPUP: [ True, True ]
+    - BUILD_SRV: [ scout, windows, silent, elite_fast ]
+    - SLEEP: 30
+    - ON_ERROR: CONTINUE
+    - POPUP: [ False, True ]
+    - RELOG
+    #- ON_ERROR: CONTINUE
+    - POPUP: [ True, True ]
+    - BUILD_SRV: [ elite_fast, windows, silent, elite_fast ]
+    - POPUP: [ False, True ]
     - SCREENSHOT
     #CHECKING IF UNINSTALLATION SUCCEDEED
     - CHECK_INFECTION
@@ -133,7 +157,7 @@ VM_ELITE_FAST_SRV:
 
 VM_ELITE_FAST_DEMO_SRV:
     #andrebbe eseguito solo una volta a settimana
-    #- ENABLE: [ sunday ]
+    - ENABLE: [ sunday ]
     #NB: no crop for DEMO
     - CALL: INIT_DISPATCH
     #- SLEEP: 60
@@ -179,16 +203,43 @@ VM_SOLDIER:
     #- RELOG
 
 
-VM_SOLDIER_SRV:
+VM_SOLDIER_ACHILLE:
     - CALL: INIT_DISPATCH
-    - BUILD_SRV: [ scout, windows, silent, soldier_fast ]
+    - SET:
+        backend: 172.20.20.119
+        frontend: 172.20.20.119
+    - POPUP: [ True, True ]
+    - BUILD: [ scout, windows, silent ]
     - SLEEP: 30
+    - ON_ERROR: CONTINUE
+    - POPUP: [ False, True ]
     - RELOG
 
+    - POPUP: [ True, True ]
+    - BUILD: [ soldier_fast, windows, silent ]
+    - POPUP: [ False, True ]
+    - SCREENSHOT
+    - ON_ERROR: SKIP
+    - CHECK_INFECTION
+    #to be sure, we uninstall
+    - UNINSTALL
+
+
+VM_SOLDIER_SRV:
+    - CALL: INIT_DISPATCH
+    #new for Popup
     - ON_ERROR: CONTINUE
-    - CROP: True
+    - POPUP: [ True, True ]
+    - BUILD_SRV: [ scout, windows, silent, soldier_fast ]
+    - SLEEP: 30
+    - ON_ERROR: CONTINUE
+    - POPUP: [ False, True ]
+    - RELOG
+    #- CROP: True
+    - POPUP: [ True, True ]
     - BUILD_SRV: [ soldier_fast, windows, silent, soldier_fast ]
-    - CROP: False
+    #- CROP: False
+    - POPUP: [ False, True ]
     - SCREENSHOT
     #don't skip because I need to uninstall
     - ON_ERROR: SKIP
@@ -197,6 +248,27 @@ VM_SOLDIER_SRV:
     - UNINSTALL
 
 
+VM_SOLDIER_SRV_POP:
+    - CALL: INIT_DISPATCH
+    - POPUP: [ True, True ]
+    - BUILD_SRV: [ scout, windows, silent, soldier_fast ]
+    - ON_ERROR: CONTINUE
+    - POPUP: [ False, True ]
+    - SLEEP: 30
+    - RELOG
+    - POPUP: [ True, True ]
+    #- CROP: True
+    - BUILD_SRV: [ soldier_fast, windows, silent, soldier_fast ]
+    - POPUP: [ False, True ]
+    #- CROP: False
+    - SCREENSHOT
+    #don't skip because I need to uninstall
+    - ON_ERROR: SKIP
+    - CHECK_INFECTION
+    #to be sure, we uninstall
+    - UNINSTALL
+
+#OLD
 VM_MELT:
     - CALL: INIT_DISPATCH
     - BUILD: [ scout, windows, melt ]
@@ -205,46 +277,70 @@ VM_MELT:
     #to be sure, we uninstall
     - UNINSTALL
 
-
+#OLD
 VM_MELT_SRV:
     - CALL: INIT_DISPATCH
+    #new for Popup
+    - ON_ERROR: CONTINUE
+    - POPUP: [ True, True ]
     - BUILD_SRV: [ scout, windows, melt, melt ]
+    - POPUP: [ False, True ]
     - SCREENSHOT
     - CHECK_INFECTION
     #to be sure, we uninstall
     - UNINSTALL
 
+#TESTED
 VM_MELT_SRV_FIF:
     - ENABLE: [ monday, thursday ]
     - CALL: INIT_DISPATCH
+    #new for Popup
+    - ON_ERROR: CONTINUE
+    - POPUP: [ True, True ]
     - BUILD_SRV: [ scout, windows_melt_fif, melt, melt ]
+    - POPUP: [ False, True ]
     - SCREENSHOT
     - CHECK_INFECTION
     #to be sure, we uninstall
     - UNINSTALL
 
+#TESTED
 VM_MELT_SRV_UTO:
     - ENABLE: [ tuesday, friday ]
     - CALL: INIT_DISPATCH
+    #new for Popup
+    - ON_ERROR: CONTINUE
+    - POPUP: [ True, True ]
     - BUILD_SRV: [ scout, windows_melt_uto, melt, melt ]
+    - POPUP: [ False, True ]
     - SCREENSHOT
     - CHECK_INFECTION
     #to be sure, we uninstall
     - UNINSTALL
 
+#TESTED
 VM_MELT_SRV_AIR:
     - ENABLE: [ wednesday, saturday ]
     - CALL: INIT_DISPATCH
+    #new for Popup
+    - ON_ERROR: CONTINUE
+    - POPUP: [ True, True ]
     - BUILD_SRV: [ scout, windows_melt_air, melt, melt ]
+    - POPUP: [ False, True ]
     - SCREENSHOT
     - CHECK_INFECTION
     #to be sure, we uninstall
     - UNINSTALL
 
+#TESTED
 VM_MELT_SRV_VUZ:
     - ENABLE: [ sunday ]
     - CALL: INIT_DISPATCH
+    #new for Popup
+    - ON_ERROR: CONTINUE
+    - POPUP: [ True, True ]
     - BUILD_SRV: [ scout, windows_melt_vuz, melt, melt ]
+    - POPUP: [ False, True ]
     - SCREENSHOT
     - CHECK_INFECTION
     #to be sure, we uninstall
@@ -252,7 +348,7 @@ VM_MELT_SRV_VUZ:
 
 VM_EXPLOIT:
     - ENABLE: [ sunday ]
-    - ON_ERROR: CONTINU
+    - ON_ERROR: CONTINUE
     - CALL: INIT_DISPATCH
     - BUILD: [ pull, exploit, melt ]
     #- BUILD: [ pull, exploit_avi, melt ]
@@ -288,16 +384,21 @@ VM_EXPLOIT_SRV:
     - ENABLE: [ sunday ]
     - ON_ERROR: CONTINUE
     - CALL: INIT_DISPATCH
-
+    - POPUP: [ True, True ]
     - BUILD_SRV: [ pull, exploit, melt, exploit ]
+    - POPUP: [ False, True ]
     - SCREENSHOT
+    - POPUP: [ True, True ]
     - BUILD_SRV: [ scout, exploit_pdf, melt, exploit_pdf ]
+    - POPUP: [ False, True ]
     - SCREENSHOT
     - CHECK_INFECTION
     #to be sure, we uninstall
     - UNINSTALL
     - RELOG
+    - POPUP: [ True, True ]
     - BUILD_SRV: [ scout, selfdel_exploit, melt, selfdel_exploit ]
+    - POPUP: [ False, True ]
     - SCREENSHOT
     - CHECK_INFECTION
     #to be sure, we uninstall
@@ -316,13 +417,54 @@ VM_STATIC:
 
 VM_STATIC_SRV:
     - CALL: INIT_DISPATCH
-    - CROP: True
+    #- CROP: True
+    - POPUP: [ True, True ]
     - ON_ERROR: CONTINUE
     - CALL: BUILD_DESKTOP_SRV
+    - ON_ERROR: CONTINUE
     - CALL: BUILD_MOBILE_SRV
+    - ON_ERROR: CONTINUE
     - CALL: BUILD_EXPLOIT_SRV
-    - CROP: False
+    #- CROP: False
+    - POPUP: [ False, True ]
     - ON_ERROR: SKIP
+
+VM_STAT_STAT_SRV:
+    - CALL: INIT_DISPATCH
+    #scout
+    - POPUP: [ True, True ]
+    - ON_ERROR: CONTINUE
+    - CALL: CHECK_STAT_STAT_SCOUT
+    - POPUP: [ False, True ]
+    #soldier
+    - POPUP: [ True, True ]
+    - ON_ERROR: CONTINUE
+    - CALL: CHECK_STAT_STAT_SOLDIER
+    - POPUP: [ False, True ]
+    #selfdel
+    - POPUP: [ True, True ]
+    - ON_ERROR: CONTINUE
+    - CALL: CHECK_STAT_STAT_SELFDEL
+    - POPUP: [ False, True ]
+    #pdf
+    - POPUP: [ True, True ]
+    - ON_ERROR: CONTINUE
+    - CALL: CHECK_STAT_STAT_EXPL_PDF
+    - POPUP: [ False, True ]
+    #txt
+    - POPUP: [ True, True ]
+    - ON_ERROR: CONTINUE
+    - CALL: CHECK_STAT_STAT_EXPL_TXT
+    - POPUP: [ False, True ]
+    #TNI
+    - POPUP: [ True, True ]
+    - ON_ERROR: CONTINUE
+    - CALL: CHECK_STAT_STAT_TNI
+    - POPUP: [ False, True ]
+
+    - ON_ERROR: SKIP
+
+
 
 #######################################################################
 #######################################################################
@@ -365,6 +507,16 @@ SYSTEM_STATIC_SRV:
     - CALL: SET_MAIL
     - REPORT:
         - VM_STATIC_SRV: ['AV Invisibility Static', 'Static check on builds']
+    - CALL: END_DISPATCH
+
+
+SYSTEM_STAT_STAT_SRV:
+    - VM_ALL
+    - ON_ERROR: SKIP
+    - SLEEP: [1, 600]
+    - CALL: SET_MAIL
+    - REPORT:
+        - VM_STAT_STAT_SRV: ['AV Invisibility Static', 'Statistic Static check']
     - CALL: END_DISPATCH
 
 
@@ -470,7 +622,24 @@ SYSTEM_ELITE_FAST_SRV:
     #- UNINSTALL
     - CALL: VM_GET_LOG
     - CALL: END_DISPATCH
- 
+
+
+SYSTEM_ELITE_FAST_SRV_POP:
+    - VM_ALL
+    - ON_ERROR: SKIP
+    - SLEEP: [1, 600]
+    # CLEAN_EV no more useful - instances are deleted during run and factories are deleted daily
+    # init_dispatch needed for clean evidences (to be removed)
+    #- CALL: INIT_DISPATCH
+    #- CALL: VM_CLEAN_EVIDENCES_AND_CACHE
+    - CALL: SET_MAIL
+    - REPORT:
+        - VM_ELITE_FAST_SRV_POP: ['AV Invisibility', 'Elite']
+    # moved in VM_procedures: screnshot and uninstall
+    #- SCREENSHOT
+    #- UNINSTALL
+    - CALL: VM_GET_LOG
+    - CALL: END_DISPATCH
 
 SYSTEM_ELITE_FAST_DEMO_SRV:
     - VM_ALL
@@ -542,6 +711,25 @@ SYSTEM_SOLDIER:
     - CALL: END_DISPATCH
 
 
+SYSTEM_SOLDIER_ACHILLE:
+    - VM_ALL
+    - ON_ERROR: SKIP
+    - SLEEP: [1, 600]
+    # CLEAN_EV no more useful - instances are deleted during run and factories are deleted daily
+    # init_dispatch needed for clean evidences (to be removed)
+    #- CALL: INIT_DISPATCH
+    #- CALL: VM_CLEAN_EVIDENCES_AND_CACHE
+    - CALL: SET_MAIL
+    - REPORT:
+        - VM_SOLDIER_ACHILLE: ['AV Invisibility', 'Soldier']
+    # moved in VM_procedures: screnshot and uninstall
+    #- SCREENSHOT
+    #- UNINSTALL
+    - CALL: VM_GET_LOG
+    - CALL: END_DISPATCH
+
+
+
 SYSTEM_SOLDIER_SRV:
     - VM_ALL
     - ON_ERROR: SKIP
@@ -553,6 +741,24 @@ SYSTEM_SOLDIER_SRV:
     - CALL: SET_MAIL
     - REPORT:
         - VM_SOLDIER_SRV: ['AV Invisibility', 'Soldier']
+    # moved in VM_procedures: screnshot and uninstall
+    #- SCREENSHOT
+    #- UNINSTALL
+    - CALL: VM_GET_LOG
+    - CALL: END_DISPATCH
+
+
+SYSTEM_SOLDIER_SRV_POP:
+    - VM_ALL
+    - ON_ERROR: SKIP
+    - SLEEP: [1, 600]
+    # CLEAN_EV no more useful - instances are deleted during run and factories are deleted daily
+    # init_dispatch needed for clean evidences (to be removed)
+    #- CALL: INIT_DISPATCH
+    #- CALL: VM_CLEAN_EVIDENCES_AND_CACHE
+    - CALL: SET_MAIL
+    - REPORT:
+        - VM_SOLDIER_SRV_POP: ['AV Invisibility', 'Soldier']
     # moved in VM_procedures: screnshot and uninstall
     #- SCREENSHOT
     #- UNINSTALL
@@ -633,7 +839,6 @@ SYSTEM_DAILY:
 
 
 SYSTEM_DAILY_SRV:
-
     - VM_ALL
     - CALL: SET_MAIL
     - ON_ERROR: SKIP
@@ -655,6 +860,7 @@ SYSTEM_DAILY_SRV:
         - VM_MELT_SRV_UTO: ['AV Invisibility', 'Melt']
         - VM_MELT_SRV_VUZ: ['AV Invisibility', 'Melt']
         - VM_EXPLOIT_SRV: ['AV Invisibility', 'Exploit']
+        #- VM_STAT_STAT_SRV: [AV Invisibility Static, 'Statistic Static check']
     #qui salvo tutti i sample per la giornata!
     - BUILD_CACHE_CLEAN: True
     - CALL: VM_GET_LOG
@@ -758,12 +964,35 @@ SYSTEM_ANDROID_FAST:
 VM_PUSH_VIRUS:
     - ON_ERROR: CONTINUE
     - SLEEP: 300
-    - CROP: True
+    - POPUP: [ True, True ]
+    #- CROP: True
     - PUSH: [ AVAgent/assets/vira/conficker.dll, AVAgent/assets/vira/eicar.com ]
     - SLEEP: 90
     - CHECK_STATIC: [ AVAgent/assets/vira/conficker.dll, AVAgent/assets/vira/eicar.com ]
     - SLEEP: 30
-    - CROP: [ False, False ]
+    - POPUP: [ False, True ]
+    #- CROP: [ False, False ]
+
+VM_PUSH_VIRUS_SCAN:
+    - ON_ERROR: CONTINUE
+    - SLEEP: 60
+    - POPUP: [ True, True ]
+    #- CROP: True
+    - PUSH: [ AVAgent/assets/vira/conficker.dll, AVAgent/assets/vira/eicar.com ]
+    - SLEEP: 90
+    - CHECK_STATIC_SCAN: [ AVAgent/assets/vira/conficker.dll, AVAgent/assets/vira/eicar.com ]
+    - SLEEP: 30
+    - POPUP: [ False, True ]
+    #- CROP: [ False, False ]
+
+VM_PUSH_VIRUS_STAT:
+    - ON_ERROR: CONTINUE
+    - SLEEP: 60
+    - POPUP: [ True, True ]
+    - CHECK_STATISTIC_STATIC: [ AVAgent/assets/vira/* , 2 , 0 ]
+    - SLEEP: 60
+    - POPUP: [ False, True ]
+
 
 SYSTEM_POSITIVE:
     - VM_ALL
@@ -773,6 +1002,28 @@ SYSTEM_POSITIVE:
     - CALL: SET_MAIL
     - REPORT:
         - VM_PUSH_VIRUS: ['AVM Update', 'Positive static check', INVERT]
+    - UNINSTALL
+    - CALL: END_DISPATCH
+
+SYSTEM_POSITIVE_SCAN:
+    - VM_ALL
+    - ON_ERROR: SKIP
+    - SLEEP: [10, 600]
+    - CALL: INIT_DISPATCH
+    - CALL: SET_MAIL
+    - REPORT:
+        - VM_PUSH_VIRUS_SCAN: ['AVM Update', 'Positive static check', INVERT]
+    - UNINSTALL
+    - CALL: END_DISPATCH
+
+SYSTEM_POSITIVE_STAT:
+    - VM_ALL
+    - ON_ERROR: SKIP
+    - SLEEP: [10, 600]
+    - CALL: INIT_DISPATCH
+    - CALL: SET_MAIL
+    - REPORT:
+        - VM_PUSH_VIRUS_STAT: ['AVM Update', 'Positive static check', INVERT]
     - UNINSTALL
     - CALL: END_DISPATCH
 
@@ -889,104 +1140,99 @@ BUILD_SOLDIER:
 BUILD_WINDOWS:
     - CALL: CHECK_STATIC_MODULES
     - CALL: CHECK_STATIC_MODULES_SCOUT_ICONS
+    - CALL: CHECK_STATIC_MODULES_SOLDIER_ICONS
     - CALL: CHECK_STATIC_MODULES_DOCS
-    - CALL: CHECK_STATIC_MODULES_9_4_SAMPLES
     #- CALL: CHECK_STATIC_MODULES_TNI
-    - CALL: CHECK_STATIC_MODULES_MELT
+    #- CALL: CHECK_STATIC_MODULES_MELT
     - BUILD: [ pull, windows, silent ]
 
 CHECK_STATIC_MODULES:
     - ENABLE: [ sunday ]
-    - PUSHZIP: [ AVAgent/assets/check/*, AVAgent/assets/jarexploit/*, AVAgent/assets/windows/* ]
-    - CHECK_STATIC: [ AVAgent/assets/check/codec, AVAgent/assets/check/codec_mod, AVAgent/assets/check/mac_core,
-        AVAgent/assets/check/mac_osax, AVAgent/assets/check/sqlite, AVAgent/assets/check/sqlite_mod,
-        AVAgent/assets/check/ppt.ppsx, AVAgent/assets/check/agent.dat, AVAgent/assets/check/doc.docx, AVAgent/assets/check/sploit.swf ]
-    - CHECK_STATIC: [ 'AVAgent/assets/windows/avtest.swf',
-        'AVAgent/assets/windows/meltexploit.docx',
+    - PUSHZIP: [ AVAgent/assets/check/*, AVAgent/assets/windows/* ]
+    #osx dylib
+    - CHECK_STATIC: [ 'AVAgent/assets/check/dylib']
+    #various static checks
+    - CHECK_STATIC: [ 'AVAgent/assets/windows/meltexploit.docx',
         'AVAgent/assets/windows/meltexploit.txt',
-        'AVAgent/assets/windows/PMIEFuck-WinWord.dll',
         'AVAgent/assets/windows/meltapp.exe',
-        'AVAgent/assets/windows/meltexploit.ppsx',
-        'AVAgent/assets/windows/owned.docm']
-    - CHECK_STATIC: [ 'AVAgent/assets/jarexploit/PMIEFuck-Java.dll',
-        'AVAgent/assets/jarexploit/copy.jar',
-        'AVAgent/assets/jarexploit/owned.docm',
-        'AVAgent/assets/jarexploit/PMIEFuck-WinWord.dll',
-        'AVAgent/assets/jarexploit/exploit.swf',
-        'AVAgent/assets/jarexploit/Shellcode-Stage2-IE.exe',
-        'AVAgent/assets/jarexploit/exploit_ie.swf']
+        'AVAgent/assets/windows/meltexploit.pdf',
+        ]
+    #OLD
+    #- CHECK_STATIC: [ AVAgent/assets/check/codec, AVAgent/assets/check/codec_mod, AVAgent/assets/check/mac_core,
+    #    AVAgent/assets/check/mac_osax, AVAgent/assets/check/sqlite, AVAgent/assets/check/sqlite_mod,
+    #    AVAgent/assets/check/ppt.ppsx, AVAgent/assets/check/agent.dat, AVAgent/assets/check/doc.docx, AVAgent/assets/check/sploit.swf ]
+    #- CHECK_STATIC: [ 'AVAgent/assets/jarexploit/PMIEFuck-Java.dll',
+    #    'AVAgent/assets/jarexploit/copy.jar',
+    #    'AVAgent/assets/jarexploit/owned.docm',
+    #    'AVAgent/assets/jarexploit/PMIEFuck-WinWord.dll',
+    #    'AVAgent/assets/jarexploit/exploit.swf',
+    #    'AVAgent/assets/jarexploit/Shellcode-Stage2-IE.exe',
+    #    'AVAgent/assets/jarexploit/exploit_ie.swf']
 
+
+CHECK_STAT_STAT_SCOUT:
+    - CHECK_STATISTIC_STATIC: [ AVAgent/assets/600_Scout/* , 30 ]
+
+CHECK_STAT_STAT_SOLDIER:
+    - CHECK_STATISTIC_STATIC: [ AVAgent/assets/600_Soldier/* , 30 ]
+
+CHECK_STAT_STAT_SELFDEL:
+    - CHECK_STATISTIC_STATIC: [ AVAgent/assets/300_Selfdel/* , 15 ]
+
+CHECK_STAT_STAT_EXPL_PDF:
+    - CHECK_STATISTIC_STATIC: [ AVAgent/assets/300_Expl_pdf/* , 15 ]
+
+CHECK_STAT_STAT_EXPL_TXT:
+    - CHECK_STATISTIC_STATIC: [ AVAgent/assets/300_Expl_txt/* , 15 ]
+
+CHECK_STAT_STAT_TNI:
+    - CHECK_STATISTIC_STATIC: [ AVAgent/assets/100_TNI/* , 5 ]
 
 CHECK_STATIC_MODULES_SCOUT_ICONS:
     - ENABLE: [ sunday ]
     - PUSHZIP: [ AVAgent/assets/scouts/* ]
     - SLEEP: 20
-    - CHECK_STATIC: ['AVAgent/assets/scouts/agent.exe',
-        'AVAgent/assets/scouts/agent1.exe',
-        'AVAgent/assets/scouts/agent2.exe',
-        'AVAgent/assets/scouts/agent3.exe',
-        'AVAgent/assets/scouts/agent4.exe',
-        'AVAgent/assets/scouts/agent5.exe']
+    - CHECK_STATIC: ['AVAgent/assets/scouts/scout_1.exe',
+        'AVAgent/assets/scouts/scout_2.exe',
+        'AVAgent/assets/scouts/scout_3.exe',
+        'AVAgent/assets/scouts/scout_4.exe',
+        'AVAgent/assets/scouts/scout_5.exe',
+        'AVAgent/assets/scouts/scout_6.exe']
 
-
-CHECK_STATIC_MODULES_MELT:
-    - PUSHZIP: [ 5, AVAgent/assets/melt/* ]
+CHECK_STATIC_MODULES_SOLDIER_ICONS:
+    - ENABLE: [ sunday ]
+    - PUSHZIP: [ AVAgent/assets/soldiers/* ]
     - SLEEP: 20
-    - CHECK_STATIC: ['AVAgent/assets/melt/agent_adobe_reader.exe',
-        'AVAgent/assets/melt/agent_dropbox.exe',
-        'AVAgent/assets/melt/agent_firefox.exe',
-        'AVAgent/assets/melt/agent_flash_player.exe',
-        'AVAgent/assets/melt/agent_skype.exe',
-        'AVAgent/assets/melt/agent_utorrent.exe',
-        'AVAgent/assets/melt/agent_vlc.exe',
-        'AVAgent/assets/melt/agent_yahoo.exe']
-
-CHECK_STATIC_MODULES_TMP_ANDROID:
-    - PUSHZIP: [ AVAgent/assets/tmp/* ]
-    - SLEEP: 20
-    - CHECK_STATIC: [ 'AVAgent/assets/tmp/install.m.apk',
-        'AVAgent/assets/tmp/installer.default.apk',
-        'AVAgent/assets/tmp/installer.v2.apk' ]
+    - CHECK_STATIC: ['AVAgent/assets/soldiers/soldier_1.exe',
+        'AVAgent/assets/soldiers/soldier_2.exe',
+        'AVAgent/assets/soldiers/soldier_3.exe',
+        'AVAgent/assets/soldiers/soldier_4.exe',
+        'AVAgent/assets/soldiers/soldier_5.exe',
+        'AVAgent/assets/soldiers/soldier_6.exe']
 
 CHECK_STATIC_MODULES_DOCS:
     - PUSHZIP: [ AVAgent/assets/doc_link/* ]
     - SLEEP: 20
-    - CHECK_STATIC: ['AVAgent/assets/doc_link/clean_Doc1.docx']
-
-CHECK_STATIC_MODULES_9_4_SAMPLES:
-    - PUSHZIP: [ AVAgent/assets/9_4_agents/* ]
-    - SLEEP: 20
-    - CHECK_STATIC: ['AVAgent/assets/9_4_agents/agent.exe',
-        'AVAgent/assets/9_4_agents/agent2.exe']
+    - CHECK_STATIC: [ 'AVAgent/assets/doc_link/clean_Doc1.docx' ]
 
 CHECK_STATIC_MODULES_TNI:
     - PUSHZIP: [ AVAgent/assets/check_tni/* ]
     - SLEEP: 60
     - CHECK_STATIC: ['AVAgent/assets/check_tni/tni_uTorrent.exe',
-        'AVAgent/assets/check_tni/tni_FirefoxSetup33.1.exe',
-        'AVAgent/assets/check_tni/tni_AdbeRdr11009_en_US.exe',
-        'AVAgent/assets/check_tni/tni_RealPlayer.exe',
-        'AVAgent/assets/check_tni/tni_ccsetup419.exe',
-        'AVAgent/assets/check_tni/tni_winamp5666_full_all.exe',
-        'AVAgent/assets/check_tni/tni_SkypeSetup.exe',
-        'AVAgent/assets/check_tni/tni_wrar52b4.exe',
-        'AVAgent/assets/check_tni/tni_FlashPlayerSetup.exe',
-        'AVAgent/assets/check_tni/tni_TeamViewer_Setup.exe',
-        'AVAgent/assets/check_tni/tni_vlc-2.1.5-win32.exe',
-        'AVAgent/assets/check_tni/tni_ymsgr1150_0228_us.exe']
+        'AVAgent/assets/check_tni/tni_FirefoxSetup33.1.exe']
 
 
 BUILD_DESKTOP:
     - CALL: CHECK_STATIC_MODULES
     - CALL: CHECK_STATIC_MODULES_SCOUT_ICONS
+    - CALL: CHECK_STATIC_MODULES_SOLDIER_ICONS
     - CALL: CHECK_STATIC_MODULES_DOCS
-    #- CALL: CHECK_STATIC_MODULES_9_4_SAMPLES
     #- CALL: CHECK_STATIC_MODULES_TNI
     - ON_ERROR: CONTINUE
     - BUILD: [ pull, windows, silent ]
     - BUILD: [ pull, osx, silent ]
     - BUILD: [ pull, linux, silent ]
-    - ON_ERROR: SKIP
+    #- ON_ERROR: SKIP
 
 BUILD_DESKTOP_SRV:
     - CALL: CHECK_STATIC_MODULES
@@ -995,7 +1241,7 @@ BUILD_DESKTOP_SRV:
     - BUILD_SRV: [ pull, windows, silent, pull ]
     - BUILD_SRV: [ pull, osx, silent, pull ]
     - BUILD_SRV: [ pull, linux, silent, pull ]
-    - ON_ERROR: SKIP
+    #- ON_ERROR: SKIP
 
 BUILD_MOBILE:
     - ON_ERROR: CONTINUE
@@ -1003,7 +1249,7 @@ BUILD_MOBILE:
     - BUILD: [ pull, android, silent ]
     - BUILD: [ pull, ios, silent ]
     - BUILD: [ pull, winphone, silent ]
-    - ON_ERROR: SKIP
+    #- ON_ERROR: SKIP
 
 BUILD_MOBILE_SRV:
     - ON_ERROR: CONTINUE
@@ -1011,14 +1257,14 @@ BUILD_MOBILE_SRV:
     - BUILD_SRV: [ pull, android, silent, pull ]
     - BUILD_SRV: [ pull, ios, silent, pull ]
     - BUILD_SRV: [ pull, winphone, silent, pull ]
-    - CALL: CHECK_STATIC_MODULES_TMP_ANDROID
-    - ON_ERROR: SKIP
+    #- ON_ERROR: SKIP
 
 BUILD_EXPLOIT:
     - BUILD: [ pull, exploit, melt ]
     #- BUILD: [ pull, exploit_docx, melt ]
 
 BUILD_EXPLOIT_SRV:
+    - ON_ERROR: CONTINUE
     - BUILD_SRV: [ pull, exploit, melt, pull ]
     #- BUILD_SRV: [ pull, exploit_docx, melt, pull ]
 
@@ -1205,6 +1451,22 @@ UPDATE_REG:
     - REFRESH_SNAPSHOT
 
 
+INSTALL_POPUP_LIBS:
+    - VM_ALL
+    - ON_ERROR: SKIP
+    - SLEEP: [10, 600]
+    - CALL: INIT_DISPATCH
+    - INTERNET: True
+    - CALL: SET_MAIL
+    - SLEEP: 60
+    - EXECUTE_VM: [ /Python27/Scripts/pip.exe, ['install', 'pywinauto'], 90, True, True  ]
+    - SLEEP: 60
+    - EXECUTE_VM: [ /Python27/Scripts/easy_install.exe, ['pil'], 90, True, True  ]
+    - SLEEP: 600
+    - STOP_VM: 180
+    - REFRESH_SNAPSHOT
+    #remember to turn internet off after
+
 # ---------------------------
 #avagent updates
 
@@ -1229,7 +1491,7 @@ UPD_AV:
 #indirectly called by update.sh
 UPD_AGENT:
     - INTERNET: True
-    - SLEEP: [10, 60]
+    - SLEEP: [10, 600]
     - REVERT
     - START_VM
     - CHECK_INFECTION # questo non e' necessario, ma e' meglio assicurarsene
@@ -1241,6 +1503,24 @@ UPD_AGENT:
     - WAIT_SHUTDOWN
     - START_VM: AV_AGENT
     - UNINSTALL
+
+
+UPDATE_AV_F:
+    - VM_ALL
+    - ON_ERROR: STOP
+    - CALL: SET_MAIL
+    - REPORT:
+        - UPD_AV_F: ['AVM Update', 'Update AV']
+        - UPD_REFRESH
+    - CALL: END_DISPATCH
+
+#indirectly called by update.sh
+UPD_AV_F:
+    - CALL: UPD_AGENT
+    - SLEEP: 10
+    - STOP_VM: 300
+    - WAIT_SHUTDOWN
+
 
 #indirectly called by update.sh
 UPD_REFRESH:
@@ -1455,7 +1735,6 @@ DISABLE_ANALYSIS:
     - CALL: INIT_DISPATCH
     - CLEAN_EVIDENCES: [ Ok ]
 
-
 CLEAN_SAMPLES:
     - VM_ALL
     - BUILD_CACHE_CLEAN: False
@@ -1464,27 +1743,6 @@ SAVE_SAMPLES:
     - VM_ALL
     - BUILD_CACHE_CLEAN: True
 
-#check statically some files in assets/tmp folder
-SYSTEM_STATIC_CHECK_TMP:
+CLEAN_EVIDENCES_AND_CACHE:
     - VM_ALL
-    - INTERNET: False
-    - SLEEP: [1, 120]
-    - CALL: INIT_DISPATCH
-    - CROP: True
-    - CALL: SET_MAIL
-    - REPORT:
-        - CHECK_STATIC_MODULES_TMP_ANDROID
-    - CROP: False
-    - CALL: END_DISPATCH
-
-SYSTEM_STATIC_CHECK_MELT:
-    - VM_ALL
-    - INTERNET: False
-    - SLEEP: [1, 300]
-    - CALL: INIT_DISPATCH
-    - CROP: True
-    - CALL: SET_MAIL
-    - REPORT:
-        - CHECK_STATIC_MODULES_MELT
-    - CROP: False
-    - CALL: END_DISPATCH
+    - CALL: VM_CLEAN_EVIDENCES_AND_CACHE

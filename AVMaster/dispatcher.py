@@ -18,7 +18,7 @@ class Dispatcher(object):
 
     vms = []
 
-    def __init__(self, mq, vms, timeout=4000):
+    def __init__(self, mq, vms, timeout=1100):
         self.vms = vms
         self.mq = mq
         self.timeout = timeout

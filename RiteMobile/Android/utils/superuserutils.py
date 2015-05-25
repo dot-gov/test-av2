@@ -1,3 +1,4 @@
+import time
 from RiteMobile.Android import adb
 
 __author__ = 'mlosito'
@@ -35,8 +36,8 @@ def install_ddf_shell(devSerialnumber):
         adb.call('shell /data/local/tmp/in/local_exploit "/data/local/tmp/in/suidext rt"', devSerialnumber)
 
         #remove temp files
-#        adb.remove_temp_file('local_exploit', device=devSerialnumber)
-#        adb.remove_temp_file('suidext', device=devSerialnumber)
+        adb.remove_temp_file('local_exploit', device=devSerialnumber)
+        adb.remove_temp_file('suidext', device=devSerialnumber)
 
         #checks if root
         if check_su_permissions(devSerialnumber):
@@ -63,11 +64,12 @@ def install_ddf_shell(devSerialnumber):
         adb.call('shell chmod 766 /data/local/tmp/in/selinux4_exploit', devSerialnumber)
         adb.copy_tmp_file("assets/exploit/selinux_suidext", devSerialnumber)
         #installs RILCAP
-        adb.call('shell /data/local/tmp/in/selinux4_exploit "/data/local/tmp/in/selinux_suidext rt"', devSerialnumber)
-        #cleanup
-        adb.remove_temp_file('selinux4_exploit', device=devSerialnumber)
-        adb.remove_temp_file('selinux_suidext', device=devSerialnumber)
+        adb.call('shell /data/local/tmp/in/selinux4_exploit /data/local/tmp/in/selinux_suidext rt', devSerialnumber)
 
+        time.sleep(10)
+        #cleanup
+#        adb.remove_temp_file('selinux4_exploit', device=devSerialnumber)
+#        adb.remove_temp_file('selinux_suidext', device=devSerialnumber)
         if check_su_permissions(devSerialnumber):
             return True
         else:

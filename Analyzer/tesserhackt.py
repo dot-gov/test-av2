@@ -1,3 +1,6 @@
+import time
+import shutil
+
 __author__ = 'mlosito'
 
 from PIL import Image
@@ -46,6 +49,14 @@ def process(av="*", num="*", ocrd=None):
     #     return processlist(prefix, filelist, ocrd)
 
 
+def cleanup(d_dir):
+    for day in range(4, 10):
+        timedir = time.strftime("%y%m%d", time.localtime(time.time()-(day*24*3600)))
+        del_dir = "%spopup_thumbs/%s/" % (d_dir, timedir)
+        shutil.rmtree(del_dir, ignore_errors=True)
+        print "Deleted old diles in dir: %s" % del_dir
+
+
 def processlist(prefix, filelist, ocrd, av=None):
     result_list = []
     if ocrd is None:
@@ -63,16 +74,22 @@ def processlist(prefix, filelist, ocrd, av=None):
         # saves
         if not av:
             if result in ['UNKNOWN', 'BAD', 'CRASH', "NO_TEXT"]:
+                print "Saving thumbnail"
                 thumb_filename = save_thumbnail(file_input_full)
         #if called from tesserest we should save the image!
         else:
-            out_dir = "%spopup_thumbs/%s/" % (log_dir, av)
+            timestamp = time.strftime("%y%m%d", time.localtime(time.time()))
+            cleanup(log_dir)
+            out_dir = "%spopup_thumbs/%s/%s/" % (log_dir, timestamp, av)
+            print "Saving thumbnail to: %s" % out_dir
             if result in ['UNKNOWN', 'BAD', 'CRASH']:
-                out_dir += "OK/"
-                thumb_filename = save_thumbnail(file_input_full, out_dir)
-            elif result in ['GOOD', "NO_TEXT"]:
                 out_dir += "NOK/"
                 thumb_filename = save_thumbnail(file_input_full, out_dir)
+            elif result in ['GOOD', "NO_TEXT"]:
+                out_dir += "OK/"
+                thumb_filename = save_thumbnail(file_input_full, out_dir)
+
+        print "Thumbnail saved or saving skipped"
 
         if len(filelist) == 1:
             return result, word, thumb_filename
@@ -88,27 +105,46 @@ def processlist(prefix, filelist, ocrd, av=None):
 
 
 def parse_crop(crop_filename):
-    im = Image.open(crop_filename)
-    out_filename = crop_filename.replace(".png", ".jpg")
-    # from 72dpi to about 300dpi
-    im = im.resize((im.size[0]*4, im.size[1]*4), Image.ANTIALIAS)
+    try:
+        im = Image.open(crop_filename)
+        #jpg and png are supported
+        if ".jpg" in crop_filename:
+            out_filename = crop_filename.replace(".jpg", "_up.jpg")
+        else:
+            out_filename = crop_filename.replace(".png", "_up.jpg")
+        # from 72dpi to about 300dpi
+        im = im.resize((im.size[0]*4, im.size[1]*4), Image.ANTIALIAS)
 
-    im.save(out_filename, dpi=(300, 300))
-    # im1 = im.convert('1')
-    # im1.save("out1.jpg", dpi=(300, 300))
-    # imL = im.convert('L')
-    # imL.save("outL.jpg", dpi=(300, 300))
+        im.save(out_filename, dpi=(300, 300))
+        print "Saved upscaled image"
+        # im1 = im.convert('1')
+        # im1.save("out1.jpg", dpi=(300, 300))
+        # imL = im.convert('L')
+        # imL.save("outL.jpg", dpi=(300, 300))
 
-    text = exec_tesseract(out_filename)
+        text = exec_tesseract(out_filename)
+        print text
+        return text
+    except IOError:
+        print "Invalid image file. Returning void text."
+        return ""
 
-    return text
     # return is_text_ok(text)
 
 
 def exec_tesseract(out_filename):
-    proc = subprocess.Popen(["tesseract", out_filename, "stdout"], stdout=subprocess.PIPE)
-    comm = proc.communicate()
-    return str(comm[0])
+    if "avmaster" == socket.gethostname():
+        txt_out = out_filename.replace(".jpg", "")
+        proc = subprocess.Popen(["tesseract", out_filename, txt_out, "nobatch", "ascii_ml"], stdout=subprocess.PIPE)
+        comm = proc.communicate()
+        print "Tesseract execution completed."
+        f = open(txt_out+".txt", "r")
+        return f.read()
+    else:
+        proc = subprocess.Popen(["tesseract", out_filename, "stdout", "ascii_ml"], stdout=subprocess.PIPE)
+        comm = proc.communicate()
+        print "Tesseract execution completed."
+        return str(comm[0])
 
 
 #if you want the thumb in another dir prlease provide a FULL out_dir name
@@ -117,21 +153,34 @@ def save_thumbnail(crop_filename, out_dir=None):
     if out_dir:
         if not os.path.exists(out_dir):
             os.makedirs(out_dir)
+    try:
+        print "Opening image %s to create thumbnail" % crop_filename
+        im = Image.open(crop_filename)
+        print "Opened image %s to create thumbnail" % crop_filename
+        if out_dir:
+            crop_filename = os.path.join(out_dir, os.path.basename(crop_filename))
 
-    im = Image.open(crop_filename)
+        #if the file is a jpg I rename it to png so thumbnail is saved correctly
+        #jpg and png are supported
+        if ".jpg" in crop_filename:
+            out_filename = crop_filename.replace(".jpg", "_thumb.jpg")
+        else:
+            out_filename = crop_filename.replace(".png", "_thumb.jpg")
 
-    if out_dir:
-        crop_filename = os.path.join(out_dir, os.path.basename(crop_filename))
-
-    out_filename = crop_filename.replace(".png", "_thumb.jpg")
-    i = 0
-    while os.path.exists(out_filename):
-        out_filename = crop_filename.replace(".png", "_thumb_%s.jpg" % i)
-        i += 1
-
-    im.save(out_filename, quality=80, optimize=True)
-    return out_filename
-
+        i = 0
+        while os.path.exists(out_filename):
+            if ".jpg" in crop_filename:
+                out_filename = crop_filename.replace(".jpg", "_thumb_%s.jpg" % i)
+            else:
+                out_filename = crop_filename.replace(".png", "_thumb_%s.jpg" % i)
+            i += 1
+        print "I will save thumbnail %s" % out_filename
+        im.save(out_filename, quality=75)
+        print "Thumbnail saved!"
+        return out_filename
+    except IOError:
+        print "Cannot save thumbnail. Probably pil cannot convert image. Using original file."
+        return crop_filename
 
 if __name__ == "__main__":
     main()

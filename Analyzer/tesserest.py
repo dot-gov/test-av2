@@ -1,3 +1,5 @@
+import socket
+
 __author__ = 'mlosito'
 
 import os
@@ -61,17 +63,39 @@ def parsefile(my_request, ocrd):
     result, word, thumb_filename = tesserhackt.processlist(directory_name, [cli_filename], ocrd, av)
 
     #temp cleanup!
-    os.remove(out_filename)
-    os.remove(out_filename.replace(".png", ".jpg"))
-    if not av:
-        os.remove(thumb_filename)
-
-    os.removedirs(directory_name)
+    #sometimes the removal fails, usualy because the call is made with an invalid image (0*0) so it's not saved.
+    try:
+        os.remove(out_filename)
+    except OSError:
+        print "Error removing temp original files: %s" % out_filename
+    try:
+        out_filename_del = out_filename.replace(".jpg", "_up.jpg")
+        out_filename_del = out_filename_del.replace(".png", "_up.jpg")
+        os.remove(out_filename_del)
+    except OSError:
+        print "Error removing temp upscaled file"
+    # if not av:
+    #     try:
+    #         os.remove(thumb_filename)
+    #     except OSError:
+    #         print "Error removing temp thumb file: %s" % thumb_filename
+    if "avmaster" == socket.gethostname():
+        try:
+            txt_filename_del = out_filename.replace(".jpg", "_up.txt")
+            txt_filename_del = txt_filename_del.replace(".png", "_up.txt")
+            os.remove(txt_filename_del)
+        except OSError:
+            print "Error removing temp txt file"
+    try:
+        os.removedirs(directory_name)
+    except OSError:
+            print "Error removing temp dir"
 
     print 'Parsed_file=%s' % out_filename
     res_out = 'Result= %s\n' % result
     res_out += 'Thumb= %s\n' % thumb_filename
     res_out += 'Found= %s\n' % word
+    print res_out
     return res_out
 
 if __name__ == '__main__':

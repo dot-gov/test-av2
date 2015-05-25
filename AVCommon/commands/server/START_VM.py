@@ -42,15 +42,20 @@ def get_status(vm):
     try:
         if config.verbose:
             logging.debug("%s, list_processes: %s" % (vm, [ (p["name"],p["owner"]) for p in processes] ))
-
+        vmtools_number = 0
         for process in processes:
             if process["owner"].endswith("avtest"):
                 user_logged = True
                 if process["name"] == "vmtoolsd.exe":
                     # owner=WIN7-NOAV\avtest, cmd=VMwareTray.exe
-                    vm_tools = True
-            if process["name"] == "wuauclt.exe" or process["name"] == "TrustedInstaller.exe":
-                install = True
+                    vmtools_number += 1
+            if process["owner"].endswith("SYSTEM") and process["name"] == "vmtoolsd.exe":
+                vmtools_number += 1
+            #removed on 05/05/2015 because the win update is no more
+            # if process["name"] == "wuauclt.exe" or process["name"] == "TrustedInstaller.exe":
+            #     install = True
+        if vmtools_number >= 2:
+            vm_tools = True
         # explorer, vmware solo se logged in
     except:
         logging.exception("error")
@@ -82,7 +87,7 @@ def execute(vm, protocol, args):
     ret = vm_manager.execute(vm, "startup")
     started = False
     if not ret:
-        return False, "Not Started VM"
+        return False, "Not Started VM - vsphere cannot start vm"
 
     max_install = 10
     max_tries = 10
@@ -91,18 +96,20 @@ def execute(vm, protocol, args):
         for i in range(8):
             sleep(10)
             if vm_manager.execute(vm, "is_powered_on"):
-                 return True, "Started VM"
+                 return True, "Started VM (no win startup check)"
         return False, "Error Occurred: Timeout while starting VM"
 
     for i in range(3):
         sleep(10)
         if vm_manager.execute(vm, "is_powered_on"):
-            for i in range(max_tries):
+            vm_tools_present = None
+            for j in range(max_tries):
+                vm_tools_present = False
                 if mq.check_connection(vm):
                     logging.debug("got connection from %s" % vm)
-                    return True, "Started VM"
+                    return True, "Started VM (connection to redis OK)"
 
-                for i in range(max_install):
+                for k in range(max_install):
                     status = get_status(vm)
                     logging.debug("%s, got status: %s" % (vm, status))
 
@@ -113,14 +120,25 @@ def execute(vm, protocol, args):
                         break
 
                 if status == "LOGGED-IN":
-                    logging.debug("%s, executing ipconfig, time: %s/%s" % (vm, i, max_tries))
+                    logging.debug("VM_tools present")
+                    vm_tools_present = True
+                    logging.debug("%s, executing ipconfig, time: %s/%s" % (vm, j, max_tries))
                     started = vm_manager.execute(vm, "executeCmd", "c:\\windows\\system32\\ipconfig.exe") == 0
                     logging.debug("%s, executed ipconfig, ret: %s" % (vm, started))
 
+                    logging.debug("IP Checking and renewing if necessary")
+
+                    arg = ["/C", 'c:\\windows\\system32\\ipconfig.exe | findstr IP | findstr /l ":\ 10.0. :\ 10.1." || c:\\windows\\system32\\ipconfig.exe /renew']
+                    reg = ("c:\\windows\\system32\\cmd.exe", arg, 40, True, True)
+                    vm_manager.execute(vm, "executeCmd", *reg)
+
+                    logging.debug("IP Checking completed")
+
                 if started and not check_avagent:
-                    return True, "Started VM"
+                    return True, "Started VM (no avagent check)"
                 else:
                     sleep(30)
+            #end for j
 
             if not started:
                 logging.debug("%s: reboot requested" % vm)
@@ -128,7 +146,10 @@ def execute(vm, protocol, args):
                 sleep(60)
                 continue
 
-            return False, "Not started VM"
+            if vm_tools_present:
+                return False, "Not started VM - vsphere started, win started and vmtools is running, but probably avagent does not start or there is a connection problem."
+            else:
+                return False, "Not started VM - vsphere started, win started, but vmtools are not running"
         else:
             logging.debug("%s: not yet powered" % vm)
 

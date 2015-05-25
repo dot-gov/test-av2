@@ -16,6 +16,7 @@ def on_answer(vm, success, answer):
     pass
 
 
+#using wildcards and directories is discouraged. Probably screws up the test COMPLETELY
 def execute(vm, args):
     logging.debug("Checking files: %s" % args)
     files = [ glob.glob(f) for f in args ]
@@ -25,5 +26,5 @@ def execute(vm, args):
     flat = [ item for sublist in files for item in sublist ]
     logging.debug("files: %s, expanded files: %s" % (files, flat))
     failed = build.check_static(flat, command.context["report"])
-
+    logging.debug("DEBUG - result from build.check_static: %s", failed)
     return failed==[], failed

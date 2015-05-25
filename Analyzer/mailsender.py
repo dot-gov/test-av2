@@ -1,3 +1,9 @@
+from ConfigParser import ConfigParser
+import os
+import subprocess
+import yaml
+from Analyzer import dbreport
+
 __author__ = 'mlosito'
 
 import smtplib
@@ -23,10 +29,11 @@ class MailSender(object):
 
     invert_result_tests = ["VM_PUSH_VIRUS"]
 
-    important_tests = ['VM_ELITE_FAST_SCOUTDEMO_SRV', 'VM_ELITE_FAST_SRV', 'VM_EXPLOIT_SRV', 'VM_SOLDIER_SRV', 'VM_STATIC_SRV']
+    #important_tests = ['VM_ELITE_FAST_SCOUTDEMO_SRV', 'VM_ELITE_FAST_SRV', 'VM_EXPLOIT_SRV', 'VM_SOLDIER_SRV', 'VM_STATIC_SRV']
+    important_tests = ['VM_STATIC_SRV', 'VM_ELITE_FAST_SRV', 'VM_SOLDIER_SRV']
 
-    # 'VM_ELITE_FAST_DEMO_SRV': ['sunday'],
-    enabled = {'VM_EXPLOIT_SRV': ['sunday'],
+    enabled = {'VM_ELITE_FAST_DEMO_SRV': ['sunday'],
+               'VM_EXPLOIT_SRV': ['sunday'],
                'VM_MELT_SRV_AIR': ['wednesday', 'saturday'],
                'VM_MELT_SRV_FIF': ['monday', 'thursday'],
                'VM_MELT_SRV_UTO': ['tuesday', 'friday'],
@@ -49,19 +56,26 @@ class MailSender(object):
     #stats
     total_tests_num = 0
     sanity_percentage = 0
+    rite_errors_percentage = 0
     rite_fails_percentage = 0
     not_run_percentage = 0
     #stats dicts
     stats_by_test = {}
     stats_by_result_type = {}
+    stats_by_vm = {}
+    times_by_vm = {}
     #stat vm/test matrix (which is an av-indexed dictionary)
     expected_table = {}
 
     #for footer
     yaml_analyzed = []
+    known_error_reports = None
 
     # (ordered) list of the results every test should return
     results_to_receive = []
+
+    default_yaml = None
+    vms_cfg = None
 
     # , "f.cornelli@hackingteam.com", "m.oliva@hackingteam.com"
     def send_mail(self, mail_recipients=["m.losito@hackingteam.com", "f.cornelli@hackingteam.com", "m.oliva@hackingteam.com"], mail_server="mail.hackingteam.com"):
@@ -84,7 +98,7 @@ class MailSender(object):
         msg.attach(htmlpart)
 
         hostname = socket.gethostname()
-        subject = 'ANALYZER_REPORT@%s - Sanity=%s%%' % (hostname, self.sanity_percentage)
+        subject = 'RiteAnalyzer - Sanity=%s%% - Errors=%s%% - Fails=%s%%+%s%%' % (self.sanity_percentage, self.rite_errors_percentage, self.rite_fails_percentage, self.not_run_percentage)
 
         # for recipient in mail_recipients:
         #     # Make sure email addresses do not contain non-ASCII characters
@@ -94,9 +108,9 @@ class MailSender(object):
         # recipient = recipient.encode('ascii')
         msg_root['Subject'] = Header(unicode(subject), header_charset)
         msg_root['From'] = sender_name
-        #msg_root['To'] = ", ".join(mail_recipients)
+        msg_root['To'] = ", ".join(mail_recipients)
 
-        print "Mail enabled. Msg to: %s to be sent" % msg_root['To']
+        print "Mail enabled. Msg to: %s to be sent. Mail size: %s" % (msg_root['To'], len(msg_root.as_string()))
         # Send the message via our own SMTP server, but don't include the
         # envelope header.
         s = smtplib.SMTP(mail_server)
@@ -105,7 +119,8 @@ class MailSender(object):
         s.sendmail(msg_root['From'], mail_recipients, msg_root.as_string())
         s.quit()
 
-    def add_result(self, vm, test, result_types, message, details=None, save_strings=None, saved_error_comment=None, crop_filenames=None):
+    def add_result(self, vm, test, result_types, message, details=None, save_strings=None, saved_error_comment=None, crop_filenames=None,
+                   popup_results=None, time=0):
         if not vm in self.all_results:
             self.all_results[vm] = {}
         if not test in self.all_results[vm]:
@@ -116,13 +131,18 @@ class MailSender(object):
         self.all_results[vm][test]['save_string'] = save_strings
         self.all_results[vm][test]['saved_error_comment'] = saved_error_comment
         self.all_results[vm][test]['crop_filenames'] = crop_filenames
+        self.all_results[vm][test]['popup_results'] = popup_results
+        self.all_results[vm][test]['time'] = time
 
     #we pass msg that is the "root" multipart. We have to attach to it the images.
     def generate_text(self, msg):
 
+        self.load_default_yaml('Rite/AVAgent/default.yaml')
+        self.load_vms_cfg('Rite/AVMaster/conf/vms-rite.cfg')
+
         #css styles
         mail_message = self.get_html_header()
-        mail_message += self.generate_stats()
+        mail_message += self.generate_stats(msg)
 
         mail_message += self.get_html_retests()
 
@@ -146,7 +166,8 @@ class MailSender(object):
         <html>
         <head>
         <style>
-            div.title   {font-weight: bold;
+            div.title   {
+                        /*font-weight: bold;*/
                         background-color: lightgray;
                         text-align: center;
                         padding: 8px;
@@ -162,7 +183,7 @@ class MailSender(object):
                         box-shadow: 3px 3px 2px #888888;
                         padding: 4px;
 
-                        max-width: 500px;
+                        max-width: 680px;
                         }
             div.cleancontainer {
                         border: 1px solid #707070;
@@ -184,8 +205,19 @@ class MailSender(object):
                           text-align: center;
                           padding: 4px;}
             p.tab    {padding-left:3em}
-            p.doubletab    {padding-left:6em}
+            div.doubletab    {padding-left:6em}
+            ol.doubletab   {padding-left:2em}
             img.tab  {padding-left:9em}
+            img.logo  {
+                       width: 25%;
+                       display: block;
+                       margin-left: auto;
+                       margin-right: auto;
+                      }
+            img.icon {
+                        height: 16px;
+                        width: 16px;
+                      }
             .percentbar {   background: red;
                             border:1px solid #000000;
                             height:10px; width:200px;
@@ -258,6 +290,7 @@ class MailSender(object):
                   </html>''' % str(self.yaml_analyzed)
 
     def get_result_type_section_html(self, result_type, ocrd, mime_msg, error_details=False):
+        attachment_number = 0
         mail_message = '<div class="cleancontainer">'
         for vm in sorted(self.all_results):
             #if it hase some results of this type I put the header and
@@ -265,60 +298,95 @@ class MailSender(object):
             for test in self.all_results[vm]:
                 # print test
                 # print result_type
-                if self.all_results[vm][test]['result_type'] == result_type:
+                #checks if there is a test of this result type to add the vm
+                #but if the test is disabled today, I should not add it to KNOWN BUT PASSED (otherwise we fill that section of garbage)
+                if self.all_results[vm][test]['result_type'] == result_type and not (result_type == self.ResultTypes.KNOWN_ERRORS_BUT_PASSED and self.disabled_today(test)):
                     found = True
+
             if found:
                 mail_message += '<details close><summary style="display:inline">Analyzed VM: %s</summary><p><br>' % self.decorate_vm(vm)
                 for test in self.all_results[vm]:
                     if self.all_results[vm][test]['result_type'] == result_type:
-                        mail_message += '<p class="tab">Test: %s</p><br>' % self.decorate_test(test, vm)
-                        mail_message += '<p class="doubletab">%s</p><br>' % self.all_results[vm][test]['message']  # before here was used cgi.escape(
+                        #if the test is disabled today, I should not add it to KNOWN BUT PASSED (otherwise we fill that section of garbage)
+                        if result_type == self.ResultTypes.KNOWN_ERRORS_BUT_PASSED and self.disabled_today(test):
+                            continue
+                        mail_message += '<p class="tab">Test: %s, Execution time in minutes: %s</p><br>' % (self.decorate_test(test, vm), self.all_results[vm][test]['time'])
                         if self.all_results[vm][test]['saved_error_comment']:
-                            mail_message += '<p class="doubletab" style="color: red;">Comment: %s</p><br>' % cgi.escape(self.all_results[vm][test]['saved_error_comment'])
+                            mail_message += '<div class="doubletab" style="color: red;">Comment: %s</div><br>' % cgi.escape(self.all_results[vm][test]['saved_error_comment'])
+                        mail_message += '<div class="doubletab">%s</div><br>' % self.all_results[vm][test]['message']  # before here was used cgi.escape(
                         #details for errors
                         if error_details:
-                            mail_message += '<details close><summary class="bold">ERROR LOG</summary><p class="doubletab">'
+                            mail_message += '<details close><summary class="bold">ERROR LOG</summary><div class="doubletab">'
                             mail_message += self.all_results[vm][test]['details']
-                            mail_message += "</p></details>"
-                            mail_message += '<details close><summary class="bold">HELPER FOR MANUAL</summary><p class="doubletab">'
+                            mail_message += "</div></details>"
+                            mail_message += '<details close><summary class="bold">HELPER FOR MANUAL</summary><div class="doubletab">'
                             mail_message += self.all_results[vm][test]['save_string']
-                            mail_message += "</p></details>"
+                            mail_message += "</div></details>"
 
                         #in error details I dont's show crops
-                        elif self.all_results[vm][test]['crop_filenames']:
-                        #crops
-                        #here I re-analyze every crop, for 2 reasons: 1: i do not have to bring all the values to this level; 2 to check consistency
-                            for crop in self.all_results[vm][test]['crop_filenames']:
-                                result, word, thumb_filename = tesserhackt.process(av=vm, num=crop, ocrd=ocrd)
-                                #good case:
-                                if thumb_filename == "":
-                                    mail_message += '<p class="doubletab">%s - <b>%s</b> - got word: %s - [image omitted] </p><br>' % (str(crop), result, word)
-                                #not good:
-                                else:
-                                    mail_message += '<p class="doubletab">%s - <b>%s</b> - got word: %s - filename: %s </p><br>' % (str(crop), result, word, thumb_filename)
-                                    img_fp = open(thumb_filename, 'rb')
-                                    img_data = img_fp.read()
-                                    # Now create the MIME container for the image
-                                    cid = vm+"-"+str(crop)
-                                    img = MIMEImage(img_data)  # , 'jpeg'
+                        if result_type != self.ResultTypes.NEW_ERRORS or not error_details:
+                            if self.all_results[vm][test]['crop_filenames']:
+                            #crops
+                            #here I re-analyze every crop, for 2 reasons: 1: i do not have to bring all the values to this level; 2 to check consistency
+                                for crop in self.all_results[vm][test]['crop_filenames']:
+                                    result, word, thumb_filename = tesserhackt.process(av=vm, num=crop, ocrd=ocrd)
+                                    #good case:
+                                    if thumb_filename == "":
+                                        mail_message += '<div class="doubletab">%s - <b>%s</b> - got word: %s - [image omitted] </div><br>' % (str(crop), result, word)
+                                    #not good:
+                                    else:
+                                        mail_message += '<div class="doubletab">%s - <b>%s</b> - got word: %s - filename: %s </div><br>' % (str(crop), result, word, thumb_filename)
+                                        img_fp = open(thumb_filename, 'rb')
+                                        img_data = img_fp.read()
+                                        # Now create the MIME container for the image
+                                        cid = vm+"-"+str(crop)
+                                        img = MIMEImage(img_data)  # , 'jpeg'
 
-                                    img.add_header('Content-Id', '<%s>' % cid)  # angle brackets are important
-                                    #not necessary
-                                    # img.add_header("Content-Disposition", "inline", filename=thumb_filename)  # David Hess recommended this edit
-                                    mime_msg.attach(img)
-                                    img_fp.close()
-                                    mail_message += '<img class="tab" src="cid:%s">' % cid
+                                        img.add_header('Content-Id', '<%s>' % cid)  # angle brackets are important
+                                        #not necessary
+                                        # img.add_header("Content-Disposition", "inline", filename=thumb_filename)  # David Hess recommended this edit
+                                        mime_msg.attach(img)
+                                        img_fp.close()
+                                        attachment_number += 1
+                                        mail_message += '<img class="tab" src="cid:%s">' % cid
+                            elif self.all_results[vm][test]['popup_results']:
+                                for result_list in self.all_results[vm][test]['popup_results'][0:11]:
+                                    result, thumb_filename, word = result_list
+                                    mail_message += '<div class="doubletab"><b>%s</b> - got word: %s - filename: %s </div><br>' % (result, word, thumb_filename)
+                                    if os.path.exists(thumb_filename):
+                                        img_fp = open(thumb_filename, 'rb')
+                                        img_data = img_fp.read()
+                                        # Now create the MIME container for the image
+                                        cid = vm+"-"+str(thumb_filename)
+                                        img = MIMEImage(img_data)  # , 'jpeg'
 
+                                        img.add_header('Content-Id', '<%s>' % cid)  # angle brackets are important
+                                        #not necessary
+                                        # img.add_header("Content-Disposition", "inline", filename=thumb_filename)  # David Hess recommended this edit
+                                        mime_msg.attach(img)
+                                        img_fp.close()
+                                        attachment_number += 1
+                                        mail_message += '<img class="tab" src="cid:%s">' % cid
+                                    else:
+                                        mail_message += '<div class="doubletab"><b>ERROR: filename %s not found on server! IMAGE OMITTED!</b></div>' % thumb_filename
+                                if len(self.all_results[vm][test]['popup_results']) > 7:
+                                    mail_message += '<div class="doubletab"><b>TOO MANY POPUPS. %i IMAGES OMITTED!</b></div>' % (len(self.all_results[vm][test]['popup_results']) - 8)
                 mail_message += "</p></details><hr>"
         mail_message += '</div>'
+        if result_type == self.ResultTypes.NEW_ERRORS and attachment_number == 0 and not error_details:
+            print "WARNING: NEW ERRORS HAVE NO ATTACHMENTS. CHECK popup_thumbs dir and permissions!"
+        else:
+            print "Number of attachments in section %s: %s" % (result_type, attachment_number)
         return mail_message
 
     def get_html_body(self, mime_msg):
 
+        self.attach_images(mime_msg)
+
         ocrd = OcrDict()
 
         mail_message = '<br><a id="rite_fails"><div class="boldback" style="background-color:darkred">RITE NEW FAILS - these are the tests in which the test system (rite) failed</div></a><br>'
-        mail_message += self.get_result_type_section_html(self.ResultTypes.RITE_FAILS, ocrd, mime_msg)
+        mail_message += self.get_result_type_section_html(self.ResultTypes.RITE_FAILS, ocrd, mime_msg, error_details=True)
 
         mail_message += '<br><a id="rite_known_fails"><div class="boldback" style="background-color:green">RITE KNOWN FAILS - these are the tests in which the test system (rite) failed but we previously aknowledged that</div></a><br>'
         mail_message += self.get_result_type_section_html(self.ResultTypes.RITE_KNOWN_FAILS, ocrd, mime_msg)
@@ -338,18 +406,37 @@ class MailSender(object):
         mail_message += '<br><a id="errorsdetails"><div class="boldback" style="background-color:red">ERROR DETAILS - log of every operation and python code to acknowledge the error (crops are not shown here)</div></a><br>'
         mail_message += self.get_result_type_section_html(self.ResultTypes.NEW_ERRORS, ocrd, mime_msg, error_details=True)
 
+        mail_message += '<br><a id="errorsdetails"><div class="boldback" style="background-color:blue">KNOWN ERRORS FRIENDLY REPORT - All the errors we known about</div></a><br>'
+        mail_message += self.get_known_errors_report()
+
         return mail_message
 
-    def generate_stats(self):
+    def get_known_errors_report(self):
+        mail_message = '<div class="cleancontainer">'
+        for vm in self.known_error_reports:
+            mail_message += '<details close><summary style="display:inline">Analyzed VM: %s</summary><p><br>' % self.decorate_vm(vm)
+            for test in self.known_error_reports[vm]:
+                mail_message += '<p class="tab"><b>Test: ' + test + '</b> - Comment: <b>' + self.known_error_reports[vm][test][0][3] + '</b></p>'
+                for res in self.known_error_reports[vm][test]:
+                    vm, test, type_comment, manual_comment, manual_optional = res
+                    mail_message += '<div class="doubletab">ERROR: %s - Occurs only some times: %s<br>' % (type_comment, manual_optional) + '</div>' #"%s - %s - %s - %s - manual_optional= %s <br>" %
+            mail_message += '</details><hr>'
+        mail_message += '</div>'
+        return mail_message
+
+    def generate_stats(self, mime_msg):
 
         self.calculate_stats()
 
+        self.attach_image('logo', mime_msg)
+
         stat_text = '<div class="title">'
-        stat_text += '<div style="font-size: 140%;background-color: #b0b0b0;padding: 5px;">Analyzer Report RITE</div>'
-        stat_text += '<div class="testcontainer">'
+        # stat_text += '<img class="logo" src="cid:logo">'
+        stat_text += '<div style="font-size: 200%; font-weight: lighter; background-color: white;padding: 5px; font-family: calibri"><img class="logo" src="cid:logo"><b>]</b>Rite<b>Analyzer</b>[</div>'
+        stat_text += '<div class="testcontainer" style="font-weight: bold;">'
         #if sanity is a number, displays percentage bar
         if not self.sanity_percentage == "Unknown":
-            stat_text += "Global Sanity: %s%% (Not run: %s%% - Rite fails: %s%%)" % (self.sanity_percentage, self.not_run_percentage, self.rite_fails_percentage)
+            stat_text += "Global Sanity: %s%% - New Errors:%s%% (Rite fails: %s%% - Not run: %s%%)" % (self.sanity_percentage, self.rite_errors_percentage, self.rite_fails_percentage, self.not_run_percentage)
             stat_text += '''
                 <div class="percentbar">
                     <div style="width:%spx;"></div>
@@ -371,7 +458,7 @@ class MailSender(object):
         #not implemented
         #stat_text += '<a href="#not_enabled">Not Enabled: %s<br></a>' % self.not_enabled_num
         stat_text += "TOTAL: %s<br>" % self.total_tests_num
-        stat_text += '<p style="font-weight: normal;">Always remember that th "Known Errors" are very very important because they are the problems we known we have. Every known error have a comment.</p><br>'
+        stat_text += '<p style="font-weight: normal;">Always remember that the "Known Errors" are very very important because they are the problems we known we have. Every known error have a comment.</p>'
         stat_text += '</div>'
         stat_text += '<br><a id="retests"><div class="boldback" style="color: black; font-size: 125%;">Stats by test</div></a><br>'
         stat_text += '<div class="testcontainer">'
@@ -419,14 +506,31 @@ class MailSender(object):
                 table_text += '<th><span title="%s">%s</span></th>' % (test, test_title)
         for vm in sorted(self.expected_table):
             table_text += '<tr>'
-            table_text += '<td class="av">%s</td>' % self.decorate_vm(vm)
+            table_text += '<td class="av">%s</td>' % self.decorate_vm(vm, icons=True)
             for test in self.results_to_receive:
-                table_text += self.decorate_result(self.expected_table[vm][test], vm, test)
+                table_text += self.decorate_result(self.expected_table[vm][test], vm, test, self.all_results[vm][test]['time'])
             table_text += '</tr>'
         table_text += "</table>"
 
-        table_text += '<div style="margin-left:auto;margin-right:auto;">RF=Rite new Fails, RK=Rite Known fails, NE=New Error, KE=Known Error, KP=Known error but Passed, OK=OK, NT=Not enabled Today, ??=WTF:) </div>'
-        table_text += '<div style="margin-left:auto;margin-right:auto;">Temporarily deactivated vms: %s</div>' % VM_ALL.vm_deactivated_temp
+        # calculate occupied space on /
+        df = subprocess.Popen(["sh", "-c", "df", "/"], stdout=subprocess.PIPE)
+        output = df.communicate()[0]
+        device, size, used, available, percent, mountpoint = output.split("\n")[1].split()
+
+        percent_available = (float(available)/(float(used)+float(available)) * 100)
+
+        table_text += '<div style="margin-left:auto;margin-right:auto;">RF=Rite new Fails, RK=Rite Known fails, NE=New Error, KE=Known Error, KP=Known error but Passed, OK=OK, NT=Not enabled Today, NR=Not run, probably caused by previous error(s)</div><hr>'
+        table_text += '<div style="margin-left:auto;margin-right:auto;">Temporarily deactivated vms: <b>%s</b><br><hr>' % VM_ALL.vm_deactivated_temp
+        table_text += '<img class="icon" src="cid:ok">= Silent ok (Elite or Soldier is evaluated, depending on soldierlist)<br>'
+        table_text += '<img class="icon" src="cid:error">= Silent new error (Elite or Soldier is evaluated, depending on soldierlist)<br>'
+        table_text += '<img class="icon" src="cid:fix">= VM to fix (only Elite or Soldier test is evaluated)<br>'
+        table_text += '<img class="icon" src="cid:soldier">= In SoldierList (Soldier test is evaluated)<br>'
+        table_text += '<img class="icon" src="cid:blacklist">= In Blacklist (No test is evaluated)<br>'
+        table_text += '<img class="icon" src="cid:save">= Saved error or saved fail (for Elite or Soldier)<br><hr>'
+        table_text += 'Available space on Rite mountpoint "%s" is: %.2f%%' % (mountpoint, percent_available)
+        if percent_available < 10:
+            table_text += '<b> WARNING LOW DISK FREE ON RITE!</b><br>'
+        table_text += '</div>'
 
         table_text += "</div>"
         return table_text
@@ -449,6 +553,7 @@ class MailSender(object):
         self.stats_by_result_type[self.ResultTypes.NOT_RUN] = 0
 
         for vm in self.all_results:
+            self.times_by_vm[vm] = 0
             for test in self.all_results[vm]:
                 #adds to total
                 self.total_tests_num += 1
@@ -471,14 +576,20 @@ class MailSender(object):
                 else:
                     self.stats_by_test[test]['total'] += 1
 
-                #adds stats by result_type
+                # adds stats by result_type
                 if not self.all_results[vm][test]['result_type'] in self.stats_by_result_type:
                     self.stats_by_result_type[self.all_results[vm][test]['result_type']] = 1
                 else:
                     self.stats_by_result_type[self.all_results[vm][test]['result_type']] += 1
 
-        #calculate sanity  - test success percentage, higher is better
-        # self.stats_by_result_type[self.ResultTypes.RITE_FAILS]
+                #calculating silent invisibility for av
+                if test == 'VM_SOLDIER_SRV' and vm in self.default_yaml['soldierlist']:
+                    self.stats_by_vm[vm] = self.all_results[vm][test]['result_type']
+                elif test == 'VM_ELITE_FAST_SRV' and vm not in self.default_yaml['blacklist'] and vm not in self.default_yaml['soldierlist']:
+                    self.stats_by_vm[vm] = self.all_results[vm][test]['result_type']
+
+                self.times_by_vm[vm] += self.all_results[vm][test]['time']
+
         if self.total_tests_num > 0:
 
             self.sanity_percentage = round((((self.stats_by_result_type[self.ResultTypes.OK] +
@@ -486,6 +597,7 @@ class MailSender(object):
                                               self.stats_by_result_type[self.ResultTypes.RITE_KNOWN_FAILS] +
                                               self.stats_by_result_type[self.ResultTypes.KNOWN_ERRORS_BUT_PASSED])*100.0) /
                                             (self.total_tests_num*100.0))*100, 2)
+            self.rite_errors_percentage = round(((self.stats_by_result_type[self.ResultTypes.NEW_ERRORS]*100.0)/(self.total_tests_num*100.0))*100, 2)
             self.rite_fails_percentage = round(((self.stats_by_result_type[self.ResultTypes.RITE_FAILS]*100.0)/(self.total_tests_num*100.0))*100, 2)
             self.not_run_percentage = round(((self.stats_by_result_type[self.ResultTypes.NOT_RUN]*100.0)/(self.total_tests_num*100.0))*100, 2)
         else:
@@ -518,11 +630,17 @@ class MailSender(object):
 
         return decorated_test
 
-    def decorate_result(self, result, vm, test):
-
+    def decorate_result(self, result, vm, test, time):
+        time_string = "[" + str(time) + "]"  # .zfill(3)
         #function to create a link
+
         def create_link(text, vm, test, css_class):
-            return '<td class="%s"><a href="#res_%s_%s">%s</td>' % (css_class, vm, test, text)
+            border = ''
+            if test == 'VM_SOLDIER_SRV' and vm in self.default_yaml['soldierlist']:
+                border = 'style="border: 3px solid black;"'
+            elif test == 'VM_ELITE_FAST_SRV' and vm not in self.default_yaml['blacklist'] and vm not in self.default_yaml['soldierlist']:
+                border = 'style="border: 3px solid black;"'
+            return '<td class="%s" %s><a href="#res_%s_%s">%s<sup>%s</sup></td>' % (css_class, border, vm, test, text, time_string)
 
         if result == self.ResultTypes.RITE_FAILS:
             return create_link("RF", vm, test, "darkred")
@@ -552,11 +670,43 @@ class MailSender(object):
         else:
             return '<td class="white">??</td>'
 
-    def decorate_vm(self, vm):
+    #icons are showed only in header where icons=True
+    def decorate_vm(self, vm, icons=False):
+        vm_txt = vm
+        #adds level icon
+        if vm in self.default_yaml['soldierlist']:
+            #vm_txt += '<sub style="color: red;">[soldier]</sub>'
+            vm_txt += '<img class="icon" src="cid:soldier">'
+        if vm in self.default_yaml['blacklist']:
+            #vm_txt += '<sub style="color: black;">[blacklist]</sub>'
+            vm_txt += '<img class="icon" src="cid:blacklist">'
+        #adds virtual machine name
+        vm_txt += "<sup>" + self.get_vm_name(vm) + "</sup>"
+
+        #adds result icon(s)
+        if vm in self.stats_by_vm and icons:
+            #errors
+            if self.stats_by_vm[vm] == self.ResultTypes.NEW_ERRORS:
+                vm_txt += '<img class="icon" src="cid:error">'
+            #ok
+            elif self.stats_by_vm[vm] in [self.ResultTypes.OK, self.ResultTypes.KNOWN_ERRORS, self.ResultTypes.KNOWN_ERRORS_BUT_PASSED, self.ResultTypes.RITE_KNOWN_FAILS]:
+                vm_txt += '<img class="icon" src="cid:ok">'
+            # vm to fix
+            elif self.stats_by_vm[vm] in [self.ResultTypes.RITE_FAILS, self.ResultTypes.NOT_RUN]:
+                vm_txt += '<img class="icon" src="cid:fix">'
+            #if saved error
+            if self.stats_by_vm[vm] in [self.ResultTypes.KNOWN_ERRORS, self.ResultTypes.KNOWN_ERRORS_BUT_PASSED, self.ResultTypes.RITE_KNOWN_FAILS]:
+                vm_txt += '<img class="icon" src="cid:save">'
+
+        #writes total time for vm (only in header)
+        if icons:
+            if self.times_by_vm[vm]:
+                vm_txt += "[" + str(self.times_by_vm[vm]) + "]"
+
         if vm in VM_ALL.vm_first_rite:
-            return '<div style="color: red;font-weight: bold; display:inline;">%s</div>' % vm
+            return '<div style="color: red;font-weight: bold; display:inline;">%s</div>' % vm_txt
         else:
-            return vm
+            return vm_txt
 
     def disabled_today(self, test):
         week = ['monday',
@@ -575,3 +725,46 @@ class MailSender(object):
                 return True
 
         return False
+
+    def load_default_yaml(self, def_file):
+        stream = file(def_file, 'r')
+        self.default_yaml = y = yaml.load(stream)
+
+    def load_vms_cfg(self, def_file):
+        # stream = file(def_file, 'r')
+        # self.vms_yaml = y = yaml.load(stream)
+        #
+        self.vms_cfg = ConfigParser()
+        self.vms_cfg.read(def_file)
+
+    def get_vm_name(self, vm):
+        path = self.vms_cfg.get("vms", vm)
+        path = path.replace(".vmx", "")
+        #example: [VMFuzz] Win7-Zoneal/Win7-Zoneal.vmx
+        vm_name = path.split("/")[1]
+        storage_name = (path.split("]")[0]).split("[")[1]
+        return vm_name + "(" + storage_name + ")"
+
+    def attach_images(self, mime_msg):
+        self.attach_image('logo', mime_msg)
+        self.attach_image('soldier', mime_msg)
+        self.attach_image('blacklist', mime_msg)
+        self.attach_image('ok', mime_msg)
+        self.attach_image('error', mime_msg)
+        self.attach_image('fix', mime_msg)
+        self.attach_image('save', mime_msg)
+
+    def attach_image(self, name, mime_msg):
+            cid = name
+            # if name not in self.attached_images:
+            img_fp = open('./Rite/Analyzer/img/%s.png' % name, 'rb')
+            img_data = img_fp.read()
+            # Now create the MIME container for the image
+            img = MIMEImage(img_data)
+
+            img.add_header('Content-Id', '<%s>' % name)  # angle brackets are important
+            mime_msg.attach(img)
+            img_fp.close()
+                # self.attached_images.append(name)
+
+            return cid
