@@ -294,7 +294,7 @@ def reboot(device=None):
 def get_deviceid(device=None):
     execute("am start -n com.example.zad.report/.ReportActivity  -e imei get", device)
 
-    sleep(2)
+    sleep(5)
     #cmd = "dumpsys iphonesubinfo"
     cmd = "cat /data/data/com.example.zad.report/files/imei"
 
@@ -304,11 +304,10 @@ def get_deviceid(device=None):
     if match:
         return match.group(0)
     else:
-        cmd = "settings get secure android_id"
-        comm = execute(cmd, device)
-        id = comm.strip()
-
-    return id.replace('*', '')
+        #cmd = "settings get secure android_id"
+        #comm = execute(cmd, device)
+        #id = comm.strip()
+        return ""
 
 
 def get_packages(device=None):

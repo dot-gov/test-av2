@@ -75,7 +75,10 @@ class Rcs_client:
         try:
 
             # Monkey patching!!!
-            ssl._create_default_https_context = ssl._create_unverified_context
+            try:
+                ssl._create_default_https_context = ssl._create_unverified_context
+            except:
+                pass
             #gcontext = ssl._create_unverified_context()
             opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj),
                                           urllib2.HTTPHandler()) # , context=gcontext
