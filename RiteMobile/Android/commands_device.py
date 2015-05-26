@@ -25,7 +25,7 @@ class CommandsDevice:
      AdbClient wins in case you have both.
      In case you have none, an assertion terminates the execution"""
 
-    def __init__(self, dev_serialno=None):
+    def __init__(self, dev_serialno=None, install_report=True):
 
         if not dev_serialno:
             uid, serial_number = self.interactive_device_select()
@@ -37,6 +37,9 @@ class CommandsDevice:
         self.client_context = {}
         self.device_serialno = serial_number
         dev_serialno = serial_number
+
+        if install_report:
+            self.install_report()
         device_id = adb.get_deviceid(dev_serialno)
 
         print "serialno: %s deviceid: %s" % (dev_serialno, device_id)

@@ -175,7 +175,7 @@ def test_device_specific(test_specific, commands_rcs, command_dev, args, results
         command_dev.wifi('open', check_connection=False, install=True)
         exit(0)
 
-    command_dev.install_report()
+    #command_dev.install_report()
     command_dev.report("Begin")
 
     if args.reboot:
@@ -311,7 +311,7 @@ def test_device_specific(test_specific, commands_rcs, command_dev, args, results
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description='AVMonitor master.')
+    parser = argparse.ArgumentParser(description='Functional common.')
     parser.add_argument('-b', '--build', required=False, action='store_true',
                         help="Rebuild apk")
     parser.add_argument('-i', '--interactive', required=False, action='store_true',
