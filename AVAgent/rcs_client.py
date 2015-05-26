@@ -6,6 +6,7 @@ import traceback
 from time import sleep
 from StringIO import StringIO
 import gzip
+import ssl
 
 import os
 import sys
@@ -72,9 +73,14 @@ class Rcs_client:
         @returns response page
         """
         try:
+
+            # Monkey patching!!!
+            ssl._create_default_https_context = ssl._create_unverified_context
+            #gcontext = ssl._create_unverified_context()
             opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj),
-                                          urllib2.HTTPHandler())
+                                          urllib2.HTTPHandler()) # , context=gcontext
             req = urllib2.Request(link, data)
+
             resp = opener.open(req).read()
             sleep(1)
             return resp
@@ -121,6 +127,9 @@ class Rcs_client:
                  'version': 2013031101}
 
         link = "https://%s/auth/login" % self.host
+        logging.debug("link = %s" % link)
+
+
         data = json.dumps(login)
         cj = cookielib.CookieJar()
         resp = self._post_response(link, cj, data)
