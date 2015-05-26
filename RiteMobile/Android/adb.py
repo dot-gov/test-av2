@@ -294,19 +294,16 @@ def reboot(device=None):
 def get_deviceid(device=None):
     execute("am start -n com.example.zad.report/.ReportActivity  -e imei get", device)
 
+    sleep(2)
     #cmd = "dumpsys iphonesubinfo"
     cmd = "cat /data/data/com.example.zad.report/files/imei"
 
     comm = execute(cmd, device)
-    lines = comm.strip()
-    print "lines: ", lines
-    if len(lines.split("\n")) >= 3:
-        devline = lines.split("\n")[2]
-        id = devline.split("=")[1].strip()
+
+    match = re.search("\d{14,16}", comm)
+    if match:
+        return match.group(0)
     else:
-        id = 'null'
-        
-    if id == 'null':
         cmd = "settings get secure android_id"
         comm = execute(cmd, device)
         id = comm.strip()

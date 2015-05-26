@@ -87,7 +87,7 @@ class CommandsRCS:
     def delete_old_instance(self):
         instances = self.conn.instances_by_factory(self.device_id, self.factory)
         if not instances:
-            print "no previous instances"
+            print "no previous instances for device %s and factory %s" % (self.device_id, self.factory)
         assert len(instances) <= 1, "too many instances: %s" % instances ;
         for i in instances:
             print "deleted old instance"
