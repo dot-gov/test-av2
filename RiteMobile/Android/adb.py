@@ -425,15 +425,17 @@ def executeGui(apk, device=None):
 
 
 
-def execute(cmd = "", device=None, adb_cmd = "shell"):
+def execute(cmd = "", device=None, adb_cmd = "shell", split=False):
     #print "##DEBUG## calling '%s' for device %s" % (cmd, device)
     if device:
         args = [adb_path, "-s", device, adb_cmd]
     else:
         args = [adb_path, adb_cmd]
 
-    #print "##DEBUG## calling '%s" % (args + cmd.split())
-    proc = subprocess.Popen(args + cmd.split(), stdout=subprocess.PIPE)
+    if cmd:
+        args.append(cmd)
+
+    proc = subprocess.Popen(args , stdout=subprocess.PIPE)
 
     comm = proc.communicate()
     ret = proc.returncode

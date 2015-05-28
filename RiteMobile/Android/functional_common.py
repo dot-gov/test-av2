@@ -173,7 +173,7 @@ def report_files(results, report):
 def test_device_specific(test_specific, commands_rcs, command_dev, args, results):
     if args.fastnet:
         command_dev.wifi('open', check_connection=False, install=True)
-        exit(0)
+        #exit(0)
 
     #command_dev.install_report()
     command_dev.report("Begin")
