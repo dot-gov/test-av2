@@ -60,6 +60,8 @@ def parse_args():
                         help="ask on which device")
     parser.add_argument('-s', '--specifictest', required=False, default='all', choices=all_tests.split(', '),
                         help="which specific test:  %s" % all_tests)
+    parser.add_argument('-a', '--specificargs', required=False, default='',
+                        help="arguments of specific test:  %s" % all_tests)
     args = parser.parse_args()
     return args
 
