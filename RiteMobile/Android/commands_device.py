@@ -62,7 +62,6 @@ class CommandsDevice:
         return None, None
 
 
-
     def interactive_device_select(self):
         devices = self.get_attached_devices()
 

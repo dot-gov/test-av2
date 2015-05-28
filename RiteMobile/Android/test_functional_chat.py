@@ -16,11 +16,13 @@ class ChatTestSpecific(functional_common.Check):
         addressbook = []
         addressbooks = ['skype', 'facebook', 'wechat', 'gmail']
         conversion={
-            'tencent.mm':'facebook', 'android.talk':'google', 'line.android':'line'
+            'tencent.mm':'facebook', 'line.android':'line'
         }
         packages = command_dev.get_packages()
-        for i in ['skype', 'facebook', 'wechat', 'telegram', 'hangout', 'android.talk', 'line.android', 'viber',
-                  'tencent.mm', 'whatsapp']:
+
+        no_more_supported= ['tencent.mm',]
+        for i in ['skype', 'facebook', 'wechat', 'telegram', 'hangout', 'line.android', 'viber',
+                  'whatsapp']:
             for p in packages:
                 if i in p:
                     converted =  conversion.get(i,i)

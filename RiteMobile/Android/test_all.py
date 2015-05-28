@@ -8,7 +8,7 @@ from test_all_specific import AllTestSpecific
 
 import functional_common
 
-from RiteMobile.Android.commands_rcs import CommandsRCSZeus as CommandsRCS
+from RiteMobile.Android.commands_rcs import CommandsRCSCastore as CommandsRCS
 
 if __name__ == '__main__':
     test_pers = pers.PersistenceTestSpecific()

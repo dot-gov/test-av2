@@ -170,7 +170,7 @@ def report_files(results, report):
         logfile.write("\n")
 
 
-def test_device_specific(test_specific, commands_rcs, command_dev, args, results, demo = True,  persist = True):
+def test_device_specific(test_specific, commands_rcs, command_dev, args, results):
     if args.fastnet:
         command_dev.wifi('open', check_connection=False, install=True)
         exit(0)
@@ -202,13 +202,14 @@ def test_device_specific(test_specific, commands_rcs, command_dev, args, results
         os.system('ruby assets/rcs-core.rb -u %s -p %s -d %s -f %s -c build/config.upload.json' % (
             commands_rcs.login, commands_rcs.password, commands_rcs.host, commands_rcs.factory))
 
-        params = {u'binary': {u'admin': True, u'demo': False, u'persist': True},
+        persist = test_specific.want_persist()
+        params = {u'binary': {u'admin': test_specific.want_admin(), u'demo': test_specific.want_demo(), u'persist': persist},
                   u'melt': {u'appname': u'autotest'},
                   u'package': {u'type': u'installation'},
                   u'platform': u'android'}
 
-        params[u'binary'][u'demo'] = demo
-        params[u'binary'][u'persist'] = persist
+        #params[u'binary'][u'demo'] = demo
+        #params[u'binary'][u'persist'] = persist
 
         if persist:
             command_dev.report( "PERSIST" )
