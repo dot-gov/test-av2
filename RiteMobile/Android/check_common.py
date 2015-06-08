@@ -27,6 +27,15 @@ class Check:
     def get_name(self):
         return "common"
 
+    def want_demo(self):
+        return True
+
+    def want_persist(self):
+        return True
+
+    def want_admin(self):
+        return True
+
     def get_config(self):
         return open('assets/config_mobile_%s.json' % self.get_name()).read()
 

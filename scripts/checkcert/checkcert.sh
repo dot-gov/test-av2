@@ -13,12 +13,15 @@ for cert in xx.pem ma.pem me.pem mt.pem mw.pem
 do
   echo CERT: $cert
   cat $cert | grep friendlyName | uniq > $file
-  openssl ocsp -issuer certum.1.int.cer -cert $cert -url http://ocsp.certum.pl >> $file 2> /dev/null
+  openssl ocsp -issuer certum.l3.pem -CAfile certum.pem -cert $cert -url http://ocsp.certum.pl
+  openssl ocsp -issuer certum.l3.pem -CAfile certum.pem -cert $cert -url http://ocsp.certum.pl >> $file 2> /dev/null
 
   good=$(cat $file | grep $cert)
 
   echo $good
   #echo $file
+
+  openssl x509 -enddate -noout -in $cert >> $file
 
   cat $file >> toZeno.mail
   echo "---------------" >> toZeno.mail

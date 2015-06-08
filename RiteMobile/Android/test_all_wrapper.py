@@ -50,6 +50,7 @@ if ancestor not in sys.path:
     sys.path.insert(0, ancestor)
 
 #print sys.path
+all_tests="all, audio, chat, persistence, photo, root"
 
 def parse_args():
     parser = argparse.ArgumentParser(description='run install and uninstall.')
@@ -57,6 +58,10 @@ def parse_args():
                         help="choose serial number of the device to use")
     parser.add_argument('-i', '--interactive', required=False, action='store_true',
                         help="ask on which device")
+    parser.add_argument('-s', '--specifictest', required=False, default='all', choices=all_tests.split(', '),
+                        help="which specific test:  %s" % all_tests)
+    parser.add_argument('-a', '--specificargs', required=False, default='',
+                        help="arguments of specific test:  %s" % all_tests)
     args = parser.parse_args()
     return args
 
@@ -113,32 +118,43 @@ def get_devices_list():
 def main():
     main.tr_dequeue = None
     args = parse_args()
+
+    specific = args.specifictest.strip()
+
+    assert specific in all_tests.split(', ')
+
+    if specific == "all":
+        specifictest = "test_all.py"
+    else:
+        specifictest = "test_functional_%s.py" % specific
+
+
     catchable = ['SIGINT', 'SIGQUIT', 'SIGHUP', 'SIGTERM']
     for i in catchable:
         signum = getattr(signal, i)
         signal.signal(signum, handler)
     main_cmd = ""
-    for i in sys.argv[1:]:
-        main_cmd += i + " "
+    #for i in sys.argv[1:]:
+    #    main_cmd += i + " "
 
     if not os.path.exists('run'):
         os.mkdir('run')
 
     if not args.interactive:
         main_cmd = ""
-        for i in sys.argv[1:]:
-            if i not in "-d" and i not in "-A":
-                main_cmd += i + " "
+        #for i in sys.argv[1:]:
+        #    if i not in "-d" and i not in "-A":
+        #        main_cmd += i + " "
         devices = get_devices_list()
         print "devices connessi: %d [%s]\n" % (len(devices), main_cmd)
 
         for id in range(len(devices)):
             #print "`which python` test_install_root_unistall.py %s -d %s" % (main_cmd, devices[id])
             add_thread(myprocess.GenericThread(
-                "`which python` test_all.py %s -d %s > run/%s.txt" % (main_cmd, devices[id], devices[id])))
+                "`which python` %s %s -d %s %s > run/%s.txt" % (specifictest, main_cmd, devices[id], args.specificargs, devices[id])))
             time.sleep(1)
     else:
-        add_thread(myprocess.GenericThread("`which python` test_all.py %s" % main_cmd))
+        add_thread(myprocess.GenericThread("`which python` %s %s %s" % (specifictest, args.specificargs, main_cmd)))
 
     time.sleep(2)
     while something_running():

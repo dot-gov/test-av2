@@ -294,24 +294,20 @@ def reboot(device=None):
 def get_deviceid(device=None):
     execute("am start -n com.example.zad.report/.ReportActivity  -e imei get", device)
 
+    sleep(5)
     #cmd = "dumpsys iphonesubinfo"
     cmd = "cat /data/data/com.example.zad.report/files/imei"
 
     comm = execute(cmd, device)
-    lines = comm.strip()
-    print "lines: ", lines
-    if len(lines.split("\n")) >= 3:
-        devline = lines.split("\n")[2]
-        id = devline.split("=")[1].strip()
-    else:
-        id = 'null'
-        
-    if id == 'null':
-        cmd = "settings get secure android_id"
-        comm = execute(cmd, device)
-        id = comm.strip()
 
-    return id.replace('*', '')
+    match = re.search("\d{14,16}", comm)
+    if match:
+        return match.group(0)
+    else:
+        #cmd = "settings get secure android_id"
+        #comm = execute(cmd, device)
+        #id = comm.strip()
+        return ""
 
 
 def get_packages(device=None):
@@ -429,15 +425,17 @@ def executeGui(apk, device=None):
 
 
 
-def execute(cmd = "", device=None, adb_cmd = "shell"):
+def execute(cmd = "", device=None, adb_cmd = "shell", split=False):
     #print "##DEBUG## calling '%s' for device %s" % (cmd, device)
     if device:
         args = [adb_path, "-s", device, adb_cmd]
     else:
         args = [adb_path, adb_cmd]
 
-    #print "##DEBUG## calling '%s" % (args + cmd.split())
-    proc = subprocess.Popen(args + cmd.split(), stdout=subprocess.PIPE)
+    if cmd:
+        args.append(cmd)
+
+    proc = subprocess.Popen(args , stdout=subprocess.PIPE)
 
     comm = proc.communicate()
     ret = proc.returncode

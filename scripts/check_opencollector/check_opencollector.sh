@@ -16,7 +16,7 @@ do
     fi
 done
 
-nmap -iL known_collectors.txt -oA $file -sS -P0 -O -sV -p 1,21,22,53,80,135,139,445,3389,5900,49154
+nmap -iL known_collectors.txt -oA $file -sS -P0 -O -sV -p 1,21,22,53,80,81,8080,135,139,445,3389,5800,5900,49154
 grep open $file.gnmap >> $file && error=1
 
 if [ $error -eq 1 ]
