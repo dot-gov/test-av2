@@ -1,0 +1,24 @@
+# Panda 2013 win7
+name: 'Panda Internet Security 2013 v18 Full Win7'
+#if in First:
+important: True
+#Level is elite, soldier, scout, exit (exit is for blacklisted agents that terminates nd deletes scout)
+level: soldier
+iso_level: soldier
+os: Win7
+vm_path: '[VMFuzz] Win7-Panda/Win7-Panda.vmx'
+#documentation
+full: True
+license_expiry_date: 28/07/2015
+bits: 64
+#none means not supported
+cloud: True
+firewall: Enabled
+#update
+update_cmd:
+last_updated_date:
+#run lo scan cmd puo' contenere un placeholder per la cartella oppure no. <*FOLDER*>
+#RICORDARSI DI SALVARE LA PREFERENZA DI IGNORARE LA MANCANZA DI INTERNET
+#INOLTRE CI METTE UN PO' A PARTIRE
+#scan_cmd: 'start C:\Progra~2\PandaS~1\PandaI~1\pavjobs.exe /REMOVDEVSCAN /<*FOLDER*>'
+scan_cmd: '"C:\Program Files (x86)\Panda Security\Panda Internet Security 2013\pavjobs.exe" /REMOVDEVSCAN /<*FOLDER*>'

@@ -1,0 +1,21 @@
+# Bitdefender
+name: 'Bitdefener Internet Security 2013 Win7 FUll'
+#if in First:
+important: True
+#Level is elite, soldier, scout, exit (exit is for blacklisted agents that terminates nd deletes scout)
+level: soldier
+iso_level: soldier
+os: Win7
+vm_path: ''
+#documentation
+full: True
+license_expiry_date: 01/08/2015
+bits: 64
+#none means not supported
+cloud: None
+firewall: Enabled
+#update
+update_cmd:
+last_updated_date:
+#run lo scan cmd puo' contenere un placeholder per la cartella oppure no. <*FOLDER*>
+scan_cmd: 'echo <*FOLDER*> > C:\Users\avtest\AppData\Local\Temp\ava.tmp | "C:\Program Files\Bitdefender\Bitdefender 2013\odscanui.exe" /UserScanTask 2ab858ed-450b-4bb6-b67c-8e3c45ec13ac /TempClone /InitFile C:\Users\avtest\AppData\Local\Temp\ava.tmp'

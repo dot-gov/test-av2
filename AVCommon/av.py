@@ -22,7 +22,6 @@ class AV(object):
         self.update_cmd = None
         self.last_updated_date = None
         self.scan_cmd = None
-        # self.hot_word_report = None
 
         error = self.load(av_id)
         if error:
@@ -50,7 +49,6 @@ class AV(object):
             self.update_cmd = av_data['update_cmd']
             self.last_updated_date = av_data['last_updated_date']
             self.scan_cmd = av_data['scan_cmd']
-            # self.hot_word_report = av_data['hot_word_report']
 
             return None
         except:

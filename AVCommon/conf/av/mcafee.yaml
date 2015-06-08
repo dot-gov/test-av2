@@ -1,21 +1,21 @@
-# ESET Win7
-name: 'ESET Smart Security 8.0 Full Win7'
+#McAfee
+name: 'McAfee Internet Security 2014 Win7 Full'
 #if in First:
 important: True
 #Level is elite, soldier, scout, exit (exit is for blacklisted agents that terminates nd deletes scout)
 level: elite
 iso_level: elite
 os: Win7
-vm_path: '[VMFuzz] Win7-ESET/Win7-ESET.vmx'
+vm_path: ''
 #documentation
 full: True
-license_expiry_date: 02/09/2015
+license_expiry_date: 05/10/2015
 bits: 64
-cloud: True
-firewall: Disabled
+#None means not supported
+cloud: None
+firewall: Enabled
 #update
 update_cmd:
 last_updated_date:
 #run lo scan cmd puo' contenere un placeholder per la cartella oppure no. <*FOLDER*>
-#/base-dir="C:\Program Files\ESET\ESET Smart Security\"
-scan_cmd: '"C:\Program Files\ESET\ESET Smart Security\ecls.exe" <*FOLDER*>'
+scan_cmd: '"C:\Program Files\McAfee\VirusScan\mcodsscan.exe" -fd <*FOLDER*>'

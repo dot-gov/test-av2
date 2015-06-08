@@ -98,10 +98,23 @@ def launch_static_scan(scan_dir, vm):
         if antivirus.scan_cmd:
             cmd = antivirus.scan_cmd_replaced(scan_dir)
             logging.debug("Starting AV scan on directory: %s" % scan_dir)
-            subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
-            sleep(90)
+            logging.debug("Command: %s" % cmd)
+            #shell was true (shell=True,) but it does not work with
+            p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            #i don;t think thi is all that thread safe...
+            timer = threading.Timer(90.0, p.kill)
+            #waits for AV scan end
+            timer.start()
+            out, err = p.communicate()
+            print "Scan finished or scan timeout"
+            timer.cancel()
+            logging.debug("AV scan Finished. Result stdout: %s" % out)
+            logging.debug("AV scan Finished. Result stderr: %s" % err)
+        else:
+            logging.debug("No 'scan_cmd' info found for av configuration: %s" % vm)
         return True
     except UndefinedAV:
+        logging.debug("No AV configuration found for vm: %s" % vm)
         return False
 
 
@@ -130,6 +143,10 @@ def check_static_scan(files, vm, report=None):
     copy_files_extension(copy_extensions, files, files_to_check)
 
     #launches av scan if configured in av yaml
+    logging.debug("INITIATING SCAN!!!")
+    logging.debug("INITIATING SCAN!!!")
+    logging.debug("INITIATING SCAN!!!")
+    logging.debug("INITIATING SCAN!!!")
     ret = launch_static_scan(dirop, vm)
     if not ret:
         failed = True
@@ -223,10 +240,6 @@ def check_static(files, report=None, scan=False, vm=None):
                 except Exception, ex:
                     logging.exception("Exception copying file: %s" % src)
     sleep(30)
-    logging.debug("INITIATING SCAN!!!")
-    logging.debug("INITIATING SCAN!!!")
-    logging.debug("INITIATING SCAN!!!")
-    logging.debug("INITIATING SCAN!!!")
     if scan:
         logging.debug("1")
         ret = launch_static_scan(dirop, vm)

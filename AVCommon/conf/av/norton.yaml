@@ -1,5 +1,5 @@
-# NORTON Win7
-name: 'Norton 2014'
+# Norton Internet Security 2013 Win7
+name: 'Norton Internet Security 2013 v21.6 Full Win7'
 #if in First:
 important: True
 #Level is elite, soldier, scout, exit (exit is for blacklisted agents that terminates nd deletes scout)
@@ -18,4 +18,3 @@ update_cmd:
 last_updated_date:
 #run lo scan cmd puo' contenere un placeholder per la cartella oppure no. <*FOLDER*>
 scan_cmd: '"C:\Program Files (x86)\Norton Internet Security\Engine\21.6.0.32\NAVW32" <*FOLDER*>'
-hot_word_report:
