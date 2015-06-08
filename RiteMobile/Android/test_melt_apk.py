@@ -6,6 +6,7 @@ import traceback
 import os
 import time
 from urllib2 import HTTPError
+import subprocess
 
 from RiteMobile.Android.commands_device import CommandsDevice
 from RiteMobile.Android.commands_rcs import CommandsRCSCastore
@@ -25,14 +26,15 @@ build_melt_dir = "build_melt/"
 # av_list = ["com.antivirus", "com.avast.android", "com.qihoo.security", "com.lookout"]
 av_list = []
 
-server = "polluce"
+#server = "polluce"
+server = "castore"
 
 # test_to_run = ["melt_server", "zip_run"]
 test_to_run = ["melt_server"]
 # test_to_run = ["zip_run"]
 
 #max retries for a single build (in case of timeout)
-max_timeout_retries = 1
+max_timeout_retries = 2
 
 #max number of app to process
 max_test_iterations = 9999
@@ -231,11 +233,20 @@ def main():
                                     repeat += 1
                                     try:
 
-                                        #ret = c.build_melt_apk(melt_file=os.path.join(apk_share_dir, apk_file), appname="melted_%s" % apk_file,
-                                              # melt_dir=build_melt_dir, ruby_build_in_second_stage=True)
+                                        #old
+                                        # ret = c.build_melt_apk(melt_file=os.path.join(apk_share_dir, apk_file), appname="melted_%s" % apk_file,
+                                        #                        melt_dir=build_melt_dir, ruby_build_in_second_stage=True)
+
+                                        #experimental
+                                        # c.build_melt_apk(melt_file=os.path.join(apk_share_dir, apk_file), appname="melted_%s" % apk_file,
+                                        #                        melt_dir=build_melt_dir, skip_download=True)
+                                        # p = subprocess.Popen("wget")
+                                        # p.communicate()
+                                        # print "I'm really optimistic!"
+                                        # ret = True
+
                                         input_melt_file = os.path.join(apk_share_dir, apk_file)
                                         zipfilenamebackend = os.path.join(build_melt_dir, "melt_%s.zip" % apk_file)
-
                                         ret = c.build_melt_apk_ruby(input_melt_file, zipfilenamebackend=zipfilenamebackend, factory_id=commands_rcs.factory)
                                         if not ret:
                                             raise Exception("Build failed")
