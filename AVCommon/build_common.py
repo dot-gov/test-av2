@@ -119,7 +119,7 @@ def get_factory(factory_id, backend, operation):
             return factories[0]
 
 
-def build_agent(factory, hostname, param, result_adder_function, zipfilename, melt=None, kind="silent", tries=0, use_cache=False, appname = None):
+def build_agent(factory, hostname, param, result_adder_function, zipfilename, melt=None, kind="silent", tries=0, use_cache=False, appname = None, skip_download=False):
     with connection() as c:
         # print "melt %s:" % melt
         # print "zipfilename %s:" % zipfilename
@@ -149,7 +149,7 @@ def build_agent(factory, hostname, param, result_adder_function, zipfilename, me
                 # print "appname %s:" % appname
                 if 'deliver' in param:
                     param['deliver']['user'] = c.myid
-                r = c.build_melt(factory, param, melt, zipfilename)
+                r = c.build_melt(factory, param, melt, zipfilename, skip_download)
             else:
                 logging.debug("- Silent build for factory: %s", factory)
                 r = c.build(factory, param, zipfilename)

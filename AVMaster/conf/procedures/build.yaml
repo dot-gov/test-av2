@@ -1497,6 +1497,8 @@ UPD_AGENT:
     - CHECK_INFECTION # questo non e' necessario, ma e' meglio assicurarsene
     #ENCAPSULATED IN INSTALL_AGENT
     #- CALL: VM_PUSH_AGENT
+    # aggiunto in data 01/06/15 perche l'install puo' fallire...
+    - ON_ERROR: CONTINUE
     - INSTALL_AGENT
     - SLEEP: 60
     - STOP_VM: 300

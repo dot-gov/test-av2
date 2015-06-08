@@ -57,7 +57,7 @@ def post_image(to_post_file_name, host="10.0.20.1", av=None):
     except URLError:
         return "ERROR - Impossible to contact host: tesserest server is up?"
 
-    print resp
+    #print resp
     return resp
 
 

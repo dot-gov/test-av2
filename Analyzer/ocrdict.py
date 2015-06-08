@@ -49,7 +49,7 @@ _ignore_list = {'AntiVirus'}
 _white_white_list = {'First Computer Scan', 'High-performance', 'Update', 'out of date', 'virus protection', 'please vote', 'which company',
                      'out-of-date', 'definitions', 'Protection is enabled', 'Nessuna connessione a Internet', "accedere all'account",
                      'devi essere connesso', 'Protection is', 'currently performing', 'computer is idle', 'tasks while your', 'your smartphone',
-                     'the cloud for free'}
+                     'the cloud for free', 'be more vulnerable to', 'Your system may', 'background tasks', 'computer is idle'}
 
 
 class OcrDict():

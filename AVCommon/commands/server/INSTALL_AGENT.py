@@ -105,7 +105,7 @@ def execute(vm, protocol, inst_args):
     #DELETE_DIR.execute(vm, protocol, "/Users/avtest/Desktop/AVTest/")
 
     #retries 1 times after first time
-    zip_success, zip_reason = PUSHZIP.execute(vm, protocol, [1, "timestamp.txt", "AVAgent/*.py", "AVAgent/*.yaml", "AVCommon/*.py", "AVCommon/*.yaml", "AVCommon/commands/client/*.py", "AVCommon/commands/meta/*.py", "AVCommon/commands/*.py", "AVCommon/conf/av/*.yaml", "AVCommon/conf/*.yaml", "AVAgent/assets/config*", "AVAgent/assets/keyinject.exe", "AVAgent/assets/exec_zip.exe", "AVAgent/assets/getusertime.exe", "AVAgent/assets/windows/*"])
+    zip_success, zip_reason = PUSHZIP.execute(vm, protocol, [2, "timestamp.txt", "AVAgent/*.py", "AVAgent/*.yaml", "AVCommon/*.py", "AVCommon/*.yaml", "AVCommon/commands/client/*.py", "AVCommon/commands/meta/*.py", "AVCommon/commands/*.py", "AVCommon/conf/av/*.yaml", "AVCommon/conf/*.yaml", "AVAgent/assets/config*", "AVAgent/assets/keyinject.exe", "AVAgent/assets/exec_zip.exe", "AVAgent/assets/getusertime.exe", "AVAgent/assets/windows/*"])
 
     cmd = "rmdir /s /q C:\\AVTest\\running \r\n" \
           "cd C:\\AVTest\\AVAgent\r\n" \
@@ -193,7 +193,7 @@ def execute(vm, protocol, inst_args):
 
     if not "start.bat" in out:
         failed = True
-        reason += "start.bat not present in in AVAgent"
+        reason += " start.bat not present in in AVAgent"
     else:
         logging.info("%s, found start.bat in %s" % (vm, d))
 
@@ -221,6 +221,10 @@ def execute(vm, protocol, inst_args):
         logging.debug("Cannot delete %s" % dirname)
 
     if failed or not zip_success:
+        #highly experimental!!!!
+        #    report_send("+ END %s %s" % (action, success))
+
+        vm_manager.execute(vm, "revert_last_snapshot")
         return False, "Cannot Install Agent on VM. Reason = %s" % (reason + " - " + zip_reason)
     else:
         return True, "Agent installed on VM"

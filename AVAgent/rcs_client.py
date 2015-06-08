@@ -10,6 +10,10 @@ import gzip
 import os
 import sys
 import inspect
+import ssl
+
+#this disables ssl certificate check!
+#ssl._create_default_https_context = ssl._create_unverified_context
 
 #pp = pprint.PrettyPrinter(indent=4)
 if ".." not in sys.path:
@@ -496,7 +500,7 @@ class Rcs_client:
 
         # logging.debug("+ %s bytes saved to %s" % (len(out),  out_file))
 
-    def build_melt(self, factory, params, melt_file, out_file):
+    def build_melt(self, factory, params, melt_file, out_file, skip_download=False):
         """ Build Melted Exe
         @param param_file
         @param factory
@@ -517,10 +521,11 @@ class Rcs_client:
         logging.debug("DBG Build melt params: \n%s" % params)
         #link  = 'https://%s/build' % self.host
         #resp = self.post_response(link, json.dumps(params))
-        resp = self._call_post('build', params, binary=True)
+        if not skip_download:
+            resp = self._call_post('build', params, binary=True)
 
-        out = open(out_file, 'wb')
-        out.write(resp)
+            out = open(out_file, 'wb')
+            out.write(resp)
 
 
 if __name__ == "__main__":

@@ -3,7 +3,6 @@ import traceback
 
 __author__ = 'mlosito'
 
-import socket
 import ctypes
 import subprocess
 import time
@@ -77,7 +76,7 @@ melt_ignore_windows = ['TssMainForm', 'ApolloRuntimeContentWindow', 'MyDialogCla
 av_ignore_windows = ['securitycenter', 'ESET Client Frame', 'AVP.SandboxWindow', 'MISP_TRAYUI_CLASSNAME_STR', 'TPSUAConsoleForm', 'SideBar_HTMLHostWindow', 'BasicWindow', 'WebViewHost', 'Afx00000000004000003000000000001000300000000019000100000000000010027']
 av_update_ignore_windows = ['QWidget', 'CisWidget']  # malwarebytes, comodo
 
-av_scan_ignore_windows = ['Sym_Common_Scan_Window']  # norton
+av_scan_ignore_windows = ['Sym_Common_Scan_Window', 'TAnalisisWindow', 'TfrmAvisoConexion']  # norton, panda, panda
 
 #av-specific windows classnames which needs PRINTSCR (popups are IMPORTANT!)
 av_printscr = ['bdPopupDlg', '_GDATA_SHADOW_CLASS_0000000001250000_', 'SymHTMLDialog', 'asw_av_popup_wndclass', 'WebViewHost', 'QTool'] #bitdefender, gdata, norton, avast, trendm, iobit
@@ -172,7 +171,7 @@ def crop_window(logging, basedir_crop, timestamp, learning=False, image_hashes=N
 
                 if win_class not in windows_ignore_windows and win_class not in av_ignore_windows and win_class not in melt_ignore_windows and \
                         win_class not in av_update_ignore_windows and win_class not in av_scan_ignore_windows:
-                    logging.debug("Win class %s found" % win_class)
+                    logging.debug("Win class %s" % win_class)
 
                     printable_win_class = re.sub(r'\W+', '', win_class)
 
@@ -203,12 +202,13 @@ def crop_window(logging, basedir_crop, timestamp, learning=False, image_hashes=N
 
                         try:
                             #until the rectangle is 0,0,0,0 i re-grab the screen
-                            while hw.Rectangle().left == 0 and hw.Rectangle().top == 0 and hw.Rectangle().right == 0 and hw.Rectangle().bottom == 0:
+                            while not hw.Rectangle() or (hw.Rectangle().left == 0 and hw.Rectangle().top == 0 and hw.Rectangle().right == 0 and hw.Rectangle().bottom == 0):
                                 logging.debug("I want to crop %s as: %s, %s, %s, %s (l, t, r, b)" % (win_class, hw.Rectangle().left, hw.Rectangle().top,
                                                                                                      hw.Rectangle().right, hw.Rectangle().bottom))
 
                                 time.sleep(1)
                                 ctypes.windll.user32.keybd_event(44, 0, 0, 0)
+                                hw = i_love_messing_whith_things_Hw.HwndWrapper(win_id)
                                 tries += 1
                                 if tries > 4:
                                     break
@@ -236,13 +236,13 @@ def crop_window(logging, basedir_crop, timestamp, learning=False, image_hashes=N
                             #cropped_pilimg.save(filename)
                             if save_if_new(cropped_pilimg, filename, filenames, image_hashes):
                                 logging.debug("Saved with clipboard")
-                        except (SystemError, AttributeError, TypeError):
+                        except (SystemError, AttributeError, TypeError, i_love_messing_whith_things_Hw.InvalidWindowHandle):
                             logging.debug("Here I print the stacktrace but we have fallback methods so don't worry.")
                             traceback.print_exc()
                             try:
                                 logging.debug("Impossible to crop with clipboard, saving FULL")
-                                # pilimg = ImageGrab.grabclipboard()
-                                # time.sleep(2)
+                                pilimg = ImageGrab.grabclipboard()
+                                time.sleep(2)
                                 #pilimg.save(filename.replace(".png", "_FULLcrop_error%s.png" % random.randint(0, 99999)))
                                 if save_if_new(pilimg, filename.replace(".png", "_FULLcrop_error%s.png" % random.randint(0, 99999)), filenames, image_hashes):
                                     logging.debug("Saved with clipboard FULL")

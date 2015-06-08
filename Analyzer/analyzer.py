@@ -278,7 +278,7 @@ def process_yaml(filenames, results_to_receive):
     print retestlist
     if write_retests:
         #writing to file retests
-        file_retest_name = "/opt/AVTest2/rite_retest_analyzer.sh"
+        file_retest_name = "/home/opt/AVTest2/rite_retest_analyzer.sh"
         retestlist = '''#!/bin/sh\ncd /home/avmonitor\n''' + retestlist.replace("<br>", "\n")
         with open(file_retest_name, 'w') as retestfile:
             retestfile.write(retestlist)

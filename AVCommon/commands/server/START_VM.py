@@ -90,7 +90,7 @@ def execute(vm, protocol, args):
         return False, "Not Started VM - vsphere cannot start vm"
 
     max_install = 10
-    max_tries = 10
+    max_tries = 20
 
     if no_check:
         for i in range(8):

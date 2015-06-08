@@ -822,3 +822,19 @@ VM_SOLDIER_NEW_STAT:
 
 CHECK_SOLDIER_NEW_STAT:
     - CHECK_STATISTIC_STATIC: [ AVAgent/assets/900_New_Soldier/* , 30 , 2 ]
+
+TEST_PUSH_VIRUS_SCAN:
+    - ON_ERROR: CONTINUE
+    #- POPUP: [ True, True ]
+    - PUSH: [ AVAgent/assets/vira/conficker.dll, AVAgent/assets/vira/eicar.com ]
+    - SLEEP: 10
+    - CHECK_STATIC_SCAN: [ AVAgent/assets/vira/conficker.dll, AVAgent/assets/vira/eicar.com ]
+    #- POPUP: [ False, True ]
+
+
+STARTUP_VM:
+    - VM_ALL
+    - INTERNET: False
+    - REVERT
+    - SLEEP: [1, 360]
+    - START_VM

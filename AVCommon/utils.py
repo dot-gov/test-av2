@@ -106,6 +106,7 @@ def pushzip(vm, args):
             break
         sleep(6)
 
+    not_copyed = []
     #tries n times to upload and extract all files, with increasing delays
     for tr in range(0, retry):
         logging.debug("tries n times to upload and extract all files, with increasing delays, try %s of %s" % (tr + 1, retry))
@@ -132,7 +133,7 @@ def pushzip(vm, args):
         logging.debug("ret: %s" % ret)
         #sleep(3 * tr)
         sleep(5 * tr + file_number)
-
+        not_copyed = []
         #if there are retries I check the existance of files and if are all present, I terminate the iteration
         if retry > 1:
             logging.debug("Checking if the files were been copyed and extracted correctly. Files: %s", all_src)
@@ -144,7 +145,9 @@ def pushzip(vm, args):
                 if file_to_check not in found_files:
                     logging.debug("NOT FOUND: %s" % file_to_check)
                     failed = True
+                    not_copyed.append(file_to_check)
             if not failed:
+                shutil.rmtree(d)
                 return True, "Files copied on VM"
         tr += 1
 
@@ -153,9 +156,9 @@ def pushzip(vm, args):
 
     if retry > 1:
         #if I'm here and retries were executed, then I have an error
-        return False, "Impossible to copy all files on VM"
+        return False, "Impossible to copy all files on VM (not copyed: %s)" % str(not_copyed)
     else:
-        #if no retries, we always
+        #if no retries, we always return true
         return True, "Tried one file copy (no check) on VM"
 
 
@@ -190,8 +193,11 @@ def list_all_files_in_dirs(vm, vm_manager, dirs):
         #list_directory
         #string_out = vm_manager.execute(vm, "list_directory", d+"\\")
         string_out = vm_manager.execute(vm, "listDirectoryInGuest", d)
-        logging.debug("Dir: %s -> %s" % (d, string_out))
-        for filename in string_out.split("\n")[1:-1]:
-            files.append(d + "\\" + filename)
+        if not len(string_out):
+            logging.debug("Dir: %s -> Empty directory!" % d)
+        else:
+            logging.debug("Dir: %s -> %s" % (d, string_out))
+            for filename in string_out.split("\n")[1:-1]:
+                files.append(d + "\\" + filename)
     logging.debug("All files listed: %s" % files)
     return files

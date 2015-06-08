@@ -22,7 +22,7 @@ vm_conf_file = "AVMaster/conf/vms-%s.cfg" % socket.gethostname()
 def execute(vm_name, cmd, *args):
     global vm_conf_file
     # pysphere, vi_server
-    vmachine_cmds = ["startup", "shutdown", "reboot",
+    x = ["startup", "shutdown", "reboot",
                      "get_snapshots", "revert_last_snapshot", "revert_to_snapshot", "revert_named_snapshot", "create_snapshot",
                      "delete_snapshot",
                      "is_powered_on", "is_powered_off", "get_status",

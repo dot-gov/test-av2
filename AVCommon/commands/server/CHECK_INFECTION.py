@@ -137,15 +137,18 @@ def check_scout_soldier(vm):
         out = vm_manager.execute(vm, "listDirectoryInGuest", d)
         logging.debug("listDirectoryInGuest: %s" % out)
 
+        #checks for scout/soldier
         for b in names:
             if b in out:
                 logging.info("%s, found %s in %s" % (vm, b, d))
                 clean = False
                 break
+        #checks for tmp files left behind
         for o in out:
             if re.match(copy_pattern, o.strip()):
                 logging.info("%s, found %s in %s" % (vm, o, d))
                 clean = False
+                break
 
     return clean
 

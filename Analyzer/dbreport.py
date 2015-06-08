@@ -416,7 +416,7 @@ class DBReport(object):
 
         #avast32
             # soldier uninstall
-        self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'avast32', u'CHECK_INFECTION', 31, 'FAILED', 0, u''), 'infected', False, "AVAST32 FAILS SOLDIER UNINSTALLATION, BUT IS ELITE ")
+            #self.insert_summary_manual_error((u'VM_SOLDIER_SRV', u'avast32', u'CHECK_INFECTION', 31, 'FAILED', 0, u''), 'infected', False, "AVAST32 FAILS SOLDIER UNINSTALLATION, BUT IS ELITE ")
 
         #avg
             # melt air (uses regexp for static check)
