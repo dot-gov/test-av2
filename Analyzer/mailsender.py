@@ -1,4 +1,4 @@
-from ConfigParser import ConfigParser
+from ConfigParser import ConfigParser, NoOptionError
 import os
 import subprocess
 import yaml
@@ -738,7 +738,10 @@ class MailSender(object):
         self.vms_cfg.read(def_file)
 
     def get_vm_name(self, vm):
-        path = self.vms_cfg.get("vms", vm)
+        try:
+            path = self.vms_cfg.get("vms", vm)
+        except NoOptionError:
+            return vm + "(vm path not found)"
         path = path.replace(".vmx", "")
         #example: [VMFuzz] Win7-Zoneal/Win7-Zoneal.vmx
         vm_name = path.split("/")[1]
