@@ -135,39 +135,46 @@ def trigger_python_mouse():
         ctypes.windll.user32.mouse_event(MOUSEEVENTF_CLICK, 0, 0, 0, 0)
 
 
+def get_box_for_cropping(logging, win_id, hw, wrapper):
+    tries = 0
+    while not hw.Rectangle() or (hw.Rectangle().left == 0 and hw.Rectangle().top == 0 and hw.Rectangle().right == 0 and hw.Rectangle().bottom == 0):
+        logging.debug("Cropping would be 0,0,0,0, I try again)")
+
+        time.sleep(1)
+        ctypes.windll.user32.keybd_event(44, 0, 0, 0)
+        hw = wrapper.HwndWrapper(win_id)
+        tries += 1
+        if tries > 4:
+            return False, hw
+    # return anyway the latest hw
+    return True, hw
+
+
 def crop_window(logging, basedir_crop, timestamp, learning=False, image_hashes=None):
     import ImageGrab
     import re
     filenames = []
     classes = set()
     try:
-        import pywinauto.findwindows as i_love_messing_whith_things
-        import pywinauto.controls.HwndWrapper as i_love_messing_whith_things_Hw
+        #this is necessary because pywinauto cannot be installed on Linux
+        #we try to late import, and fail badly if cannot find the import.
+        import pywinauto.findwindows as findwind
+        import pywinauto.controls.HwndWrapper as Wrapper
         logging.debug("Searching popup window...")
 
-        found_windows = i_love_messing_whith_things.find_windows(top_level_only=True)
+        found_windows = findwind.find_windows(top_level_only=True)
         if found_windows is not None and found_windows != []:
             # logging.debug("Learning windows. Taking screenshots...")
             for win_id in found_windows:
-                try:
-                    hw = i_love_messing_whith_things_Hw.HwndWrapper(win_id)
-                    # some compatibility code because pywinauto is so nice to send me an unicode instead of the expected class, but just sometimes! Just to spice up my work!!!
-                    if isinstance(hw.Class, unicode):
-                        win_class = hw.Class
-                    else:
-                        win_class = hw.Class()
-                except i_love_messing_whith_things_Hw.InvalidWindowHandle:
-                        #sleep and try again!
-                        time.sleep(1)
-                        try:
-                            hw = i_love_messing_whith_things_Hw.HwndWrapper(win_id)
-                            win_class = hw.Class()
-                        except i_love_messing_whith_things_Hw.InvalidWindowHandle:
-                            logging.debug("###IGNORING An invalid Window (UAC?)###")
-                            continue
+                hw, win_class = win_id_to_class(win_id, Wrapper)
+                if not win_class:
+                    logging.debug("###IGNORING An invalid Window (UAC?)###")
+                    continue
+
                 classes.add(win_class)
+
                 if learning:
-                    logging.debug("Learning, dumping all classes: Win class %s " % win_class)
+                    logging.debug("Learning, printing all classes: Win class %s " % win_class)
 
                 if win_class not in windows_ignore_windows and win_class not in av_ignore_windows and win_class not in melt_ignore_windows and \
                         win_class not in av_update_ignore_windows and win_class not in av_scan_ignore_windows:
@@ -175,9 +182,9 @@ def crop_window(logging, basedir_crop, timestamp, learning=False, image_hashes=N
 
                     printable_win_class = re.sub(r'\W+', '', win_class)
 
+                    #learning mode uses both modes: 1/2 direct
+                    # non-learning uses direct only if whitelisted (printscr is bulletproof)
                     if learning or win_class in av_direct:
-                        #learning mode uses both modes: 1/2 direct
-                        # non-learning uses direct only if whitelisted (printscr is bulletproof)
                         try:
                             pilimg = hw.CaptureAsImage()
                             time.sleep(1)
@@ -187,37 +194,29 @@ def crop_window(logging, basedir_crop, timestamp, learning=False, image_hashes=N
                             # pilimg.save(filename)
                             if save_if_new(pilimg, filename, filenames, image_hashes):
                                 logging.debug("Saved with API")
-                        except (i_love_messing_whith_things_Hw.InvalidWindowHandle, AttributeError):
+                        except (Wrapper.InvalidWindowHandle, AttributeError):
                             logging.debug("Impossible to save with API")
 
+                    #learning mode uses both modes: 2/2 printscr
+                    # non-learning uses printscr by default
                     if learning or win_class not in av_direct:
-                        #learning mode uses both modes: 2/2 printscr
-                        # non-learning uses printscr by default
                         time.sleep(1)
+
                         ctypes.windll.user32.keybd_event(44, 0, 0, 0)
-                        tries = 0
                         filename = "%s/%s_printscr_class-%s.png" % (basedir_crop, timestamp, printable_win_class)
                         filename = filename.replace('/', '\\')
                         # filenames.append(filename)
 
                         try:
                             #until the rectangle is 0,0,0,0 i re-grab the screen
-                            while not hw.Rectangle() or (hw.Rectangle().left == 0 and hw.Rectangle().top == 0 and hw.Rectangle().right == 0 and hw.Rectangle().bottom == 0):
-                                logging.debug("I want to crop %s as: %s, %s, %s, %s (l, t, r, b)" % (win_class, hw.Rectangle().left, hw.Rectangle().top,
-                                                                                                     hw.Rectangle().right, hw.Rectangle().bottom))
+                            got_valid_box, hw = get_box_for_cropping(logging, win_id, hw, Wrapper)
 
-                                time.sleep(1)
-                                ctypes.windll.user32.keybd_event(44, 0, 0, 0)
-                                hw = i_love_messing_whith_things_Hw.HwndWrapper(win_id)
-                                tries += 1
-                                if tries > 4:
-                                    break
                             logging.debug("I want to crop %s as: %s, %s, %s, %s (l, t, r, b)" % (win_class, hw.Rectangle().left, hw.Rectangle().top,
-                                                                                                     hw.Rectangle().right, hw.Rectangle().bottom))
+                                                                                                 hw.Rectangle().right, hw.Rectangle().bottom))
 
-                            #until the image is null, I re-capture from clipboard (max 8 times or it blocks other windows)
                             pilimg = None
                             i = 0
+                            #until the image is null, I re-capture from clipboard (max 8 times or it blocks other windows)
                             while pilimg is None and i < 8:
                                 try:
                                     pilimg = ImageGrab.grabclipboard()
@@ -227,38 +226,67 @@ def crop_window(logging, basedir_crop, timestamp, learning=False, image_hashes=N
                                 print "Checking if image is in clipboard"
                                 i += 1
 
-                            box = (hw.Rectangle().left,
-                                   hw.Rectangle().top,
-                                   hw.Rectangle().right,
-                                   hw.Rectangle().bottom)
+                            #if the box is valid
+                            if hw.Rectangle().left != 0 or hw.Rectangle().top != 0 or hw.Rectangle().right != 0 or hw.Rectangle().bottom != 0:
+                                box = (hw.Rectangle().left,
+                                       hw.Rectangle().top,
+                                       hw.Rectangle().right,
+                                       hw.Rectangle().bottom)
+                                cropped_pilimg = pilimg.crop(box)
+                                #cropped_pilimg.save(filename)
+                                if save_if_new(cropped_pilimg, filename, filenames, image_hashes):
+                                    logging.debug("Saved with clipboard")
+                            else:
+                                if got_valid_box:
+                                    logging.debug("Skipping because probably the windows was closed.")
+                                else:
+                                    if save_if_new(pilimg, filename + "_FULL_invalid_box.png", filenames, image_hashes):
+                                        logging.debug("Saved with clipboard but no crop (invalid box)")
 
-                            cropped_pilimg = pilimg.crop(box)
-                            #cropped_pilimg.save(filename)
-                            if save_if_new(cropped_pilimg, filename, filenames, image_hashes):
-                                logging.debug("Saved with clipboard")
-                        except (SystemError, AttributeError, TypeError, i_love_messing_whith_things_Hw.InvalidWindowHandle):
+                        except Wrapper.InvalidWindowHandle:
+                            logging.debug("Skipping because probably the windows %s was closed." % win_class)
+                        except(SystemError, AttributeError, TypeError):
                             logging.debug("Here I print the stacktrace but we have fallback methods so don't worry.")
                             traceback.print_exc()
                             try:
-                                logging.debug("Impossible to crop with clipboard, saving FULL")
+                                ctypes.windll.user32.keybd_event(44, 0, 0, 0)
+                                time.sleep(1)
+                                logging.debug("Exception, trying again to save FULL")
                                 pilimg = ImageGrab.grabclipboard()
-                                time.sleep(2)
+                                time.sleep(1)
                                 #pilimg.save(filename.replace(".png", "_FULLcrop_error%s.png" % random.randint(0, 99999)))
-                                if save_if_new(pilimg, filename.replace(".png", "_FULLcrop_error%s.png" % random.randint(0, 99999)), filenames, image_hashes):
+                                if save_if_new(pilimg, filename.replace(".png", "_FULL_exception%s.png" % random.randint(0, 99999)), filenames, image_hashes):
                                     logging.debug("Saved with clipboard FULL")
 
                             except:
                                 traceback.print_exc()
-                                logging.debug("Impossible to save FULL (probably the image is 0px*0px)")
+                                logging.debug("Impossible to save FULL (cannot screenshot at all)")
 
             return True, filenames
         else:
             return False, None
     except ImportError:
-        import shutil as i_love_messing_whith_things
-        import os as i_love_messing_whith_things_Hw
-        pywinauto.findwindows.enum_windows()
+        import shutil as findwind
+        import os as Wrapper
+        # pywinauto.findwindows.enum_windows()
         return False, "ERROR: Import error!"
+
+
+def win_id_to_class(win_id, wrapper):
+    #tries 3 times
+    for i in range(3):
+        try:
+            hw = wrapper.HwndWrapper(win_id)
+            # some compatibility code because pywinauto is so nice to send me an unicode instead of the expected class, but just sometimes! Just to spice up my work!!!
+            if isinstance(hw.Class, unicode):
+                return hw, hw.Class
+            else:
+                return hw, hw.Class()
+        except wrapper.InvalidWindowHandle:
+            #sleep and try again!
+            time.sleep(1)
+    return None, None
+
 
 def save_if_new(image, filename, filenames, image_hashes):
     w, h = image.size
