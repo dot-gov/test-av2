@@ -139,8 +139,8 @@ def execute(vm, protocol, inst_args):
     for i in range(1, 6):
         logging.debug("I'll copy %s (try %s of 5)" % (filename, i))
         assert os.path.exists(filename)
-        r = vm_manager.execute(vm, "copyFileToGuest", filename, remote_name)
-        if r > 0:
+        r = vm_manager.execute(vm, "pm_put_file", filename, remote_name)
+        if not r:
             time.sleep(i * 5)
             failed = True
             reason = "Can't copy av_agent.bat in Startup"
@@ -153,7 +153,8 @@ def execute(vm, protocol, inst_args):
     if failed:
         logging.debug("Cannot copy %s: ERROR!" % filename)
 
-    time.sleep(15)
+    #removed with new procedures
+    # time.sleep(15)
 
     os.remove(filename)
 
@@ -174,8 +175,8 @@ def execute(vm, protocol, inst_args):
     for i in range(1, 5):
         logging.debug("I'll copy %s - start.bat to %s (try %s of 4)" % (filename, vm, i))
         assert os.path.exists(filename)
-        r = vm_manager.execute(vm, "copyFileToGuest", filename, remote_name)
-        if r > 0:
+        r = vm_manager.execute(vm, "pm_put_file", filename, remote_name)
+        if not r:
             time.sleep(i * 5)
             # failed = True
             # reason += "Can't copy start.bat in AVAgent (try %s)" % i
@@ -184,12 +185,13 @@ def execute(vm, protocol, inst_args):
             # failed = False
             break
 
-    time.sleep(15)
+    #removed with new procedures
+    # time.sleep(15)
 
     #check if start.bat exists on guest
     d = "C:/AVTest/AVAgent/"
-    out = vm_manager.execute(vm, "listDirectoryInGuest", d)
-    logging.debug("listDirectoryInGuest: %s" % out)
+    out = vm_manager.execute(vm, "pm_list_directory", d)
+    logging.debug("pm_list_directory: %s" % out)
 
     if not "start.bat" in out:
         failed = True

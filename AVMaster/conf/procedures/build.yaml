@@ -19,7 +19,14 @@
 INIT_DISPATCH:
     - INTERNET: False
     - REVERT
-    - START_VM: AV_AGENT
+    - START_VM2: AV_AGENT
+    # wait for av start
+    - SLEEP: 60
+
+INIT_DISPATCH2:
+    - INTERNET: False
+    - REVERT
+    - START_VM2: AV_AGENT
     # wait for av start
     - SLEEP: 60
 
