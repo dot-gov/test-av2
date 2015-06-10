@@ -44,6 +44,7 @@ def execute(vm, protocol, args):
                 memo.append(rdir)
 
         logging.debug("%s copy %s -> %s" % (vm, src, dst))
-        vm_manager.execute(vm, "copyFileFromGuest", src, dst)
+        # copyFileFromGuest was replaced
+        vm_manager.execute(vm, "pm_get_file", src, dst)
 
     return True, "Files copied from VM"

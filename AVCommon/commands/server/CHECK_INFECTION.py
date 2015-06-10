@@ -80,16 +80,15 @@ def check_elite(vm):
     #experimental reg query startup for Elite
     reg_file = "c:\\AVTest\\logs\\reg.reg"
     logging.info("%s, Creating reg file" % vm)
-    arg = ["EXPORT", "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run", reg_file, "/y"]
-    reg = ("c:\\Windows\\System32\\reg.exe", arg, 40, True, True)
-    ret = vm_manager.execute(vm, "executeCmd", *reg)
+    # arg = ["EXPORT", "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run", reg_file, "/y"]
+    # reg = ("c:\\Windows\\System32\\reg.exe", arg, 40, True, True)
+    # ret = vm_manager.execute(vm, "executeCmd", *reg)
+
     #wait reg creation
-    sleep(15)
-    #does not works
-    # if ret == 0:
-    #     logging.info("Registry saved to: %s executed" % reg_file)
-    # else:
-    #     logging.exception("Registry saving FAILED")
+    vm_manager.execute(vm, "pm_run_and_wait", "c:\\Windows\\System32\\reg.exe", "EXPORT HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run %s /y" % reg_file)
+
+    # sleep(15)
+
     dst_dir = logger.logdir
     try:
         src = "c:\\AVTest\\logs\\reg.reg"
@@ -102,9 +101,10 @@ def check_elite(vm):
         #     os.unlink(dst_file)
 
         logging.debug("PULL: %s -> %s" % (src, dst_file))
-        vm_manager.execute(vm, "copyFileFromGuest", src, dst_file)
+        #vm_manager.execute(vm, "copyFileFromGuest", src, dst_file)
+        vm_manager.execute(vm, "pm_get_file", src, dst_file)
 
-        sleep(10)
+        # sleep(10)
 
         with open(dst_file, "r") as f:
             reg_allfile = f.read().decode("utf-16le")
@@ -134,8 +134,8 @@ def check_scout_soldier(vm):
 
     # checks scout and soldier
     for d in dirs:
-        out = vm_manager.execute(vm, "listDirectoryInGuest", d)
-        logging.debug("listDirectoryInGuest: %s" % out)
+        out = vm_manager.execute(vm, "pm_list_directory", d)
+        logging.debug("pm_list_directory: %s" % out)
 
         #checks for scout/soldier
         for b in names:

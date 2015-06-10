@@ -118,21 +118,23 @@ def pushzip(vm, args):
         dst = ntdir(os.path.join(dst_dir, "unzip.exe"))
 
         logging.debug("Copy unzip: %s -> %s" % (unzipexe, dst))
-        vm_manager.execute(vm, "copyFileToGuest", unzipexe, dst)
+        vm_manager.execute(vm, "pm_put_file", unzipexe, dst)
         sleep(2 * tr)
 
         tmpzip = "tmp.zip"
         dst = ntdir(os.path.join(dst_dir, tmpzip))
         logging.debug("Copy zip: %s -> %s" % (zfname, dst))
-        vm_manager.execute(vm, "copyFileToGuest", zfname, dst)
+        vm_manager.execute(vm, "pm_put_file", zfname, dst)
         sleep(2 * tr)
 
         logging.debug("Executing unzip on %s" % dst)
-        unzipargs = ("/AVTest/unzip.exe", ["-o", "-d", "c:\\avtest", dst], 40, True, True)
-        ret = vm_manager.execute(vm, "executeCmd", *unzipargs)
-        logging.debug("ret: %s" % ret)
-        #sleep(3 * tr)
-        sleep(5 * tr + file_number)
+        # unzipargs = ("/AVTest/unzip.exe", ["-o", "-d", "c:\\avtest", dst], 40, True, True)
+        # ret = vm_manager.execute(vm, "executeCmd", *unzipargs)
+
+        ret = vm_manager.execute(vm, "pm_run_and_wait", "/AVTest/unzip.exe", "-o -d c:\\avtest %s" % dst)
+        # logging.debug("ret: %s" % ret)
+        # #sleep(3 * tr)
+        # sleep(5 * tr + file_number)
         not_copyed = []
         #if there are retries I check the existance of files and if are all present, I terminate the iteration
         if retry > 1:
@@ -192,12 +194,13 @@ def list_all_files_in_dirs(vm, vm_manager, dirs):
     for d in dirs:
         #list_directory
         #string_out = vm_manager.execute(vm, "list_directory", d+"\\")
-        string_out = vm_manager.execute(vm, "listDirectoryInGuest", d)
-        if not len(string_out):
+        list_out = vm_manager.execute(vm, "pm_list_directory", d)
+        if not len(list_out):
             logging.debug("Dir: %s -> Empty directory!" % d)
         else:
-            logging.debug("Dir: %s -> %s" % (d, string_out))
-            for filename in string_out.split("\n")[1:-1]:
+            logging.debug("Dir: %s -> %s" % (d, list_out))
+            for filename in list_out:  # .split("\n")[1:-1]:
                 files.append(d + "\\" + filename)
+
     logging.debug("All files listed: %s" % files)
     return files

@@ -580,13 +580,13 @@ TEST_TRIGGER:
 
 TEST_UPDATE_CODE_ML_PUPPET:
     - VM_ALL
-    - SLEEP: [3, 240]
+    - SLEEP: [0, 60]
     #- CALL: VM_PUSH_AGENT
     - INSTALL_AGENT: 10.1.20.1
 
 TEST_UPDATE_CODE_ML_PUPPET_SNAP:
     - VM_ALL
-    - SLEEP: [3, 240]
+    - SLEEP: [0, 60]
     - INSTALL_AGENT: 10.1.20.1
     - SLEEP: 60
     - STOP_VM: 300
@@ -597,7 +597,7 @@ TEST_UPDATE_CODE_ML_PUPPET_SNAP_START:
     - VM_ALL
     - CALL: SET_MAIL
     - ON_ERROR: SKIP
-    - SLEEP: [3, 240]
+    - SLEEP: [0, 60]
     #init is needed by clean_evidences (just here)
     - CALL: INIT_DISPATCH
     - CALL: VM_CLEAN_EVIDENCES_AND_CACHE
@@ -838,3 +838,9 @@ STARTUP_VM:
     - REVERT
     - SLEEP: [1, 360]
     - START_VM
+
+
+TEST_GET_LOGS:
+    - VM_ALL
+    - ON_ERROR: SKIP
+    - CALL: VM_GET_LOG

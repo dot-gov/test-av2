@@ -23,7 +23,7 @@ guestusr = 'avtest'
 guestpwd = 'avtest'
 
 
-#"list_vms" "poweron", "poweroff", "stress", "listfiles", "put_file", "get_file"
+#"list_vms" "poweron", "poweroff", "stress", "listfiles", "put_file", "get_file", "hard_poweroff", "get_vm_from_path"
 action = "execute"
 
 #dangerous! vm_others = ['AVAgent Win7 x64', 'AVAgent Win7 x86', 'AVAgent Win7 x86_v10_2if', 'AVAgent WinSrv2008 R2 x64', 'AVAgent-Win81-x64', 'ComodoTest', 'FunCH', 'FunFF', 'FunIE', 'HoneyDrive', 'Kali linux', 'Mac OS X', 'PuppetMaster_New', 'Puppet_Ubuntu', 'RCS-Achille', 'RCSTestSrv', 'RiteMaster-DEB-nu', 'Stratagem Honeypot', 'TEST-Win-2012', 'TestRail', 'UbuntuAgent', 'WinXP-RU', 'vCenterC', 'Win7-x86-CCleaner', 'Win7-TestAV', 'Win81-TestSpot', ]
@@ -39,6 +39,11 @@ vm_rite = ['Win7-AVG', 'Win7-AVG15', 'Win7-Adaware_New', 'Win7-Avast', 'Win7-Avi
 vm_puppet = ['Puppet_Win7-Adaware_New', 'Puppet_Win7-Avast_New', 'Puppet_Win7-BitDef', 'Puppet_Win7-DrWeb', 'Puppet_Win7-ESET', 'Puppet_Win7-FSecure',
              'Puppet_Win7-KIS14_New', 'Puppet_Win7-KIS_New', 'Puppet_Win7-MBytes', 'Puppet_Win7-McAfee', 'Puppet_Win7-Norman', 'Puppet_Win7-Norton',
              'Puppet_Win7-Panda', 'Puppet_Win7-TrendM', 'Puppet_WinXP-Avast32', 'Puppet_WinXP-KIS', ]
+
+
+#OTHER INTERESTING FUNCTIONS:
+#vm.RebootGuest
+
 
 
 def get_vm_from_name(vm_name, si):
@@ -57,6 +62,17 @@ def get_vm_from_name(vm_name, si):
             entity_stack.extend(entity.childEntity)
         elif isinstance(entity, vim.Datacenter):
             entity_stack.append(entity.vmFolder)
+    return vm
+
+
+def get_vm_from_path(si):
+    # search the root inventory (follows all folders of all objects)
+    vm = None
+    index = si.content.searchIndex
+    object_view = si.content.viewManager.CreateContainerView(si.content.rootFolder, [vim.Datacenter], False)
+
+    vm = index.FindByDatastorePath(datacenter=object_view.view[0], path='[VMFuzz] Puppet_Win7-FSecure/Puppet_Win7-FSecure.vmx')
+    print "Found VirtualMachine: %s Name: %s" % (vm, vm.name)
     return vm
 
 
@@ -94,6 +110,18 @@ def shutdown_vm(target_vm):
         print "The machine is Powered ON! Powering off...(vm = %s)" % target_vm.name
         # does not returns a task
         target_vm.ShutdownGuest()
+        while target_vm.runtime.powerState == vim.VirtualMachinePowerState.poweredOn:
+            time.sleep(1)
+        print "Power is off.(vm = %s)" % target_vm.name
+
+
+def hard_poweroff_vm(target_vm):
+    if target_vm.runtime.powerState == vim.VirtualMachinePowerState.poweredOn:
+        # using time.sleep we just wait until the power off action
+        # is complete. Nothing fancy here.
+        print "The machine is Powered ON! Powering off...(vm = %s)" % target_vm.name
+        # does not returns a task
+        target_vm.PowerOff()
         while target_vm.runtime.powerState == vim.VirtualMachinePowerState.poweredOn:
             time.sleep(1)
         print "Power is off.(vm = %s)" % target_vm.name
@@ -255,12 +283,22 @@ def execute(si, target_vm):
     #spec = vim.vm.guest.ProcessManager.WindowsProgramSpec(programPath="cmd.exe", arguments=" /c dir > c:\\AVTest\log.txt") # arguments="tmp.zip",  workingDirectory="C:\\AVTest\\"
     for i in range(0, 10):
         try:
-            spec = vim.vm.guest.ProcessManager.WindowsProgramSpec(programPath="cmd.exe", arguments=" /c dir") # arguments="tmp.zip",  workingDirectory="C:\\AVTest\\"
+            spec = vim.vm.guest.ProcessManager.WindowsProgramSpec(programPath="cmd.exe", arguments=" /c timeout 7") # arguments="tmp.zip",  workingDirectory="C:\\AVTest\\"
 
             pid = content.guestOperationsManager.processManager.StartProgramInGuest(target_vm, creds, spec)
         except:
             print "WTF Error!"
+            return
         print pid
+        while True:
+            guest_process_info = content.guestOperationsManager.processManager.ListProcessesInGuest(target_vm, creds, [pid])
+            if guest_process_info[0].endTime:
+                print "Program finished"
+                return
+            time.sleep(2)
+            print "I love busy waiting"
+
+
 
 
 def print_all_vms(si):
@@ -346,6 +384,26 @@ def script():
             print "could not find a virtual machine with the name %s (it's not a VM Instance)" % vm_name
             sys.exit(-1)
         execute(si, target_vm=myvm)
+
+    elif action == "hard_poweroff":
+        myvm = get_vm_from_name(vm_name, si)
+        if not isinstance(myvm, vim.VirtualMachine):
+            print "could not find a virtual machine with the name %s (it's not a VM Instance)" % vm_name
+            sys.exit(-1)
+        hard_poweroff_vm(target_vm=myvm)
+
+    elif action == "print_vm_info":
+        myvm = get_vm_from_name(vm_name, si)
+        if not isinstance(myvm, vim.VirtualMachine):
+            print "could not find a virtual machine with the name %s (it's not a VM Instance)" % vm_name
+            sys.exit(-1)
+        print_vm_info(myvm)
+
+    elif action == "get_vm_from_name":
+        get_vm_from_name(vm_name, si)
+
+    elif action == "get_vm_from_path":
+        get_vm_from_path(si)
 
     sys.exit(0)
 

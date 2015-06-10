@@ -55,7 +55,7 @@ class MQStar():
         logging.debug("check_connection %s" % av)
         redis = self.channel_to_server.redis
         name = "MQ_%s_connection" % (self.session)
-        return redis.sismember(name,av)
+        return redis.sismember(name, av)
 
     def clean(self, av=None):
         """ Cleans all the redis keys related to the used channels
