@@ -139,9 +139,8 @@ def get_box_for_cropping(logging, win_id, hw, wrapper):
     tries = 0
     while not hw.Rectangle() or (hw.Rectangle().left == 0 and hw.Rectangle().top == 0 and hw.Rectangle().right == 0 and hw.Rectangle().bottom == 0):
         logging.debug("Cropping would be 0,0,0,0, I try again)")
-
-        time.sleep(1)
         ctypes.windll.user32.keybd_event(44, 0, 0, 0)
+        time.sleep(1)
         hw = wrapper.HwndWrapper(win_id)
         tries += 1
         if tries > 4:

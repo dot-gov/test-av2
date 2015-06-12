@@ -106,10 +106,12 @@ def pushzip(vm, args):
             break
         sleep(6)
 
-    not_copyed = []
+    errors = []
     #tries n times to upload and extract all files, with increasing delays
     for tr in range(0, retry):
         logging.debug("tries n times to upload and extract all files, with increasing delays, try %s of %s" % (tr + 1, retry))
+
+        errors = []
 
         vm_manager.execute(vm, "mkdirInGuest", ntdir(dst_dir))
         sleep(tr)
@@ -124,7 +126,11 @@ def pushzip(vm, args):
         tmpzip = "tmp.zip"
         dst = ntdir(os.path.join(dst_dir, tmpzip))
         logging.debug("Copy zip: %s -> %s" % (zfname, dst))
-        vm_manager.execute(vm, "pm_put_file", zfname, dst)
+        put_ret = vm_manager.execute(vm, "pm_put_file", zfname, dst)
+        if not put_ret:
+            logging.debug("Impossible to put zip to VM %s" % vm)
+            errors.append("Impossible to put zip to VM %s" % vm)
+            continue
         sleep(2 * tr)
 
         logging.debug("Executing unzip on %s" % dst)
@@ -132,10 +138,14 @@ def pushzip(vm, args):
         # ret = vm_manager.execute(vm, "executeCmd", *unzipargs)
 
         ret = vm_manager.execute(vm, "pm_run_and_wait", "/AVTest/unzip.exe", "-o -d c:\\avtest %s" % dst)
+        if not ret:
+            logging.debug("Impossible to extract files. I cannot execute unzip on VM %s" % vm)
+            errors.append("Impossible to extract files. I cannot execute unzip on VM %s" % vm)
+            continue
         # logging.debug("ret: %s" % ret)
         # #sleep(3 * tr)
         # sleep(5 * tr + file_number)
-        not_copyed = []
+
         #if there are retries I check the existance of files and if are all present, I terminate the iteration
         if retry > 1:
             logging.debug("Checking if the files were been copyed and extracted correctly. Files: %s", all_src)
@@ -147,18 +157,17 @@ def pushzip(vm, args):
                 if file_to_check not in found_files:
                     logging.debug("NOT FOUND: %s" % file_to_check)
                     failed = True
-                    not_copyed.append(file_to_check)
+                    errors.append(file_to_check)
             if not failed:
                 shutil.rmtree(d)
                 return True, "Files copied on VM"
-        tr += 1
 
     logging.debug("Removing zip: %s" % d)
     shutil.rmtree(d)
 
     if retry > 1:
         #if I'm here and retries were executed, then I have an error
-        return False, "Impossible to copy all files on VM (not copyed: %s)" % str(not_copyed)
+        return False, "Impossible to copy all files on VM (errors / not copyed: %s)" % str(errors)
     else:
         #if no retries, we always return true
         return True, "Tried one file copy (no check) on VM"

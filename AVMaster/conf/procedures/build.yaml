@@ -23,13 +23,6 @@ INIT_DISPATCH:
     # wait for av start
     - SLEEP: 60
 
-INIT_DISPATCH2:
-    - INTERNET: False
-    - REVERT
-    - START_VM2: AV_AGENT
-    # wait for av start
-    - SLEEP: 60
-
 END_DISPATCH:
     - STOP_VM: 60
 
@@ -142,26 +135,6 @@ VM_ELITE_FAST_SRV:
     - UNINSTALL
     #- RELOG
 
-VM_ELITE_FAST_SRV_POP:
-    - CALL: INIT_DISPATCH
-    - POPUP: [ True, True ]
-    - BUILD_SRV: [ scout, windows, silent, elite_fast ]
-    - SLEEP: 30
-    - ON_ERROR: CONTINUE
-    - POPUP: [ False, True ]
-    - RELOG
-    #- ON_ERROR: CONTINUE
-    - POPUP: [ True, True ]
-    - BUILD_SRV: [ elite_fast, windows, silent, elite_fast ]
-    - POPUP: [ False, True ]
-    - SCREENSHOT
-    #CHECKING IF UNINSTALLATION SUCCEDEED
-    - CHECK_INFECTION
-    #to be sure, we uninstall
-    - UNINSTALL
-    #- RELOG
-
-
 VM_ELITE_FAST_DEMO_SRV:
     #andrebbe eseguito solo una volta a settimana
     - ENABLE: [ sunday ]
@@ -247,27 +220,6 @@ VM_SOLDIER_SRV:
     - BUILD_SRV: [ soldier_fast, windows, silent, soldier_fast ]
     #- CROP: False
     - POPUP: [ False, True ]
-    - SCREENSHOT
-    #don't skip because I need to uninstall
-    - ON_ERROR: SKIP
-    - CHECK_INFECTION
-    #to be sure, we uninstall
-    - UNINSTALL
-
-
-VM_SOLDIER_SRV_POP:
-    - CALL: INIT_DISPATCH
-    - POPUP: [ True, True ]
-    - BUILD_SRV: [ scout, windows, silent, soldier_fast ]
-    - ON_ERROR: CONTINUE
-    - POPUP: [ False, True ]
-    - SLEEP: 30
-    - RELOG
-    - POPUP: [ True, True ]
-    #- CROP: True
-    - BUILD_SRV: [ soldier_fast, windows, silent, soldier_fast ]
-    - POPUP: [ False, True ]
-    #- CROP: False
     - SCREENSHOT
     #don't skip because I need to uninstall
     - ON_ERROR: SKIP
@@ -612,7 +564,6 @@ SYSTEM_ELITE_FAST:
     - CALL: VM_GET_LOG
     - CALL: END_DISPATCH
 
-
 SYSTEM_ELITE_FAST_SRV:
     - VM_ALL
     - ON_ERROR: SKIP
@@ -624,24 +575,6 @@ SYSTEM_ELITE_FAST_SRV:
     - CALL: SET_MAIL
     - REPORT:
         - VM_ELITE_FAST_SRV: ['AV Invisibility', 'Elite']
-    # moved in VM_procedures: screnshot and uninstall
-    #- SCREENSHOT
-    #- UNINSTALL
-    - CALL: VM_GET_LOG
-    - CALL: END_DISPATCH
-
-
-SYSTEM_ELITE_FAST_SRV_POP:
-    - VM_ALL
-    - ON_ERROR: SKIP
-    - SLEEP: [1, 600]
-    # CLEAN_EV no more useful - instances are deleted during run and factories are deleted daily
-    # init_dispatch needed for clean evidences (to be removed)
-    #- CALL: INIT_DISPATCH
-    #- CALL: VM_CLEAN_EVIDENCES_AND_CACHE
-    - CALL: SET_MAIL
-    - REPORT:
-        - VM_ELITE_FAST_SRV_POP: ['AV Invisibility', 'Elite']
     # moved in VM_procedures: screnshot and uninstall
     #- SCREENSHOT
     #- UNINSTALL
@@ -753,25 +686,6 @@ SYSTEM_SOLDIER_SRV:
     #- UNINSTALL
     - CALL: VM_GET_LOG
     - CALL: END_DISPATCH
-
-
-SYSTEM_SOLDIER_SRV_POP:
-    - VM_ALL
-    - ON_ERROR: SKIP
-    - SLEEP: [1, 600]
-    # CLEAN_EV no more useful - instances are deleted during run and factories are deleted daily
-    # init_dispatch needed for clean evidences (to be removed)
-    #- CALL: INIT_DISPATCH
-    #- CALL: VM_CLEAN_EVIDENCES_AND_CACHE
-    - CALL: SET_MAIL
-    - REPORT:
-        - VM_SOLDIER_SRV_POP: ['AV Invisibility', 'Soldier']
-    # moved in VM_procedures: screnshot and uninstall
-    #- SCREENSHOT
-    #- UNINSTALL
-    - CALL: VM_GET_LOG
-    - CALL: END_DISPATCH
-
 
 SYSTEM_EXPLOIT:
     - VM_ALL
@@ -1491,6 +1405,7 @@ UPDATE_AV:
 #indirectly called by update.sh
 UPD_AV:
     - CALL: UPD_AGENT
+    # waits av update
     - SLEEP: 1000
     - STOP_VM: 300
     - WAIT_SHUTDOWN
@@ -1498,19 +1413,20 @@ UPD_AV:
 #indirectly called by update.sh
 UPD_AGENT:
     - INTERNET: True
-    - SLEEP: [10, 600]
+    - SLEEP: [10, 1800]
     - REVERT
-    - START_VM
+    - START_VM2
     - CHECK_INFECTION # questo non e' necessario, ma e' meglio assicurarsene
     #ENCAPSULATED IN INSTALL_AGENT
     #- CALL: VM_PUSH_AGENT
     # aggiunto in data 01/06/15 perche l'install puo' fallire...
     - ON_ERROR: CONTINUE
     - INSTALL_AGENT
-    - SLEEP: 60
-    - STOP_VM: 300
-    - WAIT_SHUTDOWN
-    - START_VM: AV_AGENT
+    # removed because a restart is no more needed (Windows update are now performed manually)
+    #- SLEEP: 60
+    #- STOP_VM: 300
+    #- WAIT_SHUTDOWN
+    #- START_VM2: AV_AGENT
     - UNINSTALL
 
 

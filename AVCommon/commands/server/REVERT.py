@@ -13,9 +13,11 @@ def execute(vm, protocol, args):
     if args:
         name = str(args)
         vm_manager.execute(vm, "revert_named_snapshot", name)
+        return True, "Reverted VM"
     else:
-        vm_manager.execute(vm, "revert_last_snapshot")
+        #replaced revert_last_snapshot
 
-    return True, "Reverted VM"
-
-
+        if vm_manager.execute(vm, "pm_revert_last_snapshot"):
+            return True, "Reverted VM: %s" % vm
+        else:
+            return False, "Error reverting VM: %s" % vm

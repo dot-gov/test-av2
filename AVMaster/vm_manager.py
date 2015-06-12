@@ -36,7 +36,7 @@ def execute(vm_name, cmd, *args):
                   "listDirectoryInGuest", "refreshSnapshot"]
 
     pyvmomi_cmds = ["pm_poweron", "pm_poweron_and_check", "pm_poweroff", "pm_list_directory", "pm_put_file", "pm_get_file", "pm_run_and_wait",
-                    "pm_run", "pm_ip_addresses"]
+                    "pm_run", "pm_ip_addresses", "pm_revert_last_snapshot"]
 
     if config.verbose:
         logging.debug("vm: %s, command: %s" % (vm_name, cmd))

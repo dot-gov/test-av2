@@ -85,8 +85,10 @@ def check_elite(vm):
     # ret = vm_manager.execute(vm, "executeCmd", *reg)
 
     #wait reg creation
-    vm_manager.execute(vm, "pm_run_and_wait", "c:\\Windows\\System32\\reg.exe", "EXPORT HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run %s /y" % reg_file)
-
+    ret = vm_manager.execute(vm, "pm_run_and_wait", "c:\\Windows\\System32\\reg.exe", "EXPORT HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run %s /y" % reg_file)
+    if not ret:
+        logging.debug("Cannot execute REG command, I assume vm is infected - vm = %s" % vm)
+        return False
     # sleep(15)
 
     dst_dir = logger.logdir

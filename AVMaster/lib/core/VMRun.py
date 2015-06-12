@@ -165,7 +165,7 @@ class VMRun:
             if len(snaps) > 2:
                 for s in snaps[0:-2]:
                     logging.debug("checking %s" % s)
-                    if s not in untouchables: # and "manual" not in s:
+                    if s not in untouchables:  # and "manual" not in s:
                         logging.debug("deleting %s" % s)
                         self.deleteSnapshot(vmx, s)
                     else:

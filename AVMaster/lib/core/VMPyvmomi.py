@@ -3,6 +3,7 @@ import os
 import ntpath
 import requests
 import shutil
+from requests.packages.urllib3.connection import ConnectionError
 from AVCommon.logger import logging
 
 from time import sleep
@@ -32,6 +33,9 @@ class VMPyvmomi:
         self.guestpasswd = self.config.get("vm_config", "passwd")
 
         self.vm_path = self.config.get("vms", vm_name)
+
+        #for logs
+        self.vm_name = vm_name
 
     def __enter__(self):
         self.si = connect.SmartConnect(host=self.pyvmomi_host, user=self.domain+"\\"+self.user, pwd=self.passwd)
@@ -103,14 +107,15 @@ class VMPyvmomi:
     #CHECK WINDOWS STARTUP
     #this could be improved with this command: Wait-Tools
     def _wait_vmtools_vm(self):
-        #i sleep 30 seconds because windows boot takes at least 30 seconds...
-        elapsed = 30
-        sleep(30)
+        #i sleep 60 seconds because windows boot takes at least 30 seconds...
+        elapsed = 60
+        sleep(60)
         while vim.ManagedEntityStatus.green != self.vm_object.guestHeartbeatStatus:
-            sleep(5)
-            elapsed += 5
+            sleep(15)
+            elapsed += 15
             print "Waiting for vmtools (vm = %s - status = %s)" % (self.vm_object.name, self.vm_object.guestHeartbeatStatus)
-            if elapsed > 360:
+            #960 sceonds = 16 minutes
+            if elapsed > 960:
                 print "Startup timed out (no vmtools)"
                 return False
         print "Windoze started! Hurray! (vm = %s - status = %s)" % (self.vm_object.name, self.vm_object.guestHeartbeatStatus)
@@ -133,7 +138,6 @@ class VMPyvmomi:
             print "Error Powering Up (vm = %s)" % self.vm_object.vm_name
             return False
 
-    #may become
     def pm_poweroff(self):
         if self.vm_object.runtime.powerState == vim.VirtualMachinePowerState.poweredOn:
         # using time.sleep we just wait until the power off action
@@ -178,6 +182,9 @@ class VMPyvmomi:
             for f in files:
                 logging.debug("%s" % f.path)
                 filelist.append(f.path)
+        except vim.fault.FileNotFound:
+            logging.debug("ERROR: The directory %s does not exists on vm %s" % (d, self.vm_name))
+            return []
         except IOError, e:
             return e
         return filelist
@@ -205,7 +212,11 @@ class VMPyvmomi:
         #in some cases the api may put a * instead of the hostname (by specification)
         url = url.replace("*", self.pyvmomi_host)
 
-        r = requests.put(url, filecontent, verify=False)
+        try:
+            r = requests.put(url, filecontent, verify=False)
+        except ConnectionError as e:
+            logging.debug("Error uploading file, ConnectionError exception: %s", str(e))
+            return False
 
         if r.status_code == 200:
             logging.debug("Ok, file put to guest!")
@@ -222,9 +233,14 @@ class VMPyvmomi:
         err = self._check_running()
         if err:
             return False
-
-        file_transfert_info = self.content.guestOperationsManager.fileManager.InitiateFileTransferFromGuest(self.vm_object, self.creds, src_filename)
-
+        try:
+            file_transfert_info = self.content.guestOperationsManager.fileManager.InitiateFileTransferFromGuest(self.vm_object, self.creds, src_filename)
+        except vim.fault.GuestOperationsUnavailable:
+            logging.debug("Cannot get file: %s from VM: %s (GuestOperationsUnavailable)" % (src_filename, self.vm_name))
+            return False
+        except vim.fault.FileNotFound:
+            logging.debug("Cannot get file: %s from VM: %s (FileNotFound)" % (src_filename, self.vm_name))
+            return False
         logging.debug(file_transfert_info.url)
 
         #in some cases the api puts a * instead of the hostname (by specification)
@@ -253,7 +269,7 @@ class VMPyvmomi:
         pid = self.pm_run(args[0:2])
         if len(args) > 2:
             timeout = args[2]
-        if pid < 0:
+        if not pid:
             return False
         else:
             elapsed = 0
@@ -295,9 +311,12 @@ class VMPyvmomi:
             pid = self.content.guestOperationsManager.processManager.StartProgramInGuest(self.vm_object, self.creds, spec)
             logging.debug("Launched command %s with pid %s" % (cmd, pid))
             return pid
-        except:
-            logging.debug("Error executing command %s" % cmd)
-            return -1
+        except vim.fault.FileNotFound:
+            logging.debug("Error executing command %s - the executable file was not found" % cmd)
+            return False
+        except Exception:
+            logging.debug("Error executing command %s - unknown reason" % cmd)
+            return False
 
     def pm_ip_addresses(self):
         err = self._check_running()
@@ -315,6 +334,42 @@ class VMPyvmomi:
                 return ips
             else:
                 return None
+
+    def pm_revert_last_snapshot(self):
+        task = self.vm_object.RevertToCurrentSnapshot_Task()
+        while task.info.state not in [vim.TaskInfo.State.success, vim.TaskInfo.State.error]:
+            sleep(1)
+        if task.info.state == vim.TaskInfo.State.success:
+            logging.debug("VM: %s reverted to current snapshot" % self.vm_name)
+            return True
+        else:
+            logging.debug("Error reverting VM: %s" % self.vm_name)
+            return False
+
+    # replaces VMRun's refreshSnapshot
+    # def pm_refresh_snapshot(self, vmx):
+    #     untouchables = [ "_datarecovery_"] #"ready", "activated",
+    #
+    #     if config.verbose:
+    #         logging.debug("[%s] Refreshing snapshot.\n" % vmx)
+    #
+    #     # create new snapshot
+    #     date = datetime.now().strftime('%Y%m%d-%H%M')
+    #     snapshot = "auto_%s" % date
+    #     untouchables.append(snapshot)
+    #
+    #     self.createSnapshot(vmx, snapshot)
+    #
+    #     snaps = self.listSnapshots(vmx)
+    #     logging.debug("%s: snapshots %s" % (vmx,snaps))
+    #     if len(snaps) > 2:
+    #         for s in snaps[0:-2]:
+    #             logging.debug("checking %s" % s)
+    #             if s not in untouchables: # and "manual" not in s:
+    #                 logging.debug("deleting %s" % s)
+    #                 self.deleteSnapshot(vmx, s)
+    #             else:
+    #                 logging.debug("ignoring %s" % s)
 
     # def createSnapshot(self, vmx, snapshot):
     #     if config.verbose:

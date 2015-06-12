@@ -1,4 +1,5 @@
 import atexit
+from operator import attrgetter
 import os
 import sys
 import threading
@@ -23,8 +24,9 @@ guestusr = 'avtest'
 guestpwd = 'avtest'
 
 
-#"list_vms" "poweron", "poweroff", "stress", "listfiles", "put_file", "get_file", "hard_poweroff", "get_vm_from_path"
-action = "execute"
+#"list_vms" "poweron", "poweroff", "stress", "listfiles", "put_file", "get_file", "hard_poweroff", "get_vm_from_path", "pm_list_snapshots",
+# "pm_revert_last_snapshot", "pm_create_snapshot"
+action = "pm_list_snapshots"
 
 #dangerous! vm_others = ['AVAgent Win7 x64', 'AVAgent Win7 x86', 'AVAgent Win7 x86_v10_2if', 'AVAgent WinSrv2008 R2 x64', 'AVAgent-Win81-x64', 'ComodoTest', 'FunCH', 'FunFF', 'FunIE', 'HoneyDrive', 'Kali linux', 'Mac OS X', 'PuppetMaster_New', 'Puppet_Ubuntu', 'RCS-Achille', 'RCSTestSrv', 'RiteMaster-DEB-nu', 'Stratagem Honeypot', 'TEST-Win-2012', 'TestRail', 'UbuntuAgent', 'WinXP-RU', 'vCenterC', 'Win7-x86-CCleaner', 'Win7-TestAV', 'Win81-TestSpot', ]
 #probably some of these are not in use
@@ -176,7 +178,7 @@ def full_powerup_vm(vm_name, si):
 
 
 #max number of files = maxResults, no pattern filter
-def list_dir(si, target_vm, directory="C:\\Windows\\"):
+def list_dir(si, target_vm, directory="C:\\nononogergs\\"):
     maxResults = 999
     tools_status = target_vm.guest.toolsStatus
     if (tools_status == 'toolsNotInstalled' or
@@ -283,22 +285,77 @@ def execute(si, target_vm):
     #spec = vim.vm.guest.ProcessManager.WindowsProgramSpec(programPath="cmd.exe", arguments=" /c dir > c:\\AVTest\log.txt") # arguments="tmp.zip",  workingDirectory="C:\\AVTest\\"
     for i in range(0, 10):
         try:
-            spec = vim.vm.guest.ProcessManager.WindowsProgramSpec(programPath="cmd.exe", arguments=" /c timeout 7") # arguments="tmp.zip",  workingDirectory="C:\\AVTest\\"
+            spec = vim.vm.guest.ProcessManager.WindowsProgramSpec(programPath="cmda.exe", arguments=" /c timeout 7") # arguments="tmp.zip",  workingDirectory="C:\\AVTest\\"
 
             pid = content.guestOperationsManager.processManager.StartProgramInGuest(target_vm, creds, spec)
-        except:
-            print "WTF Error!"
-            return
+        except vim.fault.FileNotFound, e:
+            print e
+            print "File to execute not found"
+            return False
         print pid
         while True:
             guest_process_info = content.guestOperationsManager.processManager.ListProcessesInGuest(target_vm, creds, [pid])
             if guest_process_info[0].endTime:
                 print "Program finished"
-                return
+                return True
             time.sleep(2)
             print "I love busy waiting"
 
 
+def pm_revert_last_snapshot(target_vm):
+    task = target_vm.RevertToCurrentSnapshot_Task()
+    while task.info.state not in [vim.TaskInfo.State.success, vim.TaskInfo.State.error]:
+        time.sleep(1)
+    return task.info.state == vim.TaskInfo.State.success
+
+
+def pm_create_snapshot(target_vm, name):
+    task = target_vm.CreateSnapshot_Task(name, "Auto snapshot by Rite", False, False)
+    while task.info.state not in [vim.TaskInfo.State.success, vim.TaskInfo.State.error]:
+        time.sleep(1)
+    return task.info.state == vim.TaskInfo.State.success
+
+
+def pm_remove_snapshot(snapshot):
+    #it's VERY VERY important to set the flag to false, or it will remove all the subtree!
+    task = snapshot.RemoveSnapshot_Task(removeChildren=False)
+    while task.info.state not in [vim.TaskInfo.State.success, vim.TaskInfo.State.error]:
+        time.sleep(1)
+    return task.info.state == vim.TaskInfo.State.success
+
+
+def pm_clean_snapshots(target_vm):
+    snap_list = pm_list_snapshots(target_vm)
+    for i in snap_list:
+        if False:
+            ret = pm_remove_snapshot(i)
+
+
+def pm_list_snapshots(target_vm):
+    snapshot = target_vm.snapshot #  snapshot.while tree[0].childSnapshotList is not None:
+    l = []
+    tree = snapshot.rootSnapshotList
+    l.extend(tree)
+
+    for i in l:
+        # print("Name: %s - Description: %s - Time: %s" % (i.name, i.description, i.createTime))
+        if i.childSnapshotList:
+            l.extend(i.childSnapshotList)
+    # print "UNSorted:"
+    # for y in l:
+    #     print("Name: %s - Description: %s - Time: %s" % (y.name, y.description, y.createTime))
+    s = sorted(l, key=attrgetter('createTime'))
+    print "Printing list of snapshots from the tree, flattened and sorted"
+    for y in s:
+        print("Name: %s - Time: %s - Description: %s" % (y.name, y.createTime, y.description))
+    return s
+    # # for s in snap_list:
+    # while tree[0].childSnapshotList:
+    #     if len(tree[0].childSnapshotList) > 1:
+    #         print "Multiple branches! I don't support that!"
+    #     print("Name: %s - Description: %s - Time: %s" % (tree[0].name, tree[0].description, tree[0].createTime))
+    #     tree = tree[0].childSnapshotList
+    # print("Name: %s - Description: %s" % (tree[0].name, tree[0].description))
 
 
 def print_all_vms(si):
@@ -340,9 +397,10 @@ def stress_test(si):
 
 def script():
     #'[VMFuzz] Puppet_Win7-MBytes/Puppet_Win7-MBytes.vmx'
-    vm_name = 'Puppet_Win7-FSecure'
+    vm_name = 'Puppet_Win7-FSecure'  # this have branch in snapshots
     #vm_name = 'Puppet_Win7-MBytes'
     #vm_name = 'Puppet_Win7-Avast_New'
+    #vm_name = 'Puppet_Win7-ESET'
     si = connect.SmartConnect(host=host, user=domain+"\\"+user, pwd=pwd)
 
     # doing this means you don't need to remember to disconnect your script/objects
@@ -399,11 +457,32 @@ def script():
             sys.exit(-1)
         print_vm_info(myvm)
 
+    elif action == "pm_revert_last_snapshot":
+        myvm = get_vm_from_name(vm_name, si)
+        if not isinstance(myvm, vim.VirtualMachine):
+            print "could not find a virtual machine with the name %s (it's not a VM Instance)" % vm_name
+            sys.exit(-1)
+        pm_revert_last_snapshot(myvm)
+
     elif action == "get_vm_from_name":
         get_vm_from_name(vm_name, si)
 
     elif action == "get_vm_from_path":
         get_vm_from_path(si)
+
+    elif action == "pm_list_snapshots":
+        myvm = get_vm_from_name(vm_name, si)
+        if not isinstance(myvm, vim.VirtualMachine):
+            print "could not find a virtual machine with the name %s (it's not a VM Instance)" % vm_name
+            sys.exit(-1)
+        pm_list_snapshots(myvm)
+
+    elif action == "pm_create_snapshot":
+        myvm = get_vm_from_name(vm_name, si)
+        if not isinstance(myvm, vim.VirtualMachine):
+            print "could not find a virtual machine with the name %s (it's not a VM Instance)" % vm_name
+            sys.exit(-1)
+        pm_create_snapshot(myvm, "auto_test_yeah")
 
     sys.exit(0)
 

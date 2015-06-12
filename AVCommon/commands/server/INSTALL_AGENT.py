@@ -73,9 +73,11 @@ def execute(vm, protocol, inst_args):
     timestamplocalfile.write(str(last_edit_time))
     timestamplocalfile.close()
 
-    PULL.execute(vm, protocol, [['timestamp.txt'], "c:\\AVTest\\", "logs"])
-
-    if os.path.exists("logs/%s/timestamp.txt" % vm):
+    res = PULL.execute(vm, protocol, [['timestamp.txt'], "c:\\AVTest\\", "logs"])
+    if not res:
+        logging.debug("Last edit REMOTE unknown (cannot get remote file): pushing AVAgent anyway.")
+        timestampremoteint = 0
+    elif os.path.exists("logs/%s/timestamp.txt" % vm):
         timestampremotefile = open("logs/%s/timestamp.txt" % vm, 'r')
         try:
             timestampremoteint = float(timestampremotefile.read())

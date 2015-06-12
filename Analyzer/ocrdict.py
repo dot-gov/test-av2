@@ -9,7 +9,7 @@ _good = {'performance', 'complete', 'Protection', 'enabled', 'LIVE', 'TECH', 'SU
          'Mobile', 'Family', 'Safety', 'Update', 'UPDATE', 'FAILED', 'top-rated', 'tablet', 'Maxumize', 'maximiza',
          'free', 'trial', 'shopping', 'banking', 'watching', 'videos', 'Gamirg', 'surfirg', 'Protectior', 'actually', 'Surf', 'without',
          'interruptions', 'speeds', 'performance', 'complete', '24171365', 'LIVE', 'TECH', 'SUPPORT', 'databases', 'ugdatg', 'update', 'updating',
-         'Windows', 'Enterprise', 'Build', 'Web Filtering'}
+         'Windows', 'Enterprise', 'Build', 'Web Filtering', 'definitions'}
 
 _crash = {'stopped', 'working', 'solution', 'problem', 'online', 'solution', 'close'}
 
@@ -49,7 +49,7 @@ _ignore_list = {'AntiVirus'}
 _white_white_list = {'First Computer Scan', 'High-performance', 'Update', 'out of date', 'virus protection', 'please vote', 'which company',
                      'out-of-date', 'definitions', 'Protection is enabled', 'Nessuna connessione a Internet', "accedere all'account",
                      'devi essere connesso', 'Protection is', 'currently performing', 'computer is idle', 'tasks while your', 'your smartphone',
-                     'the cloud for free', 'be more vulnerable to', 'Your system may', 'background tasks', 'computer is idle'}
+                     'the cloud for free', 'more vulnerable to', 'and intrusions', 'Your system may', 'background tasks', 'computer is idle'}
 
 
 class OcrDict():

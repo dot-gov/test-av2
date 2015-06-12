@@ -7,7 +7,7 @@ from AVCommon import command
 
 
 #vm_first = "avast,avast32,avg,avg32,avira,kis,kis14,kis32,mcafee,norton,panda,comodo,eset,msessential".split(',')
-vm_first_rite = "eset7,avast,avg,avg15,panda15,avg32,avira,avira15,kis15,kis14,kis32,bitdef15,norton,comodo,eset,msessential,panda,norton15,avira15f,avg15f,defender,comodo7,mbytes,mcafee".split(',')
+vm_first_rite = "eset7,avast,avastf,avg,avg15,panda15,avg32,avira,avira15,kis15,kis14,kis32,bitdef15,norton,comodo,eset,msessential,panda,norton15,avira15f,avg15f,defender,comodo7,mbytes,mcafee".split(',')
 #disattivato DEFINITIVAMENTE kis (kis e' un kis 2013 che ormai non si usa piu')
 
 #disattivato DEFINITIVAMENTE avast32, kis

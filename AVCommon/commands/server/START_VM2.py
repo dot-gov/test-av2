@@ -17,8 +17,8 @@ def execute(vm, protocol, args):
 
     mq.reset_connection(vm)
 
-    #240 seconds. Sometimes it takes very long (when windows is not licensed?)!
-    max_tries = 24
+    #300 seconds. Sometimes it takes very long (when windows is not licensed?)!
+    max_tries = 30
 
     # just startup
     if no_check:
