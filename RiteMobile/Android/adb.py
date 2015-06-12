@@ -304,10 +304,17 @@ def get_deviceid(device=None):
     if match:
         return match.group(0)
     else:
+        cmd = "dumpsys iphonesubinfo"
+        comm = execute(cmd, device)
+        match = re.search("\d{14,16}", comm)
+        if match:
+            return match.group(0)
+        else:
+            return ""
         #cmd = "settings get secure android_id"
         #comm = execute(cmd, device)
         #id = comm.strip()
-        return ""
+
 
 
 def get_packages(device=None):

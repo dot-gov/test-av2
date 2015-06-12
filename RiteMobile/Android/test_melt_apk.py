@@ -30,14 +30,14 @@ av_list = []
 server = "castore"
 
 # test_to_run = ["melt_server", "zip_run"]
-test_to_run = ["melt_server"]
-# test_to_run = ["zip_run"]
+#test_to_run = ["melt_server"]
+test_to_run = ["zip_run"]
 
 #max retries for a single build (in case of timeout)
-max_timeout_retries = 2
+max_timeout_retries = 0
 
 #max number of app to process
-max_test_iterations = 9999
+max_test_iterations = 1
 
 filter_string = ""   # "com.amazon.kindle"  # "com.utorrent.client-2.20.apk"  # "com.bigduckgames.flow"  # example: "com.amazon.kindle"  #empty string gets all apks
 # filter_string = ""  #gets all apks
@@ -204,76 +204,76 @@ def main():
             else:
                 return
             with commands_rcs as c:
-                while True:
-                    unordered_list = os.listdir(apk_share_dir)[:max_test_iterations]
-                    shuffle(unordered_list)
-                    for apk_file in unordered_list:
-                        print apk_file
-                        # quelli da testare, ma che non sia gia' noto che funzionano o non che funzionano
-                        if apk_file.endswith(".apk") and apk_file.startswith(filter_string) and not glob.glob(build_melt_dir+"melt_"+apk_file+".zip")\
-                                and apk_file in zenos_apk:  # and os.path.basename(apk_file) in to_test_list:
-                                # and os.path.basename(apk_file) not in these_works_list and os.path.basename(apk_file) not in these_does_not_work_list:
-                            print "Starting"
-                            is_an_antivirus = False
-                            installation_result = "UNKNOWN"
-                            for avname in av_list:
-                                if apk_file.startswith(avname):
-                                    is_an_antivirus = True
-                            if is_an_antivirus:
-                                installation_result = "ANTIVIRUS"
-                                result_strings_error.append("%s:\t [ ANTIVIRUS ]" % apk_file)
-                                fileerror.write("%s:\t [ ANTIVIRUS ]\n" % apk_file)
-                                fileerror.flush()
-                                os.fsync(fileerror.fileno())
-                            else:
-                                time.sleep(10)
-                                repeat = 0
-                                completed_test = False
-                                while repeat <= max_timeout_retries and completed_test is False:
-                                    repeat += 1
-                                    try:
-
-                                        #old
-                                        # ret = c.build_melt_apk(melt_file=os.path.join(apk_share_dir, apk_file), appname="melted_%s" % apk_file,
-                                        #                        melt_dir=build_melt_dir, ruby_build_in_second_stage=True)
-
-                                        #experimental
-                                        # c.build_melt_apk(melt_file=os.path.join(apk_share_dir, apk_file), appname="melted_%s" % apk_file,
-                                        #                        melt_dir=build_melt_dir, skip_download=True)
-                                        # p = subprocess.Popen("wget")
-                                        # p.communicate()
-                                        # print "I'm really optimistic!"
-                                        # ret = True
-
-                                        input_melt_file = os.path.join(apk_share_dir, apk_file)
-                                        zipfilenamebackend = os.path.join(build_melt_dir, "melt_%s.zip" % apk_file)
-                                        ret = c.build_melt_apk_ruby(input_melt_file, zipfilenamebackend=zipfilenamebackend, factory_id=commands_rcs.factory)
-                                        if not ret:
-                                            raise Exception("Build failed")
-                                        installation_result = "Ok"
-                                        result_strings_ok.append(apk_file)
-                                        fileok.write("%s:\t [ Ok ]\n" % apk_file)
-                                        fileok.flush()
-                                        os.fsync(fileok.fileno())
-                                        completed_test = True
-                                    except HTTPError as err:
-                                        installation_result = "ERROR"
-                                        result_strings_error.append("%s:\t [ ERROR ]" % apk_file)
-                                        fileerror.write("%s:\t [ ERROR ]\n" % apk_file)
-                                        fileerror.flush()
-                                        os.fsync(fileerror.fileno())
-                                        completed_test = True
-                                    except:
-                                        time.sleep(10)
-                                        print "%s:\t [ RETRY! (have tried %s times of %s max) ]" % (apk_file, repeat, max_timeout_retries+1)
-                                        installation_result = "RETRIES EXCEEDED"
-                                        result_strings_error.append("%s:\t [ RETRIES EXCEEDED ]" % apk_file)
-
-                            result_string = "Result for %s: \t\t [ %s ]" % (apk_file, installation_result)
-                            result_strings_all.append(result_string)
-                            print result_string
+                # while True:
+                unordered_list = os.listdir(apk_share_dir)  # [:max_test_iterations]
+                shuffle(unordered_list)
+                for apk_file in unordered_list:
+                    print apk_file
+                    # quelli da testare, ma che non sia gia' noto che funzionano o non che funzionano
+                    if apk_file.endswith(".apk") and apk_file.startswith(filter_string) and not glob.glob(build_melt_dir+"melt_"+apk_file+".zip"):
+                            # and apk_file in zenos_apk:  # and os.path.basename(apk_file) in to_test_list:
+                            # and os.path.basename(apk_file) not in these_works_list and os.path.basename(apk_file) not in these_does_not_work_list:
+                        print "Starting"
+                        is_an_antivirus = False
+                        installation_result = "UNKNOWN"
+                        for avname in av_list:
+                            if apk_file.startswith(avname):
+                                is_an_antivirus = True
+                        if is_an_antivirus:
+                            installation_result = "ANTIVIRUS"
+                            result_strings_error.append("%s:\t [ ANTIVIRUS ]" % apk_file)
+                            fileerror.write("%s:\t [ ANTIVIRUS ]\n" % apk_file)
+                            fileerror.flush()
+                            os.fsync(fileerror.fileno())
                         else:
-                            print "skipping " + apk_file
+                            time.sleep(10)
+                            repeat = 0
+                            completed_test = False
+                            while repeat <= max_timeout_retries and completed_test is False:
+                                repeat += 1
+                                try:
+
+                                    #old
+                                    # ret = c.build_melt_apk(melt_file=os.path.join(apk_share_dir, apk_file), appname="melted_%s" % apk_file,
+                                    #                        melt_dir=build_melt_dir, ruby_build_in_second_stage=True)
+
+                                    #experimental
+                                    # c.build_melt_apk(melt_file=os.path.join(apk_share_dir, apk_file), appname="melted_%s" % apk_file,
+                                    #                        melt_dir=build_melt_dir, skip_download=True)
+                                    # p = subprocess.Popen("wget")
+                                    # p.communicate()
+                                    # print "I'm really optimistic!"
+                                    # ret = True
+
+                                    input_melt_file = os.path.join(apk_share_dir, apk_file)
+                                    zipfilenamebackend = os.path.join(build_melt_dir, "melt_%s.zip" % apk_file)
+                                    ret = c.build_melt_apk_ruby(input_melt_file, zipfilenamebackend=zipfilenamebackend, factory_id=commands_rcs.factory)
+                                    if not ret:
+                                        raise Exception("Build failed")
+                                    installation_result = "Ok"
+                                    result_strings_ok.append(apk_file)
+                                    fileok.write("%s:\t [ Ok ]\n" % apk_file)
+                                    fileok.flush()
+                                    os.fsync(fileok.fileno())
+                                    completed_test = True
+                                except HTTPError as err:
+                                    installation_result = "ERROR"
+                                    result_strings_error.append("%s:\t [ ERROR ]" % apk_file)
+                                    fileerror.write("%s:\t [ ERROR ]\n" % apk_file)
+                                    fileerror.flush()
+                                    os.fsync(fileerror.fileno())
+                                    completed_test = True
+                                except:
+                                    time.sleep(10)
+                                    print "%s:\t [ RETRY! (have tried %s times of %s max) ]" % (apk_file, repeat, max_timeout_retries+1)
+                                    installation_result = "RETRIES EXCEEDED"
+                                    result_strings_error.append("%s:\t [ RETRIES EXCEEDED ]" % apk_file)
+
+                        result_string = "Result for %s: \t\t [ %s ]" % (apk_file, installation_result)
+                        result_strings_all.append(result_string)
+                        print result_string
+                    else:
+                        print "skipping " + apk_file
         except Exception, ex:
             print ex
             traceback.print_exc()
@@ -287,10 +287,7 @@ def main():
             fileok.close()
             fileerror.close()
 
-    sync_ok = ['melt_melted_air.au.com.metro.DumbWaysToDie-1.6.apk.zip', 'melt_melted_ch.smalltech.ledflashlight.free-1.68.apk.zip',
-               'melt_melted_com.accuweather.android-3.3.2.7.apk.zip', 'melt_melted_com.adobe.reader-11.7.0.apk.zip',
-               'melt_melted_com.ansangha.drdriving-1.38.apk.zip', 'melt_melted_com.avast.android.mobilesecurity-3.0.7864.apk.zip',
-               'melt_melted_com.amazon.mp3-4.1.1.apk.zip']
+    sync_ok = []
 
     # THIST PART GETS ZIPS FROM "build_melt_dir", INSTALLS, RUNS AND CHECK SYNC OF THEM
     if "zip_run" in test_to_run:
@@ -300,6 +297,7 @@ def main():
         elif server == "polluce":
             commands_rcs = CommandsRCSPolluce(login_id=0, device_id=device_id)
         else:
+            print "ERROR - I don't have a configuration for server specified: %s" % server
             return
         print "Connected"
 
@@ -308,8 +306,9 @@ def main():
         # command_dev.wifi("av", check_connection=True, install=True)
         with commands_rcs as c:
             ziplist = [filez for filez in os.listdir(build_melt_dir) if filez.endswith(".zip")]
+            # print ziplist
             for zip_file_ok in ziplist[:max_test_iterations]:
-                if zip_file_ok.startswith("melt_melted_"+filter_string) and zip_file_ok not in sync_ok:
+                if zip_file_ok.startswith("melt_"+filter_string) and zip_file_ok not in sync_ok:
                     print "+++=== PROCESSING %s ===+++" % zip_file_ok
                     zip_file_ok = os.path.join(build_melt_dir, zip_file_ok)
                     try:

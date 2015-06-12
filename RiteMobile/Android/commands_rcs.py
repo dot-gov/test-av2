@@ -111,7 +111,7 @@ class CommandsRCS:
         }
 
         # tries = 4 MEANS NO RETRIES
-        ret = build.build_agent(self.factory_id, self.host, params, None, os.path.join(melt_dir, "melt_%s.zip" % appname), melt=melt_file, kind="melt", tries=4, use_cache=False, appname=appname, skip_download)
+        ret = build.build_agent(self.factory_id, self.host, params, None, os.path.join(melt_dir, "melt_%s.zip" % appname), melt=melt_file, kind="melt", tries=4, use_cache=False, appname=appname)
         print ret
 
     def build_melt_apk_ruby(self, input_melt_file, user="avmonitor", password="testriteP123", conf_json_filename="assets/build.demo.json", zipfilenamebackend="and.zip",
