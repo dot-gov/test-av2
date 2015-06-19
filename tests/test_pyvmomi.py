@@ -1,4 +1,5 @@
 import atexit
+from datetime import datetime
 from operator import attrgetter
 import os
 import sys
@@ -25,8 +26,9 @@ guestpwd = 'avtest'
 
 
 #"list_vms" "poweron", "poweroff", "stress", "listfiles", "put_file", "get_file", "hard_poweroff", "get_vm_from_path", "pm_list_snapshots",
-# "pm_revert_last_snapshot", "pm_create_snapshot"
-action = "pm_list_snapshots"
+# "pm_revert_last_snapshot", "pm_create_snapshot", "pm_clean_snapshots", "pm_refresh_snapshots", "pm_revert_named_snapshot"
+# "pm_make_directory", "print_powered_on_vms"
+action = "print_powered_on_vms"
 
 #dangerous! vm_others = ['AVAgent Win7 x64', 'AVAgent Win7 x86', 'AVAgent Win7 x86_v10_2if', 'AVAgent WinSrv2008 R2 x64', 'AVAgent-Win81-x64', 'ComodoTest', 'FunCH', 'FunFF', 'FunIE', 'HoneyDrive', 'Kali linux', 'Mac OS X', 'PuppetMaster_New', 'Puppet_Ubuntu', 'RCS-Achille', 'RCSTestSrv', 'RiteMaster-DEB-nu', 'Stratagem Honeypot', 'TEST-Win-2012', 'TestRail', 'UbuntuAgent', 'WinXP-RU', 'vCenterC', 'Win7-x86-CCleaner', 'Win7-TestAV', 'Win81-TestSpot', ]
 #probably some of these are not in use
@@ -269,6 +271,30 @@ def get_file(si, target_vm):
         print "Error %s" % r.status_code
 
 
+def pm_make_directory(si, target_vm, dir_name="C:\\gatto\\"):
+    tools_status = target_vm.guest.toolsStatus
+    if (tools_status == 'toolsNotInstalled' or
+            tools_status == 'toolsNotRunning'):
+        raise SystemExit(
+            "VMwareTools is either not running or not installed. "
+            "Rerun the script after verifying that VMWareTools "
+            "is running")
+
+    creds = vim.vm.guest.NamePasswordAuthentication(username=guestusr, password=guestpwd)
+    content = si.RetrieveContent()
+    try:
+        print "Creating directory: %s" % dir_name
+        content.guestOperationsManager.fileManager.MakeDirectoryInGuest(target_vm, creds, dir_name, createParentDirectories=True)
+    except vim.fault.FileAlreadyExists:
+        print "Directory %s already exists, skipping creation" % dir_name
+        return True
+    except:
+        print "Error creating directory %s" % dir_name
+        return False
+    print "Directory %s created" % dir_name
+    return True
+
+
 def execute(si, target_vm):
     tools_status = target_vm.guest.toolsStatus
     if (tools_status == 'toolsNotInstalled' or
@@ -309,8 +335,29 @@ def pm_revert_last_snapshot(target_vm):
     return task.info.state == vim.TaskInfo.State.success
 
 
-def pm_create_snapshot(target_vm, name):
-    task = target_vm.CreateSnapshot_Task(name, "Auto snapshot by Rite", False, False)
+def pm_revert_named_snapshot(target_vm, snapshot_name):
+    #list all snapshots
+    snap_list = pm_list_snapshots(target_vm)
+    snap_list.reverse()
+    for i in snap_list:
+        print i.name
+        if i.name == snapshot_name:
+            task = i.snapshot.RevertToSnapshot_Task()
+            while task.info.state not in [vim.TaskInfo.State.success, vim.TaskInfo.State.error]:
+                time.sleep(1)
+            print "Task revert to %s ended with success: %s " % (snapshot_name, task.info.state == vim.TaskInfo.State.success)
+            return task.info.state == vim.TaskInfo.State.success
+
+    print "no snapshot with name %s found" % snapshot_name
+    return False
+
+
+def pm_create_snapshot(target_vm, name=""):
+    if name == "":
+        date = datetime.now().strftime('%Y%m%d-%H%M')
+        name = "auto_%s" % date
+
+    task = target_vm.CreateSnapshot_Task(name, "Auto snapshot by Rite - pyvmomi", False, False)
     while task.info.state not in [vim.TaskInfo.State.success, vim.TaskInfo.State.error]:
         time.sleep(1)
     return task.info.state == vim.TaskInfo.State.success
@@ -318,21 +365,55 @@ def pm_create_snapshot(target_vm, name):
 
 def pm_remove_snapshot(snapshot):
     #it's VERY VERY important to set the flag to false, or it will remove all the subtree!
+    print "Removing snapshot... "
     task = snapshot.RemoveSnapshot_Task(removeChildren=False)
     while task.info.state not in [vim.TaskInfo.State.success, vim.TaskInfo.State.error]:
         time.sleep(1)
-    return task.info.state == vim.TaskInfo.State.success
+
+    if task.info.state == vim.TaskInfo.State.success:
+        print "Removed snapshot SUCCESS!"
+        return True
+    else:
+        print "Removing snapshot FAILED!"
+        return False
+
+
+def pm_refresh_snapshots(target_vm):
+    ret1 = pm_create_snapshot(target_vm)
+    if ret1:
+        return pm_clean_snapshots(target_vm)
+    else:
+        return False
 
 
 def pm_clean_snapshots(target_vm):
     snap_list = pm_list_snapshots(target_vm)
-    for i in snap_list:
-        if False:
-            ret = pm_remove_snapshot(i)
+    snap_list.reverse()
+    #keeps only the latest that is the first in list
+    latest_auto_already_kept = 0
+    if len(snap_list) > 2:
+        for i in snap_list:
+            print i.name
+            if "manual" in i.name:
+                print "I'll keep snapshot %s" % i.name
+                continue
+            elif "auto_" in i.name and latest_auto_already_kept < 2:
+                print "I'll keep snapshot %s" % i.name
+                latest_auto_already_kept += 1
+                continue
+            else:
+                print "I'll remove snapshot %s" % i.name
+                ret = pm_remove_snapshot(i.snapshot)
+                #it removes just one snapshot and exits
+                if not ret:
+                    return False
+    else:
+        print "Nothing to remove."
+    return True
 
 
 def pm_list_snapshots(target_vm):
-    snapshot = target_vm.snapshot #  snapshot.while tree[0].childSnapshotList is not None:
+    snapshot = target_vm.snapshot  # snapshot.while tree[0].childSnapshotList is not None:
     l = []
     tree = snapshot.rootSnapshotList
     l.extend(tree)
@@ -373,6 +454,29 @@ def print_all_vms(si):
             entity_stack.append(entity.vmFolder)
     names.sort()
     print names
+
+
+# DISCLAIMER: it counts all the VSPHERE VM, also Rite, Puppet, TESTSPOT, vcenter, and all Puppet VMS
+def print_powered_on_vms(si):
+    # search the root inventory (follows all folders of all objects)
+    vms = []
+    entity_stack = si.content.rootFolder.childEntity
+    while entity_stack:
+        entity = entity_stack.pop()
+        if isinstance(entity, vim.VirtualMachine):
+            print "Found " + entity.name
+
+            if entity.runtime.powerState == vim.VirtualMachinePowerState.poweredOn:
+                print "VM: " + entity.name + "powered ON on host: %s" % entity.runtime.host.QueryHostConnectionInfo().serverIp
+                vms.append(entity)
+            else:
+                print "VM: " + entity.name + "powered OFF"
+        elif hasattr(entity, 'childEntity'):
+            entity_stack.extend(entity.childEntity)
+        elif isinstance(entity, vim.Datacenter):
+            entity_stack.append(entity.vmFolder)
+    print "Number of powered on vms: %s" % len(vms)
+    return vms
 
 
 def stress_test(si):
@@ -436,6 +540,13 @@ def script():
             sys.exit(-1)
         get_file(si, target_vm=myvm)
 
+    elif action == "pm_make_directory":
+        myvm = get_vm_from_name(vm_name, si)
+        if not isinstance(myvm, vim.VirtualMachine):
+            print "could not find a virtual machine with the name %s (it's not a VM Instance)" % vm_name
+            sys.exit(-1)
+        pm_make_directory(si, myvm)
+
     elif action == "execute":
         myvm = get_vm_from_name(vm_name, si)
         if not isinstance(myvm, vim.VirtualMachine):
@@ -484,8 +595,31 @@ def script():
             sys.exit(-1)
         pm_create_snapshot(myvm, "auto_test_yeah")
 
+    elif action == "pm_clean_snapshots":
+        myvm = get_vm_from_name(vm_name, si)
+        if not isinstance(myvm, vim.VirtualMachine):
+            print "could not find a virtual machine with the name %s (it's not a VM Instance)" % vm_name
+            sys.exit(-1)
+        pm_clean_snapshots(myvm)
+
+    elif action == "pm_refresh_snapshots":
+        myvm = get_vm_from_name(vm_name, si)
+        if not isinstance(myvm, vim.VirtualMachine):
+            print "could not find a virtual machine with the name %s (it's not a VM Instance)" % vm_name
+            sys.exit(-1)
+        pm_refresh_snapshots(myvm)
+
+    elif action == "pm_revert_named_snapshot":
+        myvm = get_vm_from_name(vm_name, si)
+        if not isinstance(myvm, vim.VirtualMachine):
+            print "could not find a virtual machine with the name %s (it's not a VM Instance)" % vm_name
+            sys.exit(-1)
+        pm_revert_named_snapshot(myvm, "auto_20150609-1247")
+
+    elif action == "print_powered_on_vms":
+        print_powered_on_vms(si)
+
     sys.exit(0)
 
 if __name__ == "__main__":
     script()
-

@@ -183,7 +183,7 @@ class MailSender(object):
                         box-shadow: 3px 3px 2px #888888;
                         padding: 4px;
 
-                        max-width: 680px;
+                        max-width: 700px;
                         }
             div.cleancontainer {
                         border: 1px solid #707070;
@@ -528,8 +528,8 @@ class MailSender(object):
         table_text += '<img class="icon" src="cid:blacklist">= In Blacklist (No test is evaluated)<br>'
         table_text += '<img class="icon" src="cid:save">= Saved error or saved fail (for Elite or Soldier)<br><hr>'
         table_text += 'Available space on Rite mountpoint "%s" is: %.2f%%' % (mountpoint, percent_available)
-        if percent_available < 10:
-            table_text += '<b> WARNING LOW DISK FREE ON RITE!</b><br>'
+        if percent_available < 20:
+            table_text += '<b> WARNING LOW DISK FREE ON RITE!</b> (Check /tmp/tmp*)<br>'
         table_text += '</div>'
 
         table_text += "</div>"
@@ -683,6 +683,11 @@ class MailSender(object):
         #adds virtual machine name
         vm_txt += "<sup>" + self.get_vm_name(vm) + "</sup>"
 
+        #writes total time for vm (only in header)
+        if icons:
+            if self.times_by_vm[vm]:
+                vm_txt += "<sup>[" + str(self.times_by_vm[vm]) + "]</sup>"
+
         #adds result icon(s)
         if vm in self.stats_by_vm and icons:
             #errors
@@ -697,11 +702,6 @@ class MailSender(object):
             #if saved error
             if self.stats_by_vm[vm] in [self.ResultTypes.KNOWN_ERRORS, self.ResultTypes.KNOWN_ERRORS_BUT_PASSED, self.ResultTypes.RITE_KNOWN_FAILS]:
                 vm_txt += '<img class="icon" src="cid:save">'
-
-        #writes total time for vm (only in header)
-        if icons:
-            if self.times_by_vm[vm]:
-                vm_txt += "[" + str(self.times_by_vm[vm]) + "]"
 
         if vm in VM_ALL.vm_first_rite:
             return '<div style="color: red;font-weight: bold; display:inline;">%s</div>' % vm_txt

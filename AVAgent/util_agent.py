@@ -50,7 +50,7 @@ MUSHYBAR (xps viewer o other win window)
 windows_ignore_windows = ['Shell_TrayWnd', 'Button', 'ConsoleWindowClass', 'Progman',
                    'CabinetWClass', 'CalcFrame', 'Notepad', 'Photo_Lightweight_Viewer', '#32770', 'tooltips_class32', 'NativeHWNDHost', 'NSISUACIPC',
                    'SysShadow', 'DV2ControlHost', 'Desktop User Picture', 'SysDragImage', 'NotifyIconOverflowWindow', 'ClockTooltipWindow',
-                   'SysFader', '#32768', 'VANUITooltip', 'InternetExplorer_Hidden', 'TaskListOverlayWnd', 'TaskListThumbnailWnd', 'IEFrame',
+                   'SysFader', '#32768', 'VANUITooltip', 'Internet Explorer_Hidden', 'Internet_Explorer_Hidden', 'TaskListOverlayWnd', 'TaskListThumbnailWnd', 'IEFrame',
                    'Alternate Owner', 'CiceroUIWndFrame', 'Explorer_Hidden', 'EdgeUiInputTopWndClass', 'TfrmStartMenu', 'BaseBar', 'MUSHYBAR']
 
 #ok direct method WIN: Button, Cabinet,ConsoleWindowClass, progman
@@ -236,8 +236,8 @@ def crop_window(logging, basedir_crop, timestamp, learning=False, image_hashes=N
                                 if save_if_new(cropped_pilimg, filename, filenames, image_hashes):
                                     logging.debug("Saved with clipboard")
                             else:
-                                if got_valid_box:
-                                    logging.debug("Skipping because probably the windows was closed.")
+                                if got_valid_box or win_class == 'InternetExplorer_Hidden':
+                                    logging.debug("Skipping because probably the windows was closed or class is InternetExplorer_Hidden.")
                                 else:
                                     if save_if_new(pilimg, filename + "_FULL_invalid_box.png", filenames, image_hashes):
                                         logging.debug("Saved with clipboard but no crop (invalid box)")

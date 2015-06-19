@@ -25,13 +25,15 @@ def execute(vm, protocol, args):
     # Tries the first time to check infection
     clean = check_all(vm)
     if not clean:
+        sleep(30)
         for i in range(4):
             relog(vm)
             #aspetto 6 minuti, 1 per il relog e 5 per la sync
-            sleep(360)
+            sleep(310)
             #trigger mouse
             trigger_mouse(vm)
             #recheck
+            sleep(30)
             clean = check_all(vm)
             if clean:
                 break
@@ -67,7 +69,7 @@ def check_all(vm):
 
 
 def trigger_mouse(vm):
-    vm_manager.execute(vm, "executeCmd", "c:\\AVTest\\AVAgent\\assets\\keyinject.exe", [], 1, True, True)
+    vm_manager.execute(vm, "executeCmd", "c:\\AVTest\\AVAgent\\assets\\keyinject.exe", [], 5, True, True)
 
 
 def check_elite(vm):
@@ -89,7 +91,7 @@ def check_elite(vm):
     if not ret:
         logging.debug("Cannot execute REG command, I assume vm is infected - vm = %s" % vm)
         return False
-    # sleep(15)
+    sleep(2)
 
     dst_dir = logger.logdir
     try:
@@ -106,7 +108,7 @@ def check_elite(vm):
         #vm_manager.execute(vm, "copyFileFromGuest", src, dst_file)
         vm_manager.execute(vm, "pm_get_file", src, dst_file)
 
-        # sleep(10)
+        sleep(2)
 
         with open(dst_file, "r") as f:
             reg_allfile = f.read().decode("utf-16le")
@@ -141,10 +143,11 @@ def check_scout_soldier(vm):
 
         #checks for scout/soldier
         for b in names:
-            if b in out:
-                logging.info("%s, found %s in %s" % (vm, b, d))
-                clean = False
-                break
+            for o in out:
+                if b in o:
+                    logging.info("%s, found %s in %s" % (vm, b, d))
+                    clean = False
+                    break
         #checks for tmp files left behind
         for o in out:
             if re.match(copy_pattern, o.strip()):
@@ -157,5 +160,6 @@ def check_scout_soldier(vm):
 
 def relog(vm):
     cmd = "/Windows/System32/logoff.exe"
-    ret = vm_manager.execute(vm, "executeCmd", cmd, [], 10, True, True)
+    ret = vm_manager.execute(vm, "executeCmd", cmd, [], 20, True, True)
     logging.debug("logoff ret: %s" % ret)
+    sleep(2)
