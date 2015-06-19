@@ -97,6 +97,19 @@ class CommandsRCS:
         assert not self.instances
         return self.instances
 
+    def instance_close(self):
+        instances = self.conn.instances_by_factory(self.device_id, self.factory)
+        if not instances:
+            print "no previous instances for device %s and factory %s" % (self.device_id, self.factory)
+        assert len(instances) <= 1, "too many instances: %s" % instances ;
+        if len(instances) == 1:
+            i = instances[0]
+            self.conn.instance_close(i["_id"])
+            print "instance closed"
+        time.sleep(10)
+        self.instances = self.conn.instances_by_factory(self.device_id, self.factory)
+        print self.instances
+        return self.instances
 
     """
         build apk on given server with given configuration
@@ -195,6 +208,17 @@ class CommandsRCS:
             else:
                 print "got Started: %s/%s" % (len(info_evidences), starts)
                 self.last_start = info_evidences[-1][1]
+
+    def check_persistance(self):
+
+        infos = self.conn.infos(self.target_id, self.instance_id)
+        info_evidences = [(e['data']['content'], e['da']) for e in infos if 'Persistence installed' in e['data']['content']]
+
+        if info_evidences:
+            print info_evidences
+            return True
+        else:
+            return False
 
     def check_root(self, starts = 1):
         # check root
