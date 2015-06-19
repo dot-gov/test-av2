@@ -2,7 +2,7 @@ import functional_common
 import time
 
 
-class AllTestSpecific(functional_common.Check):
+class AllTestSpecific(functional_common.TestFunctionalBase):
 
     def __init__(self, test_list):
         self.test_list = test_list

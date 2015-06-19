@@ -10,7 +10,7 @@ import sys
 from abc import ABCMeta
 from abc import abstractmethod
 
-class Check:
+class SpecificTestFunctionalBase:
     __metaclass__ = ABCMeta
 
     service = 'com.android.dvci'
@@ -38,6 +38,13 @@ class Check:
 
     def get_config(self):
         return open('assets/config_mobile_%s.json' % self.get_name()).read()
+
+    def get_params(self):
+        params = {u'binary': {u'admin': self.want_admin(), u'demo': self.want_demo(), u'persist': self.want_persist()},
+                  u'melt': {u'appname': u'autotest'},
+                  u'package': {u'type': u'installation'},
+                  u'platform': u'android'}
+        return params
 
     def check_install(self, command_dev, results):
         still_infected = False

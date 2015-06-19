@@ -3,7 +3,7 @@ import sys
 import time
 
 
-class PersistenceTestSpecific(functional_common.Check):
+class PersistenceTestSpecific(functional_common.TestFunctionalBase):
     def get_name(self):
         return "persistence"
 

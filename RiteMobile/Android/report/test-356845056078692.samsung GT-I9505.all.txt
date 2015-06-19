@@ -1,59 +1,45 @@
 Installation
-	time: 2015-03-04 11:04:56.843189
+	time: 2015-05-28 11:12:21.473652
 	installed: False
 	executed: True
-	instance_name: AutomaticTest (1) samsung GT-I9505
+	instance_name: 
 	info: 
-	uptime_first: up time: 18:44:34, idle time: 16:57:20, sleep time: 00:28:24
-
-	uptime_last: up time: 18:46:59, idle time: 16:59:09, sleep time: 00:28:24
-
-	error: 
-	exception: {}
+	uptime_first: 
+	uptime_last: 
+	error: HTTP Error 403: Forbidden
+	exception: 
 Device
 	device: samsung GT-I9505
 	id: 356845056078692
 	release: 4.4.2
 	build_date: 2013-05-01T09:11:19
 Root
-	root: No
-	root_first: False
-	su: /system/bin/sh: su: not found
-
+	root: 
+	root_first: 
+	su: 
 	selinux: 1
-	format_resist: No root
+	format_resist: 
 Evidences
 	evidences_first: 
-		application: 1
-		camera: 7
-		device: 2
-
 	evidences_last: 
-		application: 11
-		camera: 13
-		device: 2
-		mic: 1
-
 Expected
 	call_supported: 
-	expected: []
+	expected: 
 Uninstall
-	uninstall: True
-	running: False
+	uninstall: 
+	running: 
 	files_remained: 
-	packages_remained: 
+	packages_remained: False
 Result
 	test_name: all
 	result: False
 	result_info: 
 
 		persistence: False
-			FAILED: NO ROOT
-
+'have_root'
 		photo: False
-
-		audio: True
-
+'evidence_types_last'
+		audio: False
+'evidence_programs_last'
 		chat: False
-			FAILED: no ROOT
-
+'have_root'

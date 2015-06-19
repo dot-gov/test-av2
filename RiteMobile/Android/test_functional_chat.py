@@ -5,7 +5,7 @@ import sys
 import time
 
 
-class ChatTestSpecific(functional_common.Check):
+class ChatTestSpecific(functional_common.TestFunctionalBase):
 
     def get_name(self):
         return "chat"

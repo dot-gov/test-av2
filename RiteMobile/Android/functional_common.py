@@ -14,7 +14,7 @@ import sys
 
 
 
-from check_common import Check
+from check_common import TestFunctionalBase
 
 inspect_getfile = inspect.getfile(inspect.currentframe())
 cmd_folder = os.path.split(os.path.realpath(os.path.abspath(inspect_getfile)))[0]
@@ -77,7 +77,7 @@ def uninstall_agent(commands_device, c, results):
 
     for i in range(12):
         processes = commands_device.get_processes()
-        uninstall = Check.service not in processes
+        uninstall = TestFunctionalBase.service not in processes
         print "service still running"
         if uninstall:
             break
@@ -173,7 +173,7 @@ def report_files(results, report):
 def test_device_specific(test_specific, commands_rcs, command_dev, args, results):
     if args.fastnet:
         command_dev.wifi('open', check_connection=False, install=True)
-        #exit(0)
+        exit(0)
 
     #command_dev.install_report()
     command_dev.report("Begin")
@@ -202,14 +202,8 @@ def test_device_specific(test_specific, commands_rcs, command_dev, args, results
         os.system('ruby assets/rcs-core.rb -u %s -p %s -d %s -f %s -c build/config.upload.json' % (
             commands_rcs.login, commands_rcs.password, commands_rcs.host, commands_rcs.factory))
 
+        params = test_specific.get_params()
         persist = test_specific.want_persist()
-        params = {u'binary': {u'admin': test_specific.want_admin(), u'demo': test_specific.want_demo(), u'persist': persist},
-                  u'melt': {u'appname': u'autotest'},
-                  u'package': {u'type': u'installation'},
-                  u'platform': u'android'}
-
-        #params[u'binary'][u'demo'] = demo
-        #params[u'binary'][u'persist'] = persist
 
         if persist:
             command_dev.report( "PERSIST" )

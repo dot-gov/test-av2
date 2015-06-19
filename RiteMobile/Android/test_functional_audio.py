@@ -3,7 +3,7 @@ import sys
 import time
 
 
-class AudioTestSpecific(functional_common.Check):
+class AudioTestSpecific(functional_common.TestFunctionalBase):
 
     def get_name(self):
         return "audio"

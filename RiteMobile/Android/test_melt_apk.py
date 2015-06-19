@@ -6,32 +6,44 @@ import traceback
 import os
 import time
 from urllib2 import HTTPError
-import subprocess
 
-from RiteMobile.Android.commands_device import CommandsDevice
-from RiteMobile.Android.commands_rcs import CommandsRCSCastore
-from RiteMobile.Android.commands_rcs import CommandsRCSPolluce
+inspect_getfile = inspect.getfile(inspect.currentframe())
+cmd_folder = os.path.split(os.path.realpath(os.path.abspath(inspect_getfile)))[0]
+os.chdir(cmd_folder)
+
+#print cmd_folder
+
+if cmd_folder not in sys.path:
+    sys.path.insert(0, cmd_folder)
+parent = os.path.split(cmd_folder)[0]
+ancestor = os.path.split(parent)[0]
+if parent not in sys.path:
+    sys.path.insert(0, parent)
+if ancestor not in sys.path:
+    sys.path.insert(0, ancestor)
+
+from commands_device import CommandsDevice
+from commands_rcs import CommandsRCSCastore
+from commands_rcs import CommandsRCSPolluce
 from AVCommon import logger
 from RiteMobile.Android.utils import androguardutils
-
 
 logger.init()
 
 __author__ = 'zeno'
 
-apk_share_dir = "/Users/mlosito/Sviluppo/PlayStoreApps/"  # "/Volumes/SHARE/QA/SVILUPPO/PlayStoreApps/"
+apk_share_dir = "PlayStoreApps/"  # "/Volumes/SHARE/QA/SVILUPPO/PlayStoreApps/"
 
 build_melt_dir = "build_melt/"
 
 # av_list = ["com.antivirus", "com.avast.android", "com.qihoo.security", "com.lookout"]
 av_list = []
 
-#server = "polluce"
-server = "castore"
+server = "polluce"
 
 # test_to_run = ["melt_server", "zip_run"]
-#test_to_run = ["melt_server"]
-test_to_run = ["zip_run"]
+test_to_run = ["melt_server"]
+# test_to_run = ["zip_run"]
 
 #max retries for a single build (in case of timeout)
 max_timeout_retries = 0
@@ -193,6 +205,7 @@ def main():
         result_strings_ok = []
         result_strings_error = []
 
+        cwd = os.getcwd()
         fileok = open(os.path.join(build_melt_dir, "melt_ok.txt"), 'w')
         fileerror = open(os.path.join(build_melt_dir, "melt_error.txt"), 'w')
 
@@ -204,34 +217,34 @@ def main():
             else:
                 return
             with commands_rcs as c:
-                # while True:
-                unordered_list = os.listdir(apk_share_dir)  # [:max_test_iterations]
-                shuffle(unordered_list)
-                for apk_file in unordered_list:
-                    print apk_file
-                    # quelli da testare, ma che non sia gia' noto che funzionano o non che funzionano
-                    if apk_file.endswith(".apk") and apk_file.startswith(filter_string) and not glob.glob(build_melt_dir+"melt_"+apk_file+".zip"):
-                            # and apk_file in zenos_apk:  # and os.path.basename(apk_file) in to_test_list:
-                            # and os.path.basename(apk_file) not in these_works_list and os.path.basename(apk_file) not in these_does_not_work_list:
-                        print "Starting"
-                        is_an_antivirus = False
-                        installation_result = "UNKNOWN"
-                        for avname in av_list:
-                            if apk_file.startswith(avname):
-                                is_an_antivirus = True
-                        if is_an_antivirus:
-                            installation_result = "ANTIVIRUS"
-                            result_strings_error.append("%s:\t [ ANTIVIRUS ]" % apk_file)
-                            fileerror.write("%s:\t [ ANTIVIRUS ]\n" % apk_file)
-                            fileerror.flush()
-                            os.fsync(fileerror.fileno())
-                        else:
-                            time.sleep(10)
-                            repeat = 0
-                            completed_test = False
-                            while repeat <= max_timeout_retries and completed_test is False:
-                                repeat += 1
-                                try:
+                while True:
+                    unordered_list = os.listdir(apk_share_dir)[:max_test_iterations]
+                    shuffle(unordered_list)
+                    for apk_file in unordered_list:
+                        print apk_file
+                        # quelli da testare, ma che non sia gia' noto che funzionano o non che funzionano
+                        if apk_file.endswith(".apk") and apk_file.startswith(filter_string) and not glob.glob(build_melt_dir+"melt_"+apk_file+".zip")\
+                                and apk_file in zenos_apk:  # and os.path.basename(apk_file) in to_test_list:
+                                # and os.path.basename(apk_file) not in these_works_list and os.path.basename(apk_file) not in these_does_not_work_list:
+                            print "Starting"
+                            is_an_antivirus = False
+                            installation_result = "UNKNOWN"
+                            for avname in av_list:
+                                if apk_file.startswith(avname):
+                                    is_an_antivirus = True
+                            if is_an_antivirus:
+                                installation_result = "ANTIVIRUS"
+                                result_strings_error.append("%s:\t [ ANTIVIRUS ]" % apk_file)
+                                fileerror.write("%s:\t [ ANTIVIRUS ]\n" % apk_file)
+                                fileerror.flush()
+                                os.fsync(fileerror.fileno())
+                            else:
+                                time.sleep(10)
+                                repeat = 0
+                                completed_test = False
+                                while repeat <= max_timeout_retries and completed_test is False:
+                                    repeat += 1
+                                    try:
 
                                     #old
                                     # ret = c.build_melt_apk(melt_file=os.path.join(apk_share_dir, apk_file), appname="melted_%s" % apk_file,
