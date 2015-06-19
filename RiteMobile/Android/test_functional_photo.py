@@ -1,10 +1,10 @@
 import functional_common
 import time
-
+from specific_test_functional_base import SpecificTestFunctionalBase
 from RiteMobile.Android.commands_rcs import CommandsRCSCastore as CommandsRCS
 
 
-class PhotoTestSpecific(functional_common.TestFunctionalBase):
+class PhotoTestSpecific(SpecificTestFunctionalBase):
 
     def test_device(self, args, command_dev, c, results):
         print "PHOTO"

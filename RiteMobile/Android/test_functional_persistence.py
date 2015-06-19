@@ -1,9 +1,9 @@
 import functional_common
 import sys
 import time
+from specific_test_functional_base import SpecificTestFunctionalBase
 
-
-class PersistenceTestSpecific(functional_common.TestFunctionalBase):
+class PersistenceTestSpecific(SpecificTestFunctionalBase):
     def get_name(self):
         return "persistence"
 

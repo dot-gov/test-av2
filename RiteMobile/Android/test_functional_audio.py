@@ -1,9 +1,9 @@
 import functional_common
 import sys
 import time
+from specific_test_functional_base import SpecificTestFunctionalBase
 
-
-class AudioTestSpecific(functional_common.TestFunctionalBase):
+class AudioTestSpecific(SpecificTestFunctionalBase):
 
     def get_name(self):
         return "audio"

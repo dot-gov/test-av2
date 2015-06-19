@@ -2,8 +2,8 @@ import functional_common
 import sys
 import time
 
-
-class RootTestSpecific(functional_common.TestFunctionalBase):
+from specific_test_functional_base import SpecificTestFunctionalBase
+class RootTestSpecific(SpecificTestFunctionalBase):
     def get_name(self):
         return "root"
 
