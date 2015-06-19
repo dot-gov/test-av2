@@ -758,7 +758,7 @@ class AgentBuild:
             # self.uninstall(instance_id)
             sleep(60)
             if upgraded:
-                add_result("+ SUCCESS %s UNINSTALLED" % level.upper())
+                add_result("+ SUCCESS %s UPGRADED, closing" % level.upper())
         else:
             output = self._list_processes()
             logging.debug(output)

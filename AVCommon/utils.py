@@ -11,7 +11,6 @@ from AVCommon.logger import logging
 from AVCommon import config
 
 
-
 def unzip(filename, fdir, logging_function):
     zfile = zipfile.ZipFile(filename)
     names = []
@@ -145,7 +144,7 @@ def pushzip(vm, args):
         # logging.debug("ret: %s" % ret)
         # #sleep(3 * tr)
         # sleep(5 * tr + file_number)
-
+        sleep(2)
         #if there are retries I check the existance of files and if are all present, I terminate the iteration
         if retry > 1:
             logging.debug("Checking if the files were been copyed and extracted correctly. Files: %s", all_src)
@@ -210,6 +209,7 @@ def list_all_files_in_dirs(vm, vm_manager, dirs):
             logging.debug("Dir: %s -> %s" % (d, list_out))
             for filename in list_out:  # .split("\n")[1:-1]:
                 files.append(d + "\\" + filename)
+        sleep(2)
 
     logging.debug("All files listed: %s" % files)
     return files

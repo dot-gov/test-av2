@@ -40,7 +40,7 @@ def execute(vm, protocol, args):
                 logging.debug("%s: try to reboot" % vm)
                 ret = vm_manager.execute(vm, "reboot")
             else:
-                sleep(10)
+                sleep(20)
 
 
     return False, "Cannot relogin"

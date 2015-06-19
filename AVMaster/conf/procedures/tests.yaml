@@ -844,3 +844,43 @@ TEST_GET_LOGS:
     - VM_ALL
     - ON_ERROR: SKIP
     - CALL: VM_GET_LOG
+
+
+TEST_SLEEP_INCREMENTAL:
+    - VM_ALL
+    - ON_ERROR: SKIP
+    - SLEEP_INCREMENTAL: 60
+    - START_VM
+
+
+TEST_KEYS:
+    - PRESS_KEYS: [a, b, c]
+
+#verrra' lanciato solo sulle 7 ed 8 che sono tutte a 64bit
+TEST_WIN10_64:
+    - VM_ALL
+    - ON_ERROR: SKIP
+    - SLEEP_INCREMENTAL: 60
+    - CALL: INIT_DISPATCH
+    - PUSH: [ AVAgent/assets/POC_HOOKING/64bit/ExeLoader64.exe, AVAgent/assets/POC_HOOKING/64bit/ExeLoader64.dll ]
+    - EXECUTE_VM: [ notepad.exe, [], 999, True, True  ]
+    - EXECUTE_VM: [ AVAgent/assets/POC_HOOKING/64bit/ExeLoader64.exe, [], 40, True, True  ]
+    - PRESS_KEYS: [a, b, c]
+    - SLEEP: 5
+    - PULL:
+        - ['KBD_NOTEPAD.txt']
+        - c:\\Users\\avtest\\AppData\\Local\\Temp
+        - logs
+    - CALL: END_DISPATCH
+
+
+TEST_CHECK_INFECTION:
+    - VM_ALL
+    - ON_ERROR: STOP
+    - CHECK_INFECTION
+
+
+TEST_UNINSTALL:
+    - VM_ALL
+    - ON_ERROR: STOP
+    - UNINSTALL

@@ -151,12 +151,12 @@ def execute(vm, protocol, inst_args):
             failed = False
             reason = ""
             break
-
     if failed:
         logging.debug("Cannot copy %s: ERROR!" % filename)
 
     #removed with new procedures
     # time.sleep(15)
+    time.sleep(2)
 
     os.remove(filename)
 
@@ -189,11 +189,14 @@ def execute(vm, protocol, inst_args):
 
     #removed with new procedures
     # time.sleep(15)
+    time.sleep(2)
 
     #check if start.bat exists on guest
     d = "C:/AVTest/AVAgent/"
     out = vm_manager.execute(vm, "pm_list_directory", d)
     logging.debug("pm_list_directory: %s" % out)
+
+    time.sleep(2)
 
     if not "start.bat" in out:
         failed = True
@@ -214,6 +217,7 @@ def execute(vm, protocol, inst_args):
         failed = True
         reason += " - Cannot delete running file"
         logging.debug("Cannot delete %s" % dirname)
+    time.sleep(2)
 
     # --------------delete logs-----------------
     logging.debug("Deleting 'logs' dir (if not present, will print 'Error: A file was not found' but is ok")
@@ -223,12 +227,13 @@ def execute(vm, protocol, inst_args):
         failed = True
         reason += " - Can't delete logs"
         logging.debug("Cannot delete %s" % dirname)
+    time.sleep(2)
 
     if failed or not zip_success:
-        #highly experimental!!!!
         #    report_send("+ END %s %s" % (action, success))
 
-        vm_manager.execute(vm, "revert_last_snapshot")
+        #highly experimental!!!!
+        # vm_manager.execute(vm, "revert_last_snapshot")
         return False, "Cannot Install Agent on VM. Reason = %s" % (reason + " - " + zip_reason)
     else:
         return True, "Agent installed on VM"

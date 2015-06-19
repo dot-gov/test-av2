@@ -1,4 +1,5 @@
 import socket
+from time import sleep
 
 __author__ = 'fabrizio'
 
@@ -13,6 +14,7 @@ from AVCommon import process
 from AVCommon.logger import logging
 from AVAgent import build
 
+
 def on_init(vm, args):
     """ server side """
     puppet =  socket.gethostname()
@@ -23,10 +25,11 @@ def on_init(vm, args):
 def on_answer(vm, success, answer):
     """ server side """
     from AVMaster import vm_manager
-
+    logging.debug("executing logout")
     cmd = "/windows/system32/logout.exe"
     arg = []
     ret = vm_manager.execute(vm, "executeCmd", cmd, arg, 40, True, True)
+    sleep(2)
 
 
 def execute_calc():
@@ -150,16 +153,21 @@ def execute(vm, args):
 
     # execute "calc.exe"
     execute_calc()
+    sleep(2)
     # build.close(instance)
     # if not no_clean_instances:
     close_instance(puppet, vm)
+    sleep(2)
     # kill process
     kill_rcs(vm)
+    sleep(2)
     # delete startup
     delete_startup()
+    sleep(2)
     # add avagent.bat to startup
     #remove_agent_startup()
     # sleep 20
     delete_build()
+    sleep(2)
 
     return True, "UNINSTALLED"

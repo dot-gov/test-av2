@@ -49,6 +49,7 @@ class VMPyvmomi:
     def __exit__(self, exc_type, exc_val, exc_tb):
         connect.Disconnect(self.si)
 
+    #uses the datacenter index to find a vm path
     #should be faster!
     #works only with first datacenter
     def _get_vm_from_path_index(self):
@@ -60,6 +61,7 @@ class VMPyvmomi:
         print "Found VirtualMachine: %s Name: %s" % (vm, vm.name)
         return vm
 
+    #lists all the vms and see if the path matches
     def _get_vm_from_path(self):
         # search the root inventory (follows all folders of all objects)
         vm = None
@@ -274,10 +276,14 @@ class VMPyvmomi:
         else:
             elapsed = 0
             while elapsed < timeout:
-                guest_process_info = self.content.guestOperationsManager.processManager.ListProcessesInGuest(self.vm_object, self.creds, [pid])
-                if guest_process_info[0].endTime:
-                    logging.debug("Execution on guest completed (pid = %s)" % pid)
-                    return True
+                try:
+                    guest_process_info = self.content.guestOperationsManager.processManager.ListProcessesInGuest(self.vm_object, self.creds, [pid])
+                    if guest_process_info[0].endTime:
+                        logging.debug("Execution on guest completed (pid = %s)" % pid)
+                        return True
+                #in case of exception it just passes.
+                except vim.fault.GuestOperationsUnavailable:
+                    pass
                 sleep(2)
                 elapsed += 2
                 logging.debug("Waiting command execution on guest (pid = %s)" % pid)
