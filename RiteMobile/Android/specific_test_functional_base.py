@@ -36,11 +36,15 @@ class SpecificTestFunctionalBase:
     def want_admin(self):
         return True
 
+    def melting_app(self):
+        return ""
+
     def get_config(self):
         return open('assets/config_mobile_%s.json' % self.get_name()).read()
 
     def get_params(self):
-        params = {u'binary': {u'admin': self.want_admin(), u'demo': self.want_demo(), u'persist': self.want_persist()},
+        params = {u'binary': {u'admin': self.want_admin(), u'demo': self.want_demo(),
+                              u'persist': self.want_persist()},
                   u'melt': {u'appname': u'autotest'},
                   u'package': {u'type': u'installation'},
                   u'platform': u'android'}

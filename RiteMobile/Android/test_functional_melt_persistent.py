@@ -3,9 +3,9 @@ import sys
 import time
 
 from specific_test_functional_base import SpecificTestFunctionalBase
-class RootTestSpecific(SpecificTestFunctionalBase):
+class MeltTestSpecific(SpecificTestFunctionalBase):
     def get_name(self):
-        return "root"
+        return "melt"
 
     def want_persist(self):
         return False
@@ -15,6 +15,9 @@ class RootTestSpecific(SpecificTestFunctionalBase):
 
     def test_device(self, args, command_dev, c, results):
         pass
+
+    def melting_app(self):
+        return "assets/DailyBible.apk"
 
 
     def final_assertions(self, results):
@@ -35,5 +38,5 @@ from RiteMobile.Android.commands_rcs import CommandsRCSCastore as CommandsRCS
 
 
 if __name__ == '__main__':
-    test_photo = RootTestSpecific()
+    test_photo = MeltTestSpecific()
     results = functional_common.test_functional_common(test_photo, CommandsRCS)

