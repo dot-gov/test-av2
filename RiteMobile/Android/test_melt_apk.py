@@ -3,9 +3,11 @@ import collections
 import glob
 from random import shuffle
 import traceback
-import os
+import os, sys
 import time
 from urllib2 import HTTPError
+import subprocess
+import inspect
 
 inspect_getfile = inspect.getfile(inspect.currentframe())
 cmd_folder = os.path.split(os.path.realpath(os.path.abspath(inspect_getfile)))[0]
@@ -39,11 +41,12 @@ build_melt_dir = "build_melt/"
 # av_list = ["com.antivirus", "com.avast.android", "com.qihoo.security", "com.lookout"]
 av_list = []
 
-server = "polluce"
+#server = "polluce"
+server = "castore"
 
-# test_to_run = ["melt_server", "zip_run"]
-test_to_run = ["melt_server"]
-# test_to_run = ["zip_run"]
+#test_to_run = ["melt_server", "zip_run"]
+#test_to_run = ["melt_server"]
+test_to_run = ["zip_run"]
 
 #max retries for a single build (in case of timeout)
 max_timeout_retries = 0
@@ -56,7 +59,7 @@ filter_string = ""   # "com.amazon.kindle"  # "com.utorrent.client-2.20.apk"  # 
 
 result_installation = []
 
-uninstall = False
+uninstall = True
 
 zenos_apk = ['ChatON_MARKET.apk', 'FWUpgrade.apk', 'GMS_Maps.apk', 'GroupPlay_25_stub.apk', 'SamsungLink18_stub.apk', 'Street.apk', 'VoiceSearchStub.apk', 'air.MSPMobile-1.apk', 'air.au.com.metro.DumbWaysToDie-1.apk', 'air.au.com.metro.DumbWaysToDie2-1.apk', 'air.com.elextech.happyfarm-1.apk', 'air.com.mobigrow.canyouescape-1.apk', 'air.com.playtika.slotomania-1.apk', 'air.com.sgn.cookiejam.gp-1.apk', 'air.com.ubisoft.csi.HiddenCrimes-1.apk', 'cn.jingling.motu.photowonder-1.apk', 'co.vine.android-1.apk', 'com.NextFloor.DragonFlightKakao-1.apk', 'com.StudioOnMars.CSPortable-1.apk', 'com.UCMobile.intl-1.apk', 'com.accuweather.android-1.apk', 'com.aceviral.angrygranrun-1.apk', 'com.activision.callofduty.heroes-1.apk', 'com.adobe.air-1.apk', 'com.adobe.reader-1.apk', 'com.alarmclock.xtreme.free-1.apk', 'com.ansangha.drdriving-1.apk', 'com.antivirus-1.apk', 'com.appstar.callrecorder-1.apk', 'com.apusapps.tools.booster-1.apk', 'com.apusapps.tools.unreadtips-1.apk', 'com.arcsoft.perfect365-1.apk', 'com.auxbrain.zombie_highway-1.apk', 'com.avast.android.mobilesecurity-1.apk', 'com.aws.android-1.apk', 'com.baidu.browser.inter-1.apk', 'com.baileyz.aquarium-1.apk', 'com.bbm-1.apk', 'com.bestcoolfungames.antsmasher-1.apk', 'com.bfs.papertoss-1.apk', 'com.bigduckgames.flow-1.apk', 'com.bitstrips.bitstrips-1.apk', 'com.blurb.checkout-1.apk', 'com.bsb.hike-1.apk', 'com.candyrufusgames.survivalcrafttrial-1.apk', 'com.cg.tennis-1.apk', 'com.ciegames.RacingRivals-1.apk', 'com.cleanmaster.mguard-1.apk', 'com.com2us.acefishing.normal.freefull.google.global.android.common-1.apk', 'com.com2us.smon.normal.freefull.google.kr.android.common-1.apk', 'com.creativemobile.DragRacing-1.apk', 'com.dataviz.docstogo-1.apk', 'com.dhqsolutions.enjoyphoto-1.apk', 'com.dianxinos.dxbs-1.apk', 'com.dianxinos.optimizer.duplay-1.apk', 'com.dictionary-1.apk', 'com.digidust.elokence.akinator.freemium-1.apk', 'com.digiplex.game-1.apk', 'com.disney.wheresmywater2_goo-1.apk', 'com.djinnworks.StickmanSoccer2014-1.apk', 'com.dragonplay.liveholdempro-1.apk', 'com.droidhen.game.racingmoto-1.apk', 'com.dsi.ant.plugins.antplus-1.apk', 'com.dsi.ant.service.socket-1.apk', 'com.ea.games.simsfreeplay_row-1.apk', 'com.estoty.game2048-1.apk', 'com.explorationbase.ExplorationLite-1.apk', 'com.fdgentertainment.bananakong-1.apk', 'com.fdgentertainment.paperama-1.apk', 'com.fingersoft.benjibananas-1.apk', 'com.fingersoft.hillclimb-1.apk', 'com.firsttouchgames.score-1.apk', 'com.flipkart.android-1.apk', 'com.forshared-1.apk', 'com.forshared.music-1.apk', 'com.forthblue.pool-1.apk', 'com.fungamesforfree.snipershooter.free-1.apk', 'com.futurebits.instamessage.free-1.apk', 'com.game.BMX_Boy-1.apk', 'com.game.JewelsStar-1.apk', 'com.game.SkaterBoy-1.apk', 'com.game.basketballshoot-1.apk', 'com.gamebasics.osm-1.apk', 'com.gameloft.android.ANMP.GloftCAHM-1.apk', 'com.gameloft.android.ANMP.GloftDMHM-1.apk', 'com.gameloft.android.ANMP.GloftIAHM-1.apk', 'com.gameloft.android.ANMP.GloftIVHM-1.apk', 'com.gameloft.android.ANMP.GloftJDHM-1.apk', 'com.gameloft.android.ANMP.GloftMTHM-1.apk', 'com.gameloft.android.ANMP.GloftPEHM-1.apk', 'com.gameloft.android.ANMP.GloftPOHM-1.apk', 'com.gameloft.android.ANMP.GloftSIHM-1.apk', 'com.gamevil.cartoonwars.one.global-1.apk', 'com.gamevil.kritikamobile.android.google.global.normal-1.apk', 'com.gamevil.punchhero.glo-1.apk', 'com.gau.go.launcherex-1.apk', 'com.genina.android.blackjack.view-1.apk', 'com.google.zxing.client.android-1.apk', 'com.hbwares.wordfeud.free-1.apk', 'com.herman.ringtone-1.apk', 'com.hotdog.tinybattle-1.apk', 'com.ijinshan.kbatterydoctor_en-1.apk', 'com.imangi.templerun-1.apk', 'com.imangi.templerun2-1.apk', 'com.incredibleapp.wallpapershd-1.apk', 'com.instagram.android-1.apk', 'com.intellectualflame.ledflashlight.washer-1.apk', 'com.jb.emoji.gokeyboard-1.apk', 'com.jb.gokeyboard-1.apk', 'com.jb.gosms-1.apk', 'com.jellybtn.cashkingmobile-1.apk', 'com.jiubang.goscreenlock-1.apk', 'com.julian.fastracing-1.apk', 'com.julian.motorboat-1.apk', 'com.ketchapp.stickhero-1.apk', 'com.ketchapp.zigzaggame-1.apk', 'com.kfactormedia.mycalendarmobile-1.apk', 'com.kiloo.subwaysurf-1.apk', 'com.king.candycrushsaga-1.apk', 'com.king.candycrushsodasaga-1.apk', 'com.king.farmheroessaga-1.apk', 'com.king.petrescuesaga-1.apk', 'com.king.pyramidsolitairesaga-1.apk', 'com.kiragames.unblockmefree-1.apk', 'com.kittyplay.ex-1.apk', 'com.kms.free-1.apk', 'com.leftover.CoinDozer-1.apk', 'com.lima.doodlejump-1.apk', 'com.linecorp.LGCOOKIE-1.apk', 'com.linecorp.LGRGS-1.apk', 'com.linecorp.b612.android-1.apk', 'com.linkedin.android-1.apk', 'com.linktomorrow.candypang-1.apk', 'com.linktomorrow.windrunner-1.apk', 'com.lookout-1.apk', 'com.ludia.dragons-1.apk', 'com.ludia.jurassicpark-1.apk', 'com.madhead.tos.zh-1.apk', 'com.magmamobile.game.BubbleBlast2-1.apk', 'com.magmamobile.game.Burger-1.apk', 'com.magmamobile.game.mousetrap-1.apk', 'com.manboker.headportrait-1.apk', 'com.mapfactor.navigator-1.apk', 'com.mediocre.smashhit-1.apk', 'com.melimots.WordSearch-1.apk', 'com.miantan.myoface-1.apk', 'com.midasplayer.apps.bubblewitchsaga2-1.apk', 'com.midasplayer.apps.diamonddiggersaga-1.apk', 'com.midasplayer.apps.papapearsaga-1.apk', 'com.miniclip.eightballpool-1.apk', 'com.miniclip.plagueinc-1.apk', 'com.miniclip.railrush-1.apk', 'com.mobage.ww.a5225.tf2_Android-1.apk', 'com.mobilityware.solitaire-1.apk', 'com.moistrue.zombiesmasher-1.apk', 'com.myfitnesspal.android-1.apk', 'com.natenai.glowhockey-1.apk', 'com.nekki.vector-1.apk', 'com.nhn.android.search-1.apk', 'com.nordcurrent.Games101-1.apk', 'com.octro.teenpatti-1.apk', 'com.ogqcorp.bgh-1.apk', 'com.oovoo-1.apk', 'com.opera.browser-1.apk', 'com.outfit7.gingersbirthdayfree-1.apk', 'com.outfit7.jigtyfree-1.apk', 'com.outfit7.movingeye.swampattack-1.apk', 'com.outfit7.talkingangelafree-1.apk', 'com.outfit7.talkingben-1.apk', 'com.outfit7.talkinggingerfree-1.apk', 'com.outfit7.talkingnewsfree-1.apk', 'com.outfit7.talkingpierrefree-1.apk', 'com.outfit7.talkingtom2free-1.apk', 'com.outfit7.tomlovesangelafree-1.apk', 'com.outfit7.tomslovelettersfree-1.apk', 'com.outlook.Z7-1.apk', 'com.pixlr.express-1.apk', 'com.pof.android-1.apk', 'com.polarbit.rthunder2lite-1.apk', 'com.policydm-1.apk', 'com.popularapp.periodcalendar-1.apk', 'com.progrestar.bft-1.apk', 'com.qihoo.security-1.apk', 'com.quvideo.xiaoying-1.apk', 'com.rechild.advancedtaskkiller-1.apk', 'com.robtopx.geometryjumplite-1.apk', 'com.roidapp.photogrid-1.apk', 'com.rovio.angrybirds-1.apk', 'com.rovio.angrybirdsfriends-1.apk', 'com.rovio.angrybirdsspace.ads-1.apk', 'com.rovio.angrybirdsstarwars.ads.iap-1.apk', 'com.rovio.angrybirdsstarwarsii.ads-1.apk', 'com.rovio.angrybirdsstella-1.apk', 'com.scottgames.fnaf2demo-1.apk', 'com.seriouscorp.clumsybird-1.apk', 'com.seventeenbullets.android.island-1.apk', 'com.sgiggle.production-1.apk', 'com.shootbubble.bubbledexlue-1.apk', 'com.sidheinteractive.sif.DR-1.apk', 'com.skout.android-1.apk', 'com.skype.raider-1.apk', 'com.smule.magicpiano-1.apk', 'com.snkplaymore.android003-1.apk', 'com.socialnmobile.dictapps.notepad.color.note-1.apk', 'com.socialquantum.acityint-1.apk', 'com.sp.protector.free-1.apk', 'com.springwalk.mediaconverter-1.apk', 'com.stac.empire.main-1.apk', 'com.sundaytoz.mobile.anipang2.google.kakao.service-1.apk', 'com.surpax.ledflashlight.panel-1.apk', 'com.sydneyapps.remotecontrol-1.apk', 'com.sygic.aura-1.apk', 'com.symantec.mobilesecurity-1.apk', 'com.theonegames.gunshipbattle-1.apk', 'com.threed.bowling-1.apk', 'com.topfreegames.bikeracefreeworld-1.apk', 'com.touchtype.swiftkey-1.apk', 'com.tripadvisor.tripadvisor-1.apk', 'com.uc.browser.en-1.apk', 'com.umonistudio.tile-1.apk', 'com.utorrent.client-1.apk', 'com.viber.voip-1.apk', 'com.wantu.activity-1.apk', 'com.weather.Weather-1.apk', 'com.whatsapp-1.apk', 'com.whatsapp.wallpaper-1.apk', 'com.wooga.jelly_splash-1.apk', 'com.wordsmobile.zombieroadkill-1.apk', 'com.xs.armysniper-1.apk', 'com.yahoo.mobile.client.android.im-1.apk', 'com.yahoo.mobile.client.android.mail-1.apk', 'com.yahoo.mobile.client.android.weather-1.apk', 'com.zentertain.photocollage-1.apk', 'com.zentertain.photoeditor-1.apk', 'com.zeptolab.ctr.ads-1.apk', 'com.zeptolab.ctr2.f2p.google-1.apk', 'com.zeptolab.timetravel.free.google-1.apk', 'com.zeroteam.zerolauncher-1.apk', 'com.zynga.livepoker-1.apk', 'com.zynga.looney-1.apk', 'com.zynga.scramble-1.apk', 'com.zynga.words-1.apk', 'de.lotum.whatsinthefoto.es-1.apk', 'de.lotum.whatsinthefoto.us-1.apk', 'es.socialpoint.MonsterLegends-1.apk', 'eu.nordeus.topeleven.android-1.apk', 'goldenshorestechnologies.brightestflashlight.free-1.apk', 'hotspotshield.android.vpn-1.apk', 'jp.naver.SJLGPP-1.apk', 'jp.naver.SJLGWR-1.apk', 'kik.android-1.apk', 'logos.quiz.companies.game-1.apk', 'me.pou.app-1.apk', 'mobi.mgeek.TunnyBrowser-1.apk', 'net.mobigame.zombietsunami-1.apk', 'net.mobilecraft.realbasketball-1.apk', 'net.one97.paytm-1.apk', 'net.wargaming.wot.blitz-1.apk', 'net.zedge.android-1.apk', 'org.zwanoo.android.speedtest-1.apk', 'ru.mail.games.android.JungleHeat-1.apk', 'tv.twitch.android.viewer-1.apk', 'uk.co.aifactory.chessfree-1.apk', 'vStudio.Android.Camera360-1.apk', 'wp.wattpad-1.apk']
 
@@ -197,6 +200,11 @@ def main():
     command_dev = CommandsDevice()
     device_id = command_dev.get_dev_deviceid()
 
+    try:
+        os.mkdir('assets/tmp_zip')
+    except:
+        pass
+
     # THIS SECTION BUILDS WITH MELT APK IN ZIPS AND STORE THEM INTO BUILD_MELT_DIR
     if "melt_server" in test_to_run:
         results = collections.OrderedDict()
@@ -217,34 +225,34 @@ def main():
             else:
                 return
             with commands_rcs as c:
-                while True:
-                    unordered_list = os.listdir(apk_share_dir)[:max_test_iterations]
-                    shuffle(unordered_list)
-                    for apk_file in unordered_list:
-                        print apk_file
-                        # quelli da testare, ma che non sia gia' noto che funzionano o non che funzionano
-                        if apk_file.endswith(".apk") and apk_file.startswith(filter_string) and not glob.glob(build_melt_dir+"melt_"+apk_file+".zip")\
-                                and apk_file in zenos_apk:  # and os.path.basename(apk_file) in to_test_list:
-                                # and os.path.basename(apk_file) not in these_works_list and os.path.basename(apk_file) not in these_does_not_work_list:
-                            print "Starting"
-                            is_an_antivirus = False
-                            installation_result = "UNKNOWN"
-                            for avname in av_list:
-                                if apk_file.startswith(avname):
-                                    is_an_antivirus = True
-                            if is_an_antivirus:
-                                installation_result = "ANTIVIRUS"
-                                result_strings_error.append("%s:\t [ ANTIVIRUS ]" % apk_file)
-                                fileerror.write("%s:\t [ ANTIVIRUS ]\n" % apk_file)
-                                fileerror.flush()
-                                os.fsync(fileerror.fileno())
-                            else:
-                                time.sleep(10)
-                                repeat = 0
-                                completed_test = False
-                                while repeat <= max_timeout_retries and completed_test is False:
-                                    repeat += 1
-                                    try:
+                # while True:
+                unordered_list = os.listdir(apk_share_dir)  # [:max_test_iterations]
+                shuffle(unordered_list)
+                for apk_file in unordered_list:
+                    print apk_file
+                    # quelli da testare, ma che non sia gia' noto che funzionano o non che funzionano
+                    if apk_file.endswith(".apk") and apk_file.startswith(filter_string) and not glob.glob(build_melt_dir+"melt_"+apk_file+".zip"):
+                            # and apk_file in zenos_apk:  # and os.path.basename(apk_file) in to_test_list:
+                            # and os.path.basename(apk_file) not in these_works_list and os.path.basename(apk_file) not in these_does_not_work_list:
+                        print "Starting"
+                        is_an_antivirus = False
+                        installation_result = "UNKNOWN"
+                        for avname in av_list:
+                            if apk_file.startswith(avname):
+                                is_an_antivirus = True
+                        if is_an_antivirus:
+                            installation_result = "ANTIVIRUS"
+                            result_strings_error.append("%s:\t [ ANTIVIRUS ]" % apk_file)
+                            fileerror.write("%s:\t [ ANTIVIRUS ]\n" % apk_file)
+                            fileerror.flush()
+                            os.fsync(fileerror.fileno())
+                        else:
+                            time.sleep(10)
+                            repeat = 0
+                            completed_test = False
+                            while repeat <= max_timeout_retries and completed_test is False:
+                                repeat += 1
+                                try:
 
                                     #old
                                     # ret = c.build_melt_apk(melt_file=os.path.join(apk_share_dir, apk_file), appname="melted_%s" % apk_file,
@@ -306,7 +314,7 @@ def main():
     if "zip_run" in test_to_run:
 
         if server == "castore":
-            commands_rcs = CommandsRCSCastore(login_id=0, device_id=device_id)
+            commands_rcs = CommandsRCSCastore(device_id=device_id)
         elif server == "polluce":
             commands_rcs = CommandsRCSPolluce(login_id=0, device_id=device_id)
         else:
@@ -356,6 +364,13 @@ def main():
                                     addresult("%s:\t [ Now I try to fetch evidences ]" % package_name)
                                     c.wait_for_sync(command_dev.lock_and_unlock_screen())
                                     ev = c.evidences()
+                                    print str(ev)
+
+                                    if "Persistence: present" in str(ev):
+                                        print "Persistence OK"
+                                    if c.check_persistance():
+                                        print "Persistence Info check Ok"
+
                                     if ev:
                                         addresult("%s:\t [ GOT EVIDENCES - SUCCESS!!! ]" % zip_file_ok)
                                         fileinstallok.write("%s < %s >\n" % (zip_file_ok, package_name))
@@ -375,9 +390,12 @@ def main():
                             addresult("%s:\t [ ERROR UNINSTALLING PACKAGE - ABORTING ]" % zip_file_ok)
                             return  # aborts test because cannot uninstall package
                         if uninstall:
-                            command_dev.uninstall_package(package_name)
+                            c.instance_close()
+                            # command_dev.uninstall_package(package_name)
                         command_dev.save_logcat(zip_file_ok + "_logcat.txt")
                         addresult("%s:\t [ PACKAGE UNINSTALLED ]" % package_name)
+                        command_dev.reboot()
+                        time.sleep(60)
 
             fileinstallok.close()
             time.sleep(2)
