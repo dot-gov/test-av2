@@ -4,6 +4,12 @@ import time
 from specific_test_functional_base import SpecificTestFunctionalBase
 
 class RootTestSpecific(SpecificTestFunctionalBase):
+    def get_info(self):
+        return """ Builds a silent and check that:
+         - Root is gained
+         - Everything is correctly uninstalled
+        """
+
     def get_name(self):
         return "root"
 

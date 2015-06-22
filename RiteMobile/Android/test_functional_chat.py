@@ -7,6 +7,12 @@ import time
 from specific_test_functional_base import SpecificTestFunctionalBase
 class ChatTestSpecific(SpecificTestFunctionalBase):
 
+    def get_info(self):
+        return """ Enables ADDRESSBOOK, CHAT and check that:
+         - Addressbook are saved
+         - Chats are saved
+        """
+
     def get_name(self):
         return "chat"
 
@@ -14,7 +20,7 @@ class ChatTestSpecific(SpecificTestFunctionalBase):
         chat = set()
         packs = []
         addressbook = []
-        addressbooks = ['skype', 'facebook', 'wechat', 'gmail']
+        addressbooks = ['skype', 'facebook', 'gmail']
         conversion={
             'tencent.mm':'facebook', 'line.android':'line'
         }

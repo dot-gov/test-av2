@@ -25,6 +25,12 @@ def say(text):
     os.system("say " + text)
 
 def install(command_dev, results, apk_names = None):
+    """ installs an agent, depending on the kind
+    :param command_dev:
+    :param results:
+    :param apk_names:
+    :return:
+    """
 
     if results['melt']:
         agent = "melt"

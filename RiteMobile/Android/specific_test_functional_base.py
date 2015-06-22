@@ -29,6 +29,10 @@ class SpecificTestFunctionalBase:
     def get_name(self):
         return "common"
 
+    @abstractmethod
+    def get_info(self):
+        return "need info"
+
     def want_demo(self):
         return True
 
@@ -132,3 +136,38 @@ class SpecificTestFunctionalBase:
         results['evidence_types' + timestamp] = stat.keys()
 
         results['uptime' + timestamp] = command_dev.get_uptime()
+
+    def check_format_resist(self, command_dev, c, results, delay=60):
+        print "check format_resist and reboot"
+        command_dev.press_key_home()
+
+        if not command_dev.execute_cmd("ls /system/app/StkDevice.apk"):
+            results["format_resist"] = "No";
+            return
+
+        if not c.check_persistance():
+            results["format_resist"] = "No Info";
+            return
+
+        command_dev.reboot()
+        time.sleep(delay)
+
+        c.wait_for_start(2)
+        if command_dev.isVersion(4, 0, -1) > 0:
+            command_dev.unlock_screen()
+        else:
+            command_dev.unlock()
+
+        ret = command_dev.execute_cmd("ls /system/app/StkDevice.apk")
+
+        inst = command_dev.execute_cmd("pm path com.android.dvci")
+        if "/data/app/" in inst:
+            if "No such file" in ret:
+                results["format_resist"] = "No";
+            else:
+                results["format_resist"] = "Reboot"
+        elif "/system/app/" in inst:
+            results["format_resist"] = "Yes";
+            print "got format_resist = Yes"
+        else:
+            results["format_resist"] = "Error";
