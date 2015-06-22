@@ -10,6 +10,8 @@ import sys
 from abc import ABCMeta
 from abc import abstractmethod
 
+import rite_mobile
+
 class SpecificTestFunctionalBase:
     __metaclass__ = ABCMeta
 

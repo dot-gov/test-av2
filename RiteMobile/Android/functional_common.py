@@ -12,26 +12,9 @@ import argparse
 import inspect
 import sys
 
+import rite_mobile
 
 from specific_test_functional_base import SpecificTestFunctionalBase
-
-inspect_getfile = inspect.getfile(inspect.currentframe())
-cmd_folder = os.path.split(os.path.realpath(os.path.abspath(inspect_getfile)))[0]
-os.chdir(cmd_folder)
-
-#print cmd_folder
-
-if cmd_folder not in sys.path:
-    sys.path.insert(0, cmd_folder)
-parent = os.path.split(cmd_folder)[0]
-ancestor = os.path.split(parent)[0]
-if parent not in sys.path:
-    sys.path.insert(0, parent)
-if ancestor not in sys.path:
-    sys.path.insert(0, ancestor)
-
-#print sys.path
-
 from RiteMobile.Android.commands_device import CommandsDevice
 
 
