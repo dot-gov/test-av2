@@ -1,9 +1,16 @@
 import functional_common
 import sys
 import time
+from specific_test_functional_base import SpecificTestFunctionalBase
 
+class AudioTestSpecific(SpecificTestFunctionalBase):
 
-class AudioTestSpecific(functional_common.TestFunctionalBase):
+    def get_info(self):
+        return """ Enables MIC, CALL and CAMERA and check that:
+         - SKYPE call are recorded
+         - MIC works
+         - CAMERA works
+        """
 
     def get_name(self):
         return "audio"

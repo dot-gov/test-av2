@@ -303,18 +303,23 @@ class CommandsDevice:
     #     apk_instance = apk_dataLoader.get_apk('agent')
     #     apk_instance.start_default_activity(self.device_serialno)
 
-    def execute_agent(self):
+    def execute_agent(self, melt = False):
         tried = 0
-        while not self.is_agent_running() and tried < 3:
-            package = apk_dataLoader.get_apk("agent").package_name
+        while not self.is_agent_running(melt) and tried < 3:
+            apk = "agent"
+            if melt:
+                apk = "melt"
+
+            package = apk_dataLoader.get_apk(apk).package_name
+            launch_activity = apk_dataLoader.get_apk(apk).apk_launch_activity
             adb.executeMonkey(package, self.device_serialno)
             time.sleep(1)
             if not self.is_agent_running():
-                adb.executeService(package, self.device_serialno)
+                adb.executeService(launch_activity,  self.device_serialno)
                 time.sleep(1)
             tried =+ 1
             time.sleep(1)
-        return self.is_agent_running()
+        return self.is_agent_running(melt)
 
     def execute_cmd(self, app):
         return adb.executeSU(app, False, self.device_serialno)
@@ -542,8 +547,11 @@ class CommandsDevice:
         cmd = " content insert --uri content://settings/system --bind name:s:accelerometer_rotation --bind value:i:%d" % s
         return adb.execute(cmd, self.device_serialno)
 
-    def is_agent_running(self):
-        return self.is_package_runnning(apk_dataLoader.get_apk("agent").package_name)
+    def is_agent_running(self, melt = False):
+        apk = "agent"
+        if melt:
+            apk = "melt"
+        return self.is_package_runnning(apk_dataLoader.get_apk(apk).package_name)
 
     def is_package_runnning(self, package_name):
         processes = adb.ps(self.device_serialno)

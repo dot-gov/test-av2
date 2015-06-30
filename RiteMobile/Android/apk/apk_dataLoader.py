@@ -19,15 +19,26 @@ apksConf['agent'] = {'type': 'apk',
                      'conf_gzip': '',
                      'launch_activity': 'com.android.dvci/.gui.ASG',
                      'apk_conf_backup_file': '',
-                     'package_name': 'com.android.dvci'}
+                     'package_name': 'com.android.dvci',
+                     'service': '/.ServiceMain'}
 
 apksConf['agent_v2'] = {'type': 'apk',
                      'apk_path': 'assets/autotest.v2.apk',
                      'conf_file': '',
                      'conf_gzip': '',
-                     'launch_activity': 'com.android.dvci/.gui.ASG',
+                     'launch_activity': 'com.android.dvci/.MainActivity',
                      'apk_conf_backup_file': '',
-                     'package_name': 'com.android.dvci'}
+                     'package_name': 'com.android.dvci',
+                     'service': '/.ServiceMain'}
+
+apksConf['melt'] = {'type': 'apk',
+                     'apk_path': 'assets/autotest.melt.apk',
+                     'conf_file': '',
+                     'conf_gzip': '',
+                     'launch_activity': 'joansoft.dailybible/com.android.dvci.ServiceMain',
+                     'apk_conf_backup_file': '',
+                     'package_name': 'joansoft.dailybible',
+                     'service': '/.DailyBible'}
 
 
 apksConf['eicar'] = {'type': 'apk',

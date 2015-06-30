@@ -374,13 +374,13 @@ def install(apk, device=None):
     return True
 
 
-def executeService(apk, device=None):
+def executeService(app, device=None):
     """ Execute melted apk on phone
     @param apk class name to run (eg. com.roxy.angrybirds)
     @return True/False
     shell am  startservice -n $CLASS_PACK/
     """
-    app = apk + '/.ServiceMain'
+
     if device:
         proc = subprocess.call([adb_path,
                                 "-s", device,

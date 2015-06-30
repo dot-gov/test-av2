@@ -1,9 +1,15 @@
 import functional_common
 import sys
 import time
+from specific_test_functional_base import SpecificTestFunctionalBase
 
+class RootTestSpecific(SpecificTestFunctionalBase):
+    def get_info(self):
+        return """ Builds a silent and check that:
+         - Root is gained
+         - Everything is correctly uninstalled
+        """
 
-class RootTestSpecific(functional_common.TestFunctionalBase):
     def get_name(self):
         return "root"
 
