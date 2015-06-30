@@ -27,11 +27,24 @@ from AVCommon.protocol import Protocol
 
 
 def execute(vm, protocol, args):
-    assert isinstance(args, int)
-        #"Sleep needs only an int as argument"
-        #logging.debug("    CS Sleep for %s" % args)
+    #fast startup is 20 seconds
+    fast_startup_time = 20
+
+    if isinstance(args, int):
+        time_per_vm = args
+        fast_startup_vm = 0
+    elif isinstance(args, list) and len(args) == 2:
+        time_per_vm, fast_startup_vm = args
+    else:
+        return False, "Wrong syntax for SLEEP_INCREMENTAL"
+
     assert protocol.id >= 0
-    sleep_time = args * protocol.id
+
+    if protocol.id < fast_startup_vm:
+        sleep_time = fast_startup_time * protocol.id
+    else:
+        sleep_time = fast_startup_time * fast_startup_vm + time_per_vm * (protocol.id - fast_startup_vm)
+
     sleep(int(sleep_time))
 
     logging.debug("%s  protocol.id: %s - sleep per vm: %s - sleep time: %s" % (vm, protocol.id, args, sleep_time))

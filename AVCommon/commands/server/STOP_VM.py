@@ -20,11 +20,11 @@ def execute(vm, protocol, args):
 
         logging.debug("%s, shutting down with timeout %s." % (vm,timeout))
 
-        vm_manager.execute(vm, "executeCmd","C:/Windows/System32/shutdown.exe",["/s", "/t", "30"], timeout, False, True)
-
+        # vm_manager.execute(vm, "executeCmd","C:/Windows/System32/shutdown.exe",["/s", "/t", "30"], timeout, False, True)
+        vm_manager.execute(vm, "pm_run_and_wait", "C:/Windows/System32/shutdown.exe", "/s /t 30", timeout)
         for i in range(0, timeout, tick):
             sleep(tick)
-            if vm_manager.execute(vm, "is_powered_off"):
+            if vm_manager.execute(vm, "pm_is_powered_off"):
                 return True, "Stopped VM"
 
 
@@ -34,7 +34,7 @@ def execute(vm, protocol, args):
     logging.debug("%s, shutdown returns: %s" % (vm, ret))
 
     for i in range(10):
-        if vm_manager.execute(vm, "is_powered_off"):
+        if vm_manager.execute(vm, "pm_is_powered_off"):
             return True, "Stopped VM"
         sleep(tick)
 

@@ -476,7 +476,8 @@ class DBReport(object):
         self.insert_summary_manual_error((u'VM_STATIC_SRV', u'adaware', u'POPUP', 65, 'POPUP', 0, u''), 'popup', False, "Adaware Static Android APK")
 
         #kis14 failed: "No Report"
-        self.insert_summary_manual_error((u'VM_ELITE_FAST_SRV', u'kis14', u'REPORT_KIND_INIT', 0, 'PASSED', 1, u'No Report'), 'None', False, "Kis14 at uninstall deletes python.")
+        #corrected whitelisting python
+        #self.insert_summary_manual_error((u'VM_ELITE_FAST_SRV', u'kis14', u'REPORT_KIND_INIT', 0, 'PASSED', 1, u'No Report'), 'None', False, "Kis14 at uninstall deletes python.")
         #self.insert_summary_manual_error((u'VM_STATIC_SRV', u'adaware', u'POPUP', 65, 'POPUP', True, "No Report"), 'popup', False, "Uninstalls python")
 
     def insert_summary_manual_error(self, txt_tuple, error_type, manual_optional, manual_comment):

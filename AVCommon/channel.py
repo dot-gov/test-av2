@@ -31,17 +31,17 @@ class Channel():
         if config.verbose:
             logging.debug("  CH write: channel: %s  message: %s" % (str(self.channel), str(message)))
 
-        while(True):
+        while True:
             try:
                 pipe = self.redis.pipeline()
-                l1,ret,l2 = pipe.llen(self.channel).rpush(self.channel, message).llen(self.channel).execute()
+                l1, ret, l2 = pipe.llen(self.channel).rpush(self.channel, message).llen(self.channel).execute()
                 if not ret:
                     logging.error("not ret: %s" % self.channel)
                     continue
                 if not l2>0:
                     logging.error("not l2>0 %s" % self.channel)
                     continue
-                if l1 and not l2 == l1 +1:
+                if l1 and not l2 == l1 + 1:
                     logging.error("l1 and not l2 == l1 +1: %s" % self.channel)
                     continue
                 break

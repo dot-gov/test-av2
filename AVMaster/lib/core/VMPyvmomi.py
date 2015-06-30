@@ -1,15 +1,13 @@
-import subprocess
-import os
-import ntpath
+from operator import attrgetter
+from datetime import datetime
 import requests
 import shutil
+from requests.auth import HTTPBasicAuth
 from requests.packages.urllib3.connection import ConnectionError
 from AVCommon.logger import logging
 
 from time import sleep
-from datetime import datetime
 from ConfigParser import ConfigParser
-from AVCommon import config
 
 from pyVim import connect
 from pyVmomi import vim
@@ -43,6 +41,8 @@ class VMPyvmomi:
         self.content = self.si.RetrieveContent()
         self.vm_object = self._get_vm_from_path_index()
         self.creds = vim.vm.guest.NamePasswordAuthentication(username=self.guestuser, password=self.guestpasswd)
+        #this sets the session id to 1
+        self.creds.interactiveSession = True
 
         return self
 
@@ -133,12 +133,21 @@ class VMPyvmomi:
     def pm_poweron(self):
         return self._poweron_vm()
 
+    def pm_is_powered_on(self):
+        return self.vm_object.runtime.powerState == vim.VirtualMachinePowerState.poweredOn
+
+    def pm_is_powered_off(self):
+        return self.vm_object.runtime.powerState == vim.VirtualMachinePowerState.poweredOff
+
     def pm_poweron_and_check(self):
         if self._poweron_vm():
             return self._wait_vmtools_vm()
         else:
             print "Error Powering Up (vm = %s)" % self.vm_object.vm_name
             return False
+
+    def pm_check_login(self):
+        return self._wait_vmtools_vm()
 
     def pm_poweroff(self):
         if self.vm_object.runtime.powerState == vim.VirtualMachinePowerState.poweredOn:
@@ -184,12 +193,55 @@ class VMPyvmomi:
             for f in files:
                 logging.debug("%s" % f.path)
                 filelist.append(f.path)
+        except vim.fault.GuestOperationsUnavailable:
+            logging.debug("ERROR: Cannot talk to vmtools on vm: %s" % self.vm_name)
+            return "ERROR: Cannot talk to vmtools on vm: %s" % self.vm_name
         except vim.fault.FileNotFound:
             logging.debug("ERROR: The directory %s does not exists on vm %s" % (d, self.vm_name))
             return []
         except IOError, e:
             return e
         return filelist
+
+    def pm_make_directory(self, args):
+        dir_name = args[0]
+
+        err = self._check_running()
+        if err:
+            return err
+
+        try:
+            print "Creating directory: %s" % dir_name
+            self.content.guestOperationsManager.fileManager.MakeDirectoryInGuest(self.vm_object, self.creds, dir_name, createParentDirectories=True)
+        except vim.fault.FileAlreadyExists:
+            logging.debug("Directory %s already exists, skipping creation" % dir_name)
+            return True
+        except:
+            logging.debug("Error creating directory %s" % dir_name)
+            return False
+        logging.debug("Directory %s created" % dir_name)
+        return True
+
+    def pm_delete_directory(self, args):
+        dir_name = args[0]
+        dir_name = dir_name.replace('/', '\\')
+        recursive = True
+
+        err = self._check_running()
+        if err:
+            return err
+
+        try:
+            print "Removing directory: %s, with recursion = %s" % (dir_name, recursive)
+            self.content.guestOperationsManager.fileManager.DeleteDirectoryInGuest(self.vm_object, self.creds, dir_name, recursive=recursive)
+        except vim.fault.FileNotFound:
+            logging.debug("Directory %s not found, skipping deletion" % dir_name)
+            return True
+        except:
+            logging.debug("Error deleting directory %s" % dir_name)
+            return False
+        logging.debug("Directory %s deleted" % dir_name)
+        return True
 
     def pm_put_file(self, args):
         filename = args[0]
@@ -263,14 +315,14 @@ class VMPyvmomi:
     # this works a little differently from executeCmd:
     # the command is executed in background and NO GUI IS SHOWN (even if you launch ie notepad.exe)
     # arguments (args[2]) is a string (not a list)
-    # this starts the command and WAITS UNTIL THE PID exists no more (or timeout occurs after 10 minutes)
-    #
-    # arguments are cmd and cmd_args, and you can specify a timeout as third argument
+    # this starts the command and WAITS UNTIL THE PID exists no more (or timeout occurs after TIMEOUT minutes)
+    # arguments are cmd and cmd_args, and you can specify a TIMEOUT ( default = 10 minutes) as third argument
     def pm_run_and_wait(self, args):
         timeout = 600  # 10 minutes
         pid = self.pm_run(args[0:2])
         if len(args) > 2:
             timeout = args[2]
+
         if not pid:
             return False
         else:
@@ -324,6 +376,33 @@ class VMPyvmomi:
             logging.debug("Error executing command %s - unknown reason" % cmd)
             return False
 
+    def pm_list_processes(self):
+        logging.debug("Listing processes for vm %s" % self.vm_name)
+
+        err = self._check_running()
+        if err:
+            return False
+
+        out = []
+
+        #gets process info for all the pids (no "pids" parameter (list) is specified)
+        guest_process_info = self.content.guestOperationsManager.processManager.ListProcessesInGuest(self.vm_object, self.creds)
+        for gpi in guest_process_info:
+            # print gpi
+               # name = 'slui.exe',
+               # pid = 3904L,
+               # owner = 'WIN7FSECURE\\avtest',
+               # cmdLine = 'slui.exe',
+               # startTime = 2015-06-19T12:43:58Z,
+               # endTime = <unset>,
+               # exitCode = <unset>
+            if not gpi.endTime:
+                out.append({"name": gpi.name, "pid": gpi.pid, "owner": gpi.owner, "cmd_line": gpi.cmdLine, "startTime": gpi.startTime})
+        # for o in out:
+        #     print o
+
+        return out
+
     def pm_ip_addresses(self):
         err = self._check_running()
         if err:
@@ -341,6 +420,25 @@ class VMPyvmomi:
             else:
                 return None
 
+    def _pm_list_snapshots(self):
+        snapshot = self.vm_object.snapshot  # snapshot.while tree[0].childSnapshotList is not None:
+        l = []
+        tree = snapshot.rootSnapshotList
+        l.extend(tree)
+
+        for i in l:
+            # print("Name: %s - Description: %s - Time: %s" % (i.name, i.description, i.createTime))
+            if i.childSnapshotList:
+                l.extend(i.childSnapshotList)
+        # print "UNSorted:"
+        # for y in l:
+        #     print("Name: %s - Description: %s - Time: %s" % (y.name, y.description, y.createTime))
+        s = sorted(l, key=attrgetter('createTime'))
+        print "Printing list of snapshots from the tree, flattened and sorted"
+        for y in s:
+            print("Name: %s - Time: %s - Description: %s" % (y.name, y.createTime, y.description))
+        return s
+
     def pm_revert_last_snapshot(self):
         task = self.vm_object.RevertToCurrentSnapshot_Task()
         while task.info.state not in [vim.TaskInfo.State.success, vim.TaskInfo.State.error]:
@@ -351,6 +449,134 @@ class VMPyvmomi:
         else:
             logging.debug("Error reverting VM: %s" % self.vm_name)
             return False
+
+    def pm_revert_named_snapshot(self, args):
+        snapshot_name = args[0]
+        #list all snapshots
+        snap_list = self._pm_list_snapshots()
+        snap_list.reverse()
+        for i in snap_list:
+            print i.name
+            if i.name == snapshot_name:
+                task = i.snapshot.RevertToSnapshot_Task()
+                while task.info.state not in [vim.TaskInfo.State.success, vim.TaskInfo.State.error]:
+                    sleep(1)
+                print "Task revert to %s ended with success: %s " % (snapshot_name, task.info.state == vim.TaskInfo.State.success)
+                return task.info.state == vim.TaskInfo.State.success
+
+        print "no snapshot with name %s found" % snapshot_name
+        return False
+
+    def pm_create_snapshot(self, args=None):
+        if not args:
+            name = ""
+        else:
+            name = args[0]
+        if name == "":
+            date = datetime.now().strftime('%Y%m%d-%H%M')
+            name = "auto_%s" % date
+
+        task = self.vm_object.CreateSnapshot_Task(name, "Auto snapshot by Rite - pyvmomi", False, False)
+        while task.info.state not in [vim.TaskInfo.State.success, vim.TaskInfo.State.error]:
+            sleep(1)
+        return task.info.state == vim.TaskInfo.State.success
+
+    def _pm_remove_snapshot(self, snapshot):
+        #it's VERY VERY important to set the flag to false, or it will remove all the subtree!
+        print "Removing snapshot... "
+        task = snapshot.RemoveSnapshot_Task(removeChildren=False)
+        while task.info.state not in [vim.TaskInfo.State.success, vim.TaskInfo.State.error]:
+            sleep(1)
+        if task.info.state == vim.TaskInfo.State.success:
+            print "Removed snapshot SUCCESS!"
+            return True
+        else:
+            print "Removing snapshot FAILED!"
+            return False
+
+    def pm_refresh_snapshots(self):
+        ret1 = self.pm_create_snapshot()
+        if ret1:
+            return self._pm_clean_snapshots()
+        else:
+            return False
+
+    def _pm_clean_snapshots(self):
+        snap_list = self._pm_list_snapshots()
+        snap_list.reverse()
+        #keeps only the latest that is the first in list
+        latest_auto_already_kept = 0
+        if len(snap_list) > 2:
+            for i in snap_list:
+                print i.name
+                if "manual" in i.name:
+                    print "I'll keep snapshot %s" % i.name
+                    continue
+                elif "auto_" in i.name and latest_auto_already_kept < 2:
+                    print "I'll keep snapshot %s" % i.name
+                    latest_auto_already_kept += 1
+                    continue
+                else:
+                    print "I'll remove snapshot %s" % i.name
+                    ret = self._pm_remove_snapshot(i.snapshot)
+                    #it removes just one snapshot and exits
+                    if not ret:
+                        return False
+        else:
+            print "Nothing to remove."
+        return True
+
+    #this is the ugliest of the pyvmomi funcions: it cleanly uses the api to create the screenshot
+    #but then the screenshot is saved ONTO VSPHERE (wtf?) and I retrieve it using the Web-Based Datastore Browser
+    #manually creating the url and using Basic hhtp authentication. That it's the SIMPLEST way!
+    #also this leaves the screenshot files onto vsphere, so I need to make another api call to delete it
+    # VMWare applies strictly the kiss logic
+    def pm_screenshot(self, args):
+        img_path = args[0]
+        err = self._check_running()
+        if err:
+            return False
+
+        task = self.vm_object.CreateScreenshot_Task()
+
+        while task.info.state not in [vim.TaskInfo.State.success, vim.TaskInfo.State.error]:
+            sleep(1)
+        if task.info.state == vim.TaskInfo.State.error:
+            logging.debug("Impossible to create screenshot(vm = %s)" % self.vm_object.name)
+
+            return False
+        #successful, prints screenshot filename and path
+        # logging.debug(task.info.result)
+        #result is something like: [VMFuzz] Puppet_Win7-FSecure/Puppet_Win7-FSecure-2.png
+        store, filen = task.info.result.split(" ")
+        store = store[1:-1]
+        # url = https://172.20.20.126/folder/Puppet_Win7-FSecure/Puppet_Win7-FSecure-1.png?dcPath=Rite&dsName=VMFuzz
+        url = "https://" + self.pyvmomi_host + "/folder/" + filen + "?dcPath=Rite&dsName=" + store
+        logging.debug("Downloading screenshot from: %s" % url)
+
+        r = requests.get(url, stream=True, verify=False, auth=HTTPBasicAuth(self.domain+"\\"+self.user, self.passwd))
+
+        if r.status_code == 200:
+            with open(img_path, 'wb') as f:
+                r.raw.decode_content = True
+                shutil.copyfileobj(r.raw, f)
+            logging.debug("Ok, got file from guest!")
+        else:
+            logging.debug("Error %s" % r.status_code)
+            return False
+
+        logging.debug("Screenshot saved (vm = %s)" % self.vm_object.name)
+
+        task_del = self.content.fileManager.DeleteDatastoreFile_Task(url)
+        while task_del.info.state not in [vim.TaskInfo.State.success, vim.TaskInfo.State.error]:
+            sleep(1)
+        if task_del.info.state == vim.TaskInfo.State.error:
+            logging.debug("Impossible to delete screenshot file from vSphere (vm = %s)" % self.vm_object.name)
+            return False
+
+        logging.debug("Temporary screenshot file %s deleted from vSphere" % filen)
+        return True
+
 
     # replaces VMRun's refreshSnapshot
     # def pm_refresh_snapshot(self, vmx):
@@ -376,131 +602,3 @@ class VMPyvmomi:
     #                 self.deleteSnapshot(vmx, s)
     #             else:
     #                 logging.debug("ignoring %s" % s)
-
-    # def createSnapshot(self, vmx, snapshot):
-    #     if config.verbose:
-    #         logging.debug("[%s] Creating snapshot %s.\n" % (vmx, snapshot))
-    #     self._run_cmd(vmx, "snapshot", [snapshot])
-    #
-    # def deleteSnapshot(self, vmx, snapshot):
-    #     if config.verbose:
-    #         logging.debug("[%s] Deleting snapshot %s.\n" % (vmx, snapshot))
-    #     self._run_cmd(vmx, "deleteSnapshot", [snapshot])
-    #
-    # def revertSnapshot(self, vmx, snapshot):
-    #     if config.verbose:
-    #         logging.debug("[%s] Reverting snapshot %s.\n" % (vmx, snapshot))
-    #     self._run_cmd(vmx, "revertToSnapshot", [snapshot])
-    #
-    # def refreshSnapshot(self, vmx, delete=True):
-    #     untouchables = [ "_datarecovery_"] #"ready", "activated",
-    #
-    #     if config.verbose:
-    #         logging.debug("[%s] Refreshing snapshot.\n" % vmx)
-    #
-    #     # create new snapshot
-    #     date = datetime.now().strftime('%Y%m%d-%H%M')
-    #     snapshot = "auto_%s" % date
-    #     untouchables.append(snapshot)
-    #
-    #     self.createSnapshot(vmx, snapshot)
-    #     if delete is True:
-    #         snaps = self.listSnapshots(vmx)
-    #         logging.debug("%s: snapshots %s" % (vmx,snaps))
-    #         if len(snaps) > 2:
-    #             for s in snaps[0:-2]:
-    #                 logging.debug("checking %s" % s)
-    #                 if s not in untouchables: # and "manual" not in s:
-    #                     logging.debug("deleting %s" % s)
-    #                     self.deleteSnapshot(vmx, s)
-    #                 else:
-    #                     logging.debug("ignoring %s" % s)
-    #
-    # def revertLastSnapshot(self, vmx):
-    #     snap = self.listSnapshots(vmx)
-    #     if len(snap) > 0:
-    #
-    #         for s in range(len(snap) - 1, -1, -1):
-    #             snapshot = snap[s]
-    #             if snapshot != "_datarecovery_":
-    #                 self.revertSnapshot(vmx, snap[s])
-    #                 return "[%s] Reverted with snapshot %s" % (vmx, snap[s])
-    #             else:
-    #                 logging.debug("snapshot _datarecovery_ found!")
-    #         return "%s, ERROR: no more snapshot to try" % vmx
-    #     else:
-    #         return "%s, ERROR: no snapshots!" % vmx
-    #
-    # def mkdirInGuest(self, vmx, dir_path):
-    #     if config.verbose:
-    #         logging.debug("[%s] Creating directory %s.\n" % (vmx, dir_path))
-    #     self._run_cmd(vmx, "CreateDirectoryInGuest", [
-    #         dir_path], [vmx.user, vmx.passwd])
-    #
-    # def listDirectoryInGuest(self, vmx, dir_path):
-    #     if config.verbose:
-    #         logging.debug("[%s] Listing directory %s.\n" % (vmx, dir_path))
-    #     return self._run_cmd(vmx, "listDirectoryInGuest", [dir_path], [vmx.user, vmx.passwd], popen=True)
-    #
-    # def deleteDirectoryInGuest(self, vmx, dir_path):
-    #     if config.verbose:
-    #         logging.debug("[%s] Delete directory %s.\n" % (vmx, dir_path))
-    #     self._run_cmd(
-    #         vmx, "deleteDirectoryInGuest", [dir_path], [vmx.user, vmx.passwd])
-    #
-    # def copyFileToGuest(self, vmx, src_file, dst_file):
-    #     if config.verbose:
-    #         logging.debug("[%s] Copying file from %s to %s.\n" %
-    #                      (vmx, src_file, dst_file))
-    #     return self._run_cmd(vmx, "CopyFileFromHostToGuest",
-    #                          [src_file, dst_file], [vmx.user, vmx.passwd])
-    #
-    # def copyFileFromGuest(self, vmx, src_file, dst_file):
-    #     if config.verbose:
-    #         logging.debug("[%s] Copying file from %s to %s.\n" %
-    #                      (vmx, src_file, dst_file))
-    #     return self._run_cmd(vmx, "CopyFileFromGuestToHost",
-    #                          [src_file, dst_file], [vmx.user, vmx.passwd])
-    #
-    # def executeCmd(self, vmx, cmd, args=[], timeout=40, interactive=True, bg=False):
-    #     if config.verbose:
-    #         logging.debug("[%s] Executing %s with args %s" % (vmx, cmd, str(args)))
-    #     if config.verbose:
-    #         logging.debug("on %s with credentials %s %s" % (vmx, vmx.user, vmx.passwd))
-    #         logging.debug("Options: timeout: %s, interactive: %s, background: %s" % (timeout, interactive, bg))
-    #     cmds = []
-    #     if interactive is True:
-    #         cmds.append("-interactive")
-    #     cmds.append(cmd)
-    #     cmds.extend(args)
-    #     if config.verbose:
-    #         logging.debug("background execution is %s" % bg)
-    #     return self._run_cmd(vmx,
-    #                          "runProgramInGuest",
-    #                          cmds,
-    #                          [vmx.user, vmx.passwd],
-    #                          bg=bg, timeout=timeout)
-    #
-
-    # def listProcesses(self, vmx):
-    #     if config.verbose:
-    #         logging.debug("[%s] List processes\n" % vmx)
-    #     return self._run_cmd(vmx, "listProcessesInGuest", vmx_creds=[vmx.user, vmx.passwd], popen=True)
-    #
-    # def takeScreenshot(self, vmx, out_img):
-    #     if config.verbose:
-    #         logging.debug("[%s] Taking screenshot.\n" % vmx)
-    #     if config.verbose:
-    #         logging.debug("CALLING FUNCTIONS WITH out img %s, u: %s, p: %s.\n" % (out_img, vmx.user, vmx.passwd))
-    #     self._run_cmd(vmx, "captureScreen", [out_img], [vmx.user, vmx.passwd])
-    #     return os.path.exists(out_img)
-    #
-    # def VMisRunning(self, vmx):
-    #     res = self._run_cmd(vmx, "list", popen=True)
-    #     if vmx.path[1:-1] in res:
-    #         return True
-    #     return False
-    #
-    # def listSnapshots(self, vmx):
-    #     out = self._run_cmd(vmx, "listSnapshots", popen=True).split("\n")
-    #     return out[1:-1]

@@ -18,6 +18,6 @@ def execute(vm, protocol, args):
         #replaced revert_last_snapshot
 
         if vm_manager.execute(vm, "pm_revert_last_snapshot"):
-            return True, "Reverted VM: %s" % vm
+            return True, "Reverted VM"
         else:
-            return False, "Error reverting VM: %s" % vm
+            return False, "Error reverting VM (check if this is referred to the logged vm)"

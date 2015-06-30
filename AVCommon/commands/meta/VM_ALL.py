@@ -13,7 +13,7 @@ vm_first_rite = "eset7,avast,avastf,avg,avg15,panda15,avg32,avira,avira15,kis15,
 #disattivato DEFINITIVAMENTE avast32, kis
 vm_deactivated_temp = "ahnlab"
 
-vm_second_rite = "fortinet,drweb,cmcav,adaware,fprot,bitdef,fsecure,gdata,vba32,risint,syscare,trendm15,zoneal,clamav,360ts,norman,spybot,zoneal7".split(',')
+vm_second_rite = "fortinet,drweb,cmcav,adaware,fprot,bitdef,fsecure,gdata,vba32,risint,syscare,trendm15,zoneal,clamav,360ts,norman,spybot,zoneal7,win10preview".split(',')
 #disattivati DEFINITIVAMENTE trendm (abbiamo trendm15) e 360cn5 (abbiamo 360ts), iobit32,
 
 

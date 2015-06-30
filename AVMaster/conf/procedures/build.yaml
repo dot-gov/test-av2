@@ -459,7 +459,7 @@ SYSTEM_STATIC:
 SYSTEM_STATIC_SRV:
     - VM_ALL
     - ON_ERROR: SKIP
-    - SLEEP_INCREMENTAL: 60
+    - SLEEP_INCREMENTAL: [60, 4]
     #- SLEEP: [1, 600]
     # CLEAN_EV no more useful - instances are deleted during run and factories are deleted daily
     # init_dispatch needed for clean evidences (to be removed)
@@ -474,7 +474,7 @@ SYSTEM_STATIC_SRV:
 SYSTEM_STAT_STAT_SRV:
     - VM_ALL
     - ON_ERROR: SKIP
-    - SLEEP_INCREMENTAL: 60
+    - SLEEP_INCREMENTAL: [60, 4]
     #- SLEEP: [1, 600]
     - CALL: SET_MAIL
     - REPORT:
@@ -502,7 +502,7 @@ SYSTEM_MELT:
 SYSTEM_MELT_SRV:
     - VM_ALL
     - ON_ERROR: SKIP
-    - SLEEP_INCREMENTAL: 60
+    - SLEEP_INCREMENTAL: [60, 4]
     #- SLEEP: [1, 600]
     # CLEAN_EV no more useful - instances are deleted during run and factories are deleted daily
     # init_dispatch needed for clean evidences (to be removed)
@@ -520,7 +520,7 @@ SYSTEM_MELT_SRV:
 SYSTEM_MELT_SRV_FIF:
     - VM_ALL
     - ON_ERROR: SKIP
-    - SLEEP_INCREMENTAL: 60
+    - SLEEP_INCREMENTAL: [60, 4]
     #- SLEEP: [1, 600]
     - CALL: SET_MAIL
     - REPORT:
@@ -530,7 +530,7 @@ SYSTEM_MELT_SRV_FIF:
 SYSTEM_MELT_SRV_UTO:
     - VM_ALL
     - ON_ERROR: SKIP
-    - SLEEP_INCREMENTAL: 60
+    - SLEEP_INCREMENTAL: [60, 4]
     #- SLEEP: [1, 600]
     - CALL: SET_MAIL
     - REPORT:
@@ -540,7 +540,7 @@ SYSTEM_MELT_SRV_UTO:
 SYSTEM_MELT_SRV_AIR:
     - VM_ALL
     - ON_ERROR: SKIP
-    - SLEEP_INCREMENTAL: 60
+    - SLEEP_INCREMENTAL: [60, 4]
     #- SLEEP: [1, 600]
     - CALL: SET_MAIL
     - REPORT:
@@ -550,7 +550,7 @@ SYSTEM_MELT_SRV_AIR:
 SYSTEM_MELT_SRV_VUZ:
     - VM_ALL
     - ON_ERROR: SKIP
-    - SLEEP_INCREMENTAL: 60
+    - SLEEP_INCREMENTAL: [60, 4]
     #- SLEEP: [1, 600]
     - CALL: SET_MAIL
     - REPORT:
@@ -577,7 +577,7 @@ SYSTEM_ELITE_FAST:
 SYSTEM_ELITE_FAST_SRV:
     - VM_ALL
     - ON_ERROR: SKIP
-    - SLEEP_INCREMENTAL: 60
+    - SLEEP_INCREMENTAL: [60, 4]
     #- SLEEP: [1, 600]
     # CLEAN_EV no more useful - instances are deleted during run and factories are deleted daily
     # init_dispatch needed for clean evidences (to be removed)
@@ -595,7 +595,7 @@ SYSTEM_ELITE_FAST_SRV:
 SYSTEM_ELITE_FAST_DEMO_SRV:
     - VM_ALL
     - ON_ERROR: SKIP
-    - SLEEP_INCREMENTAL: 60
+    - SLEEP_INCREMENTAL: [60, 4]
     #- SLEEP: [1, 600]
     # CLEAN_EV no more useful - instances are deleted during run and factories are deleted daily
     # init_dispatch needed for clean evidences (to be removed)
@@ -613,7 +613,7 @@ SYSTEM_ELITE_FAST_DEMO_SRV:
 SYSTEM_ELITE_FAST_SCOUTDEMO_SRV:
     - VM_ALL
     - ON_ERROR: SKIP
-    - SLEEP_INCREMENTAL: 60
+    - SLEEP_INCREMENTAL: [60, 4]
     #- SLEEP: [1, 600]
     # CLEAN_EV no more useful - instances are deleted during run and factories are deleted daily
     # init_dispatch needed for clean evidences (to be removed)
@@ -669,7 +669,7 @@ SYSTEM_SOLDIER:
 SYSTEM_SOLDIER_ACHILLE:
     - VM_ALL
     - ON_ERROR: SKIP
-    - SLEEP_INCREMENTAL: 60
+    - SLEEP_INCREMENTAL: [60, 4]
     #- SLEEP: [1, 600]
     # CLEAN_EV no more useful - instances are deleted during run and factories are deleted daily
     # init_dispatch needed for clean evidences (to be removed)
@@ -689,7 +689,7 @@ SYSTEM_SOLDIER_ACHILLE:
 SYSTEM_SOLDIER_SRV:
     - VM_ALL
     - ON_ERROR: SKIP
-    - SLEEP_INCREMENTAL: 60
+    - SLEEP_INCREMENTAL: [60, 4]
     #- SLEEP: [1, 600]
     # CLEAN_EV no more useful - instances are deleted during run and factories are deleted daily
     # init_dispatch needed for clean evidences (to be removed)
@@ -725,7 +725,7 @@ SYSTEM_EXPLOIT:
 SYSTEM_EXPLOIT_SRV:
     - VM_ALL
     - ON_ERROR: SKIP
-    - SLEEP_INCREMENTAL: 60
+    - SLEEP_INCREMENTAL: [60, 4]
     #- SLEEP: [1, 600]
     # CLEAN_EV no more useful - instances are deleted during run and factories are deleted daily
     # init_dispatch needed for clean evidences (to be removed)
@@ -859,7 +859,9 @@ SYSTEM_ANDROID_FAST:
 
 VM_PUSH_VIRUS:
     - ON_ERROR: CONTINUE
-    - SLEEP: 300
+    # there was a 300 seconds sleep to ensure the av has started
+    # really this is not necessary and no test have it! So reduced to 60 seconds
+    - SLEEP: 60
     - POPUP: [ True, True ]
     #- CROP: True
     - PUSH: [ AVAgent/assets/vira/conficker.dll, AVAgent/assets/vira/eicar.com ]
@@ -1169,8 +1171,8 @@ BUILD_EXPLOIT_SRV:
 #ENCAPSULATED IN INSTALL_AGENT
 VM_PUSH_AGENT:
     #ENCAPSULATED IN INSTALL_AGENT
-    - DELETE_DIR: /AVTest/
-    - DELETE_DIR: /Users/avtest/Desktop/AVTest/
+    - DELETE_DIR: C:/AVTest/
+    - DELETE_DIR: C:/Users/avtest/Desktop/AVTest/
     - PUSHZIP: [ AVAgent/*.py, AVAgent/*.yaml, AVCommon/*.py, AVCommon/*.yml, AVCommon/commands/client/*.py, AVCommon/commands/meta/*.py, AVCommon/commands/*.py, AVAgent/assets/config*, AVAgent/assets/keyinject.exe, AVAgent/assets/exec_zip.exe, AVAgent/assets/getusertime.exe, AVAgent/assets/windows/*  ]
 
 VM_UPLOAD_SKYPE:
@@ -1283,6 +1285,7 @@ UPDATE_ALL_7:
     - INTERNET: False
     #ENCAPSULATED IN INSTALL_AGENT
     #- CALL: VM_PUSH_AGENT
+    - STOP_AGENT
     - INSTALL_AGENT
     - RELOG
     - INTERNET: False
@@ -1391,12 +1394,14 @@ UPD_AGENT:
     #- SLEEP: [10, 1800]
     - SLEEP_INCREMENTAL: 60
     - REVERT
-    - START_VM2
+    # qui c'era un bug enorme: non aspettava che la vm fosse partita (no parametro AV_AGENT)
+    - START_VM2: AV_AGENT
     - CHECK_INFECTION # questo non e' necessario, ma e' meglio assicurarsene
     #ENCAPSULATED IN INSTALL_AGENT
     #- CALL: VM_PUSH_AGENT
     # aggiunto in data 01/06/15 perche l'install puo' fallire...
     - ON_ERROR: CONTINUE
+    - STOP_AGENT
     - INSTALL_AGENT
     - RELOG
     # removed because a restart is no more needed (Windows update are now performed manually)
@@ -1462,6 +1467,7 @@ INIT_UPDATE_MANUAL:
     - DELETE_DIR: c:\\AVTest\\logs\\
     #ENCAPSULATED IN INSTALL_AGENT
     #- CALL: VM_PUSH_AGENT
+    - STOP_AGENT
     - INSTALL_AGENT
 
 FINALIZE_UPDATE_MANUAL:
@@ -1476,6 +1482,7 @@ UPDATE_INSTALL_MANUAL:
     - START_VM
     #ENCAPSULATED IN INSTALL_AGENT
     #- CALL: VM_PUSH_AGENT
+    - STOP_AGENT
     - INSTALL_AGENT
     - RELOG
     - STOP_VM: 300
@@ -1490,6 +1497,7 @@ UPDATE_MANUAL:
     #ENCAPSULATED IN INSTALL_AGENT
     #- CALL: VM_PUSH_AGENT
     - PUSH: [assets/update_system_manual.bat]
+    - STOP_AGENT
     - INSTALL_AGENT
     - EXECUTE_VM: /AVTest/assets/update_system_manual.bat # scarica gli aggiornamenti windows
 
@@ -1530,6 +1538,7 @@ UPDATE_AGENT:
     - START_VM
     #ENCAPSULATED IN INSTALL_AGENT
     #- CALL: VM_PUSH_AGENT
+    - STOP_AGENT
     - INSTALL_AGENT
     - START_AGENT
     - UNINSTALL
@@ -1542,6 +1551,7 @@ UPDATE_AGENT:
 UPDATE_AGENT_FAST:
     #ENCAPSULATED IN INSTALL_AGENT
     #- CALL: VM_PUSH_AGENT
+    - STOP_AGENT
     - INSTALL_AGENT
     - RELOG
 
@@ -1576,6 +1586,7 @@ UPD_WAIT_FAST:
     #- CALL: VM_PUSH_AGENT
     - PUSH: [assets/update_system.bat, assets/update_theme.bat]
     - EXECUTE_VM: [ /avtest/assets/update_theme.bat, [], 40, True, True ]
+    - STOP_AGENT
     - INSTALL_AGENT
     - SLEEP: 60
     - STOP_VM: 300

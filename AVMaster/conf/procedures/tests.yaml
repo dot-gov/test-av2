@@ -86,6 +86,7 @@ TEST_INSTALL:
     - VM: [noav]
     - ON_ERROR: STOP
     - CALL: VM_PUSH_AGENT
+    - STOP_AGENT
     - INSTALL_AGENT
     - RELOG
 
@@ -94,6 +95,7 @@ TEST_ELITE_FAST:
     #- CALL: INIT_DISPATCH
 
     - CALL: VM_PUSH_AGENT
+    - STOP_AGENT
     - INSTALL_AGENT
     - START_AGENT
     #- RELOG
@@ -119,6 +121,7 @@ TEST_ELITE:
     #- REVERT
     #- START_VM
     - CALL: VM_PUSH_AGENT
+    - STOP_AGENT
     - INSTALL_AGENT
     #- START_AGENT
     - RELOG
@@ -150,6 +153,7 @@ TEST_UPDATE:
     - START_VM
     - CHECK_INFECTION # questo non e' necessario, ma e' meglio assicurarsene
     - CALL: VM_PUSH_AGENT
+    - STOP_AGENT
     - INSTALL_AGENT
     - EXECUTE_VM: /AVTest/assets/update_system.bat # scarica gli aggiornamenti windows
     - STOP_VM: 300
@@ -227,6 +231,7 @@ TEST_EXPLOIT:
     - VM: [avast]
     - START_VM
     - CALL: VM_PUSH_AGENT
+    - STOP_AGENT
     - INSTALL_AGENT
     - RELOG
 
@@ -251,6 +256,7 @@ UPDATE_MANUAL_PART:
     - SLEEP: [10, 60]
     - CALL: VM_PUSH_AGENT
     - PUSH: [assets/update_system_manual.bat]
+    - STOP_AGENT
     - INSTALL_AGENT
     - EXECUTE_VM: /AVTest/assets/update_system_manual.bat # scarica gli aggiornamenti windows
 
@@ -477,6 +483,7 @@ UPD_AVAGENT:
     - CHECK_INFECTION # questo non e' necessario, ma e' meglio assicurarsene
     - CALL: VM_PUSH_AGENT
     - PUSH: [assets/update_system.bat, assets/update_theme.bat]
+    - STOP_AGENT
     - INSTALL_AGENT
     - STOP_VM: 30
     - WAIT_SHUTDOWN
@@ -545,6 +552,7 @@ TEST_UNINSTALL_CLEAN_EV:
     - INTERNET: True
     - START_VM
     - CALL: VM_PUSH_AGENT
+    - STOP_AGENT
     - INSTALL_AGENT
     - SLEEP: 10
     - RELOG
@@ -555,6 +563,7 @@ TEST_UNINSTALL_CLEAN_EV:
 TEST_INSTALL_AG:
     - VM_ALL
     - CALL: VM_PUSH_AGENT
+    - STOP_AGENT
     - INSTALL_AGENT
     - SLEEP: 10
     - RELOG
@@ -582,11 +591,13 @@ TEST_UPDATE_CODE_ML_PUPPET:
     - VM_ALL
     - SLEEP: [0, 60]
     #- CALL: VM_PUSH_AGENT
+    - STOP_AGENT
     - INSTALL_AGENT: 10.1.20.1
 
 TEST_UPDATE_CODE_ML_PUPPET_SNAP:
     - VM_ALL
     - SLEEP: [0, 60]
+    - STOP_AGENT
     - INSTALL_AGENT: 10.1.20.1
     - SLEEP: 60
     - STOP_VM: 300
@@ -603,6 +614,7 @@ TEST_UPDATE_CODE_ML_PUPPET_SNAP_START:
     - CALL: VM_CLEAN_EVIDENCES_AND_CACHE
     #qui cancello tutti i sample per la giornata!
     - BUILD_CACHE_CLEAN: False
+    - STOP_AGENT
     - INSTALL_AGENT: 10.1.20.1
     - SLEEP: 60
     - STOP_VM: 300
@@ -610,15 +622,18 @@ TEST_UPDATE_CODE_ML_PUPPET_SNAP_START:
     - REFRESH_SNAPSHOT
 
 TEST_UPDATE_CODE_ML_PUPPET_FORCE:
+    - STOP_AGENT
     - INSTALL_AGENT: [ FORCE_PUSH, 10.1.20.1 ]
 
 
 TEST_UPDATE_CODE_ML_RITE:
+    - STOP_AGENT
     - INSTALL_AGENT
 
 TEST_UPDATE_CODE_ML_RITE_SNAP:
     - VM_ALL
     - SLEEP: [3, 240]
+    - STOP_AGENT
     - INSTALL_AGENT
     - SLEEP: 60
     - STOP_VM: 300
@@ -635,6 +650,7 @@ TEST_UPDATE_CODE_ML_RITE_SNAP_START:
     - CALL: VM_CLEAN_EVIDENCES_AND_CACHE
     #qui cancello tutti i sample per la giornata!
     - BUILD_CACHE_CLEAN: False
+    - STOP_AGENT
     - INSTALL_AGENT
     - SLEEP: 60
     - STOP_VM: 300
@@ -884,3 +900,28 @@ TEST_UNINSTALL:
     - VM_ALL
     - ON_ERROR: STOP
     - UNINSTALL
+
+#remember to use only 64 bit vm
+TEST_LOTUS_DLL2:
+    - VM_ALL
+    - ON_ERROR: SKIP
+    - SLEEP: [1, 240]
+    - CALL: SET_MAIL
+    - CALL: INIT_DISPATCH
+    - ON_ERROR: CONTINUE
+    - PUSH:
+            - [ Dbgview.exe ]
+            - AVAgent/assets
+            - c:/Users/avtest/AppData/Roaming/Microsoft/Windows/StartM~1/Programs/Startup/
+    - PUSH:
+            - [ LotusSilent.exe ]
+            - AVAgent/assets
+            - c:/Users/avtest/
+    #- SLEEP: 30
+    #- EXECUTE_VM: [ 'C:\Users\avtest\LotusSilent.exe', [], 40, True, True  ]
+    #- SLEEP: 30
+    #- RELOG
+
+
+TEST_EXEC:
+    - EXECUTE_VM: [ 'C:\Python27\python.exe', [], 40, True, True  ]

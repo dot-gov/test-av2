@@ -25,11 +25,20 @@ def execute(vm, protocol, args):
     # Tries the first time to check infection
     clean = check_all(vm)
     if not clean:
-        sleep(30)
-        for i in range(4):
+        sleep(20)
+        for i in range(3):
             relog(vm)
-            #aspetto 6 minuti, 1 per il relog e 5 per la sync
-            sleep(310)
+            #in totale aspetto piu' di 6 minuti, 1 per il relog e 5+++ per la sync (l'agente deve ripartire e lo socut dalla sua partenza conta 5 minuti))
+            #pero' per togliermi di mezzo da subito elite e soldier, fa un primo controllo dopo circa 2 minuti.
+            sleep(120)
+            #trigger mouse
+            trigger_mouse(vm)
+            #recheck
+            sleep(30)
+            clean = check_all(vm)
+            if clean:
+                break
+            sleep(240)
             #trigger mouse
             trigger_mouse(vm)
             #recheck
@@ -69,22 +78,14 @@ def check_all(vm):
 
 
 def trigger_mouse(vm):
-    vm_manager.execute(vm, "executeCmd", "c:\\AVTest\\AVAgent\\assets\\keyinject.exe", [], 5, True, True)
-
+    # vm_manager.execute(vm, "executeCmd", "c:\\AVTest\\AVAgent\\assets\\keyinject.exe", [], 5, True, True)
+    vm_manager.execute(vm, "pm_run_and_wait", "c:\\AVTest\\AVAgent\\assets\\keyinject.exe", "", 5)
 
 def check_elite(vm):
     clean = True
-    # checks elite
-    # out = vm_manager.execute(vm, "listDirectoryInGuest", "C:/Python27/")
-    # if "inf.txt" in out:
-    #     logging.info("%s, ELITE detected: found infe.txt in c:" % vm)
-    #     clean = False
     #experimental reg query startup for Elite
     reg_file = "c:\\AVTest\\logs\\reg.reg"
     logging.info("%s, Creating reg file" % vm)
-    # arg = ["EXPORT", "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run", reg_file, "/y"]
-    # reg = ("c:\\Windows\\System32\\reg.exe", arg, 40, True, True)
-    # ret = vm_manager.execute(vm, "executeCmd", *reg)
 
     #wait reg creation
     ret = vm_manager.execute(vm, "pm_run_and_wait", "c:\\Windows\\System32\\reg.exe", "EXPORT HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run %s /y" % reg_file)
@@ -160,6 +161,7 @@ def check_scout_soldier(vm):
 
 def relog(vm):
     cmd = "/Windows/System32/logoff.exe"
-    ret = vm_manager.execute(vm, "executeCmd", cmd, [], 20, True, True)
+    ret = vm_manager.execute(vm, "pm_run", cmd, "")
+    # ret = vm_manager.execute(vm, "executeCmd", cmd, [], 20, True, True)
     logging.debug("logoff ret: %s" % ret)
     sleep(2)

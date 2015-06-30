@@ -14,22 +14,24 @@ def execute(vm, protocol, args):
     assert vm, "null vm"
 
 
-    for i in range (30):
-        if vm_manager.execute(vm, "is_powered_off"):
-            return True, "%s VM is stopped" % vm
-        else:
-            logging.debug("%s, not yet powered off" % vm)
-            time.sleep(30)
+    # for i in range (30):
+    #     if vm_manager.execute(vm, "pm_is_powered_off"):
+    #         return True, "%s VM is stopped" % vm
+    #     else:
+    #         logging.debug("%s, not yet powered off" % vm)
+    #         time.sleep(30)
 
-    ret = vm_manager.execute(vm, "shutdown")
+    ret = vm_manager.execute(vm, "pm_poweroff")
     if not ret:
         return False, "Not Stopped VM %s" % ret
-
-    for i in range (10):
-        if vm_manager.execute(vm, "is_powered_off"):
-            return True, "%s VM is stopped" % vm
-        else:
-            logging.debug("%s, not yet powered off" % vm)
-            time.sleep(30)
-
-    return False, "%s VM isn't stopped" % vm
+    else:
+        return True, "%s VM is stopped" % vm
+    #
+    # for i in range (10):
+    #     if vm_manager.execute(vm, "pm_is_powered_off"):
+    #         return True, "%s VM is stopped" % vm
+    #     else:
+    #         logging.debug("%s, not yet powered off" % vm)
+    #         time.sleep(30)
+    #
+    # return False, "%s VM isn't stopped" % vm

@@ -45,13 +45,19 @@ EdgeUiInputTopWndClass (windows 8)
 TfrmStartMenu (tasto windows 8.1)
 BaseBar (menu win 32)
 MUSHYBAR (xps viewer o other win window)
+Windows.UI.Core.CoreWindow (windows 10 interface)
+ApplicationFrameWindow (windows 10 interface)
+TaskManagerWindow (task manager)
+
 '''
 
 windows_ignore_windows = ['Shell_TrayWnd', 'Button', 'ConsoleWindowClass', 'Progman',
                    'CabinetWClass', 'CalcFrame', 'Notepad', 'Photo_Lightweight_Viewer', '#32770', 'tooltips_class32', 'NativeHWNDHost', 'NSISUACIPC',
                    'SysShadow', 'DV2ControlHost', 'Desktop User Picture', 'SysDragImage', 'NotifyIconOverflowWindow', 'ClockTooltipWindow',
-                   'SysFader', '#32768', 'VANUITooltip', 'Internet Explorer_Hidden', 'Internet_Explorer_Hidden', 'TaskListOverlayWnd', 'TaskListThumbnailWnd', 'IEFrame',
-                   'Alternate Owner', 'CiceroUIWndFrame', 'Explorer_Hidden', 'EdgeUiInputTopWndClass', 'TfrmStartMenu', 'BaseBar', 'MUSHYBAR']
+                   'SysFader', '#32768', 'VANUITooltip', 'Internet Explorer_Hidden', 'Internet_Explorer_Hidden', 'TaskListOverlayWnd',
+                   'TaskListThumbnailWnd', 'IEFrame',
+                   'Alternate Owner', 'CiceroUIWndFrame', 'Explorer_Hidden', 'EdgeUiInputTopWndClass', 'TfrmStartMenu', 'BaseBar', 'MUSHYBAR',
+                   'Windows.UI.Core.CoreWindow', 'ApplicationFrameWindow', 'TaskManagerWindow']
 
 #ok direct method WIN: Button, Cabinet,ConsoleWindowClass, progman
 #not important the method for windows because we ignore these windows

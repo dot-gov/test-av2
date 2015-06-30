@@ -19,22 +19,21 @@ def get_status(vm):
     vm_tools = False
     install = False
     try:
-        processes = vm_manager.execute(vm, "list_processes");
+        processes = vm_manager.execute(vm, "pm_list_processes");
     except:
         logging.exception("cannot get processes")
-        #processes = vm_manager.execute(vm, "listProcesses");
-        #logging.debug("listProcesses: %s" % processes)
 
-    if not processes:
-        try:
-            sleep(60)
-            logging.debug("trying listProcesses")
-            procs = vm_manager.execute(vm, "listProcesses");
-            if config.verbose:
-                logging.debug("listProcesses: %s" % procs)
-            processes = helper.convert_processes(procs)
-        except:
-            logging.exception("listProcesses")
+    #now I use: pm_list_processes so I don't more use the 2 different methods from vmrun and vmachine
+    # if not processes:
+    #     try:
+    #         sleep(60)
+    #         logging.debug("trying listProcesses")
+    #         procs = vm_manager.execute(vm, "listProcesses");
+    #         if config.verbose:
+    #             logging.debug("listProcesses: %s" % procs)
+    #         processes = helper.convert_processes(procs)
+    #     except:
+    #         logging.exception("listProcesses")
 
     if not processes:
         return "NOT-STARTED"
@@ -123,14 +122,16 @@ def execute(vm, protocol, args):
                     logging.debug("VM_tools present")
                     vm_tools_present = True
                     logging.debug("%s, executing ipconfig, time: %s/%s" % (vm, j, max_tries))
-                    started = vm_manager.execute(vm, "executeCmd", "c:\\windows\\system32\\ipconfig.exe") == 0
+                    # started = vm_manager.execute(vm, "executeCmd", "c:\\windows\\system32\\ipconfig.exe") == 0
+                    started = vm_manager.execute(vm, "pm_run_and_wait", "c:\\windows\\system32\\ipconfig.exe")
                     logging.debug("%s, executed ipconfig, ret: %s" % (vm, started))
 
                     logging.debug("IP Checking and renewing if necessary")
 
-                    arg = ["/C", 'c:\\windows\\system32\\ipconfig.exe | findstr IP | findstr /l ":\ 10.0. :\ 10.1." || c:\\windows\\system32\\ipconfig.exe /renew']
-                    reg = ("c:\\windows\\system32\\cmd.exe", arg, 40, True, True)
-                    vm_manager.execute(vm, "executeCmd", *reg)
+                    # arg = ["/C", 'c:\\windows\\system32\\ipconfig.exe | findstr IP | findstr /l ":\ 10.0. :\ 10.1." || c:\\windows\\system32\\ipconfig.exe /renew']
+                    # reg = ("c:\\windows\\system32\\cmd.exe", arg, 40, True, True)
+                    #vm_manager.execute(vm, "executeCmd", *reg)
+                    vm_manager.execute(vm, "pm_run_and_wait", "c:\\windows\\system32\\cmd.exe", ' /C c:\\windows\\system32\\ipconfig.exe | findstr IP | findstr /l ":\ 10.0. :\ 10.1." || c:\\windows\\system32\\ipconfig.exe /renew')
 
                     logging.debug("IP Checking completed")
 

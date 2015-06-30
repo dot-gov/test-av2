@@ -189,6 +189,21 @@ def check_static_scan(files, vm, report=None):
     return failed
 
 
+def copy_files(copy_extensions, files, files_to_check):
+    for src in files:
+        logging.debug("DBG: check_static: %s" % src)
+        for ext in copy_extensions:
+            dst = "%s.copy.%s" % (src, ext)
+            files_to_check.add(dst)
+            if os.path.exists(src) and not os.path.exists(dst):
+                logging.debug("Copying %s to %s" % (src, dst))
+                try:
+                    shutil.copy(src, dst)
+                except Exception, ex:
+                    logging.exception("Exception copying file: %s" % src)
+
+
+
 def check_static(files, report=None, scan=False, vm=None):
 
     global report_send
@@ -228,18 +243,20 @@ def check_static(files, report=None, scan=False, vm=None):
     subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
 
     #copy everything to .copy.exe, .copy.bat, .copy.com, .copy.dll
-    for src in files:
-        logging.debug("DBG: check_static: %s" % src)
-        for ext in copy_extensions:
-            dst = "%s.copy.%s" % (src, ext)
-            files_to_check.add(dst)
-            if os.path.exists(src) and not os.path.exists(dst):
-                logging.debug("Copying %s to %s" % (src, dst))
-                try:
-                    shutil.copy(src, dst)
-                except Exception, ex:
-                    logging.exception("Exception copying file: %s" % src)
+
+    #experimental: run this in a thread so does not locks up the whole avagent in case of a detection
+    #this was made mostly for gdata
+    copy_thread = threading.Thread(target=copy_files, args=(copy_extensions, files, files_to_check))
+    copy_thread.start()
+
+    #if after 1 minute the thread hasn't finished, then the test failed because it was blocked by an AV
+    # (and probably hasn't updated the files_to_check, so we cannot check the files existance)
+    copy_thread.join(60.0)
+    if copy_thread.isAlive():
+        failed = True
+
     sleep(30)
+
     if scan:
         logging.debug("1")
         ret = launch_static_scan(dirop, vm)
@@ -758,14 +775,14 @@ class AgentBuild:
             # self.uninstall(instance_id)
             sleep(60)
             if upgraded:
-                add_result("+ SUCCESS %s UPGRADED, closing" % level.upper())
+                add_result("+ SUCCESS %s UPGRADED, now I wait 5 minute and then close the instance" % level.upper())
         else:
             output = self._list_processes()
             logging.debug(output)
             add_result("+ FAILED %s INSTALL" % level.upper())
         #added because kis detects the elite after some time.
         sleep(300)
-        logging.debug("- Uninstalling and closing instance: %s" % instance_id)
+        logging.debug("- Uninstalling (to uninstall I close this instance: %s)" % instance_id)
         self.uninstall(instance_id)
 
         logging.debug("- Result: %s" % upgraded)
@@ -844,7 +861,8 @@ class AgentBuild:
         logging.debug("- Scout, Wait for 5 minutes: %s" % time.ctime())
         sleep(300)
 
-
+        #waits for about 10* (30+60 sec) = about 15 minutes
+        #30 seconds for trigger process timeout and 60 seconds of sleep
         for tries in range(1, 10):
             logging.debug("- Scout, Trigger sync for 30 seconds, try %s" % tries)
             self._trigger_sync(timeout=30)

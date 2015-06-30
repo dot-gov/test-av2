@@ -102,9 +102,8 @@ def execute(vm, protocol, inst_args):
     # - PUSHZIP: [ AVAgent/*.py, AVAgent/*.yaml, AVCommon/*.py, AVCommon/*.yml, AVCommon/commands/client/*.py, AVCommon/commands/meta/*.py, AVCommon/commands/*.py, AVAgent/assets/config*, AVAgent/assets/keyinject.exe, AVAgent/assets/getusertime.exe, AVAgent/assets/windows/*  ]
 
     #deleteDirectoryInGuest
-    DELETE_DIR.execute(vm, protocol, "/AVTest/")
+    DELETE_DIR.execute(vm, protocol, "C:\\AVTest\\")
     #not more useful
-    #DELETE_DIR.execute(vm, protocol, "/Users/avtest/Desktop/AVTest/")
 
     #retries 1 times after first time
     zip_success, zip_reason = PUSHZIP.execute(vm, protocol, [2, "timestamp.txt", "AVAgent/*.py", "AVAgent/*.yaml", "AVCommon/*.py", "AVCommon/*.yaml", "AVCommon/commands/client/*.py", "AVCommon/commands/meta/*.py", "AVCommon/commands/*.py", "AVCommon/conf/av/*.yaml", "AVCommon/conf/*.yaml", "AVAgent/assets/config*", "AVAgent/assets/keyinject.exe", "AVAgent/assets/exec_zip.exe", "AVAgent/assets/getusertime.exe", "AVAgent/assets/windows/*"])
@@ -209,25 +208,27 @@ def execute(vm, protocol, inst_args):
 
     os.remove(filename)
 
-    # --------------delete running-----------------
-    logging.debug("Deleting 'running' dir (if not present, will print 'Error: A file was not found' but is ok")
-    dirname = "%s/avagent/running" % config.basedir_av
-    r = vm_manager.execute(vm, "deleteDirectoryInGuest", dirname)
-    if r > 0:
-        failed = True
-        reason += " - Cannot delete running file"
-        logging.debug("Cannot delete %s" % dirname)
-    time.sleep(2)
+    #all this files are already deleted before (all C:\AVTest is deleted)
 
-    # --------------delete logs-----------------
-    logging.debug("Deleting 'logs' dir (if not present, will print 'Error: A file was not found' but is ok")
-    dirname = "%s/logs" % config.basedir_av
-    r = vm_manager.execute(vm, "deleteDirectoryInGuest", dirname)
-    if r > 0:
-        failed = True
-        reason += " - Can't delete logs"
-        logging.debug("Cannot delete %s" % dirname)
-    time.sleep(2)
+    # # --------------delete running-----------------
+    # logging.debug("Deleting 'running' dir (if not present, will print 'Error: A file was not found' but is ok")
+    # dirname = "%s/avagent/running" % config.basedir_av
+    # r = vm_manager.execute(vm, "pm_delete_directory", dirname)
+    # if r > 0:
+    #     failed = True
+    #     reason += " - Cannot delete running file"
+    #     logging.debug("Cannot delete %s" % dirname)
+    # time.sleep(2)
+    #
+    # # --------------delete logs-----------------
+    # logging.debug("Deleting 'logs' dir (if not present, will print 'Error: A file was not found' but is ok")
+    # dirname = "%s/logs" % config.basedir_av
+    # r = vm_manager.execute(vm, "pm_delete_directory", dirname)
+    # if r > 0:
+    #     failed = True
+    #     reason += " - Can't delete logs"
+    #     logging.debug("Cannot delete %s" % dirname)
+    # time.sleep(2)
 
     if failed or not zip_success:
         #    report_send("+ END %s %s" % (action, success))

@@ -75,7 +75,7 @@ def execute(vm, protocol, args):
         rdir = ntdir(os.path.join(dst_dir, r))
         #print("2_crea cartelle %s" % rdir)
         logging.debug("mkdir %s " % (rdir))
-        vm_manager.execute(vm, "mkdirInGuest", rdir)
+        vm_manager.execute(vm, "pm_make_directory", rdir)
 
     """ then upload parsed files """
     logging.debug("All files to copy are:\n%s" % src_files)
@@ -96,9 +96,9 @@ def execute(vm, protocol, args):
             #logging.debug("file exists")
 
         logging.debug("%s copy %s -> %s" % (vm, src, dst))
-        r = vm_manager.execute(vm, "copyFileToGuest", src, dst)
-        sleep(10)
-        if r > 0:
+        r = vm_manager.execute(vm, "pm_put_file", src, dst)
+        sleep(1)
+        if not r:
             return False, "Cant Copy %s on VM" % src_file
 
     return True, "Files copied on VM"

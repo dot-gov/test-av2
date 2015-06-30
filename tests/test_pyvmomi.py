@@ -6,6 +6,7 @@ import sys
 import threading
 import time
 import shutil
+from requests.auth import HTTPBasicAuth
 
 __author__ = 'mlosito'
 
@@ -27,8 +28,8 @@ guestpwd = 'avtest'
 
 #"list_vms" "poweron", "poweroff", "stress", "listfiles", "put_file", "get_file", "hard_poweroff", "get_vm_from_path", "pm_list_snapshots",
 # "pm_revert_last_snapshot", "pm_create_snapshot", "pm_clean_snapshots", "pm_refresh_snapshots", "pm_revert_named_snapshot"
-# "pm_make_directory", "print_powered_on_vms"
-action = "print_powered_on_vms"
+# "pm_make_directory", "print_powered_on_vms", "pm_screenshot", "pm_list_processes", "pm_delete_directory",  "pm_is_powered_on",  "pm_is_powered_off"
+action = "pm_list_processes"
 
 #dangerous! vm_others = ['AVAgent Win7 x64', 'AVAgent Win7 x86', 'AVAgent Win7 x86_v10_2if', 'AVAgent WinSrv2008 R2 x64', 'AVAgent-Win81-x64', 'ComodoTest', 'FunCH', 'FunFF', 'FunIE', 'HoneyDrive', 'Kali linux', 'Mac OS X', 'PuppetMaster_New', 'Puppet_Ubuntu', 'RCS-Achille', 'RCSTestSrv', 'RiteMaster-DEB-nu', 'Stratagem Honeypot', 'TEST-Win-2012', 'TestRail', 'UbuntuAgent', 'WinXP-RU', 'vCenterC', 'Win7-x86-CCleaner', 'Win7-TestAV', 'Win81-TestSpot', ]
 #probably some of these are not in use
@@ -130,6 +131,11 @@ def hard_poweroff_vm(target_vm):
             time.sleep(1)
         print "Power is off.(vm = %s)" % target_vm.name
 
+def pm_is_powered_on(target_vm):
+    return target_vm.runtime.powerState == vim.VirtualMachinePowerState.poweredOn
+
+def pm_is_powered_off(target_vm):
+    return target_vm.runtime.powerState == vim.VirtualMachinePowerState.poweredOff
 
 #CHECK WINDOWS STARTUP
 def wait_vmtools_vm(target_vm):
@@ -295,6 +301,87 @@ def pm_make_directory(si, target_vm, dir_name="C:\\gatto\\"):
     return True
 
 
+def pm_delete_directory(si, target_vm, dir_name="C:\\gatto\\", recursive=True):
+    tools_status = target_vm.guest.toolsStatus
+    if (tools_status == 'toolsNotInstalled' or
+            tools_status == 'toolsNotRunning'):
+        raise SystemExit(
+            "VMwareTools is either not running or not installed. "
+            "Rerun the script after verifying that VMWareTools "
+            "is running")
+
+    creds = vim.vm.guest.NamePasswordAuthentication(username=guestusr, password=guestpwd)
+    content = si.RetrieveContent()
+    try:
+        print "Removing directory: %s, with recursion = %s" % (dir_name, recursive)
+        content.guestOperationsManager.fileManager.DeleteDirectoryInGuest(target_vm, creds, dir_name, recursive=recursive)
+    except vim.fault.FileNotFound:
+        print "Directory %s not found, skipping deletion" % dir_name
+        return True
+    except:
+        print "Error deleting directory %s" % dir_name
+        return False
+    print "Directory %s deleted" % dir_name
+    return True
+
+
+#this is the ugliest of the pyvmomi funcions: it cleanly uses the api to create the screenshot
+#but then the screenshot is saved ONTO VSPHERE (wtf?) and I retrieve it using the Web-Based Datastore Browser
+#manually creating the url and using Basic hhtp authentication. That it's the SIMPLEST way!
+#also this leaves the screenshot files onto vsphere, so I need to make another api call to delete it
+# VMWare applies strictly the kiss logic
+def pm_screenshot(si, target_vm, img_path):
+    tools_status = target_vm.guest.toolsStatus
+    if (tools_status == 'toolsNotInstalled' or
+            tools_status == 'toolsNotRunning'):
+        raise SystemExit(
+            "VMwareTools is either not running or not installed. "
+            "Rerun the script after verifying that VMWareTools "
+            "is running")
+
+    task = target_vm.CreateScreenshot_Task()
+
+    while task.info.state not in [vim.TaskInfo.State.success, vim.TaskInfo.State.error]:
+        time.sleep(1)
+    if task.info.state == vim.TaskInfo.State.error:
+        print "Impossible to create screenshot(vm = %s)" % target_vm.name
+
+        return False
+    #successful
+    print task.info.result
+
+    #result = [VMFuzz] Puppet_Win7-FSecure/Puppet_Win7-FSecure-2.png
+    store, filen = task.info.result.split(" ")
+    store = store[1:-1]
+    # url = https://172.20.20.126/folder/Puppet_Win7-FSecure/Puppet_Win7-FSecure-1.png?dcPath=Rite&dsName=VMFuzz
+    url = "https://" + host + "/folder/" + filen + "?dcPath=Rite&dsName=" + store
+    print url
+
+    r = requests.get(url, stream=True, verify=False, auth=HTTPBasicAuth(domain+"\\"+user, pwd))
+
+    if r.status_code == 200:
+        with open("/tmp/get.png", 'wb') as f:
+            r.raw.decode_content = True
+            shutil.copyfileobj(r.raw, f)
+        print "Ok, got file from guest!"
+    else:
+        print "Error %s" % r.status_code
+        return False
+
+    print "Screenshot saved (vm = %s)" % target_vm.name
+
+    content = si.RetrieveContent()
+    task_del = content.fileManager.DeleteDatastoreFile_Task(url)
+    while task_del.info.state not in [vim.TaskInfo.State.success, vim.TaskInfo.State.error]:
+        time.sleep(1)
+    if task_del.info.state == vim.TaskInfo.State.error:
+        print "Impossible to delete screenshot file from vSphere (vm = %s)" % target_vm.name
+        return False
+
+    print "Temporary screenshot file %s deleted from vSphere" % filen
+    return True
+
+
 def execute(si, target_vm):
     tools_status = target_vm.guest.toolsStatus
     if (tools_status == 'toolsNotInstalled' or
@@ -305,13 +392,14 @@ def execute(si, target_vm):
             "is running")
 
     creds = vim.vm.guest.NamePasswordAuthentication(username=guestusr, password=guestpwd)
+    creds.interactiveSession = True
 
     content = si.RetrieveContent()
 
     #spec = vim.vm.guest.ProcessManager.WindowsProgramSpec(programPath="cmd.exe", arguments=" /c dir > c:\\AVTest\log.txt") # arguments="tmp.zip",  workingDirectory="C:\\AVTest\\"
     for i in range(0, 10):
         try:
-            spec = vim.vm.guest.ProcessManager.WindowsProgramSpec(programPath="cmda.exe", arguments=" /c timeout 7") # arguments="tmp.zip",  workingDirectory="C:\\AVTest\\"
+            spec = vim.vm.guest.ProcessManager.WindowsProgramSpec(programPath="calc.exe", workingDirectory="C:\\Windows\\", arguments="", startMinimized=False) # arguments="tmp.zip",  workingDirectory="C:\\AVTest\\"
 
             pid = content.guestOperationsManager.processManager.StartProgramInGuest(target_vm, creds, spec)
         except vim.fault.FileNotFound, e:
@@ -327,6 +415,39 @@ def execute(si, target_vm):
             time.sleep(2)
             print "I love busy waiting"
 
+
+def pm_list_processes(si, target_vm):
+
+    tools_status = target_vm.guest.toolsStatus
+    if (tools_status == 'toolsNotInstalled' or
+            tools_status == 'toolsNotRunning'):
+        raise SystemExit(
+            "VMwareTools is either not running or not installed. "
+            "Rerun the script after verifying that VMWareTools "
+            "is running")
+
+    creds = vim.vm.guest.NamePasswordAuthentication(username=guestusr, password=guestpwd)
+
+    content = si.RetrieveContent()
+
+    out = []
+
+    #gets process info for all the pids (no "pids" parameter (list) is specified)
+    guest_process_info = content.guestOperationsManager.processManager.ListProcessesInGuest(target_vm, creds)
+    for gpi in guest_process_info:
+        # print gpi
+           # name = 'slui.exe',
+           # pid = 3904L,
+           # owner = 'WIN7FSECURE\\avtest',
+           # cmdLine = 'slui.exe',
+           # startTime = 2015-06-19T12:43:58Z,
+           # endTime = <unset>,
+           # exitCode = <unset>
+        if not gpi.endTime:
+            out.append((gpi.name, gpi.pid, gpi.owner, gpi.cmdLine, gpi.startTime))
+    for o in out:
+        print o
+    return out
 
 def pm_revert_last_snapshot(target_vm):
     task = target_vm.RevertToCurrentSnapshot_Task()
@@ -547,12 +668,33 @@ def script():
             sys.exit(-1)
         pm_make_directory(si, myvm)
 
+    elif action == "pm_delete_directory":
+        myvm = get_vm_from_name(vm_name, si)
+        if not isinstance(myvm, vim.VirtualMachine):
+            print "could not find a virtual machine with the name %s (it's not a VM Instance)" % vm_name
+            sys.exit(-1)
+        pm_delete_directory(si, myvm)
+
+    elif action == "pm_screenshot":
+        myvm = get_vm_from_name(vm_name, si)
+        if not isinstance(myvm, vim.VirtualMachine):
+            print "could not find a virtual machine with the name %s (it's not a VM Instance)" % vm_name
+            sys.exit(-1)
+        pm_screenshot(si, myvm, "")
+
     elif action == "execute":
         myvm = get_vm_from_name(vm_name, si)
         if not isinstance(myvm, vim.VirtualMachine):
             print "could not find a virtual machine with the name %s (it's not a VM Instance)" % vm_name
             sys.exit(-1)
         execute(si, target_vm=myvm)
+
+    elif action == "pm_list_processes":
+        myvm = get_vm_from_name(vm_name, si)
+        if not isinstance(myvm, vim.VirtualMachine):
+            print "could not find a virtual machine with the name %s (it's not a VM Instance)" % vm_name
+            sys.exit(-1)
+        pm_list_processes(si, target_vm=myvm)
 
     elif action == "hard_poweroff":
         myvm = get_vm_from_name(vm_name, si)
@@ -615,6 +757,22 @@ def script():
             print "could not find a virtual machine with the name %s (it's not a VM Instance)" % vm_name
             sys.exit(-1)
         pm_revert_named_snapshot(myvm, "auto_20150609-1247")
+
+    elif action == "pm_is_powered_on":
+        myvm = get_vm_from_name(vm_name, si)
+        if not isinstance(myvm, vim.VirtualMachine):
+            print "could not find a virtual machine with the name %s (it's not a VM Instance)" % vm_name
+            sys.exit(-1)
+        if pm_is_powered_on(myvm):
+            print("ON")
+
+    elif action == "pm_is_powered_off":
+        myvm = get_vm_from_name(vm_name, si)
+        if not isinstance(myvm, vim.VirtualMachine):
+            print "could not find a virtual machine with the name %s (it's not a VM Instance)" % vm_name
+            sys.exit(-1)
+        if pm_is_powered_off(myvm):
+            print("OFF")
 
     elif action == "print_powered_on_vms":
         print_powered_on_vms(si)

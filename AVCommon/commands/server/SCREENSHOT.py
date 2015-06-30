@@ -21,7 +21,7 @@ def execute(vm, protocol, img_path):
             os.makedirs(basedir)
         img_path = "%s/%s.%s.png" % (basedir, vm, int(time.time()))
 
-    ret = vm_manager.execute(vm, "takeScreenshot", img_path)
+    ret = vm_manager.execute(vm, "pm_screenshot", img_path)
     if ret is True:
         #blob = open(img_path).read()
         return ret, img_path

@@ -54,30 +54,11 @@ def on_answer(vm, success, answer):
             for result_item in answer:
                 logging.debug("SAVED IMAGE: %s (%s, word: %s)" % (result_item[1], result_item[0], result_item[2]))
 
-            # logging.warn("We have to PULL %s images" % len(answer))
-            # dir = "%s/crop" % logger.logdir
-            #
-            # for result_item in answer:
-            #     try:
-            #         src = result_item[1]
-            #         dst_dir = "%s/%s" % (dir, vm)
-            #         if not os.path.exists(dst_dir):
-            #             os.makedirs(dst_dir)
-            #
-            #         src_linuxformat = src.replace('\\', '/')
-            #
-            #         dst = "%s/%s" % (dst_dir, os.path.basename(src_linuxformat))
-            #
-            #         logging.debug("PULL: %s -> %s (%s)" % (src, dst, result_item[0]))
-            #         vm_manager.execute(vm, "copyFileFromGuest", src, dst)
-            #     except:
-            #         logging.exception("Cannot get image %s" % src)
 
 
 # popup supports 2 arguments. The first is True to start monitoring and False to stop
 # the second (optional) permits to disable saving of crop images (default = True, saves the files)
 def execute(vm, args):
-    import PIL
     global results, go_on, popup_thread, vm_global, server, learning_mode, vm_error
     vm_global = vm
     output = [""]

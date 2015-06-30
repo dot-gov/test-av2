@@ -44,7 +44,8 @@ def on_answer(vm, success, answer):
 
                 src = src.replace('/','\\')
                 logging.debug("PULL: %s -> %s" % (src, dst))
-                vm_manager.execute(vm, "copyFileFromGuest", src ,dst)
+                if not vm_manager.execute(vm, "pm_get_file", src ,dst):
+                    logging.exception("Cannot get image %s" % src)
             except:
                 logging.exception("Cannot get image %s" % src)
 

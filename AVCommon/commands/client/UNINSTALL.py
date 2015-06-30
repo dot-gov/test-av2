@@ -26,9 +26,10 @@ def on_answer(vm, success, answer):
     """ server side """
     from AVMaster import vm_manager
     logging.debug("executing logout")
-    cmd = "/windows/system32/logout.exe"
-    arg = []
-    ret = vm_manager.execute(vm, "executeCmd", cmd, arg, 40, True, True)
+    #cmd = "/windows/system32/logoff.exe"
+    # arg = []
+    # ret = vm_manager.execute(vm, "executeCmd", cmd, arg, 40, True, True)
+    ret = vm_manager.execute(vm, "pm_run", "logoff", "")
     sleep(2)
 
 

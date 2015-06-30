@@ -18,7 +18,7 @@ class Dispatcher(object):
 
     vms = []
 
-    def __init__(self, mq, vms, timeout=1100):
+    def __init__(self, mq, vms, timeout=1300):
         self.vms = vms
         self.mq = mq
         self.timeout = timeout
@@ -184,4 +184,7 @@ class Dispatcher(object):
         if len(self.ended) != len(self.vms):
             logging.error("ended: %s, num_vms: %s, not_answered: %s. Probably some timeout occurred" % (len(self.ended), len(self.vms), no_answer))
         #assert answered >= (len(self.vms) * (self.num_commands)), "answered: %s, len(vms): %s, num_commands: %s" % (answered , len(self.vms), self.num_commands)
+        logging.debug("######################################################")
+        logging.debug("THIS TEST IS FINISHED. PROCEDURE: %s" % procedure.name)
+        logging.debug("######################################################")
         return answered

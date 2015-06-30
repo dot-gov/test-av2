@@ -22,28 +22,28 @@ def test_up_and_down():
 
     logging.info( "Testing existent methods")
     for vm in vms:
-        if not vmm.execute(vm, "is_powered_on"):
+        if not vmm.execute(vm, "pm_is_powered_on"):
             logging.debug("powering on %s" % vm)
             vmm.execute(vm, "startup")
 
     for vm in vms:
-        while not vmm.execute(vm, "is_powered_on") :
+        while not vmm.execute(vm, "pm_is_powered_on") :
             logging.debug( "sleeping 5 secs waiting for avg")
             sleep(5)
 
     for vm in vms:
-        assert vmm.execute(vm, "is_powered_on")
+        assert vmm.execute(vm, "pm_is_powered_on")
 
     for vm in vms:
         vmm.execute(vm, "shutdown")
 
     for vm in vms:
-        while vmm.execute(vm, "is_powered_on"):
+        while vmm.execute(vm, "pm_is_powered_on"):
             logging.debug( "sleeping 5 secs waiting for avg")
             sleep(5)
 
     for vm in vms:
-        assert vmm.execute(vm, "is_powered_off")
+        assert vmm.execute(vm, "pm_is_powered_off")
 
     logging.info( "Testing non existent methods")
     exp = False

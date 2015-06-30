@@ -44,7 +44,7 @@ def red(msg, max_len=100):
 
 def get_hostname():
     host = socket.gethostname()
-    drop = ["winxp","win7","win8"]
+    drop = ["winxp", "win7", "win8", "win10", "Win10"]
     for d in drop:
         host = host.replace(d, "")
 

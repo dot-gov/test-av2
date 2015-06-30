@@ -35,8 +35,11 @@ def execute(vm_name, cmd, *args):
                   "mkdirInGuest", "copyFileToGuest", "copyFileFromGuest", "deleteDirectoryInGuest",
                   "listDirectoryInGuest", "refreshSnapshot"]
 
-    pyvmomi_cmds = ["pm_poweron", "pm_poweron_and_check", "pm_poweroff", "pm_list_directory", "pm_put_file", "pm_get_file", "pm_run_and_wait",
-                    "pm_run", "pm_ip_addresses", "pm_revert_last_snapshot"]
+    pyvmomi_cmds = ["pm_poweron", "pm_poweron_and_check", "pm_poweroff", "pm_check_login",
+                    "pm_list_directory", "pm_put_file", "pm_get_file", "pm_run_and_wait",
+                    "pm_run", "pm_list_processes",
+                    "pm_ip_addresses", "pm_revert_last_snapshot", "pm_make_directory", "pm_delete_directory", "pm_screenshot",
+                    "pm_is_powered_on", "pm_is_powered_off"]
 
     if config.verbose:
         logging.debug("vm: %s, command: %s" % (vm_name, cmd))

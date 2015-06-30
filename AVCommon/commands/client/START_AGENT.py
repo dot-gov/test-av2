@@ -15,15 +15,17 @@ def on_init(protocol, args):
     else:
         redis = config.redis
 
-    arg = ["C:\\AVTest\\AVAgent\\av_agent.py", "-m", vm, "-s", mq.session, "-d", redis]
-    ret = vm_manager.execute(vm, "executeCmd", cmd, arg, 40, True, True)
+    # arg = ["C:\\AVTest\\AVAgent\\av_agent.py", "-m", vm, "-s", mq.session, "-d", redis]
+    # ret = vm_manager.execute(vm, "executeCmd", cmd, arg, 40, True, True)
+    ret = vm_manager.execute(vm, "pm_run", cmd, "C:\\AVTest\\AVAgent\\av_agent.py " + " -m " + vm + " -s " + mq.session + " -d " + redis)
+
 
     #logging.debug("execution: %s" % ret)
     python = None
 
     for i in range(5):
         time.sleep(10)
-        processes = vm_manager.execute(vm, "list_processes")
+        processes = vm_manager.execute(vm, "pm_list_processes")
         if not processes:
             logging.debug("%s: null list_processes" % vm)
             continue

@@ -112,7 +112,7 @@ def pushzip(vm, args):
 
         errors = []
 
-        vm_manager.execute(vm, "mkdirInGuest", ntdir(dst_dir))
+        vm_manager.execute(vm, "pm_make_directory", ntdir(dst_dir))
         sleep(tr)
         # copy unzip (it should be already in AVAgent/assets...)
         unzipexe = "assets/unzip.exe"

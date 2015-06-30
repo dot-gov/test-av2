@@ -9,7 +9,8 @@ _good = {'performance', 'complete', 'Protection', 'enabled', 'LIVE', 'TECH', 'SU
          'Mobile', 'Family', 'Safety', 'Update', 'UPDATE', 'FAILED', 'top-rated', 'tablet', 'Maxumize', 'maximiza',
          'free', 'trial', 'shopping', 'banking', 'watching', 'videos', 'Gamirg', 'surfirg', 'Protectior', 'actually', 'Surf', 'without',
          'interruptions', 'speeds', 'performance', 'complete', '24171365', 'LIVE', 'TECH', 'SUPPORT', 'databases', 'ugdatg', 'update', 'updating',
-         'Windows', 'Enterprise', 'Build', 'Web Filtering', 'definitions'}
+         'Windows', 'Enterprise', 'Build', 'Web Filtering', 'definitions', 'background tasks', 'currently performing',
+         'computer is idle'}
 
 _crash = {'stopped', 'working', 'solution', 'problem', 'online', 'solution', 'close'}
 

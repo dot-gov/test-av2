@@ -10,7 +10,7 @@ def wait_timeout(proc, seconds):
     end = start + seconds
     interval = min(seconds / 1000.0, .25)
 
-    logging.debug("DBG wait for: %s sec" % seconds)
+    logging.debug("DBG process wait for: %s sec" % seconds)
     while True:
         result = proc.poll()
         if result is not None:

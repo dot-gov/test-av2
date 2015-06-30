@@ -98,7 +98,10 @@ class MailSender(object):
         msg.attach(htmlpart)
 
         hostname = socket.gethostname()
-        subject = 'RiteAnalyzer - Sanity=%s%% - Errors=%s%% - Fails=%s%%+%s%%' % (self.sanity_percentage, self.rite_errors_percentage, self.rite_fails_percentage, self.not_run_percentage)
+        if self.rite_errors_percentage == 0.0:
+            subject = 'RiteAnalyzer - FLAWLESS VICTORY!!! - Fails=%s%%+%s%%' % (self.rite_fails_percentage, self.not_run_percentage)
+        else:
+            subject = 'RiteAnalyzer - Sanity=%s%% - Errors=%s%% - Fails=%s%%+%s%%' % (self.sanity_percentage, self.rite_errors_percentage, self.rite_fails_percentage, self.not_run_percentage)
 
         # for recipient in mail_recipients:
         #     # Make sure email addresses do not contain non-ASCII characters
